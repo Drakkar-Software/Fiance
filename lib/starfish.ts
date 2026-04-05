@@ -14,6 +14,7 @@ import { createBackupDocument, restoreFromBackup } from "./sync";
 import { getDatabase } from "@/db/provider";
 
 let store: StoreApi<StarfishStore> | null = null;
+let isRestoring = false;
 
 export interface StarfishConfig {
   serverUrl: string;
@@ -50,6 +51,9 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
   });
 
   // Subscribe to remote pull results → restore to stores + SQLite
+  // restoreFromBackup updates stores via hydrateAllStores which does NOT
+  // call notifySync, so no infinite loop. The isRestoring flag is an extra
+  // safeguard to prevent notifySync during restore.
   store.subscribe((state, prevState) => {
     if (
       state.data &&
@@ -58,7 +62,12 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     ) {
       const db = getDatabase();
       if (db) {
-        restoreFromBackup(state.data as Record<string, unknown>, db);
+        isRestoring = true;
+        try {
+          restoreFromBackup(state.data as Record<string, unknown>, db);
+        } finally {
+          isRestoring = false;
+        }
       }
     }
   });
@@ -82,7 +91,7 @@ export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
  * which auto-flushes to the server when online.
  */
 export function notifySync(): void {
-  if (!store) return;
+  if (!store || isRestoring) return;
   store.getState().set(() => createBackupDocument());
 }
 

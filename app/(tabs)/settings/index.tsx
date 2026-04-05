@@ -26,7 +26,6 @@ import {
   generateTemplateTasks,
   recalculateDueDates,
 } from "@/lib/planning";
-import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function SettingsScreen() {
   const wedding = useWeddingStore((s) => s.wedding);
@@ -46,8 +45,6 @@ export default function SettingsScreen() {
     wedding?.budgetTarget?.toString() || ""
   );
   const [currency, setCurrency] = useState(wedding?.currency || "EUR");
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-
   // Starfish sync state
   const [serverUrl, setServerUrl] = useState("");
   const [authToken, setAuthToken] = useState("");
@@ -419,7 +416,7 @@ export default function SettingsScreen() {
             Privacy-first · Offline-first · Aucune télémétrie
           </Text>
           <Text className="text-xs text-gray-400 mt-1">
-            Toutes vos données restent sur votre appareil.
+            Vos données restent chiffrées, sur votre appareil et votre serveur Starfish.
           </Text>
         </View>
       </View>

@@ -23,7 +23,7 @@ export const useWeddingStore = create<WeddingState>((set) => ({
       };
       // Write-through to SQLite
       const db = getDatabase();
-      if (db) persistWedding(db, updates);
+      if (db) persistWedding(db, { ...updates, updatedAt: updated.updatedAt });
       // Notify Starfish sync
       notifySync();
       return { wedding: updated };
