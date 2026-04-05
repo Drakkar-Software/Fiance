@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -15,13 +15,13 @@ import {
   VENDOR_TYPE_LABELS,
   VENDOR_STATUS_LABELS,
   VENDOR_STATUS_COLORS,
-  PRICING_KEY_LABELS,
 } from "@/db/types";
-import type { VendorType, VendorStatus, PricingKey } from "@/db/types";
+import type { VendorType, VendorStatus } from "@/db/types";
 import { RatingStars } from "@/components/RatingStars";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import type { Vendor, QuotePricing } from "@/db/schema";
+import { SectionTitle, FormCard, InputRow, ToggleRow } from "@/components/FormSection";
+import type { Vendor } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
   "PROSPECT",
@@ -38,36 +38,22 @@ export default function VendorDetailScreen() {
   const addVendor = useVendorsStore((s) => s.addVendor);
   const updateVendor = useVendorsStore((s) => s.updateVendor);
   const removeVendor = useVendorsStore((s) => s.removeVendor);
-  const quotePricings = useVendorsStore((s) => s.quotePricings);
-  const addQuotePricing = useVendorsStore((s) => s.addQuotePricing);
-  const updateQuotePricing = useVendorsStore((s) => s.updateQuotePricing);
-  const removeQuotePricing = useVendorsStore((s) => s.removeQuotePricing);
 
   const isNew = id === "new";
   const existingVendor = vendors.find((v) => v.id === id);
 
   const [name, setName] = useState(existingVendor?.name || "");
-  const [contactName, setContactName] = useState(
-    existingVendor?.contactName || ""
-  );
+  const [contactName, setContactName] = useState(existingVendor?.contactName || "");
   const [phone, setPhone] = useState(existingVendor?.phone || "");
   const [email, setEmail] = useState(existingVendor?.email || "");
   const [website, setWebsite] = useState(existingVendor?.website || "");
   const [status, setStatus] = useState<VendorStatus>(
     (existingVendor?.status as VendorStatus) || "PROSPECT"
   );
-  const [basePrice, setBasePrice] = useState(
-    existingVendor?.basePrice?.toString() || ""
-  );
-  const [pricePerPerson, setPricePerPerson] = useState(
-    existingVendor?.pricePerPerson?.toString() || ""
-  );
-  const [depositAmount, setDepositAmount] = useState(
-    existingVendor?.depositAmount?.toString() || ""
-  );
-  const [depositPaid, setDepositPaid] = useState(
-    existingVendor?.depositPaid || false
-  );
+  const [basePrice, setBasePrice] = useState(existingVendor?.basePrice?.toString() || "");
+  const [pricePerPerson, setPricePerPerson] = useState(existingVendor?.pricePerPerson?.toString() || "");
+  const [depositAmount, setDepositAmount] = useState(existingVendor?.depositAmount?.toString() || "");
+  const [depositPaid, setDepositPaid] = useState(existingVendor?.depositPaid || false);
   const [rating, setRating] = useState(existingVendor?.rating || 0);
   const [notes, setNotes] = useState(existingVendor?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
@@ -132,24 +118,18 @@ export default function VendorDetailScreen() {
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Status selector */}
-        <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-          Statut
-        </Text>
+        <SectionTitle>Statut</SectionTitle>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="mb-6"
+          className="mb-5"
           contentContainerStyle={{ gap: 8 }}
         >
           {STATUS_OPTIONS.map((s) => (
             <Pressable key={s} onPress={() => setStatus(s)}>
               <StatusBadge
                 label={VENDOR_STATUS_LABELS[s]}
-                color={
-                  status === s
-                    ? VENDOR_STATUS_COLORS[s]
-                    : "#D1D5DB"
-                }
+                color={status === s ? VENDOR_STATUS_COLORS[s] : "#D1D5DB"}
                 size="md"
               />
             </Pressable>
@@ -157,22 +137,18 @@ export default function VendorDetailScreen() {
         </ScrollView>
 
         {/* Information section */}
-        <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-          Informations
-        </Text>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <SectionTitle>Informations</SectionTitle>
+        <FormCard>
           <InputRow label="Nom de l'entreprise *" value={name} onChangeText={setName} />
           <InputRow label="Contact / Responsable" value={contactName} onChangeText={setContactName} />
           <InputRow label="Téléphone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
           <InputRow label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
           <InputRow label="Site web" value={website} onChangeText={setWebsite} />
-        </View>
+        </FormCard>
 
         {/* Pricing section */}
-        <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-          Tarification
-        </Text>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <SectionTitle>Tarification</SectionTitle>
+        <FormCard>
           <InputRow
             label="Prix total (€)"
             value={basePrice}
@@ -191,52 +167,40 @@ export default function VendorDetailScreen() {
             onChangeText={setDepositAmount}
             keyboardType="numeric"
           />
-          <Pressable
-            onPress={() => setDepositPaid(!depositPaid)}
-            className="flex-row items-center justify-between py-3"
-          >
-            <Text className="text-base text-gray-700 dark:text-gray-300">
-              Acompte versé
-            </Text>
-            <Ionicons
-              name={depositPaid ? "checkbox" : "square-outline"}
-              size={24}
-              color={depositPaid ? "#10B981" : "#9CA3AF"}
-            />
-          </Pressable>
-        </View>
+          <ToggleRow
+            label="Acompte versé"
+            value={depositPaid}
+            onToggle={() => setDepositPaid(!depositPaid)}
+          />
+        </FormCard>
 
         {/* Rating */}
-        <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-          Note personnelle
-        </Text>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <SectionTitle>Note personnelle</SectionTitle>
+        <FormCard>
           <RatingStars rating={rating} onChange={setRating} size={32} />
-        </View>
+        </FormCard>
 
         {/* Notes */}
-        <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-          Notes
-        </Text>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <SectionTitle>Notes</SectionTitle>
+        <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[100px]"
             placeholder="Observations, détails du devis..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
             multiline
             textAlignVertical="top"
           />
-        </View>
+        </FormCard>
 
         {/* Delete button */}
         {!isNew && (
           <Pressable
             onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-xl p-4 mb-8 items-center"
+            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
-            <Text className="text-red-500 font-semibold">
+            <Text className="text-red-500 font-semibold text-sm">
               Supprimer ce prestataire
             </Text>
           </Pressable>
@@ -253,31 +217,6 @@ export default function VendorDetailScreen() {
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
-      />
-    </View>
-  );
-}
-
-function InputRow({
-  label,
-  value,
-  onChangeText,
-  keyboardType = "default",
-}: {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
-}) {
-  return (
-    <View className="border-b border-gray-100 dark:border-gray-800 py-3">
-      <Text className="text-sm text-gray-500 mb-1">{label}</Text>
-      <TextInput
-        className="text-base text-gray-900 dark:text-white"
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType}
-        placeholderTextColor="#9CA3AF"
       />
     </View>
   );

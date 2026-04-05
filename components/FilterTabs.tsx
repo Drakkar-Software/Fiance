@@ -27,10 +27,10 @@ export function FilterTabs({ tabs, activeKey, onSelect }: FilterTabsProps) {
           <Pressable
             key={tab.key}
             onPress={() => onSelect(tab.key)}
-            className={`px-4 py-2 rounded-full ${
+            className={`px-4 py-2 rounded-full border ${
               isActive
-                ? "bg-primary-500"
-                : "bg-gray-100 dark:bg-gray-800"
+                ? "bg-primary-500 border-primary-500"
+                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
             }`}
           >
             <Text

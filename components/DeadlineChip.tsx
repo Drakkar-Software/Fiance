@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import {
   differenceInDays,
   differenceInMonths,
@@ -18,28 +19,41 @@ export function DeadlineChip({ date }: DeadlineChipProps) {
   const months = differenceInMonths(target, now);
 
   let label: string;
-  let colorClass: string;
+  let bg: string;
+  let fg: string;
+  let iconName: keyof typeof Ionicons.glyphMap = "time-outline";
 
   if (isToday(target)) {
     label = "Aujourd'hui";
-    colorClass = "bg-red-100 text-red-700";
+    bg = "#FEF2F2";
+    fg = "#DC2626";
+    iconName = "alert-circle";
   } else if (isPast(target)) {
     label = "En retard";
-    colorClass = "bg-red-100 text-red-700";
+    bg = "#FEF2F2";
+    fg = "#DC2626";
+    iconName = "alert-circle";
   } else if (days <= 7) {
-    label = `Dans ${days} jour${days > 1 ? "s" : ""}`;
-    colorClass = "bg-amber-100 text-amber-700";
+    label = `${days}j`;
+    bg = "#FFFBEB";
+    fg = "#D97706";
   } else if (days <= 30) {
-    label = `Dans ${days} jours`;
-    colorClass = "bg-blue-100 text-blue-700";
+    label = `${days}j`;
+    bg = "#EFF6FF";
+    fg = "#2563EB";
   } else {
-    label = `Dans ${months} mois`;
-    colorClass = "bg-gray-100 text-gray-600";
+    label = `${months} mois`;
+    bg = "#F3F4F6";
+    fg = "#6B7280";
   }
 
   return (
-    <View className={`px-2 py-0.5 rounded-full ${colorClass.split(" ")[0]}`}>
-      <Text className={`text-xs font-medium ${colorClass.split(" ")[1]}`}>
+    <View
+      className="flex-row items-center px-2 py-0.5 rounded-full gap-1"
+      style={{ backgroundColor: bg }}
+    >
+      <Ionicons name={iconName} size={11} color={fg} />
+      <Text className="text-xs font-medium" style={{ color: fg }}>
         {label}
       </Text>
     </View>

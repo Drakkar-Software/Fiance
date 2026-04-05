@@ -16,6 +16,7 @@ import { useVendorsStore } from "@/store/useVendorsStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { Idea } from "@/db/schema";
 
 const CATEGORIES = Object.entries(IDEA_CATEGORY_LABELS) as [
@@ -42,9 +43,7 @@ export default function IdeaDetailScreen() {
   const [category, setCategory] = useState<IdeaCategory | "">(
     (existing?.category as IdeaCategory) || ""
   );
-  const [collectionId, setCollectionId] = useState(
-    existing?.collectionId || ""
-  );
+  const [collectionId, setCollectionId] = useState(existing?.collectionId || "");
   const [vendorId, setVendorId] = useState(existing?.vendorId || "");
   const [isFavorite, setIsFavorite] = useState(existing?.isFavorite || false);
   const [tagsInput, setTagsInput] = useState(
@@ -103,7 +102,7 @@ export default function IdeaDetailScreen() {
                 <Ionicons
                   name={isFavorite ? "heart" : "heart-outline"}
                   size={24}
-                  color={isFavorite ? "#EF4444" : "#9CA3AF"}
+                  color={isFavorite ? "#EF4444" : "#C0C0C8"}
                 />
               </Pressable>
               <Pressable onPress={handleSave}>
@@ -118,7 +117,7 @@ export default function IdeaDetailScreen() {
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Image preview */}
         {existing?.imageUri ? (
-          <View className="rounded-xl overflow-hidden mb-4">
+          <View className="rounded-2xl overflow-hidden mb-5 border border-gray-100 dark:border-gray-800">
             <Image
               source={{ uri: existing.imageUri }}
               className="w-full"
@@ -131,7 +130,7 @@ export default function IdeaDetailScreen() {
                   (color, idx) => (
                     <View
                       key={idx}
-                      className="flex-1 h-6"
+                      className="flex-1 h-5"
                       style={{ backgroundColor: color }}
                     />
                   )
@@ -140,9 +139,9 @@ export default function IdeaDetailScreen() {
             )}
           </View>
         ) : (
-          <Pressable className="bg-white dark:bg-gray-900 rounded-xl p-8 mb-4 items-center">
-            <Ionicons name="image-outline" size={48} color="#D1D5DB" />
-            <Text className="text-gray-400 mt-2">
+          <Pressable className="bg-accent-cream dark:bg-gray-900 rounded-2xl p-8 mb-5 items-center border border-gray-100 dark:border-gray-800">
+            <Ionicons name="image-outline" size={40} color="#E8D5C0" />
+            <Text className="text-gray-400 mt-2 text-sm">
               Appuyez pour ajouter une image
             </Text>
           </Pressable>
@@ -150,55 +149,51 @@ export default function IdeaDetailScreen() {
 
         {/* Title & notes */}
         <SectionTitle>Informations</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <FormCard>
           <InputRow label="Titre" value={title} onChangeText={setTitle} />
-          <InputRow
-            label="URL source"
-            value={sourceUrl}
-            onChangeText={setSourceUrl}
-          />
-          <Text className="text-sm text-gray-500 mb-1 mt-3">Notes</Text>
+          <InputRow label="URL source" value={sourceUrl} onChangeText={setSourceUrl} />
+          <Text className="text-xs text-gray-400 mb-1 mt-3 font-medium">Notes</Text>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[60px]"
             value={notes}
             onChangeText={setNotes}
             placeholder="Description, remarques..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
           />
-        </View>
+        </FormCard>
 
         {/* Tags */}
         <SectionTitle>Tags</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white"
             value={tagsInput}
             onChangeText={setTagsInput}
-            placeholder="rustique, verdure, suspendu... (séparés par des virgules)"
-            placeholderTextColor="#9CA3AF"
+            placeholder="rustique, verdure, suspendu..."
+            placeholderTextColor="#D0D0D8"
           />
-        </View>
+        </FormCard>
 
         {/* Category */}
         <SectionTitle>Catégorie</SectionTitle>
-        <View className="flex-row flex-wrap gap-2 mb-6">
+        <View className="flex-row flex-wrap gap-2 mb-5">
           {CATEGORIES.map(([key, label]) => (
             <Pressable
               key={key}
               onPress={() => setCategory(category === key ? "" : key)}
-              className={`px-3 py-2 rounded-full ${
+              className={`px-3.5 py-2 rounded-full border ${
                 category === key
-                  ? "bg-primary-500"
-                  : "bg-gray-100 dark:bg-gray-800"
+                  ? "bg-primary-500 border-primary-500"
+                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
                 className={`text-sm ${
                   category === key
                     ? "text-white font-medium"
-                    : "text-gray-600"
+                    : "text-gray-500"
                 }`}
               >
                 {label}
@@ -214,20 +209,20 @@ export default function IdeaDetailScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="mb-6"
+              className="mb-5"
               contentContainerStyle={{ gap: 8 }}
             >
               <Pressable
                 onPress={() => setCollectionId("")}
-                className={`px-3 py-2 rounded-full ${
+                className={`px-3.5 py-2 rounded-full border ${
                   !collectionId
-                    ? "bg-primary-500"
-                    : "bg-gray-100 dark:bg-gray-800"
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    !collectionId ? "text-white font-medium" : "text-gray-600"
+                    !collectionId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
                   Aucune
@@ -237,17 +232,17 @@ export default function IdeaDetailScreen() {
                 <Pressable
                   key={c.id}
                   onPress={() => setCollectionId(c.id)}
-                  className={`px-3 py-2 rounded-full ${
+                  className={`px-3.5 py-2 rounded-full border ${
                     collectionId === c.id
-                      ? "bg-primary-500"
-                      : "bg-gray-100 dark:bg-gray-800"
+                      ? "bg-primary-500 border-primary-500"
+                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                   }`}
                 >
                   <Text
                     className={`text-sm ${
                       collectionId === c.id
                         ? "text-white font-medium"
-                        : "text-gray-600"
+                        : "text-gray-500"
                     }`}
                   >
                     {c.name}
@@ -265,20 +260,20 @@ export default function IdeaDetailScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="mb-6"
+              className="mb-5"
               contentContainerStyle={{ gap: 8 }}
             >
               <Pressable
                 onPress={() => setVendorId("")}
-                className={`px-3 py-2 rounded-full ${
+                className={`px-3.5 py-2 rounded-full border ${
                   !vendorId
-                    ? "bg-primary-500"
-                    : "bg-gray-100 dark:bg-gray-800"
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    !vendorId ? "text-white font-medium" : "text-gray-600"
+                    !vendorId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
                   Aucun
@@ -288,17 +283,17 @@ export default function IdeaDetailScreen() {
                 <Pressable
                   key={v.id}
                   onPress={() => setVendorId(v.id)}
-                  className={`px-3 py-2 rounded-full ${
+                  className={`px-3.5 py-2 rounded-full border ${
                     vendorId === v.id
-                      ? "bg-primary-500"
-                      : "bg-gray-100 dark:bg-gray-800"
+                      ? "bg-primary-500 border-primary-500"
+                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                   }`}
                 >
                   <Text
                     className={`text-sm ${
                       vendorId === v.id
                         ? "text-white font-medium"
-                        : "text-gray-600"
+                        : "text-gray-500"
                     }`}
                   >
                     {v.name}
@@ -313,9 +308,9 @@ export default function IdeaDetailScreen() {
         {!isNew && (
           <Pressable
             onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-xl p-4 mb-8 items-center"
+            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
-            <Text className="text-red-500 font-semibold">
+            <Text className="text-red-500 font-semibold text-sm">
               Supprimer cette idée
             </Text>
           </Pressable>
@@ -332,36 +327,6 @@ export default function IdeaDetailScreen() {
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
-      />
-    </View>
-  );
-}
-
-function SectionTitle({ children }: { children: string }) {
-  return (
-    <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-      {children}
-    </Text>
-  );
-}
-
-function InputRow({
-  label,
-  value,
-  onChangeText,
-}: {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-}) {
-  return (
-    <View className="border-b border-gray-100 dark:border-gray-800 py-3">
-      <Text className="text-sm text-gray-500 mb-1">{label}</Text>
-      <TextInput
-        className="text-base text-gray-900 dark:text-white"
-        value={value}
-        onChangeText={onChangeText}
-        placeholderTextColor="#9CA3AF"
       />
     </View>
   );

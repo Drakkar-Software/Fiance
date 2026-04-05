@@ -49,9 +49,11 @@ export default function TablesScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       {/* Unassigned guests warning */}
       {unassigned.length > 0 && (
-        <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center">
-          <Ionicons name="alert-circle" size={20} color="#F59E0B" />
-          <Text className="text-sm text-amber-700 dark:text-amber-300 ml-2">
+        <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">
+          <View className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center mr-2">
+            <Ionicons name="alert" size={14} color="#F59E0B" />
+          </View>
+          <Text className="text-sm text-amber-700 dark:text-amber-300 flex-1">
             {unassigned.length} invité{unassigned.length > 1 ? "s" : ""}{" "}
             accepté{unassigned.length > 1 ? "s" : ""} sans table
           </Text>
@@ -70,14 +72,14 @@ export default function TablesScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {/* Add table form */}
           {showAdd && (
-            <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-4">
+            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 Nouvelle table
               </Text>
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
                 placeholder="Nom de la table"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#D0D0D8"
                 value={newTableName}
                 onChangeText={setNewTableName}
                 autoFocus
@@ -85,7 +87,7 @@ export default function TablesScreen() {
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
                 placeholder="Capacité"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#D0D0D8"
                 value={newTableCapacity}
                 onChangeText={setNewTableCapacity}
                 keyboardType="numeric"
@@ -93,15 +95,15 @@ export default function TablesScreen() {
               <View className="flex-row gap-2">
                 <Pressable
                   onPress={handleAdd}
-                  className="flex-1 bg-primary-500 py-2 rounded-lg items-center"
+                  className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
                 >
-                  <Text className="text-white font-semibold">Créer</Text>
+                  <Text className="text-white font-semibold text-sm">Créer</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => setShowAdd(false)}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2 rounded-lg items-center"
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
-                  <Text className="text-gray-600 dark:text-gray-400">
+                  <Text className="text-gray-500 dark:text-gray-400 text-sm">
                     Annuler
                   </Text>
                 </Pressable>
@@ -118,34 +120,39 @@ export default function TablesScreen() {
             return (
               <View
                 key={table.id}
-                className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
               >
                 <View className="flex-row items-center justify-between mb-2">
                   <View className="flex-row items-center">
-                    <Ionicons name="grid" size={20} color="#EC4899" />
-                    <Text className="text-base font-semibold text-gray-900 dark:text-white ml-2">
+                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
+                      <Ionicons name="grid" size={16} color="#EC4899" />
+                    </View>
+                    <Text className="text-base font-semibold text-gray-900 dark:text-white">
                       {table.name}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
                     <View
-                      className={`px-2 py-0.5 rounded-full ${
+                      className={`px-2.5 py-1 rounded-full ${
                         isFull
-                          ? "bg-red-100 dark:bg-red-900"
-                          : "bg-gray-100 dark:bg-gray-800"
+                          ? "bg-red-50 dark:bg-red-900"
+                          : "bg-gray-50 dark:bg-gray-800"
                       }`}
                     >
                       <Text
-                        className={`text-sm font-medium ${
-                          isFull ? "text-red-600" : "text-gray-600"
+                        className={`text-xs font-semibold ${
+                          isFull ? "text-red-500" : "text-gray-500"
                         }`}
                       >
                         {tableGuests.length}
                         {table.capacity ? `/${table.capacity}` : ""}
                       </Text>
                     </View>
-                    <Pressable onPress={() => setDeleteId(table.id)}>
-                      <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                    <Pressable
+                      onPress={() => setDeleteId(table.id)}
+                      className="w-8 h-8 items-center justify-center"
+                    >
+                      <Ionicons name="trash-outline" size={16} color="#EF4444" />
                     </Pressable>
                   </View>
                 </View>
@@ -154,13 +161,13 @@ export default function TablesScreen() {
                   tableGuests.map((g) => (
                     <View
                       key={g.id}
-                      className="flex-row items-center py-1.5 border-t border-gray-50 dark:border-gray-800"
+                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
                     >
                       <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                         {g.firstName} {g.lastName}
                       </Text>
                       {g.diet && g.diet !== "STANDARD" && (
-                        <Text className="text-xs text-amber-500">
+                        <Text className="text-xs text-amber-500 font-medium">
                           {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
                         </Text>
                       )}

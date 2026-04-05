@@ -19,12 +19,14 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View className="flex-1 items-center justify-center p-8">
-      <Ionicons name={icon} size={64} color="#D1D5DB" />
-      <Text className="text-xl font-semibold text-gray-700 dark:text-gray-300 mt-4 text-center">
+      <View className="w-24 h-24 rounded-full bg-accent-blush dark:bg-gray-800 items-center justify-center mb-5">
+        <Ionicons name={icon} size={40} color="#E8B4B8" />
+      </View>
+      <Text className="text-lg font-semibold text-gray-800 dark:text-gray-200 text-center">
         {title}
       </Text>
       {description && (
-        <Text className="text-gray-500 dark:text-gray-400 mt-2 text-center">
+        <Text className="text-sm text-gray-400 dark:text-gray-500 mt-2 text-center leading-5">
           {description}
         </Text>
       )}
@@ -33,7 +35,9 @@ export function EmptyState({
           onPress={onAction}
           className="mt-6 bg-primary-500 px-6 py-3 rounded-full active:bg-primary-600"
         >
-          <Text className="text-white font-semibold">{actionLabel}</Text>
+          <Text className="text-white font-semibold text-sm">
+            {actionLabel}
+          </Text>
         </Pressable>
       )}
     </View>

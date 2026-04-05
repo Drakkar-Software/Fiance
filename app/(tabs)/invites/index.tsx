@@ -45,7 +45,7 @@ export default function GuestsListScreen() {
 
   const tabs = [
     { key: "ALL", label: "Tous", count: counts.total },
-    { key: "ACCEPTED", label: "Acceptés", count: counts.accepted },
+    { key: "ACCEPTED", label: "Confirmés", count: counts.accepted },
     { key: "PENDING", label: "En attente", count: counts.pending },
     { key: "DECLINED", label: "Déclinés", count: counts.declined },
     { key: "MAYBE", label: "Peut-être", count: counts.maybe },
@@ -54,25 +54,10 @@ export default function GuestsListScreen() {
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       {/* Stats bar */}
-      <View className="bg-white dark:bg-gray-900 px-4 py-3 flex-row justify-between border-b border-gray-100 dark:border-gray-800">
-        <View className="items-center">
-          <Text className="text-lg font-bold text-emerald-500">
-            {counts.accepted}
-          </Text>
-          <Text className="text-xs text-gray-500">Confirmés</Text>
-        </View>
-        <View className="items-center">
-          <Text className="text-lg font-bold text-gray-900 dark:text-white">
-            {counts.total}
-          </Text>
-          <Text className="text-xs text-gray-500">Total</Text>
-        </View>
-        <View className="items-center">
-          <Text className="text-lg font-bold text-blue-500">
-            {counts.response_rate}%
-          </Text>
-          <Text className="text-xs text-gray-500">Réponses</Text>
-        </View>
+      <View className="bg-white dark:bg-gray-900 px-4 py-3.5 flex-row justify-between border-b border-gray-100 dark:border-gray-800">
+        <StatMini value={counts.accepted} label="Confirmés" color="#10B981" />
+        <StatMini value={counts.total} label="Total" color="#1F2937" />
+        <StatMini value={`${counts.response_rate}%`} label="Réponses" color="#3B82F6" />
         <Pressable
           onPress={() => router.push("/(tabs)/invites/tables")}
           className="items-center"
@@ -80,21 +65,26 @@ export default function GuestsListScreen() {
           <Text className="text-lg font-bold text-primary-500">
             {counts.nb_no_table}
           </Text>
-          <Text className="text-xs text-gray-500">Sans table</Text>
+          <Text className="text-[11px] text-gray-400">Sans table</Text>
         </Pressable>
       </View>
 
       {/* Search */}
       <View className="px-4 pt-3">
-        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3 py-2">
-          <Ionicons name="search" size={20} color="#9CA3AF" />
+        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
+          <Ionicons name="search" size={18} color="#C0C0C8" />
           <TextInput
-            className="flex-1 ml-2 text-base text-gray-900 dark:text-white"
+            className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
             placeholder="Rechercher un invité..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#C0C0C8"
             value={search}
             onChangeText={setSearch}
           />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch("")}>
+              <Ionicons name="close-circle" size={18} color="#C0C0C8" />
+            </Pressable>
+          )}
         </View>
       </View>
 
@@ -130,11 +120,11 @@ export default function GuestsListScreen() {
                   params: { id: guest.id },
                 })
               }
-              className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-2 shadow-sm active:opacity-80"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
             >
               <View className="flex-row items-center">
-                <View className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-3">
-                  <Text className="text-primary-500 font-bold text-base">
+                <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
+                  <Text className="text-primary-500 font-bold text-sm">
                     {guest.firstName[0]}
                     {guest.lastName[0]}
                   </Text>
@@ -143,7 +133,7 @@ export default function GuestsListScreen() {
                   <Text className="text-base font-semibold text-gray-900 dark:text-white">
                     {guest.firstName} {guest.lastName}
                   </Text>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-sm text-gray-400 mt-0.5">
                     {INVITATION_TYPE_LABELS[guest.invitationType as InvitationType]}
                     {guest.isChild ? " · Enfant" : ""}
                     {guest.diet && guest.diet !== "STANDARD"
@@ -170,6 +160,25 @@ export default function GuestsListScreen() {
           })
         }
       />
+    </View>
+  );
+}
+
+function StatMini({
+  value,
+  label,
+  color,
+}: {
+  value: number | string;
+  label: string;
+  color: string;
+}) {
+  return (
+    <View className="items-center">
+      <Text className="text-lg font-bold" style={{ color }}>
+        {value}
+      </Text>
+      <Text className="text-[11px] text-gray-400">{label}</Text>
     </View>
   );
 }

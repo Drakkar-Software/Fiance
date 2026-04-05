@@ -26,6 +26,13 @@ import type {
 } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import {
+  SectionTitle,
+  FormCard,
+  InputRow,
+  ToggleRow,
+  ChipSelect,
+} from "@/components/FormSection";
 import type { Guest } from "@/db/schema";
 
 const INVITATION_TYPES: InvitationType[] = [
@@ -140,82 +147,52 @@ export default function GuestDetailScreen() {
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Personal info */}
         <SectionTitle>Informations personnelles</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <FormCard>
           <InputRow label="Prénom *" value={firstName} onChangeText={setFirstName} />
           <InputRow label="Nom *" value={lastName} onChangeText={setLastName} />
           <InputRow label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
           <InputRow label="Téléphone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
           <InputRow label="Adresse" value={address} onChangeText={setAddress} />
 
-          <Text className="text-sm text-gray-500 mt-3 mb-2">Côté</Text>
-          <View className="flex-row gap-2">
-            {SIDES.map((s) => (
-              <Pressable
-                key={s}
-                onPress={() => setSide(s)}
-                className={`px-3 py-2 rounded-full ${
-                  side === s
-                    ? "bg-primary-500"
-                    : "bg-gray-100 dark:bg-gray-800"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    side === s ? "text-white font-medium" : "text-gray-600"
-                  }`}
-                >
-                  {SIDE_LABELS[s]}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">Côté</Text>
+          <ChipSelect
+            options={SIDES}
+            value={side}
+            onChange={setSide}
+            labels={SIDE_LABELS as Record<Side, string>}
+          />
+        </FormCard>
 
         {/* Invitation */}
         <SectionTitle>Invitation</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
-          <Text className="text-sm text-gray-500 mb-2">
+        <FormCard>
+          <Text className="text-xs text-gray-400 mb-2 font-medium">
             Type d'invitation
           </Text>
-          <View className="flex-row flex-wrap gap-2 mb-3">
-            {INVITATION_TYPES.map((t) => (
-              <Pressable
-                key={t}
-                onPress={() => setInvitationType(t)}
-                className={`px-3 py-2 rounded-full ${
-                  invitationType === t
-                    ? "bg-primary-500"
-                    : "bg-gray-100 dark:bg-gray-800"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    invitationType === t
-                      ? "text-white font-medium"
-                      : "text-gray-600"
-                  }`}
-                >
-                  {INVITATION_TYPE_LABELS[t]}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          <ChipSelect
+            options={INVITATION_TYPES}
+            value={invitationType}
+            onChange={setInvitationType}
+            labels={INVITATION_TYPE_LABELS as Record<InvitationType, string>}
+          />
 
-          <ToggleRow
-            label="Dort sur place"
-            value={isSleeping}
-            onToggle={() => setIsSleeping(!isSleeping)}
-          />
-          <ToggleRow
-            label="Enfant (< 12 ans)"
-            value={isChild}
-            onToggle={() => setIsChild(!isChild)}
-          />
-        </View>
+          <View className="mt-3">
+            <ToggleRow
+              label="Dort sur place"
+              value={isSleeping}
+              onToggle={() => setIsSleeping(!isSleeping)}
+            />
+            <ToggleRow
+              label="Enfant (< 12 ans)"
+              value={isChild}
+              onToggle={() => setIsChild(!isChild)}
+            />
+          </View>
+        </FormCard>
 
         {/* RSVP */}
         <SectionTitle>RSVP</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <FormCard>
           <View className="flex-row flex-wrap gap-2">
             {RSVP_STATUSES.map((s) => (
               <Pressable key={s} onPress={() => setRsvpStatus(s)}>
@@ -229,26 +206,26 @@ export default function GuestDetailScreen() {
               </Pressable>
             ))}
           </View>
-        </View>
+        </FormCard>
 
         {/* Table */}
         {tables.length > 0 && (
           <>
             <SectionTitle>Table</SectionTitle>
-            <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+            <FormCard>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-2">
                   <Pressable
                     onPress={() => setTableId("")}
-                    className={`px-3 py-2 rounded-full ${
+                    className={`px-3.5 py-2 rounded-full border ${
                       !tableId
-                        ? "bg-primary-500"
-                        : "bg-gray-100 dark:bg-gray-800"
+                        ? "bg-primary-500 border-primary-500"
+                        : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                     }`}
                   >
                     <Text
                       className={`text-sm ${
-                        !tableId ? "text-white font-medium" : "text-gray-600"
+                        !tableId ? "text-white font-medium" : "text-gray-500"
                       }`}
                     >
                       Non assigné
@@ -258,17 +235,17 @@ export default function GuestDetailScreen() {
                     <Pressable
                       key={t.id}
                       onPress={() => setTableId(t.id)}
-                      className={`px-3 py-2 rounded-full ${
+                      className={`px-3.5 py-2 rounded-full border ${
                         tableId === t.id
-                          ? "bg-primary-500"
-                          : "bg-gray-100 dark:bg-gray-800"
+                          ? "bg-primary-500 border-primary-500"
+                          : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                       }`}
                     >
                       <Text
                         className={`text-sm ${
                           tableId === t.id
                             ? "text-white font-medium"
-                            : "text-gray-600"
+                            : "text-gray-500"
                         }`}
                       >
                         {t.name}
@@ -277,67 +254,52 @@ export default function GuestDetailScreen() {
                   ))}
                 </View>
               </ScrollView>
-            </View>
+            </FormCard>
           </>
         )}
 
         {/* Diet */}
         <SectionTitle>Régime alimentaire</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
-          <View className="flex-row flex-wrap gap-2 mb-3">
-            {DIETS.map((d) => (
-              <Pressable
-                key={d}
-                onPress={() => setDiet(d)}
-                className={`px-3 py-2 rounded-full ${
-                  diet === d
-                    ? "bg-primary-500"
-                    : "bg-gray-100 dark:bg-gray-800"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    diet === d ? "text-white font-medium" : "text-gray-600"
-                  }`}
-                >
-                  {DIET_LABELS[d]}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+        <FormCard>
+          <ChipSelect
+            options={DIETS}
+            value={diet}
+            onChange={setDiet}
+            labels={DIET_LABELS as Record<Diet, string>}
+          />
           {(diet === "ALLERGY" || diet === "VEGETARIAN" || diet === "VEGAN") && (
             <TextInput
-              className="text-base text-gray-900 dark:text-white border-t border-gray-100 dark:border-gray-800 pt-3 mt-2"
+              className="text-base text-gray-900 dark:text-white border-t border-gray-50 dark:border-gray-800 pt-3 mt-3"
               placeholder="Précisions (allergies, restrictions...)"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D0D0D8"
               value={dietNotes}
               onChangeText={setDietNotes}
               multiline
             />
           )}
-        </View>
+        </FormCard>
 
         {/* Notes */}
         <SectionTitle>Notes</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-6">
+        <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[80px]"
             placeholder="Notes libres..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
             multiline
             textAlignVertical="top"
           />
-        </View>
+        </FormCard>
 
         {/* Delete */}
         {!isNew && (
           <Pressable
             onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-xl p-4 mb-8 items-center"
+            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
-            <Text className="text-red-500 font-semibold">
+            <Text className="text-red-500 font-semibold text-sm">
               Supprimer cet invité
             </Text>
           </Pressable>
@@ -356,64 +318,5 @@ export default function GuestDetailScreen() {
         onCancel={() => setShowDelete(false)}
       />
     </View>
-  );
-}
-
-function SectionTitle({ children }: { children: string }) {
-  return (
-    <Text className="text-sm font-medium text-gray-500 mb-2 uppercase">
-      {children}
-    </Text>
-  );
-}
-
-function InputRow({
-  label,
-  value,
-  onChangeText,
-  keyboardType = "default",
-}: {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  keyboardType?: "default" | "email-address" | "phone-pad";
-}) {
-  return (
-    <View className="border-b border-gray-100 dark:border-gray-800 py-3">
-      <Text className="text-sm text-gray-500 mb-1">{label}</Text>
-      <TextInput
-        className="text-base text-gray-900 dark:text-white"
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType}
-        placeholderTextColor="#9CA3AF"
-      />
-    </View>
-  );
-}
-
-function ToggleRow({
-  label,
-  value,
-  onToggle,
-}: {
-  label: string;
-  value: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onToggle}
-      className="flex-row items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800"
-    >
-      <Text className="text-base text-gray-700 dark:text-gray-300">
-        {label}
-      </Text>
-      <Ionicons
-        name={value ? "checkbox" : "square-outline"}
-        size={24}
-        color={value ? "#10B981" : "#9CA3AF"}
-      />
-    </Pressable>
   );
 }

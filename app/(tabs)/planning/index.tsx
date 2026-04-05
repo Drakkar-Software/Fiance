@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { format, isBefore, differenceInDays } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { TASK_STATUS_LABELS, PRIORITY_COLORS, PRIORITY_LABELS } from "@/db/types";
@@ -95,38 +95,34 @@ export default function PlanningScreen() {
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       {/* Progress header */}
-      <View className="px-4 pt-4 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <View className="flex-row items-center justify-between mb-2">
+      <View className="px-4 pt-4 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+        <View className="flex-row items-center justify-between mb-3">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             Progression
           </Text>
-          <View className="flex-row gap-2">
+          <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
             <Pressable
               onPress={() => setViewMode("timeline")}
-              className={`px-3 py-1 rounded-full ${
-                viewMode === "timeline"
-                  ? "bg-primary-500"
-                  : "bg-gray-100 dark:bg-gray-800"
+              className={`px-3 py-1.5 rounded-md ${
+                viewMode === "timeline" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
               }`}
             >
               <Ionicons
                 name="list"
                 size={16}
-                color={viewMode === "timeline" ? "white" : "#9CA3AF"}
+                color={viewMode === "timeline" ? "#EC4899" : "#9CA3AF"}
               />
             </Pressable>
             <Pressable
               onPress={() => setViewMode("kanban")}
-              className={`px-3 py-1 rounded-full ${
-                viewMode === "kanban"
-                  ? "bg-primary-500"
-                  : "bg-gray-100 dark:bg-gray-800"
+              className={`px-3 py-1.5 rounded-md ${
+                viewMode === "kanban" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
               }`}
             >
               <Ionicons
                 name="grid"
                 size={16}
-                color={viewMode === "kanban" ? "white" : "#9CA3AF"}
+                color={viewMode === "kanban" ? "#EC4899" : "#9CA3AF"}
               />
             </Pressable>
           </View>
@@ -169,7 +165,7 @@ export default function PlanningScreen() {
         >
           {Object.entries(groupedByMonth).map(([month, monthTasks]) => (
             <View key={month} className="mb-4">
-              <Text className="text-sm font-semibold text-gray-500 uppercase mb-2">
+              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                 {month}
               </Text>
               {monthTasks.map((task) => (
@@ -210,7 +206,7 @@ export default function PlanningScreen() {
               );
               return (
                 <View key={status} className="w-72 mr-4">
-                  <Text className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                  <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                     {TASK_STATUS_LABELS[status]} ({columnTasks.length})
                   </Text>
                   <ScrollView showsVerticalScrollIndicator={false}>
@@ -279,14 +275,17 @@ function TaskCard({
   return (
     <Pressable
       onPress={onPress}
-      className={`bg-white dark:bg-gray-900 rounded-xl p-3 mb-2 shadow-sm active:opacity-80 ${
-        isOverdue ? "border-l-4 border-red-500" : ""
+      className={`bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+        isOverdue
+          ? "border-red-200 dark:border-red-800"
+          : "border-gray-100 dark:border-gray-800"
       }`}
+      style={isOverdue ? { borderLeftWidth: 3, borderLeftColor: "#EF4444" } : {}}
     >
       <View className="flex-row items-start">
         <Pressable onPress={onToggleDone} className="mt-0.5 mr-3">
           <Ionicons
-            name={isDone ? "checkbox" : "square-outline"}
+            name={isDone ? "checkmark-circle" : "ellipse-outline"}
             size={22}
             color={isDone ? "#10B981" : "#D1D5DB"}
           />
@@ -301,12 +300,12 @@ function TaskCard({
           >
             {task.title}
           </Text>
-          <View className="flex-row items-center gap-2 mt-1 flex-wrap">
+          <View className="flex-row items-center gap-2 mt-1.5 flex-wrap">
             {categoryName && (
               <View
                 className="px-2 py-0.5 rounded-full"
                 style={{
-                  backgroundColor: (categoryColor || "#9CA3AF") + "20",
+                  backgroundColor: (categoryColor || "#9CA3AF") + "15",
                 }}
               >
                 <Text

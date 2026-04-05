@@ -75,20 +75,25 @@ export default function PrestatairesListScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       {/* Search */}
       <View className="px-4 pt-4">
-        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3 py-2">
-          <Ionicons name="search" size={20} color="#9CA3AF" />
+        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
+          <Ionicons name="search" size={18} color="#C0C0C8" />
           <TextInput
-            className="flex-1 ml-2 text-base text-gray-900 dark:text-white"
+            className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
             placeholder="Rechercher un prestataire..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#C0C0C8"
             value={search}
             onChangeText={setSearch}
           />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch("")}>
+              <Ionicons name="close-circle" size={18} color="#C0C0C8" />
+            </Pressable>
+          )}
         </View>
       </View>
 
       {/* Type filter tabs */}
-      <View className="mt-4">
+      <View className="mt-3">
         <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
       </View>
 
@@ -97,10 +102,10 @@ export default function PrestatairesListScreen() {
         vendors.filter((v) => v.type === "CATERER").length >= 2 && (
           <Pressable
             onPress={() => router.push("/(tabs)/prestataires/compare")}
-            className="mx-4 mb-3 bg-primary-100 dark:bg-primary-900 rounded-xl p-3 flex-row items-center justify-center"
+            className="mx-4 mb-3 bg-accent-blush dark:bg-primary-900 rounded-xl p-3 flex-row items-center justify-center border border-primary-200 dark:border-primary-800"
           >
-            <Ionicons name="git-compare" size={20} color="#EC4899" />
-            <Text className="text-primary-600 dark:text-primary-300 font-semibold ml-2">
+            <Ionicons name="git-compare" size={18} color="#EC4899" />
+            <Text className="text-primary-600 dark:text-primary-300 font-semibold text-sm ml-2">
               Comparateur traiteurs
             </Text>
           </Pressable>
@@ -126,13 +131,13 @@ export default function PrestatairesListScreen() {
                   params: { type: vendor.type, id: vendor.id },
                 })
               }
-              className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm active:opacity-80"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800 active:opacity-80"
             >
               <View className="flex-row items-start">
-                <View className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-3">
+                <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
                   <Ionicons
                     name={TYPE_ICONS[vendor.type as VendorType] || "ellipsis-horizontal"}
-                    size={20}
+                    size={18}
                     color="#EC4899"
                   />
                 </View>
@@ -140,14 +145,10 @@ export default function PrestatairesListScreen() {
                   <Text className="text-base font-semibold text-gray-900 dark:text-white">
                     {vendor.name}
                   </Text>
-                  <Text className="text-sm text-gray-500 mt-0.5">
+                  <Text className="text-sm text-gray-400 mt-0.5">
                     {VENDOR_TYPE_LABELS[vendor.type as VendorType]}
+                    {vendor.contactName ? ` · ${vendor.contactName}` : ""}
                   </Text>
-                  {vendor.contactName && (
-                    <Text className="text-sm text-gray-400 mt-0.5">
-                      {vendor.contactName}
-                    </Text>
-                  )}
                 </View>
                 <View className="items-end">
                   <StatusBadge
@@ -155,14 +156,14 @@ export default function PrestatairesListScreen() {
                     color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
                   />
                   {(vendor.basePrice != null && vendor.basePrice > 0) && (
-                    <Text className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                    <Text className="text-sm font-semibold text-gray-900 dark:text-white mt-1.5">
                       {formatMoney(vendor.basePrice)}
                     </Text>
                   )}
                 </View>
               </View>
               {vendor.rating != null && vendor.rating > 0 && (
-                <View className="mt-2">
+                <View className="mt-2.5 ml-13">
                   <RatingStars rating={vendor.rating} size={14} />
                 </View>
               )}
