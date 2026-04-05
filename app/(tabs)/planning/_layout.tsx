@@ -1,0 +1,18 @@
+import React from "react";
+import { Stack } from "expo-router";
+
+export default function PlanningLayout() {
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: "#FFFFFF" },
+        headerTintColor: "#111827",
+        headerTitleStyle: { fontWeight: "600" },
+      }}
+    >
+      <Stack.Screen name="index" options={{ title: "Planning" }} />
+      <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
+      <Stack.Screen name="categories" options={{ title: "Catégories" }} />
+    </Stack>
+  );
+}
