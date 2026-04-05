@@ -3,11 +3,11 @@
  * Uses createStarfishStore() Zustand binding for reactive sync state
  */
 
-import { StarfishClient, SyncManager } from "@starfish/client";
+import { StarfishClient, SyncManager } from "@drakkar-software/starfish-client";
 import {
   createStarfishStore,
   type StarfishStore,
-} from "@starfish/client/zustand";
+} from "@drakkar-software/starfish-client/zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { useStore } from "zustand";
 import { createBackupDocument, restoreFromBackup } from "./sync";
