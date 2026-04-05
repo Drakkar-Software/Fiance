@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Star } from "lucide-react-native";
 
 interface RatingStarsProps {
   rating: number;
@@ -17,19 +17,22 @@ export function RatingStars({
 }: RatingStarsProps) {
   return (
     <View className="flex-row gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Pressable
-          key={star}
-          onPress={() => onChange?.(star === rating ? 0 : star)}
-          disabled={!onChange}
-        >
-          <Ionicons
-            name={star <= rating ? "star" : "star-outline"}
-            size={size}
-            color={star <= rating ? color : "#D1D5DB"}
-          />
-        </Pressable>
-      ))}
+      {[1, 2, 3, 4, 5].map((star) => {
+        const filled = star <= rating;
+        return (
+          <Pressable
+            key={star}
+            onPress={() => onChange?.(star === rating ? 0 : star)}
+            disabled={!onChange}
+          >
+            <Star
+              size={size}
+              color={filled ? color : "#D1D5DB"}
+              fill={filled ? color : "transparent"}
+            />
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

@@ -131,9 +131,10 @@ function getSyncRouter(env: Env): Hono {
   return cachedRouter;
 }
 
-app.route(
-  "/v1",
-  new Hono().all("/*", (c) => getSyncRouter(c.env).fetch(c.req.raw)),
-);
+app.all("/v1/*", (c) => {
+  const url = new URL(c.req.raw.url);
+  url.pathname = url.pathname.replace(/^\/v1/, "") || "/";
+  return getSyncRouter(c.env).fetch(new Request(url, c.req.raw));
+});
 
 export default app;

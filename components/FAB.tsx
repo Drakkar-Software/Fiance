@@ -1,13 +1,14 @@
 import React from "react";
 import { Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Plus } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 
 interface FABProps {
   onPress: () => void;
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: LucideIcon;
 }
 
-export function FAB({ onPress, icon = "add" }: FABProps) {
+export function FAB({ onPress, icon: Icon = Plus }: FABProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -20,7 +21,7 @@ export function FAB({ onPress, icon = "add" }: FABProps) {
         shadowRadius: 10,
       }}
     >
-      <Ionicons name={icon} size={26} color="white" />
+      <Icon size={26} color="white" />
     </Pressable>
   );
 }

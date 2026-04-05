@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { CheckCircle2, Circle } from "lucide-react-native";
 
 /** Section heading for form screens */
 export function SectionTitle({ children }: { children: string }) {
@@ -71,11 +71,11 @@ export function ToggleRow({
       <Text className="text-base text-gray-700 dark:text-gray-300">
         {label}
       </Text>
-      <Ionicons
-        name={value ? "checkmark-circle" : "ellipse-outline"}
-        size={24}
-        color={value ? "#10B981" : "#D1D5DB"}
-      />
+      {value ? (
+        <CheckCircle2 size={24} color="#10B981" />
+      ) : (
+        <Circle size={24} color="#D1D5DB" />
+      )}
     </Pressable>
   );
 }

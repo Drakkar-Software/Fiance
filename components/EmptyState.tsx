@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import type { LucideIcon } from "lucide-react-native";
 
 interface EmptyStateProps {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: LucideIcon;
   title: string;
   description?: string;
   actionLabel?: string;
@@ -11,7 +11,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon,
+  icon: Icon,
   title,
   description,
   actionLabel,
@@ -20,7 +20,7 @@ export function EmptyState({
   return (
     <View className="flex-1 items-center justify-center p-8">
       <View className="w-24 h-24 rounded-full bg-accent-blush dark:bg-gray-800 items-center justify-center mb-5">
-        <Ionicons name={icon} size={40} color="#E8B4B8" />
+        <Icon size={40} color="#E8B4B8" />
       </View>
       <Text className="text-lg font-semibold text-gray-800 dark:text-gray-200 text-center">
         {title}

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Clock, AlertCircle } from "lucide-react-native";
 import {
   differenceInDays,
   differenceInMonths,
@@ -21,18 +21,18 @@ export function DeadlineChip({ date }: DeadlineChipProps) {
   let label: string;
   let bg: string;
   let fg: string;
-  let iconName: keyof typeof Ionicons.glyphMap = "time-outline";
+  let useAlert = false;
 
   if (isToday(target)) {
     label = "Aujourd'hui";
     bg = "#FEF2F2";
     fg = "#DC2626";
-    iconName = "alert-circle";
+    useAlert = true;
   } else if (isPast(target)) {
     label = "En retard";
     bg = "#FEF2F2";
     fg = "#DC2626";
-    iconName = "alert-circle";
+    useAlert = true;
   } else if (days <= 7) {
     label = `${days}j`;
     bg = "#FFFBEB";
@@ -52,7 +52,11 @@ export function DeadlineChip({ date }: DeadlineChipProps) {
       className="flex-row items-center px-2 py-0.5 rounded-full gap-1"
       style={{ backgroundColor: bg }}
     >
-      <Ionicons name={iconName} size={11} color={fg} />
+      {useAlert ? (
+        <AlertCircle size={11} color={fg} />
+      ) : (
+        <Clock size={11} color={fg} />
+      )}
       <Text className="text-xs font-medium" style={{ color: fg }}>
         {label}
       </Text>

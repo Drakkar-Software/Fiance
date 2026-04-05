@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight } from "lucide-react-native";
 import { differenceInDays, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -96,7 +96,7 @@ export default function DashboardScreen() {
           className="absolute top-16 right-5 w-9 h-9 rounded-full bg-white/15 items-center justify-center"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="settings-outline" size={18} color="rgba(255,255,255,0.85)" />
+          <Settings size={18} color="rgba(255,255,255,0.85)" />
         </Pressable>
         <Text className="text-white/70 text-sm font-medium tracking-wide">
           {wedding?.partner1Name && wedding?.partner2Name
@@ -130,7 +130,7 @@ export default function DashboardScreen() {
         )}
         {wedding?.venueName && (
           <View className="flex-row items-center mt-3 bg-white/10 self-start px-3 py-1.5 rounded-full">
-            <Ionicons name="location" size={14} color="rgba(255,255,255,0.8)" />
+            <MapPin size={14} color="rgba(255,255,255,0.8)" />
             <Text className="text-white/80 ml-1.5 text-sm">
               {wedding.venueName}
             </Text>
@@ -144,7 +144,7 @@ export default function DashboardScreen() {
           <View className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-3 border border-red-100 dark:border-red-900">
             <View className="flex-row items-center mb-2.5">
               <View className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900 items-center justify-center mr-2">
-                <Ionicons name="alert" size={14} color="#EF4444" />
+                <AlertTriangle size={14} color="#EF4444" />
               </View>
               <Text className="text-sm font-semibold text-red-700 dark:text-red-300">
                 Actions urgentes
@@ -185,7 +185,7 @@ export default function DashboardScreen() {
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <View className="w-8 h-8 rounded-full bg-accent-sage-light dark:bg-emerald-900 items-center justify-center mr-2.5">
-                <Ionicons name="pie-chart" size={16} color="#7B9A7B" />
+                <PieChart size={16} color="#7B9A7B" />
               </View>
               <Text className="text-base font-semibold text-gray-900 dark:text-white">
                 Budget

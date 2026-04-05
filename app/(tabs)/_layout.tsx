@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform } from "react-native";
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
 import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function TabLayout() {
@@ -50,9 +50,7 @@ export default function TabLayout() {
         options={{
           title: "Accueil",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -60,9 +58,7 @@ export default function TabLayout() {
         options={{
           title: "Prestataires",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="briefcase" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Briefcase size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -70,9 +66,7 @@ export default function TabLayout() {
         options={{
           title: "Invités",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Users size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -80,9 +74,7 @@ export default function TabLayout() {
         options={{
           title: "Planning",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
           tabBarBadge: overdueTasks.length > 0 ? overdueTasks.length : undefined,
           tabBarBadgeStyle: {
             backgroundColor: "#EF4444",
@@ -99,9 +91,7 @@ export default function TabLayout() {
           title: "Idées",
           headerShown: false,
           href: null,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="sparkles" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Sparkles size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -109,9 +99,7 @@ export default function TabLayout() {
         options={{
           title: "Budget",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="pie-chart" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <PieChart size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -120,9 +108,7 @@ export default function TabLayout() {
           title: "Réglages",
           headerShown: false,
           href: null,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Settings size={22} color={color} />,
         }}
       />
     </Tabs>
