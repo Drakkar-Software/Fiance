@@ -1,8 +1,10 @@
-name: Deploy Web
+name: Deploy Sync Server
 
 on:
   push:
     branches: [main, master]
+    paths:
+      - "server/**"
   workflow_dispatch:
 
 permissions:
@@ -10,8 +12,11 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to Cloudflare Pages
+    name: Deploy Starfish Sync Server
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
 
     steps:
       - name: Checkout repository
@@ -29,16 +34,12 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --config.node-linker=hoisted --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Build web
-        run: pnpm build:web
-        env:
-          EXPO_PUBLIC_SYNC_URL: ${{ vars.EXPO_PUBLIC_SYNC_URL }}
-
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name wedding-os
+          workingDirectory: server
+          command: deploy

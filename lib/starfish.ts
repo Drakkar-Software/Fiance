@@ -31,8 +31,8 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
 
   const syncManager = new SyncManager({
     client,
-    pullPath: `/pull/users/${config.userId}/wedding`,
-    pushPath: `/push/users/${config.userId}/wedding`,
+    pullPath: `/pull/wedding/${config.userId}`,
+    pushPath: `/push/wedding/${config.userId}`,
     encryptionSecret: config.encryptionKey,
     encryptionSalt: config.userId,
     onConflict: (local: unknown, remote: unknown) => {

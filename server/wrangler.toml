@@ -1,0 +1,7 @@
+name = "wedding-os-sync"
+main = "index.ts"
+compatibility_date = "2025-04-05"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "wedding-os-sync"

@@ -53,7 +53,7 @@ export async function createWeddingEntry(
     dbFileName: `wedding_${id}.db`,
     createdAt: new Date().toISOString(),
     seedPhrase,
-    serverUrl,
+    serverUrl: serverUrl || process.env.EXPO_PUBLIC_SYNC_URL,
   };
 
   const registry = await loadRegistry();
