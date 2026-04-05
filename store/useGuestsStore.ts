@@ -1,5 +1,11 @@
 import { create } from "zustand";
 import type { Guest, Table } from "@/db/schema";
+import { getDatabase } from "@/db/provider";
+import {
+  persistGuest, updateGuestDb, deleteGuestDb,
+  persistTable, updateTableDb, deleteTableDb,
+} from "@/lib/persistence";
+import { notifySync } from "@/lib/starfish";
 
 export interface GuestCounts {
   total: number;
@@ -37,9 +43,7 @@ interface GuestsState {
 function computeCounts(guests: Guest[]): GuestCounts {
   const accepted = guests.filter((g) => g.rsvpStatus === "ACCEPTED");
   const total = guests.length;
-  const declinedCount = guests.filter(
-    (g) => g.rsvpStatus === "DECLINED"
-  ).length;
+  const declinedCount = guests.filter((g) => g.rsvpStatus === "DECLINED").length;
   const acceptedCount = accepted.length;
 
   return {
@@ -74,47 +78,67 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   tables: [],
   setGuests: (guests) => set({ guests }),
   setTables: (tables) => set({ tables }),
-  addGuest: (guest) =>
-    set((state) => ({ guests: [...state.guests, guest] })),
-  updateGuest: (id, updates) =>
+  addGuest: (guest) => {
+    set((state) => ({ guests: [...state.guests, guest] }));
+    const db = getDatabase();
+    if (db) persistGuest(db, guest);
+    notifySync();
+  },
+  updateGuest: (id, updates) => {
     set((state) => ({
       guests: state.guests.map((g) =>
         g.id === id
           ? { ...g, ...updates, updatedAt: new Date().toISOString() }
           : g
       ),
-    })),
-  removeGuest: (id) =>
-    set((state) => ({ guests: state.guests.filter((g) => g.id !== id) })),
-  addTable: (table) =>
-    set((state) => ({ tables: [...state.tables, table] })),
-  updateTable: (id, updates) =>
+    }));
+    const db = getDatabase();
+    if (db) updateGuestDb(db, id, { ...updates, updatedAt: new Date().toISOString() });
+    notifySync();
+  },
+  removeGuest: (id) => {
+    set((state) => ({ guests: state.guests.filter((g) => g.id !== id) }));
+    const db = getDatabase();
+    if (db) deleteGuestDb(db, id);
+    notifySync();
+  },
+  addTable: (table) => {
+    set((state) => ({ tables: [...state.tables, table] }));
+    const db = getDatabase();
+    if (db) persistTable(db, table);
+    notifySync();
+  },
+  updateTable: (id, updates) => {
     set((state) => ({
       tables: state.tables.map((t) => (t.id === id ? { ...t, ...updates } : t)),
-    })),
-  removeTable: (id) =>
+    }));
+    const db = getDatabase();
+    if (db) updateTableDb(db, id, updates);
+    notifySync();
+  },
+  removeTable: (id) => {
     set((state) => ({
       tables: state.tables.filter((t) => t.id !== id),
       guests: state.guests.map((g) =>
         g.tableId === id ? { ...g, tableId: null } : g
       ),
-    })),
+    }));
+    const db = getDatabase();
+    if (db) deleteTableDb(db, id);
+    notifySync();
+  },
   getCounts: () => computeCounts(get().guests),
   getGuestsByTable: (tableId) =>
     get().guests.filter((g) => g.tableId === tableId),
   getUnassignedGuests: () =>
-    get()
-      .guests.filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId),
+    get().guests.filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId),
 }));
 
 /** Hook to get guest count by key — used by budget calculations */
-export function useGuestCount(
-  key: keyof GuestCounts | null
-): number {
+export function useGuestCount(key: keyof GuestCounts | null): number {
   return useGuestsStore((state) => {
     if (!key) return 0;
     const counts = computeCounts(state.guests);
-    // If no accepted guests yet, use total as estimate
     const useEstimate = counts.accepted === 0 && counts.total > 0;
     if (useEstimate && key !== "total" && key !== "response_rate") {
       return counts.total;

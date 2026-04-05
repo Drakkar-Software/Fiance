@@ -1,66 +1,78 @@
 /**
  * Cloud sync utilities for WeddingOS
- * Handles backup/restore to iCloud and Google Drive
+ * Handles backup document creation and restoration via Starfish
  */
 
-import { encryptData, decryptData } from "./crypto";
+import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
+import type * as schema from "@/db/schema";
+import { useWeddingStore } from "@/store/useWeddingStore";
+import { useGuestsStore } from "@/store/useGuestsStore";
+import { useVendorsStore } from "@/store/useVendorsStore";
+import { usePlanningStore } from "@/store/usePlanningStore";
+import { useIdeasStore } from "@/store/useIdeasStore";
+import { restoreAllTables, hydrateAllStores } from "./persistence";
+
+type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
 export interface BackupData {
   version: number;
   timestamp: string;
-  wedding: any;
-  guests: any[];
-  tables: any[];
-  vendors: any[];
-  quotePricings: any[];
-  tasks: any[];
-  taskCategories: any[];
-  ideas: any[];
-  ideaCollections: any[];
+  wedding: unknown;
+  guests: unknown[];
+  tables: unknown[];
+  vendors: unknown[];
+  quotePricings: unknown[];
+  tasks: unknown[];
+  taskCategories: unknown[];
+  ideas: unknown[];
+  ideaCollections: unknown[];
 }
 
 const BACKUP_VERSION = 1;
-const BACKUP_FILENAME = "weddingos_backup.enc";
 
-/** Create a backup payload from all stores */
-export function createBackupPayload(data: Omit<BackupData, "version" | "timestamp">): BackupData {
+/** Collect all domain store state into a single backup document */
+export function createBackupDocument(): Record<string, unknown> {
   return {
     version: BACKUP_VERSION,
     timestamp: new Date().toISOString(),
-    ...data,
+    wedding: useWeddingStore.getState().wedding,
+    guests: useGuestsStore.getState().guests,
+    tables: useGuestsStore.getState().tables,
+    vendors: useVendorsStore.getState().vendors,
+    quotePricings: useVendorsStore.getState().quotePricings,
+    tasks: usePlanningStore.getState().tasks,
+    taskCategories: usePlanningStore.getState().categories,
+    ideas: useIdeasStore.getState().ideas,
+    ideaCollections: useIdeasStore.getState().collections,
   };
 }
 
-/** Encrypt backup data for cloud storage */
-export async function encryptBackup(
-  data: BackupData,
-  encryptionKey: string
-): Promise<string> {
-  const json = JSON.stringify(data);
-  return encryptData(json, encryptionKey);
-}
+/** Restore all stores + SQLite from a pulled backup document */
+export function restoreFromBackup(
+  data: Record<string, unknown>,
+  db: DrizzleDB
+): void {
+  const backup = data as unknown as BackupData;
 
-/** Decrypt and parse a backup from cloud storage */
-export async function decryptBackup(
-  encrypted: string,
-  encryptionKey: string
-): Promise<BackupData> {
-  const json = await decryptData(encrypted, encryptionKey);
-  const data = JSON.parse(json) as BackupData;
-
-  if (data.version > BACKUP_VERSION) {
+  if (backup.version > BACKUP_VERSION) {
     throw new Error(
-      `Backup version ${data.version} is newer than app version ${BACKUP_VERSION}. Please update WeddingOS.`
+      `Backup version ${backup.version} is newer than app version ${BACKUP_VERSION}. Please update WeddingOS.`
     );
   }
 
-  return data;
-}
+  // Write to SQLite first (source of truth)
+  restoreAllTables(db, {
+    wedding: backup.wedding,
+    guests: (backup.guests || []) as any[],
+    tables: (backup.tables || []) as any[],
+    vendors: (backup.vendors || []) as any[],
+    quotePricings: (backup.quotePricings || []) as any[],
+    tasks: (backup.tasks || []) as any[],
+    taskCategories: (backup.taskCategories || []) as any[],
+    ideas: (backup.ideas || []) as any[],
+    ideaCollections: (backup.ideaCollections || []) as any[],
+  });
 
-/** Check if cloud backup is newer than local data */
-export function isCloudNewer(
-  cloudTimestamp: string,
-  localTimestamp: string
-): boolean {
-  return new Date(cloudTimestamp) > new Date(localTimestamp);
+  // Re-hydrate Zustand stores from SQLite
+  hydrateAllStores(db);
 }

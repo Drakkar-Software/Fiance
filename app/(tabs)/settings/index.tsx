@@ -6,8 +6,16 @@ import {
   TextInput,
   Pressable,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
+import * as Crypto from "expo-crypto";
+import {
+  initStarfish,
+  getStarfishStore,
+  teardownStarfish,
+} from "@/lib/starfish";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
@@ -39,6 +47,92 @@ export default function SettingsScreen() {
   );
   const [currency, setCurrency] = useState(wedding?.currency || "EUR");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Starfish sync state
+  const [serverUrl, setServerUrl] = useState("");
+  const [authToken, setAuthToken] = useState("");
+  const [syncEnabled, setSyncEnabled] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [encKeyVisible, setEncKeyVisible] = useState(false);
+  const [encKey, setEncKey] = useState<string | null>(null);
+
+  // Load saved sync config on mount
+  React.useEffect(() => {
+    (async () => {
+      const url = await SecureStore.getItemAsync("starfish_server_url");
+      const token = await SecureStore.getItemAsync("starfish_auth_token");
+      const key = await SecureStore.getItemAsync("starfish_encryption_key");
+      const last = await SecureStore.getItemAsync("starfish_last_sync");
+      if (url) setServerUrl(url);
+      if (token) setAuthToken(token);
+      if (key) setEncKey(key);
+      if (last) setLastSync(last);
+      if (url && token && key) setSyncEnabled(true);
+    })();
+  }, []);
+
+  const handleSetupSync = useCallback(async () => {
+    if (!serverUrl || !authToken) {
+      Alert.alert("Erreur", "Veuillez renseigner l'URL du serveur et le token.");
+      return;
+    }
+
+    let key = encKey;
+    if (!key) {
+      const bytes = Crypto.getRandomValues(new Uint8Array(32));
+      key = Array.from(bytes)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+      setEncKey(key);
+      await SecureStore.setItemAsync("starfish_encryption_key", key);
+      Alert.alert(
+        "Clé de chiffrement générée",
+        "Conservez cette clé en lieu sûr. Elle est nécessaire pour récupérer vos données."
+      );
+    }
+
+    await SecureStore.setItemAsync("starfish_server_url", serverUrl);
+    await SecureStore.setItemAsync("starfish_auth_token", authToken);
+
+    const userId = wedding?.id?.toString() || "default";
+    initStarfish({
+      serverUrl,
+      authToken,
+      userId,
+      encryptionKey: key,
+    });
+
+    setSyncEnabled(true);
+  }, [serverUrl, authToken, encKey, wedding]);
+
+  const handleSyncNow = useCallback(async () => {
+    const sf = getStarfishStore();
+    if (!sf) {
+      Alert.alert("Erreur", "La synchronisation n'est pas configurée.");
+      return;
+    }
+
+    setSyncing(true);
+    setSyncError(null);
+    try {
+      await sf.getState().pull();
+      await sf.getState().flush();
+      const now = new Date().toISOString();
+      setLastSync(now);
+      await SecureStore.setItemAsync("starfish_last_sync", now);
+    } catch (e: any) {
+      setSyncError(e.message || "Erreur de synchronisation");
+    } finally {
+      setSyncing(false);
+    }
+  }, []);
+
+  const handleDisableSync = useCallback(() => {
+    teardownStarfish();
+    setSyncEnabled(false);
+  }, []);
 
   const handleSave = useCallback(() => {
     const oldDate = wedding?.weddingDate;
@@ -184,22 +278,100 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Sync placeholder */}
+      {/* Starfish Sync */}
       <View className="px-4">
         <SectionTitle>Synchronisation</SectionTitle>
         <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm">
-          <View className="flex-row items-center">
-            <Ionicons name="cloud-outline" size={24} color="#9CA3AF" />
-            <View className="ml-3">
-              <Text className="text-base text-gray-900 dark:text-white">
-                Sauvegarde cloud
+          <InputRow
+            label="URL du serveur Starfish"
+            value={serverUrl}
+            onChangeText={setServerUrl}
+            placeholder="https://sync.example.com"
+          />
+          <InputRow
+            label="Token d'authentification"
+            value={authToken}
+            onChangeText={setAuthToken}
+            placeholder="Bearer token"
+          />
+
+          {!syncEnabled ? (
+            <Pressable
+              onPress={handleSetupSync}
+              className="bg-primary-500 rounded-lg py-2.5 items-center mt-3 active:bg-primary-600"
+            >
+              <Text className="text-white font-semibold text-sm">
+                Activer la synchronisation
               </Text>
-              <Text className="text-sm text-gray-500">
-                iCloud (iOS) · Google Drive (Android/Web)
-              </Text>
+            </Pressable>
+          ) : (
+            <View className="mt-3">
+              {/* Status row */}
+              <View className="flex-row items-center mb-3">
+                <Ionicons
+                  name={syncError ? "cloud-offline" : "cloud-done"}
+                  size={20}
+                  color={syncError ? "#EF4444" : "#10B981"}
+                />
+                <Text className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                  {syncError
+                    ? syncError
+                    : lastSync
+                    ? `Dernière sync : ${new Date(lastSync).toLocaleString()}`
+                    : "Synchronisation active"}
+                </Text>
+              </View>
+
+              {/* Sync now button */}
+              <Pressable
+                onPress={handleSyncNow}
+                disabled={syncing}
+                className="bg-primary-500 rounded-lg py-2.5 items-center mb-2 active:bg-primary-600"
+              >
+                {syncing ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text className="text-white font-semibold text-sm">
+                    Synchroniser maintenant
+                  </Text>
+                )}
+              </Pressable>
+
+              {/* Disable button */}
+              <Pressable
+                onPress={handleDisableSync}
+                className="rounded-lg py-2 items-center active:opacity-70"
+              >
+                <Text className="text-red-500 text-sm">
+                  Désactiver la synchronisation
+                </Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        {/* Encryption key display */}
+        {encKey && (
+          <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 mr-3">
+                <Text className="text-sm text-gray-500 mb-1">
+                  Clé de chiffrement
+                </Text>
+                <Text className="text-xs text-gray-700 dark:text-gray-300 font-mono">
+                  {encKeyVisible ? encKey : "••••••••••••••••"}
+                </Text>
+              </View>
+              <Pressable onPress={() => setEncKeyVisible(!encKeyVisible)}>
+                <Ionicons
+                  name={encKeyVisible ? "eye-off" : "eye"}
+                  size={20}
+                  color="#9CA3AF"
+                />
+              </Pressable>
             </View>
           </View>
-        </View>
+        )}
       </View>
 
       {/* Security placeholder */}

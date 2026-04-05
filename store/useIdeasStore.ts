@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import type { Idea, IdeaCollection } from "@/db/schema";
 import type { IdeaCategory } from "@/db/types";
+import { getDatabase } from "@/db/provider";
+import {
+  persistIdea, updateIdeaDb, deleteIdeaDb,
+  persistIdeaCollection, updateIdeaCollectionDb, deleteIdeaCollectionDb,
+} from "@/lib/persistence";
+import { notifySync } from "@/lib/starfish";
 
 interface IdeasState {
   ideas: Idea[];
@@ -26,36 +32,57 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
   collections: [],
   setIdeas: (ideas) => set({ ideas }),
   setCollections: (collections) => set({ collections }),
-  addIdea: (idea) => set((state) => ({ ideas: [...state.ideas, idea] })),
-  updateIdea: (id, updates) =>
+  addIdea: (idea) => {
+    set((state) => ({ ideas: [...state.ideas, idea] }));
+    const db = getDatabase();
+    if (db) persistIdea(db, idea);
+    notifySync();
+  },
+  updateIdea: (id, updates) => {
+    const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
     set((state) => ({
       ideas: state.ideas.map((i) =>
-        i.id === id
-          ? { ...i, ...updates, updatedAt: new Date().toISOString() }
-          : i
+        i.id === id ? { ...i, ...updatedFields } : i
       ),
-    })),
-  removeIdea: (id) =>
-    set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) })),
-  addCollection: (collection) =>
-    set((state) => ({
-      collections: [...state.collections, collection],
-    })),
-  updateCollection: (id, updates) =>
+    }));
+    const db = getDatabase();
+    if (db) updateIdeaDb(db, id, updatedFields);
+    notifySync();
+  },
+  removeIdea: (id) => {
+    set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) }));
+    const db = getDatabase();
+    if (db) deleteIdeaDb(db, id);
+    notifySync();
+  },
+  addCollection: (collection) => {
+    set((state) => ({ collections: [...state.collections, collection] }));
+    const db = getDatabase();
+    if (db) persistIdeaCollection(db, collection);
+    notifySync();
+  },
+  updateCollection: (id, updates) => {
+    const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
     set((state) => ({
       collections: state.collections.map((c) =>
-        c.id === id
-          ? { ...c, ...updates, updatedAt: new Date().toISOString() }
-          : c
+        c.id === id ? { ...c, ...updatedFields } : c
       ),
-    })),
-  removeCollection: (id) =>
+    }));
+    const db = getDatabase();
+    if (db) updateIdeaCollectionDb(db, id, updatedFields);
+    notifySync();
+  },
+  removeCollection: (id) => {
     set((state) => ({
       collections: state.collections.filter((c) => c.id !== id),
       ideas: state.ideas.map((i) =>
         i.collectionId === id ? { ...i, collectionId: null } : i
       ),
-    })),
+    }));
+    const db = getDatabase();
+    if (db) deleteIdeaCollectionDb(db, id);
+    notifySync();
+  },
   getIdeasByCollection: (collectionId) =>
     get().ideas.filter((i) => i.collectionId === collectionId),
   getIdeasByCategory: (category) =>

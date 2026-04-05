@@ -3,10 +3,21 @@ import { openDatabaseSync, type SQLiteDatabase } from "expo-sqlite";
 import { drizzle, type ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { View, Text, ActivityIndicator } from "react-native";
 import * as schema from "./schema";
+import { hydrateAllStores } from "@/lib/persistence";
 
 const DB_NAME = "weddingos.db";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
+
+// ─── Global DB singleton (accessible outside React) ─────────────────────────
+
+let dbInstance: DrizzleDB | null = null;
+
+export function getDatabase(): DrizzleDB | null {
+  return dbInstance;
+}
+
+// ─── React context for components ───────────────────────────────────────────
 
 const DatabaseContext = createContext<DrizzleDB | null>(null);
 
@@ -40,6 +51,12 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
             sqliteDb.execSync(stmt + ";");
           }
         }
+
+        // Set global instance
+        dbInstance = drizzleDb;
+
+        // Hydrate all Zustand stores from SQLite
+        await hydrateAllStores(drizzleDb);
 
         setDb(drizzleDb);
       } catch (e: any) {

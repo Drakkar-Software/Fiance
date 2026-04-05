@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import type { Task, TaskCategory } from "@/db/schema";
 import { addMonths, isBefore, differenceInDays } from "date-fns";
+import { getDatabase } from "@/db/provider";
+import {
+  persistTask, updateTaskDb, deleteTaskDb,
+  persistTaskCategory, updateTaskCategoryDb, deleteTaskCategoryDb,
+} from "@/lib/persistence";
+import { notifySync } from "@/lib/starfish";
 
 interface PlanningState {
   tasks: Task[];
@@ -25,29 +31,53 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   categories: [],
   setTasks: (tasks) => set({ tasks }),
   setCategories: (categories) => set({ categories }),
-  addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
-  updateTask: (id, updates) =>
+  addTask: (task) => {
+    set((state) => ({ tasks: [...state.tasks, task] }));
+    const db = getDatabase();
+    if (db) persistTask(db, task);
+    notifySync();
+  },
+  updateTask: (id, updates) => {
+    const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
     set((state) => ({
       tasks: state.tasks.map((t) =>
-        t.id === id
-          ? { ...t, ...updates, updatedAt: new Date().toISOString() }
-          : t
+        t.id === id ? { ...t, ...updatedFields } : t
       ),
-    })),
-  removeTask: (id) =>
-    set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
-  addCategory: (category) =>
-    set((state) => ({ categories: [...state.categories, category] })),
-  updateCategory: (id, updates) =>
+    }));
+    const db = getDatabase();
+    if (db) updateTaskDb(db, id, updatedFields);
+    notifySync();
+  },
+  removeTask: (id) => {
+    set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
+    const db = getDatabase();
+    if (db) deleteTaskDb(db, id);
+    notifySync();
+  },
+  addCategory: (category) => {
+    set((state) => ({ categories: [...state.categories, category] }));
+    const db = getDatabase();
+    if (db) persistTaskCategory(db, category);
+    notifySync();
+  },
+  updateCategory: (id, updates) => {
     set((state) => ({
       categories: state.categories.map((c) =>
         c.id === id ? { ...c, ...updates } : c
       ),
-    })),
-  removeCategory: (id) =>
+    }));
+    const db = getDatabase();
+    if (db) updateTaskCategoryDb(db, id, updates);
+    notifySync();
+  },
+  removeCategory: (id) => {
     set((state) => ({
       categories: state.categories.filter((c) => c.id !== id),
-    })),
+    }));
+    const db = getDatabase();
+    if (db) deleteTaskCategoryDb(db, id);
+    notifySync();
+  },
   getOverdueTasks: () => {
     const now = new Date();
     return get().tasks.filter(
@@ -70,11 +100,7 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   getCriticalUnstarted: () => {
     const now = new Date();
     return get().tasks.filter((t) => {
-      if (
-        t.priority !== "CRITICAL" ||
-        t.status !== "TODO" ||
-        !t.dueDate
-      )
+      if (t.priority !== "CRITICAL" || t.status !== "TODO" || !t.dueDate)
         return false;
       const days = differenceInDays(new Date(t.dueDate), now);
       return days >= 0 && days <= 30;
