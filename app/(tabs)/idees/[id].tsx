@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Heart, Image as ImageIcon } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -99,10 +99,10 @@ export default function IdeaDetailScreen() {
           headerRight: () => (
             <View className="flex-row items-center gap-3 mr-2">
               <Pressable onPress={() => setIsFavorite(!isFavorite)}>
-                <Ionicons
-                  name={isFavorite ? "heart" : "heart-outline"}
+                <Heart
                   size={24}
                   color={isFavorite ? "#EF4444" : "#C0C0C8"}
+                  fill={isFavorite ? "#EF4444" : "transparent"}
                 />
               </Pressable>
               <Pressable onPress={handleSave}>
@@ -140,7 +140,7 @@ export default function IdeaDetailScreen() {
           </View>
         ) : (
           <Pressable className="bg-accent-cream dark:bg-gray-900 rounded-2xl p-8 mb-5 items-center border border-gray-100 dark:border-gray-800">
-            <Ionicons name="image-outline" size={40} color="#E8D5C0" />
+            <ImageIcon size={40} color="#E8D5C0" />
             <Text className="text-gray-400 mt-2 text-sm">
               Appuyez pour ajouter une image
             </Text>

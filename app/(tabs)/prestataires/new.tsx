@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import {
   VENDOR_TYPE_LABELS,
   VENDOR_TYPE_ICONS,
@@ -32,30 +31,27 @@ export default function NewVendorPickerScreen() {
               {category}
             </Text>
             <View className="flex-row flex-wrap" style={{ gap: 10 }}>
-              {types.map((type) => (
-                <Pressable
-                  key={type}
-                  onPress={() => handleSelect(type)}
-                  className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 active:opacity-80 items-center justify-center"
-                  style={{ width: "47%" }}
-                >
-                  <View className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-2">
-                    <Ionicons
-                      name={
-                        VENDOR_TYPE_ICONS[type] as keyof typeof Ionicons.glyphMap
-                      }
-                      size={22}
-                      color="#EC4899"
-                    />
-                  </View>
-                  <Text
-                    className="text-sm font-medium text-gray-900 dark:text-white text-center"
-                    numberOfLines={2}
+              {types.map((type) => {
+                const Icon = VENDOR_TYPE_ICONS[type];
+                return (
+                  <Pressable
+                    key={type}
+                    onPress={() => handleSelect(type)}
+                    className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 active:opacity-80 items-center justify-center"
+                    style={{ width: "47%" }}
                   >
-                    {VENDOR_TYPE_LABELS[type]}
-                  </Text>
-                </Pressable>
-              ))}
+                    <View className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-2">
+                      <Icon size={22} color="#EC4899" />
+                    </View>
+                    <Text
+                      className="text-sm font-medium text-gray-900 dark:text-white text-center"
+                      numberOfLines={2}
+                    >
+                      {VENDOR_TYPE_LABELS[type]}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         ))}

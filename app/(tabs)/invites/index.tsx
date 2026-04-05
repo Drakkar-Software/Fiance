@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Search, XCircle, Users } from "lucide-react-native";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import {
   RSVP_STATUS_LABELS,
@@ -72,7 +72,7 @@ export default function GuestsListScreen() {
       {/* Search */}
       <View className="px-4 pt-3">
         <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
-          <Ionicons name="search" size={18} color="#C0C0C8" />
+          <Search size={18} color="#C0C0C8" />
           <TextInput
             className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
             placeholder="Rechercher un invité..."
@@ -82,7 +82,7 @@ export default function GuestsListScreen() {
           />
           {search.length > 0 && (
             <Pressable onPress={() => setSearch("")}>
-              <Ionicons name="close-circle" size={18} color="#C0C0C8" />
+              <XCircle size={18} color="#C0C0C8" />
             </Pressable>
           )}
         </View>
@@ -100,7 +100,7 @@ export default function GuestsListScreen() {
       {/* Guest list */}
       {filteredGuests.length === 0 ? (
         <EmptyState
-          icon="people-outline"
+          icon={Users}
           title="Aucun invité"
           description="Ajoutez votre premier invité pour commencer"
           actionLabel="Ajouter un invité"

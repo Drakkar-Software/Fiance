@@ -13,6 +13,45 @@ import { useStore } from "zustand";
 import { createBackupDocument, restoreFromBackup, saveToLocalStorage } from "./sync";
 import { getDatabase } from "@/db/provider";
 
+function isIdArray(val: unknown): val is { id: string }[] {
+  if (!Array.isArray(val)) return false;
+  return val.length === 0 || typeof val[0]?.id === "string";
+}
+
+/**
+ * Merge two backup documents:
+ * - Arrays of objects with `id`: ID-based union (local wins per-item, remote-only items kept)
+ * - Everything else: latest timestamp wins
+ */
+function mergeBackups(
+  local: Record<string, unknown>,
+  remote: Record<string, unknown>,
+): Record<string, unknown> {
+  const localTs = (local.timestamp as string) || "";
+  const remoteTs = (remote.timestamp as string) || "";
+  const remoteNewer = remoteTs > localTs;
+  const merged: Record<string, unknown> = { ...local };
+
+  for (const key of Object.keys(remote)) {
+    const localVal = local[key];
+    const remoteVal = remote[key];
+
+    if (isIdArray(localVal) || isIdArray(remoteVal)) {
+      const localArr = (localVal as { id: string }[] | undefined) ?? [];
+      const remoteArr = (remoteVal as { id: string }[] | undefined) ?? [];
+      const byId = new Map(remoteArr.map((item) => [item.id, item]));
+      for (const item of localArr) {
+        byId.set(item.id, item);
+      }
+      merged[key] = Array.from(byId.values());
+    } else if (remoteNewer) {
+      merged[key] = remoteVal;
+    }
+  }
+
+  return merged;
+}
+
 let store: StoreApi<StarfishStore> | null = null;
 let isRestoring = false;
 
@@ -35,11 +74,11 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     pushPath: `/push/wedding/${config.userId}`,
     encryptionSecret: config.encryptionKey,
     encryptionSalt: config.userId,
-    onConflict: (local: unknown, remote: unknown) => {
-      const localTs = (local as Record<string, string>).timestamp || "";
-      const remoteTs = (remote as Record<string, string>).timestamp || "";
-      return remoteTs > localTs ? remote : local;
-    },
+    onConflict: (local: unknown, remote: unknown) =>
+      mergeBackups(
+        local as Record<string, unknown>,
+        remote as Record<string, unknown>,
+      ),
     maxRetries: 3,
   });
 
@@ -60,14 +99,11 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
       state.data !== prevState.data &&
       (state.data as Record<string, unknown>).version
     ) {
-      const db = getDatabase();
-      if (db) {
-        isRestoring = true;
-        try {
-          restoreFromBackup(state.data as Record<string, unknown>, db);
-        } finally {
-          isRestoring = false;
-        }
+      isRestoring = true;
+      try {
+        restoreFromBackup(state.data as Record<string, unknown>, getDatabase());
+      } finally {
+        isRestoring = false;
       }
     }
   });

@@ -7,7 +7,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { FAB } from "@/components/FAB";
@@ -105,7 +105,7 @@ export default function CollectionsScreen() {
                   </Text>
                 </View>
                 <Pressable onPress={() => setDeleteId(col.id)}>
-                  <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                  <Trash2 size={18} color="#EF4444" />
                 </Pressable>
               </View>
             </View>

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Briefcase } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -25,7 +25,7 @@ export default function VendorTypeListScreen() {
 
       {vendors.length === 0 ? (
         <EmptyState
-          icon="briefcase-outline"
+          icon={Briefcase}
           title={`Aucun ${typeName.toLowerCase()}`}
           description={`Ajoutez votre premier ${typeName.toLowerCase()}`}
           actionLabel="Ajouter"

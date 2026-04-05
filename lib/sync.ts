@@ -63,7 +63,7 @@ export function createBackupDocument(): Record<string, unknown> {
 /** Restore all stores + SQLite from a pulled backup document */
 export function restoreFromBackup(
   data: Record<string, unknown>,
-  db: DrizzleDB
+  db: DrizzleDB | null,
 ): void {
   const backup = data as unknown as BackupData;
 
@@ -73,19 +73,31 @@ export function restoreFromBackup(
     );
   }
 
-  // Write to SQLite first (source of truth)
-  restoreAllTables(db, {
-    wedding: backup.wedding,
-    guests: (backup.guests || []) as any[],
-    tables: (backup.tables || []) as any[],
-    vendors: (backup.vendors || []) as any[],
-    quotePricings: (backup.quotePricings || []) as any[],
-    tasks: (backup.tasks || []) as any[],
-    taskCategories: (backup.taskCategories || []) as any[],
-    ideas: (backup.ideas || []) as any[],
-    ideaCollections: (backup.ideaCollections || []) as any[],
-  });
-
-  // Re-hydrate Zustand stores from SQLite
-  hydrateAllStores(db);
+  if (db) {
+    // Native: write to SQLite (source of truth) then re-hydrate stores from it
+    restoreAllTables(db, {
+      wedding: backup.wedding,
+      guests: (backup.guests || []) as any[],
+      tables: (backup.tables || []) as any[],
+      vendors: (backup.vendors || []) as any[],
+      quotePricings: (backup.quotePricings || []) as any[],
+      tasks: (backup.tasks || []) as any[],
+      taskCategories: (backup.taskCategories || []) as any[],
+      ideas: (backup.ideas || []) as any[],
+      ideaCollections: (backup.ideaCollections || []) as any[],
+    });
+    hydrateAllStores(db);
+  } else {
+    // Web: hydrate Zustand stores directly from the backup data
+    if (backup.wedding) useWeddingStore.getState().setWedding(backup.wedding as any);
+    useGuestsStore.getState().setGuests((backup.guests || []) as any[]);
+    useGuestsStore.getState().setTables((backup.tables || []) as any[]);
+    useVendorsStore.getState().setVendors((backup.vendors || []) as any[]);
+    useVendorsStore.getState().setQuotePricings((backup.quotePricings || []) as any[]);
+    usePlanningStore.getState().setCategories((backup.taskCategories || []) as any[]);
+    usePlanningStore.getState().setTasks((backup.tasks || []) as any[]);
+    useIdeasStore.getState().setCollections((backup.ideaCollections || []) as any[]);
+    useIdeasStore.getState().setIdeas((backup.ideas || []) as any[]);
+    saveToLocalStorage();
+  }
 }

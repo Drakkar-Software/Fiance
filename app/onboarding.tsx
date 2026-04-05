@@ -19,11 +19,14 @@ interface OnboardingProps {
   /** Pre-filled from a deep link invite */
   inviteName?: string;
   invitePassword?: string;
+  /** Override join handler (e.g. to navigate after creation) */
+  onJoinOverride?: (label: string, password: string) => Promise<void>;
 }
 
 export default function OnboardingScreen({
   inviteName,
   invitePassword,
+  onJoinOverride,
 }: OnboardingProps = {}) {
   const [mode, setMode] = useState<Mode>(
     inviteName && invitePassword ? "join" : "choose"
@@ -51,9 +54,9 @@ export default function OnboardingScreen({
       onBack={() => setMode("choose")}
       initialName={inviteName}
       initialPassword={invitePassword}
-      onJoin={async (label, password) => {
+      onJoin={onJoinOverride ?? (async (label, password) => {
         await createWedding(label, password);
-      }}
+      })}
     />
   );
 }

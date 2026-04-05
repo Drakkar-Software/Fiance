@@ -7,7 +7,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { AlertTriangle, LayoutGrid, Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
@@ -51,7 +51,7 @@ export default function TablesScreen() {
       {unassigned.length > 0 && (
         <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">
           <View className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center mr-2">
-            <Ionicons name="alert" size={14} color="#F59E0B" />
+            <AlertTriangle size={14} color="#F59E0B" />
           </View>
           <Text className="text-sm text-amber-700 dark:text-amber-300 flex-1">
             {unassigned.length} invité{unassigned.length > 1 ? "s" : ""}{" "}
@@ -62,7 +62,7 @@ export default function TablesScreen() {
 
       {tables.length === 0 && !showAdd ? (
         <EmptyState
-          icon="grid-outline"
+          icon={LayoutGrid}
           title="Aucune table"
           description="Créez des tables pour organiser votre plan de tables"
           actionLabel="Créer une table"
@@ -125,7 +125,7 @@ export default function TablesScreen() {
                 <View className="flex-row items-center justify-between mb-2">
                   <View className="flex-row items-center">
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
-                      <Ionicons name="grid" size={16} color="#EC4899" />
+                      <LayoutGrid size={16} color="#EC4899" />
                     </View>
                     <Text className="text-base font-semibold text-gray-900 dark:text-white">
                       {table.name}
@@ -152,7 +152,7 @@ export default function TablesScreen() {
                       onPress={() => setDeleteId(table.id)}
                       className="w-8 h-8 items-center justify-center"
                     >
-                      <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                      <Trash2 size={16} color="#EF4444" />
                     </Pressable>
                   </View>
                 </View>

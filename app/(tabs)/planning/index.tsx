@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { List, LayoutGrid, Calendar, CheckCircle2, Circle } from "lucide-react-native";
 import { format, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -112,8 +112,7 @@ export default function PlanningScreen() {
                 viewMode === "timeline" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
               }`}
             >
-              <Ionicons
-                name="list"
+              <List
                 size={16}
                 color={viewMode === "timeline" ? "#EC4899" : "#9CA3AF"}
               />
@@ -124,8 +123,7 @@ export default function PlanningScreen() {
                 viewMode === "kanban" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
               }`}
             >
-              <Ionicons
-                name="grid"
+              <LayoutGrid
                 size={16}
                 color={viewMode === "kanban" ? "#EC4899" : "#9CA3AF"}
               />
@@ -152,7 +150,7 @@ export default function PlanningScreen() {
 
       {filteredTasks.length === 0 ? (
         <EmptyState
-          icon="calendar-outline"
+          icon={Calendar}
           title="Aucune tâche"
           description="Ajoutez votre première tâche ou générez le planning type"
           actionLabel="Ajouter une tâche"
@@ -289,11 +287,11 @@ function TaskCard({
     >
       <View className="flex-row items-start">
         <Pressable onPress={onToggleDone} className="mt-0.5 mr-3">
-          <Ionicons
-            name={isDone ? "checkmark-circle" : "ellipse-outline"}
-            size={22}
-            color={isDone ? "#10B981" : "#D1D5DB"}
-          />
+          {isDone ? (
+            <CheckCircle2 size={22} color="#10B981" />
+          ) : (
+            <Circle size={22} color="#D1D5DB" />
+          )}
         </Pressable>
         <View className="flex-1">
           <Text

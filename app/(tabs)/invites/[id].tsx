@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import {

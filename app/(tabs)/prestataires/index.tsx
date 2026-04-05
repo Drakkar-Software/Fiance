@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Search, XCircle, GitCompare, Briefcase, Ellipsis } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS, VENDOR_TYPE_ICONS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -50,7 +50,7 @@ export default function PrestatairesListScreen() {
       {/* Search */}
       <View className="px-4 pt-4">
         <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
-          <Ionicons name="search" size={18} color="#C0C0C8" />
+          <Search size={18} color="#C0C0C8" />
           <TextInput
             className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
             placeholder="Rechercher un prestataire..."
@@ -60,7 +60,7 @@ export default function PrestatairesListScreen() {
           />
           {search.length > 0 && (
             <Pressable onPress={() => setSearch("")}>
-              <Ionicons name="close-circle" size={18} color="#C0C0C8" />
+              <XCircle size={18} color="#C0C0C8" />
             </Pressable>
           )}
         </View>
@@ -78,7 +78,7 @@ export default function PrestatairesListScreen() {
             onPress={() => router.push("/(tabs)/prestataires/compare")}
             className="mx-4 mb-3 bg-accent-blush dark:bg-primary-900 rounded-xl p-3 flex-row items-center justify-center border border-primary-200 dark:border-primary-800"
           >
-            <Ionicons name="git-compare" size={18} color="#EC4899" />
+            <GitCompare size={18} color="#EC4899" />
             <Text className="text-primary-600 dark:text-primary-300 font-semibold text-sm ml-2">
               Comparateur traiteurs
             </Text>
@@ -88,7 +88,7 @@ export default function PrestatairesListScreen() {
       {/* Vendor list */}
       {filteredVendors.length === 0 ? (
         <EmptyState
-          icon="briefcase-outline"
+          icon={Briefcase}
           title="Aucun prestataire"
           description="Ajoutez votre premier prestataire pour commencer"
           actionLabel="Ajouter un prestataire"
@@ -109,11 +109,10 @@ export default function PrestatairesListScreen() {
             >
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
-                  <Ionicons
-                    name={VENDOR_TYPE_ICONS[vendor.type as VendorType] || "ellipsis-horizontal"}
-                    size={18}
-                    color="#EC4899"
-                  />
+                  {(() => {
+                    const Icon = VENDOR_TYPE_ICONS[vendor.type as VendorType] || Ellipsis;
+                    return <Icon size={18} color="#EC4899" />;
+                  })()}
                 </View>
                 <View className="flex-1">
                   <Text className="text-base font-semibold text-gray-900 dark:text-white">

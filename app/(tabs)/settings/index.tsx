@@ -7,7 +7,8 @@ import {
   Alert,
   Share,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Share2, ChevronRight, Calendar, Cloud, CloudOff, Heart, CheckCircle2, Lock, ShieldCheck } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import {
   initStarfish,
   teardownStarfish,
@@ -185,7 +186,7 @@ export default function SettingsScreen() {
             className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
           >
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Ionicons name="share-outline" size={20} color="#EC4899" />
+              <Share2 size={20} color="#EC4899" />
             </View>
             <View className="ml-3 flex-1">
               <Text className="text-base font-medium text-gray-900 dark:text-white">
@@ -195,7 +196,7 @@ export default function SettingsScreen() {
                 Envoyer un lien pour rejoindre ce mariage
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#C0C0C8" />
+            <ChevronRight size={18} color="#C0C0C8" />
           </Pressable>
         </View>
       )}
@@ -208,7 +209,7 @@ export default function SettingsScreen() {
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
         >
           <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center">
-            <Ionicons name="calendar" size={20} color="#EC4899" />
+            <Calendar size={20} color="#EC4899" />
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base font-medium text-gray-900 dark:text-white">
@@ -218,7 +219,7 @@ export default function SettingsScreen() {
               33 tâches avec deadlines relatives
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color="#C0C0C8" />
+          <ChevronRight size={18} color="#C0C0C8" />
         </Pressable>
       </View>
 
@@ -246,11 +247,11 @@ export default function SettingsScreen() {
             className="w-10 h-10 rounded-xl items-center justify-center"
             style={{ backgroundColor: syncEnabled ? "#ECFDF5" : "#F3F4F6" }}
           >
-            <Ionicons
-              name={syncEnabled ? "cloud-done" : "cloud-offline-outline"}
-              size={20}
-              color={syncEnabled ? "#10B981" : "#9CA3AF"}
-            />
+            {syncEnabled ? (
+              <Cloud size={20} color="#10B981" />
+            ) : (
+              <CloudOff size={20} color="#9CA3AF" />
+            )}
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base font-medium text-gray-900 dark:text-white">
@@ -298,10 +299,10 @@ export default function SettingsScreen() {
                     backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
                   }}
                 >
-                  <Ionicons
-                    name={isActive ? "heart" : "heart-outline"}
+                  <Heart
                     size={20}
                     color={isActive ? "#EC4899" : "#9CA3AF"}
+                    fill={isActive ? "#EC4899" : "transparent"}
                   />
                 </View>
                 <View className="flex-1">
@@ -313,7 +314,7 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
                 {isActive && (
-                  <Ionicons name="checkmark-circle" size={20} color="#EC4899" />
+                  <CheckCircle2 size={20} color="#EC4899" />
                 )}
               </Pressable>
             );
@@ -325,12 +326,12 @@ export default function SettingsScreen() {
       <View className="px-4 mt-4">
         <SectionTitle>Sécurité</SectionTitle>
         <SettingsRow
-          icon="lock-closed-outline"
+          icon={Lock}
           title="Verrouillage de l'app"
           subtitle="PIN ou biométrie"
         />
         <SettingsRow
-          icon="shield-checkmark-outline"
+          icon={ShieldCheck}
           title="Chiffrement"
           subtitle="AES-256 · Backup chiffré AES-GCM"
         />
@@ -361,18 +362,18 @@ export default function SettingsScreen() {
 }
 
 function SettingsRow({
-  icon,
+  icon: Icon,
   title,
   subtitle,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: LucideIcon;
   title: string;
   subtitle: string;
 }) {
   return (
     <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center">
       <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-        <Ionicons name={icon} size={20} color="#C0C0C8" />
+        <Icon size={20} color="#C0C0C8" />
       </View>
       <View className="ml-3">
         <Text className="text-base text-gray-900 dark:text-white font-medium">

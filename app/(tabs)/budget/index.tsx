@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { ChevronUp, ChevronDown } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -175,11 +175,11 @@ export default function BudgetScreen() {
                       {formatMoney(cat.totalConfirmed)} confirmé
                     </Text>
                   </View>
-                  <Ionicons
-                    name={isExpanded ? "chevron-up" : "chevron-down"}
-                    size={18}
-                    color="#C0C0C8"
-                  />
+                  {isExpanded ? (
+                    <ChevronUp size={18} color="#C0C0C8" />
+                  ) : (
+                    <ChevronDown size={18} color="#C0C0C8" />
+                  )}
                 </View>
                 <View className="mt-3">
                   <ProgressBar

@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { ChevronUp, ChevronDown, CheckSquare, Square } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import {
@@ -212,11 +212,11 @@ export default function VendorDetailScreen() {
           className="flex-row items-center justify-between mb-2 mt-1"
         >
           <SectionTitle>Dates</SectionTitle>
-          <Ionicons
-            name={showDates ? "chevron-up" : "chevron-down"}
-            size={16}
-            color="#9CA3AF"
-          />
+          {showDates ? (
+            <ChevronUp size={16} color="#9CA3AF" />
+          ) : (
+            <ChevronDown size={16} color="#9CA3AF" />
+          )}
         </Pressable>
         {showDates && (
           <FormCard>
@@ -345,11 +345,11 @@ function CustomFieldRenderer({
               }}
               className="flex-row items-center py-2"
             >
-              <Ionicons
-                name={isChecked ? "checkbox" : "square-outline"}
-                size={20}
-                color={isChecked ? "#EC4899" : "#D1D5DB"}
-              />
+              {isChecked ? (
+                <CheckSquare size={20} color="#EC4899" />
+              ) : (
+                <Square size={20} color="#D1D5DB" />
+              )}
               <Text className="text-sm text-gray-700 dark:text-gray-300 ml-2.5">
                 {opt}
               </Text>

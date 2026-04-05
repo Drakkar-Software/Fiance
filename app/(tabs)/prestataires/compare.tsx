@@ -68,7 +68,7 @@ export default function CompareScreen() {
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center">
                 {idx === 0 && (
-                  <Ionicons name="trophy" size={20} color="#F59E0B" />
+                  <Trophy size={20} color="#F59E0B" />
                 )}
                 <Text className="text-base font-semibold text-gray-900 dark:text-white ml-1">
                   {c.vendor.name}
@@ -157,5 +157,4 @@ export default function CompareScreen() {
   );
 }
 
-// Need to import Ionicons
-import { Ionicons } from "@expo/vector-icons";
+import { Trophy } from "lucide-react-native";

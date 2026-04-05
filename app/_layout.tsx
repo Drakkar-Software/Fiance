@@ -53,13 +53,15 @@ function AppContent() {
 
     (async () => {
       const authToken = await deriveAuthToken(seedPhrase);
-      const encryptionKey = await deriveEncryptionKey(seedPhrase, id);
-      initStarfish({
+      const userId = authToken.slice(0, 16);
+      const encryptionKey = await deriveEncryptionKey(seedPhrase, userId);
+      const sf = initStarfish({
         serverUrl,
         authToken,
-        userId: authToken.slice(0, 16),
+        userId,
         encryptionKey,
       });
+      sf.getState().pull().catch(console.error);
     })();
   }, [activeWedding?.id]);
 

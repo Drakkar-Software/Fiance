@@ -224,7 +224,7 @@ export default function DashboardScreen() {
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center mr-2">
-                <Ionicons name="people" size={16} color="#E8B4B8" />
+                <Users size={16} color="#E8B4B8" />
               </View>
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">
                 Invités
@@ -253,7 +253,7 @@ export default function DashboardScreen() {
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2">
-                <Ionicons name="calendar" size={16} color="#C9956B" />
+                <Calendar size={16} color="#C9956B" />
               </View>
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">
                 Planning
@@ -283,7 +283,7 @@ export default function DashboardScreen() {
         >
           <View className="flex-row items-center mb-3">
             <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
-              <Ionicons name="briefcase" size={16} color="#EC4899" />
+              <Briefcase size={16} color="#EC4899" />
             </View>
             <Text className="text-base font-semibold text-gray-900 dark:text-white">
               Prestataires
@@ -319,7 +319,7 @@ export default function DashboardScreen() {
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center"
         >
           <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
-            <Ionicons name="sparkles" size={20} color="#A855F7" />
+            <Sparkles size={20} color="#A855F7" />
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base font-semibold text-gray-900 dark:text-white">
@@ -329,7 +329,7 @@ export default function DashboardScreen() {
               {ideaCount} idée{ideaCount !== 1 ? "s" : ""} sauvegardée{ideaCount !== 1 ? "s" : ""}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color="#C0C0C8" />
+          <ChevronRight size={18} color="#C0C0C8" />
         </Pressable>
 
         {/* Planning progress */}

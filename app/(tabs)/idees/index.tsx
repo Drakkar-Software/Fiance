@@ -10,7 +10,7 @@ import {
   Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Search, Heart, Sparkles, Image as ImageIcon, Link } from "lucide-react-native";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
@@ -70,7 +70,7 @@ export default function IdeasScreen() {
       {/* Search & filters */}
       <View className="px-4 pt-4">
         <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 mb-3 border border-gray-100 dark:border-gray-800">
-          <Ionicons name="search" size={18} color="#C0C0C8" />
+          <Search size={18} color="#C0C0C8" />
           <TextInput
             className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
             placeholder="Rechercher une idée..."
@@ -82,10 +82,10 @@ export default function IdeasScreen() {
             onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}
             className="ml-2 w-8 h-8 items-center justify-center"
           >
-            <Ionicons
-              name={showFavoritesOnly ? "heart" : "heart-outline"}
+            <Heart
               size={20}
               color={showFavoritesOnly ? "#EF4444" : "#C0C0C8"}
+              fill={showFavoritesOnly ? "#EF4444" : "transparent"}
             />
           </Pressable>
         </View>
@@ -151,7 +151,7 @@ export default function IdeasScreen() {
       {/* Card list */}
       {filteredIdeas.length === 0 ? (
         <EmptyState
-          icon="sparkles-outline"
+          icon={Sparkles}
           title="Aucune idée"
           description="Ajoutez vos premières inspirations"
           actionLabel="Ajouter une idée"
@@ -197,7 +197,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
             />
           ) : (
             <View className="w-16 h-16 rounded-xl bg-accent-cream dark:bg-gray-800 items-center justify-center">
-              <Ionicons name="image-outline" size={24} color="#E8D5C0" />
+              <ImageIcon size={24} color="#E8D5C0" />
             </View>
           )}
           <View className="flex-1 ml-3 justify-center">
@@ -209,7 +209,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
                 {idea.title || "Sans titre"}
               </Text>
               {idea.isFavorite && (
-                <Ionicons name="heart" size={16} color="#EF4444" />
+                <Heart size={16} color="#EF4444" fill="#EF4444" />
               )}
             </View>
             {idea.category && (
@@ -238,7 +238,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
             onPress={() => Linking.openURL(idea.sourceUrl!)}
             className="flex-row items-center mt-2.5"
           >
-            <Ionicons name="link-outline" size={14} color="#EC4899" />
+            <Link size={14} color="#EC4899" />
             <Text className="text-sm text-primary-400 ml-1.5" numberOfLines={1}>
               {displayUrl}
             </Text>
