@@ -3,7 +3,7 @@
  * Each wedding gets its own SQLite database file.
  */
 
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { secureGet, secureSet } from "./secure-store";
 
 const REGISTRY_KEY = "wedding_registry";
@@ -46,7 +46,7 @@ export async function createWeddingEntry(
   seedPhrase?: string,
   serverUrl?: string
 ): Promise<WeddingRegistryEntry> {
-  const id = uuid();
+  const id = Crypto.randomUUID();
   const entry: WeddingRegistryEntry = {
     id,
     label: label || "Mon mariage",

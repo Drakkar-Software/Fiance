@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
@@ -31,7 +31,7 @@ export default function TablesScreen() {
       return;
     }
     addTable({
-      id: uuid(),
+      id: Crypto.randomUUID(),
       name: newTableName.trim(),
       capacity: newTableCapacity ? parseInt(newTableCapacity) : null,
       notes: null,

@@ -3,6 +3,7 @@
  * Handles hydration on boot and write-through on mutations
  */
 
+import { Platform } from "react-native";
 import { eq } from "drizzle-orm";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import * as schema from "@/db/schema";
@@ -26,6 +27,33 @@ export function clearAllStores(): void {
   usePlanningStore.getState().setTasks([]);
   useIdeasStore.getState().setCollections([]);
   useIdeasStore.getState().setIdeas([]);
+}
+
+// ─── Web: localStorage persistence (SQLite unavailable) ─────────────────────
+
+const WEB_STORAGE_KEY = "wedding_data";
+
+export function loadFromLocalStorage(): boolean {
+  if (Platform.OS !== "web") return false;
+  try {
+    const raw = localStorage.getItem(WEB_STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data?.version) return false;
+
+    if (data.wedding) useWeddingStore.getState().setWedding(data.wedding);
+    if (data.guests) useGuestsStore.getState().setGuests(data.guests);
+    if (data.tables) useGuestsStore.getState().setTables(data.tables);
+    if (data.vendors) useVendorsStore.getState().setVendors(data.vendors);
+    if (data.quotePricings) useVendorsStore.getState().setQuotePricings(data.quotePricings);
+    if (data.taskCategories) usePlanningStore.getState().setCategories(data.taskCategories);
+    if (data.tasks) usePlanningStore.getState().setTasks(data.tasks);
+    if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
+    if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ─── Hydrate all stores from SQLite on boot ─────────────────────────────────

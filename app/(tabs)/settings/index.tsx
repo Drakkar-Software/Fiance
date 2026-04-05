@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   initStarfish,
   teardownStarfish,
+  getStarfishStore,
 } from "@/lib/starfish";
 import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -55,14 +56,11 @@ export default function SettingsScreen() {
   const [currency, setCurrency] = useState(wedding?.currency || "EUR");
 
   // Sync state
-  const [syncEnabled, setSyncEnabled] = useState(
-    !!(activeEntry?.serverUrl && activeEntry?.seedPhrase)
-  );
+  const syncEnabled = !!getStarfishStore();
 
   const handleToggleSync = useCallback(async () => {
     if (syncEnabled) {
       teardownStarfish();
-      setSyncEnabled(false);
       return;
     }
 
@@ -88,7 +86,6 @@ export default function SettingsScreen() {
       userId: authToken.slice(0, 16),
       encryptionKey,
     });
-    setSyncEnabled(true);
   }, [syncEnabled, activeEntry]);
 
   const handleInvite = useCallback(async () => {

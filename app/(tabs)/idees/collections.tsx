@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -30,7 +30,7 @@ export default function CollectionsScreen() {
     }
     const now = new Date().toISOString();
     addCollection({
-      id: uuid(),
+      id: Crypto.randomUUID(),
       name: newName.trim(),
       description: newDescription || null,
       coverIdeaId: null,

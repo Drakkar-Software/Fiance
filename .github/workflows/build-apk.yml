@@ -2,9 +2,8 @@ name: Build APK
 
 on:
   push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
@@ -73,7 +73,7 @@ export default function IdeaDetailScreen() {
     if (isNew) {
       addIdea({
         ...ideaData,
-        id: uuid(),
+        id: Crypto.randomUUID(),
         imageUri: null,
         imageThumbnailUri: null,
         colorPalette: null,

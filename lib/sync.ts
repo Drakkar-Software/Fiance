@@ -3,6 +3,7 @@
  * Handles backup document creation and restoration via Starfish
  */
 
+import { Platform } from "react-native";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import type * as schema from "@/db/schema";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -29,6 +30,18 @@ export interface BackupData {
 }
 
 const BACKUP_VERSION = 1;
+
+const WEB_STORAGE_KEY = "wedding_data";
+
+/** Save all store state to localStorage (web only, called after every mutation) */
+export function saveToLocalStorage(): void {
+  if (Platform.OS !== "web") return;
+  try {
+    localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(createBackupDocument()));
+  } catch {
+    // localStorage full or unavailable
+  }
+}
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {

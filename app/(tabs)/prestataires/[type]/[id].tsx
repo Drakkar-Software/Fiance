@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import {
   VENDOR_TYPE_LABELS,
@@ -117,7 +117,7 @@ export default function VendorDetailScreen() {
     if (isNew) {
       addVendor({
         ...vendorData,
-        id: uuid(),
+        id: Crypto.randomUUID(),
         createdAt: now,
       } as Vendor);
     } else {

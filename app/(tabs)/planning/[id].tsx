@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import {
@@ -77,7 +77,7 @@ export default function TaskDetailScreen() {
     if (isNew) {
       addTask({
         ...taskData,
-        id: uuid(),
+        id: Crypto.randomUUID(),
         isSystem: false,
         dueDate: null,
         reminderDaysBefore: null,

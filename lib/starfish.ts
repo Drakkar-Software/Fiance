@@ -10,7 +10,7 @@ import {
 } from "@drakkar.software/starfish-client/zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { useStore } from "zustand";
-import { createBackupDocument, restoreFromBackup } from "./sync";
+import { createBackupDocument, restoreFromBackup, saveToLocalStorage } from "./sync";
 import { getDatabase } from "@/db/provider";
 
 let store: StoreApi<StarfishStore> | null = null;
@@ -91,6 +91,7 @@ export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
  * which auto-flushes to the server when online.
  */
 export function notifySync(): void {
+  saveToLocalStorage();
   if (!store || isRestoring) return;
   store.getState().set(() => createBackupDocument());
 }

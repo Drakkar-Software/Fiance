@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import {
   INVITATION_TYPE_LABELS,
@@ -115,7 +115,7 @@ export default function GuestDetailScreen() {
     };
 
     if (isNew) {
-      addGuest({ ...guestData, id: uuid(), createdAt: now } as Guest);
+      addGuest({ ...guestData, id: Crypto.randomUUID(), createdAt: now } as Guest);
     } else {
       updateGuest(id!, guestData);
     }

@@ -3,7 +3,7 @@ import { openDatabaseSync, type SQLiteDatabase } from "expo-sqlite";
 import { drizzle, type ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { View, Text, ActivityIndicator, Platform } from "react-native";
 import * as schema from "./schema";
-import { hydrateAllStores, clearAllStores } from "@/lib/persistence";
+import { hydrateAllStores, clearAllStores, loadFromLocalStorage } from "@/lib/persistence";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
@@ -41,9 +41,11 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
     async function init() {
       try {
         if (Platform.OS === "web") {
-          setError(null);
-          setDb(null);
-          setLoading(false);
+          loadFromLocalStorage();
+          if (!cancelled) {
+            setDb(null as any);
+            setLoading(false);
+          }
           return;
         }
 
@@ -102,15 +104,6 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ color: "red" }}>Database error: {error}</Text>
       </View>
-    );
-  }
-
-  // On web, SQLite is unavailable — render children without DB context
-  if (Platform.OS === "web") {
-    return (
-      <DatabaseContext.Provider value={null as any}>
-        {children}
-      </DatabaseContext.Provider>
     );
   }
 

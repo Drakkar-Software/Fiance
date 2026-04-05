@@ -1,5 +1,5 @@
 import { addMonths } from "date-fns";
-import { v4 as uuid } from "uuid";
+import * as Crypto from "expo-crypto";
 import type { Task, TaskCategory } from "@/db/schema";
 
 // ─── Default categories ─────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export const TEMPLATE_TASKS: TemplateTask[] = [
 export function generateDefaultCategories(): TaskCategory[] {
   const now = new Date().toISOString();
   return DEFAULT_CATEGORIES.map((c) => ({
-    id: uuid(),
+    id: Crypto.randomUUID(),
     name: c.name,
     icon: c.icon,
     color: c.color,
@@ -92,7 +92,7 @@ export function generateTemplateTasks(
     }
 
     return {
-      id: uuid(),
+      id: Crypto.randomUUID(),
       categoryId: categoryMap.get(t.categoryName) || null,
       title: t.title,
       description: null,

@@ -1,13 +1,13 @@
 import "../global.css";
 import React, { useEffect, useState } from "react";
-import { AppState, View, ActivityIndicator, Text, Platform } from "react-native";
+import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
 import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
-import { getStarfishStore } from "@/lib/starfish";
-import { parseInviteUrl } from "@/lib/identity";
+import { getStarfishStore, initStarfish } from "@/lib/starfish";
+import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import OnboardingScreen from "./onboarding";
 
@@ -66,6 +66,23 @@ function AppContent() {
     (w) => w.id === registry.activeWeddingId
   ) ?? registry.weddings[0];
 
+  // Auto-enable sync if the wedding has a server URL and seed phrase
+  useEffect(() => {
+    const { serverUrl, seedPhrase, id } = activeWedding;
+    if (!serverUrl || !seedPhrase || getStarfishStore()) return;
+
+    (async () => {
+      const authToken = await deriveAuthToken(seedPhrase);
+      const encryptionKey = await deriveEncryptionKey(seedPhrase, id);
+      initStarfish({
+        serverUrl,
+        authToken,
+        userId: authToken.slice(0, 16),
+        encryptionKey,
+      });
+    })();
+  }, [activeWedding.id]);
+
   return (
     <DatabaseProvider dbFileName={activeWedding.dbFileName}>
       <Stack screenOptions={{ headerShown: false }}>
@@ -79,14 +96,7 @@ export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
 
   useEffect(() => {
-    if (Platform.OS !== "web") {
-      loadRegistry();
-    } else {
-      useWeddingRegistryStore.setState({
-        isLoaded: true,
-        registry: { activeWeddingId: null, weddings: [] },
-      });
-    }
+    loadRegistry();
   }, []);
 
   useEffect(() => {
