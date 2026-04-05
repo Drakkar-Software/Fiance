@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import type { Context } from "hono";
 import {
   createSyncRouter,
@@ -108,6 +109,8 @@ async function roleResolver(c: Context): Promise<AuthResult> {
 // ---------------------------------------------------------------------------
 
 const app = new Hono<{ Bindings: Env }>();
+
+app.use("/*", cors());
 
 let cachedRouter: Hono | null = null;
 

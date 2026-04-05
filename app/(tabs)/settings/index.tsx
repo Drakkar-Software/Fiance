@@ -65,13 +65,18 @@ export default function SettingsScreen() {
     }
 
     const password = activeEntry?.seedPhrase;
-    const serverUrl = activeEntry?.serverUrl;
+    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
     if (!password || !serverUrl) {
       Alert.alert(
         "Synchronisation impossible",
         "Aucun serveur ou mot de passe configuré pour ce mariage."
       );
       return;
+    }
+
+    // Persist serverUrl if it was missing from the entry
+    if (!activeEntry?.serverUrl && activeEntry?.id) {
+      useWeddingRegistryStore.getState().updateWedding(activeEntry.id, { serverUrl });
     }
 
     const authToken = await deriveAuthToken(password);

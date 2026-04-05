@@ -19,6 +19,10 @@ function AppContent() {
     password: string;
   } | null>(null);
 
+  const activeWedding = registry?.weddings.find(
+    (w) => w.id === registry.activeWeddingId
+  ) ?? registry?.weddings[0] ?? null;
+
   // Handle deep links (initial + while app is open)
   useEffect(() => {
     function handleUrl(event: { url: string }) {
@@ -26,12 +30,10 @@ function AppContent() {
       if (params) setInviteParams(params);
     }
 
-    // Check if app was opened via a deep link
     Linking.getInitialURL().then((url) => {
       if (url) handleUrl({ url });
     });
 
-    // Listen for deep links while app is running
     const sub = Linking.addEventListener("url", handleUrl);
     return () => sub.remove();
   }, []);
@@ -43,31 +45,9 @@ function AppContent() {
     }
   }, [registry?.weddings.length]);
 
-  if (!isLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Loading WeddingOS...</Text>
-      </View>
-    );
-  }
-
-  // No weddings exist → show onboarding (with invite params if present)
-  if (!registry || registry.weddings.length === 0) {
-    return (
-      <OnboardingScreen
-        inviteName={inviteParams?.name}
-        invitePassword={inviteParams?.password}
-      />
-    );
-  }
-
-  const activeWedding = registry.weddings.find(
-    (w) => w.id === registry.activeWeddingId
-  ) ?? registry.weddings[0];
-
   // Auto-enable sync if the wedding has a server URL and seed phrase
   useEffect(() => {
+    if (!activeWedding) return;
     const { serverUrl, seedPhrase, id } = activeWedding;
     if (!serverUrl || !seedPhrase || getStarfishStore()) return;
 
@@ -81,10 +61,28 @@ function AppContent() {
         encryptionKey,
       });
     })();
-  }, [activeWedding.id]);
+  }, [activeWedding?.id]);
+
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 16 }}>Loading WeddingOS...</Text>
+      </View>
+    );
+  }
+
+  if (!registry || registry.weddings.length === 0) {
+    return (
+      <OnboardingScreen
+        inviteName={inviteParams?.name}
+        invitePassword={inviteParams?.password}
+      />
+    );
+  }
 
   return (
-    <DatabaseProvider dbFileName={activeWedding.dbFileName}>
+    <DatabaseProvider dbFileName={activeWedding!.dbFileName}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
       </Stack>
