@@ -14,6 +14,20 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
+// ─── Clear all stores (for wedding switching) ──────────────────────────────
+
+export function clearAllStores(): void {
+  useWeddingStore.getState().setWedding(null as any);
+  useGuestsStore.getState().setGuests([]);
+  useGuestsStore.getState().setTables([]);
+  useVendorsStore.getState().setVendors([]);
+  useVendorsStore.getState().setQuotePricings([]);
+  usePlanningStore.getState().setCategories([]);
+  usePlanningStore.getState().setTasks([]);
+  useIdeasStore.getState().setCollections([]);
+  useIdeasStore.getState().setIdeas([]);
+}
+
 // ─── Hydrate all stores from SQLite on boot ─────────────────────────────────
 
 export async function hydrateAllStores(db: DrizzleDB): Promise<void> {

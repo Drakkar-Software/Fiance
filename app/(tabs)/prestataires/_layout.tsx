@@ -15,6 +15,10 @@ export default function PrestatairesLayout() {
         options={{ title: "Prestataires" }}
       />
       <Stack.Screen
+        name="new"
+        options={{ title: "Nouveau prestataire" }}
+      />
+      <Stack.Screen
         name="[type]/index"
         options={{ title: "Prestataires" }}
       />

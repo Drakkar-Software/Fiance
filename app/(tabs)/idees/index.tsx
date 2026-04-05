@@ -1,10 +1,20 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  Pressable,
+  TextInput,
+  Image,
+  Linking,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
+import type { Idea } from "@/db/schema";
 import { FilterTabs } from "@/components/FilterTabs";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
@@ -51,6 +61,9 @@ export default function IdeasScreen() {
       count: ideas.filter((i) => i.category === key).length,
     })),
   ];
+
+  const navigateToIdea = (id: string) =>
+    router.push({ pathname: "/(tabs)/idees/[id]", params: { id } });
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
@@ -135,110 +148,130 @@ export default function IdeasScreen() {
         onSelect={setCategoryFilter}
       />
 
-      {/* Masonry grid */}
+      {/* Card list */}
       {filteredIdeas.length === 0 ? (
         <EmptyState
           icon="sparkles-outline"
           title="Aucune idée"
           description="Ajoutez vos premières inspirations"
           actionLabel="Ajouter une idée"
-          onAction={() =>
-            router.push({
-              pathname: "/(tabs)/idees/[id]",
-              params: { id: "new" },
-            })
-          }
+          onAction={() => navigateToIdea("new")}
         />
       ) : (
-        <ScrollView
-          className="flex-1 px-4"
+        <FlatList
+          data={filteredIdeas}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}
           showsVerticalScrollIndicator={false}
-        >
-          <View className="flex-row flex-wrap" style={{ gap: 10 }}>
-            {filteredIdeas.map((idea) => (
-              <Pressable
-                key={idea.id}
-                onPress={() =>
-                  router.push({
-                    pathname: "/(tabs)/idees/[id]",
-                    params: { id: idea.id },
-                  })
-                }
-                className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
-                style={{ width: "48%" }}
-              >
-                {idea.imageUri ? (
-                  <Image
-                    source={{ uri: idea.imageUri }}
-                    className="w-full"
-                    style={{ height: 150 }}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View
-                    className="w-full items-center justify-center bg-accent-cream dark:bg-gray-800"
-                    style={{ height: 110 }}
-                  >
-                    <Ionicons name="image-outline" size={28} color="#E8D5C0" />
-                  </View>
-                )}
-                <View className="p-2.5">
-                  {idea.title && (
-                    <Text
-                      className="text-sm font-medium text-gray-900 dark:text-white"
-                      numberOfLines={1}
-                    >
-                      {idea.title}
-                    </Text>
-                  )}
-                  {idea.category && (
-                    <Text className="text-xs text-gray-400 mt-0.5">
-                      {IDEA_CATEGORY_LABELS[idea.category as IdeaCategory]}
-                    </Text>
-                  )}
-                  <View className="flex-row items-center justify-between mt-1.5">
-                    {idea.tags && (
-                      <Text
-                        className="text-xs text-primary-400 flex-1"
-                        numberOfLines={1}
-                      >
-                        {JSON.parse(idea.tags).slice(0, 2).join(", ")}
-                      </Text>
-                    )}
-                    {idea.isFavorite && (
-                      <Ionicons name="heart" size={13} color="#EF4444" />
-                    )}
-                  </View>
-                </View>
-                {/* Color palette */}
-                {idea.colorPalette && (
-                  <View className="flex-row">
-                    {(JSON.parse(idea.colorPalette) as string[]).map(
-                      (color, idx) => (
-                        <View
-                          key={idx}
-                          className="flex-1 h-1.5"
-                          style={{ backgroundColor: color }}
-                        />
-                      )
-                    )}
-                  </View>
-                )}
-              </Pressable>
-            ))}
-          </View>
-          <View className="h-24" />
-        </ScrollView>
+          ItemSeparatorComponent={() => <View className="h-3" />}
+          renderItem={({ item }) => (
+            <IdeaCard idea={item} onPress={() => navigateToIdea(item.id)} />
+          )}
+        />
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({
-            pathname: "/(tabs)/idees/[id]",
-            params: { id: "new" },
-          })
-        }
-      />
+      <FAB onPress={() => navigateToIdea("new")} />
     </View>
+  );
+}
+
+function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
+  const tags = idea.tags ? (JSON.parse(idea.tags) as string[]) : [];
+  const displayUrl = idea.sourceUrl
+    ? idea.sourceUrl.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
+    : null;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
+    >
+      <View className="p-4">
+        {/* Top row: thumbnail + title */}
+        <View className="flex-row">
+          {idea.imageUri ? (
+            <Image
+              source={{ uri: idea.imageUri }}
+              className="w-16 h-16 rounded-xl"
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="w-16 h-16 rounded-xl bg-accent-cream dark:bg-gray-800 items-center justify-center">
+              <Ionicons name="image-outline" size={24} color="#E8D5C0" />
+            </View>
+          )}
+          <View className="flex-1 ml-3 justify-center">
+            <View className="flex-row items-center justify-between">
+              <Text
+                className="text-base font-semibold text-gray-900 dark:text-white flex-1 mr-2"
+                numberOfLines={1}
+              >
+                {idea.title || "Sans titre"}
+              </Text>
+              {idea.isFavorite && (
+                <Ionicons name="heart" size={16} color="#EF4444" />
+              )}
+            </View>
+            {idea.category && (
+              <View className="self-start mt-1 px-2 py-0.5 rounded-full bg-accent-cream dark:bg-gray-800">
+                <Text className="text-xs text-gray-500">
+                  {IDEA_CATEGORY_LABELS[idea.category as IdeaCategory]}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Notes preview */}
+        {idea.notes && (
+          <Text
+            className="text-sm text-gray-500 dark:text-gray-400 mt-3 leading-5"
+            numberOfLines={3}
+          >
+            {idea.notes}
+          </Text>
+        )}
+
+        {/* Source URL */}
+        {displayUrl && (
+          <Pressable
+            onPress={() => Linking.openURL(idea.sourceUrl!)}
+            className="flex-row items-center mt-2.5"
+          >
+            <Ionicons name="link-outline" size={14} color="#EC4899" />
+            <Text className="text-sm text-primary-400 ml-1.5" numberOfLines={1}>
+              {displayUrl}
+            </Text>
+          </Pressable>
+        )}
+
+        {/* Tags */}
+        {tags.length > 0 && (
+          <View className="flex-row flex-wrap gap-1.5 mt-2.5">
+            {tags.slice(0, 5).map((tag, idx) => (
+              <View
+                key={idx}
+                className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-gray-800"
+              >
+                <Text className="text-xs text-primary-500">{tag}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Color palette bar */}
+      {idea.colorPalette && (
+        <View className="flex-row">
+          {(JSON.parse(idea.colorPalette) as string[]).map((color, idx) => (
+            <View
+              key={idx}
+              className="flex-1 h-1.5"
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </View>
+      )}
+    </Pressable>
   );
 }

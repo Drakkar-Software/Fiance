@@ -1,6 +1,7 @@
+import React from "react";
 import { useWeddingStore } from "./useWeddingStore";
 import { useVendorsStore } from "./useVendorsStore";
-import { useGuestsStore, type GuestCounts } from "./useGuestsStore";
+import { useGuestsStore, computeCounts, type GuestCounts } from "./useGuestsStore";
 import type { Vendor, QuotePricing } from "@/db/schema";
 import type { VendorType, PppSource } from "@/db/types";
 import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE } from "@/db/types";
@@ -202,41 +203,11 @@ export function useBudgetSummary(): BudgetSummary {
   );
   const vendors = useVendorsStore((s) => s.vendors);
   const quotePricings = useVendorsStore((s) => s.quotePricings);
-  const counts = useGuestsStore((s) => {
-    const guests = s.guests;
-    const accepted = guests.filter((g) => g.rsvpStatus === "ACCEPTED");
-    const total = guests.length;
-    const declinedCount = guests.filter(
-      (g) => g.rsvpStatus === "DECLINED"
-    ).length;
-    const acceptedCount = accepted.length;
-    return {
-      total,
-      accepted: acceptedCount,
-      declined: declinedCount,
-      pending: guests.filter((g) => g.rsvpStatus === "PENDING").length,
-      maybe: guests.filter((g) => g.rsvpStatus === "MAYBE").length,
-      nb_cocktail: accepted.filter((g) =>
-        ["COCKTAIL", "DINNER", "FULL"].includes(g.invitationType)
-      ).length,
-      nb_dinner: accepted.filter((g) =>
-        ["DINNER", "FULL"].includes(g.invitationType)
-      ).length,
-      nb_full: accepted.filter((g) => g.invitationType === "FULL").length,
-      nb_next_day: accepted.filter((g) => g.invitationType === "NEXT_DAY")
-        .length,
-      nb_children: accepted.filter((g) => g.isChild).length,
-      nb_vegetarian: accepted.filter((g) =>
-        ["VEGETARIAN", "VEGAN"].includes(g.diet || "")
-      ).length,
-      nb_sleeping: accepted.filter((g) => g.isSleeping).length,
-      response_rate:
-        total > 0
-          ? Math.round(((acceptedCount + declinedCount) / total) * 100)
-          : 0,
-      nb_no_table: accepted.filter((g) => !g.tableId).length,
-    } satisfies GuestCounts;
-  });
+  const guests = useGuestsStore((s) => s.guests);
+  const counts = React.useMemo(() => computeCounts(guests), [guests]);
 
-  return computeBudgetSummary(budgetTarget, vendors, quotePricings, counts);
+  return React.useMemo(
+    () => computeBudgetSummary(budgetTarget, vendors, quotePricings, counts),
+    [budgetTarget, vendors, quotePricings, counts]
+  );
 }

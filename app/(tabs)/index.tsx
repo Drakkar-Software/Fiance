@@ -6,9 +6,10 @@ import { differenceInDays, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
-import { useGuestsStore } from "@/store/useGuestsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
+import { useIdeasStore } from "@/store/useIdeasStore";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 
@@ -16,13 +17,37 @@ export default function DashboardScreen() {
   const router = useRouter();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
-  const counts = useGuestsStore((s) => s.getCounts());
+  const guests = useGuestsStore((s) => s.guests);
+  const counts = React.useMemo(() => computeCounts(guests), [guests]);
   const tasks = usePlanningStore((s) => s.tasks);
-  const overdueTasks = usePlanningStore((s) => s.getOverdueTasks());
-  const urgentTasks = usePlanningStore((s) => s.getUrgentTasks());
-  const criticalUnstarted = usePlanningStore((s) => s.getCriticalUnstarted());
-  const completionRate = usePlanningStore((s) => s.getCompletionRate());
+  const overdueTasks = React.useMemo(
+    () => tasks.filter((t) => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== "DONE" && t.status !== "CANCELLED"),
+    [tasks]
+  );
+  const urgentTasks = React.useMemo(
+    () => tasks.filter((t) => {
+      if (!t.dueDate || t.status === "DONE" || t.status === "CANCELLED") return false;
+      const days = differenceInDays(new Date(t.dueDate), new Date());
+      return days >= 0 && days <= 7;
+    }),
+    [tasks]
+  );
+  const criticalUnstarted = React.useMemo(
+    () => tasks.filter((t) => {
+      if (t.priority !== "CRITICAL" || t.status !== "TODO" || !t.dueDate) return false;
+      const days = differenceInDays(new Date(t.dueDate), new Date());
+      return days >= 0 && days <= 30;
+    }),
+    [tasks]
+  );
+  const completionRate = React.useMemo(() => {
+    const active = tasks.filter((t) => t.status !== "CANCELLED");
+    if (active.length === 0) return 0;
+    const done = active.filter((t) => t.status === "DONE").length;
+    return Math.round((done / active.length) * 100);
+  }, [tasks]);
   const budget = useBudgetSummary();
+  const ideaCount = useIdeasStore((s) => s.ideas.length);
 
   const weddingDate = wedding?.weddingDate
     ? new Date(wedding.weddingDate)
@@ -59,13 +84,20 @@ export default function DashboardScreen() {
     >
       {/* Header / Countdown */}
       <View
-        className="px-6 pt-16 pb-10"
+        className="px-6 pt-16 pb-10 relative"
         style={{
           backgroundColor: "#EC4899",
           borderBottomLeftRadius: 32,
           borderBottomRightRadius: 32,
         }}
       >
+        <Pressable
+          onPress={() => router.push("/(tabs)/settings")}
+          className="absolute top-16 right-5 w-9 h-9 rounded-full bg-white/15 items-center justify-center"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="settings-outline" size={18} color="rgba(255,255,255,0.85)" />
+        </Pressable>
         <Text className="text-white/70 text-sm font-medium tracking-wide">
           {wedding?.partner1Name && wedding?.partner2Name
             ? `${wedding.partner1Name} & ${wedding.partner2Name}`
@@ -279,6 +311,25 @@ export default function DashboardScreen() {
               color="#9CA3AF"
             />
           </View>
+        </Pressable>
+
+        {/* Inspirations */}
+        <Pressable
+          onPress={() => router.push("/(tabs)/idees")}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center"
+        >
+          <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
+            <Ionicons name="sparkles" size={20} color="#A855F7" />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              Mes inspirations
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {ideaCount} idée{ideaCount !== 1 ? "s" : ""} sauvegardée{ideaCount !== 1 ? "s" : ""}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#C0C0C8" />
         </Pressable>
 
         {/* Planning progress */}

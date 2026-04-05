@@ -40,7 +40,7 @@ interface GuestsState {
   getUnassignedGuests: () => Guest[];
 }
 
-function computeCounts(guests: Guest[]): GuestCounts {
+export function computeCounts(guests: Guest[]): GuestCounts {
   const accepted = guests.filter((g) => g.rsvpStatus === "ACCEPTED");
   const total = guests.length;
   const declinedCount = guests.filter((g) => g.rsvpStatus === "DECLINED").length;

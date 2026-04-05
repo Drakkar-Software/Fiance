@@ -21,7 +21,12 @@ export default function PlanningScreen() {
   const router = useRouter();
   const tasks = usePlanningStore((s) => s.tasks);
   const categories = usePlanningStore((s) => s.categories);
-  const completionRate = usePlanningStore((s) => s.getCompletionRate());
+  const completionRate = useMemo(() => {
+    const active = tasks.filter((t) => t.status !== "CANCELLED");
+    if (active.length === 0) return 0;
+    const done = active.filter((t) => t.status === "DONE").length;
+    return Math.round((done / active.length) * 100);
+  }, [tasks]);
   const updateTask = usePlanningStore((s) => s.updateTask);
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [filter, setFilter] = useState<FilterKey>("ALL");

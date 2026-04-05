@@ -3,24 +3,22 @@ import {
   View,
   Text,
   ScrollView,
-  TextInput,
   Pressable,
   Alert,
-  ActivityIndicator,
+  Share,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import * as Crypto from "expo-crypto";
 import {
   initStarfish,
-  getStarfishStore,
   teardownStarfish,
 } from "@/lib/starfish";
+import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import {
   generateDefaultCategories,
   generateTemplateTasks,
@@ -40,6 +38,13 @@ export default function SettingsScreen() {
   const categories = usePlanningStore((s) => s.categories);
   const setCategories = usePlanningStore((s) => s.setCategories);
 
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
+
+  const activeEntry = registry?.weddings.find(
+    (w) => w.id === registry.activeWeddingId
+  );
+
   const [partner1, setPartner1] = useState(wedding?.partner1Name || "");
   const [partner2, setPartner2] = useState(wedding?.partner2Name || "");
   const [weddingDate, setWeddingDate] = useState(wedding?.weddingDate || "");
@@ -49,85 +54,59 @@ export default function SettingsScreen() {
   );
   const [currency, setCurrency] = useState(wedding?.currency || "EUR");
 
-  // Starfish sync state
-  const [serverUrl, setServerUrl] = useState("");
-  const [authToken, setAuthToken] = useState("");
-  const [syncEnabled, setSyncEnabled] = useState(false);
-  const [syncing, setSyncing] = useState(false);
-  const [syncError, setSyncError] = useState<string | null>(null);
-  const [lastSync, setLastSync] = useState<string | null>(null);
-  const [encKeyVisible, setEncKeyVisible] = useState(false);
-  const [encKey, setEncKey] = useState<string | null>(null);
+  // Sync state
+  const [syncEnabled, setSyncEnabled] = useState(
+    !!(activeEntry?.serverUrl && activeEntry?.seedPhrase)
+  );
 
-  // Load saved sync config on mount
-  React.useEffect(() => {
-    (async () => {
-      const url = await SecureStore.getItemAsync("starfish_server_url");
-      const token = await SecureStore.getItemAsync("starfish_auth_token");
-      const key = await SecureStore.getItemAsync("starfish_encryption_key");
-      const last = await SecureStore.getItemAsync("starfish_last_sync");
-      if (url) setServerUrl(url);
-      if (token) setAuthToken(token);
-      if (key) setEncKey(key);
-      if (last) setLastSync(last);
-      if (url && token && key) setSyncEnabled(true);
-    })();
-  }, []);
-
-  const handleSetupSync = useCallback(async () => {
-    if (!serverUrl || !authToken) {
-      Alert.alert("Erreur", "Veuillez renseigner l'URL du serveur et le token.");
+  const handleToggleSync = useCallback(async () => {
+    if (syncEnabled) {
+      teardownStarfish();
+      setSyncEnabled(false);
       return;
     }
 
-    let key = encKey;
-    if (!key) {
-      const bytes = Crypto.getRandomValues(new Uint8Array(32));
-      key = Array.from(bytes)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-      setEncKey(key);
-      await SecureStore.setItemAsync("starfish_encryption_key", key);
+    const password = activeEntry?.seedPhrase;
+    const serverUrl = activeEntry?.serverUrl;
+    if (!password || !serverUrl) {
       Alert.alert(
-        "Clé de chiffrement générée",
-        "Conservez cette clé en lieu sûr. Elle est nécessaire pour récupérer vos données."
+        "Synchronisation impossible",
+        "Aucun serveur ou mot de passe configuré pour ce mariage."
       );
-    }
-
-    await SecureStore.setItemAsync("starfish_server_url", serverUrl);
-    await SecureStore.setItemAsync("starfish_auth_token", authToken);
-
-    const userId = wedding?.id?.toString() || "default";
-    initStarfish({ serverUrl, authToken, userId, encryptionKey: key });
-    setSyncEnabled(true);
-  }, [serverUrl, authToken, encKey, wedding]);
-
-  const handleSyncNow = useCallback(async () => {
-    const sf = getStarfishStore();
-    if (!sf) {
-      Alert.alert("Erreur", "La synchronisation n'est pas configurée.");
       return;
     }
 
-    setSyncing(true);
-    setSyncError(null);
-    try {
-      await sf.getState().pull();
-      await sf.getState().flush();
-      const now = new Date().toISOString();
-      setLastSync(now);
-      await SecureStore.setItemAsync("starfish_last_sync", now);
-    } catch (e: any) {
-      setSyncError(e.message || "Erreur de synchronisation");
-    } finally {
-      setSyncing(false);
-    }
-  }, []);
+    const authToken = await deriveAuthToken(password);
+    const encryptionKey = await deriveEncryptionKey(
+      password,
+      activeEntry?.id || "default"
+    );
 
-  const handleDisableSync = useCallback(() => {
-    teardownStarfish();
-    setSyncEnabled(false);
-  }, []);
+    initStarfish({
+      serverUrl,
+      authToken,
+      userId: authToken.slice(0, 16),
+      encryptionKey,
+    });
+    setSyncEnabled(true);
+  }, [syncEnabled, activeEntry]);
+
+  const handleInvite = useCallback(async () => {
+    const password = activeEntry?.seedPhrase;
+    const name = activeEntry?.label;
+    if (!password || !name) {
+      Alert.alert("Erreur", "Aucun mot de passe associé à ce mariage.");
+      return;
+    }
+    const url = buildInviteUrl(name, password);
+    try {
+      await Share.share({
+        message: `Rejoins notre mariage sur WeddingOS !\n${url}`,
+      });
+    } catch {
+      // User cancelled share
+    }
+  }, [activeEntry]);
 
   const handleSave = useCallback(() => {
     const oldDate = wedding?.weddingDate;
@@ -195,6 +174,30 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
+      {/* Invite */}
+      {activeEntry?.seedPhrase && (
+        <View className="px-4">
+          <SectionTitle>Inviter</SectionTitle>
+          <Pressable
+            onPress={handleInvite}
+            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <Ionicons name="share-outline" size={20} color="#EC4899" />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-base font-medium text-gray-900 dark:text-white">
+                Partager un lien d'invitation
+              </Text>
+              <Text className="text-xs text-gray-400 mt-0.5">
+                Envoyer un lien pour rejoindre ce mariage
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#C0C0C8" />
+          </Pressable>
+        </View>
+      )}
+
       {/* Planning template */}
       <View className="px-4">
         <SectionTitle>Planning</SectionTitle>
@@ -230,107 +233,91 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Starfish Sync */}
+      {/* Synchronisation */}
       <View className="px-4">
         <SectionTitle>Synchronisation</SectionTitle>
-        <FormCard>
-          <InputRow
-            label="URL du serveur Starfish"
-            value={serverUrl}
-            onChangeText={setServerUrl}
-            placeholder="https://sync.example.com"
-          />
-          <InputRow
-            label="Token d'authentification"
-            value={authToken}
-            onChangeText={setAuthToken}
-            placeholder="Bearer token"
-          />
+        <Pressable
+          onPress={handleToggleSync}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
+        >
+          <View
+            className="w-10 h-10 rounded-xl items-center justify-center"
+            style={{ backgroundColor: syncEnabled ? "#ECFDF5" : "#F3F4F6" }}
+          >
+            <Ionicons
+              name={syncEnabled ? "cloud-done" : "cloud-offline-outline"}
+              size={20}
+              color={syncEnabled ? "#10B981" : "#9CA3AF"}
+            />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base font-medium text-gray-900 dark:text-white">
+              {syncEnabled ? "Synchronisation activée" : "Synchronisation désactivée"}
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {syncEnabled
+                ? "Les données sont synchronisées automatiquement"
+                : "Appuyez pour activer la synchronisation"}
+            </Text>
+          </View>
+          <View
+            className="w-12 h-7 rounded-full justify-center px-0.5"
+            style={{ backgroundColor: syncEnabled ? "#EC4899" : "#D1D5DB" }}
+          >
+            <View
+              className="w-6 h-6 rounded-full bg-white"
+              style={{ alignSelf: syncEnabled ? "flex-end" : "flex-start" }}
+            />
+          </View>
+        </Pressable>
+      </View>
 
-          {!syncEnabled ? (
-            <Pressable
-              onPress={handleSetupSync}
-              className="bg-primary-500 rounded-xl py-2.5 items-center mt-4 active:bg-primary-600"
-            >
-              <Text className="text-white font-semibold text-sm">
-                Activer la synchronisation
-              </Text>
-            </Pressable>
-          ) : (
-            <View className="mt-4">
-              {/* Status row */}
-              <View className="flex-row items-center mb-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl">
+      {/* Mes mariages */}
+      {registry && registry.weddings.length > 0 && (
+        <View className="px-4 mt-4">
+          <SectionTitle>Mes mariages</SectionTitle>
+          {registry.weddings.map((w) => {
+            const isActive = w.id === registry.activeWeddingId;
+            return (
+              <Pressable
+                key={w.id}
+                onPress={() => {
+                  if (!isActive) switchWedding(w.id);
+                }}
+                className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center active:opacity-80 ${
+                  isActive
+                    ? "border-primary-300 dark:border-primary-700"
+                    : "border-gray-100 dark:border-gray-800"
+                }`}
+              >
                 <View
-                  className="w-8 h-8 rounded-full items-center justify-center mr-2.5"
-                  style={{ backgroundColor: syncError ? "#FEF2F2" : "#ECFDF5" }}
+                  className="w-10 h-10 rounded-xl items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
+                  }}
                 >
                   <Ionicons
-                    name={syncError ? "cloud-offline" : "cloud-done"}
-                    size={16}
-                    color={syncError ? "#EF4444" : "#10B981"}
+                    name={isActive ? "heart" : "heart-outline"}
+                    size={20}
+                    color={isActive ? "#EC4899" : "#9CA3AF"}
                   />
                 </View>
-                <Text className="text-sm text-gray-600 dark:text-gray-400 flex-1">
-                  {syncError
-                    ? syncError
-                    : lastSync
-                    ? `Dernière sync : ${new Date(lastSync).toLocaleString()}`
-                    : "Synchronisation active"}
-                </Text>
-              </View>
-
-              <Pressable
-                onPress={handleSyncNow}
-                disabled={syncing}
-                className="bg-primary-500 rounded-xl py-2.5 items-center mb-2 active:bg-primary-600"
-              >
-                {syncing ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text className="text-white font-semibold text-sm">
-                    Synchroniser maintenant
+                <View className="flex-1">
+                  <Text className="text-base font-medium text-gray-900 dark:text-white">
+                    {w.label}
                   </Text>
+                  <Text className="text-xs text-gray-400 mt-0.5">
+                    {isActive ? "Mariage actif" : "Appuyez pour basculer"}
+                  </Text>
+                </View>
+                {isActive && (
+                  <Ionicons name="checkmark-circle" size={20} color="#EC4899" />
                 )}
               </Pressable>
-
-              <Pressable
-                onPress={handleDisableSync}
-                className="rounded-xl py-2 items-center active:opacity-70"
-              >
-                <Text className="text-red-400 text-sm">
-                  Désactiver la synchronisation
-                </Text>
-              </Pressable>
-            </View>
-          )}
-        </FormCard>
-
-        {/* Encryption key */}
-        {encKey && (
-          <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1 mr-3">
-                <Text className="text-xs text-gray-400 mb-1 font-medium">
-                  Clé de chiffrement
-                </Text>
-                <Text className="text-xs text-gray-600 dark:text-gray-400 font-mono">
-                  {encKeyVisible ? encKey : "••••••••••••••••••••"}
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setEncKeyVisible(!encKeyVisible)}
-                className="w-8 h-8 items-center justify-center"
-              >
-                <Ionicons
-                  name={encKeyVisible ? "eye-off-outline" : "eye-outline"}
-                  size={18}
-                  color="#C0C0C8"
-                />
-              </Pressable>
-            </View>
-          </View>
-        )}
-      </View>
+            );
+          })}
+        </View>
+      )}
 
       {/* Security */}
       <View className="px-4 mt-4">
@@ -360,7 +347,7 @@ export default function SettingsScreen() {
           <View className="mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
             <Text className="text-xs text-gray-400 leading-4">
               Privacy-first · Offline-first · Aucune télémétrie{"\n"}
-              Vos données restent chiffrées, sur votre appareil et votre serveur Starfish.
+              Vos données restent chiffrées, sur votre appareil et votre serveur.
             </Text>
           </View>
         </View>

@@ -5,7 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function TabLayout() {
-  const overdueTasks = usePlanningStore((s) => s.getOverdueTasks());
+  const tasks = usePlanningStore((s) => s.tasks);
+  const overdueTasks = React.useMemo(
+    () => tasks.filter((t) => t.status !== "DONE" && t.dueDate && new Date(t.dueDate) < new Date()),
+    [tasks]
+  );
 
   return (
     <Tabs
@@ -94,6 +98,7 @@ export default function TabLayout() {
         options={{
           title: "Idées",
           headerShown: false,
+          href: null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="sparkles" size={22} color={color} />
           ),
@@ -114,6 +119,7 @@ export default function TabLayout() {
         options={{
           title: "Réglages",
           headerShown: false,
+          href: null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={22} color={color} />
           ),

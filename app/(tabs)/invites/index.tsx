@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useGuestsStore } from "@/store/useGuestsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import {
   RSVP_STATUS_LABELS,
   RSVP_STATUS_COLORS,
@@ -18,7 +18,7 @@ import { EmptyState } from "@/components/EmptyState";
 export default function GuestsListScreen() {
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
-  const counts = useGuestsStore((s) => s.getCounts());
+  const counts = useMemo(() => computeCounts(guests), [guests]);
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
 

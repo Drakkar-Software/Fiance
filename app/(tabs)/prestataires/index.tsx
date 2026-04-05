@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useVendorsStore } from "@/store/useVendorsStore";
-import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS } from "@/db/types";
+import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS, VENDOR_TYPE_ICONS } from "@/db/types";
 import type { VendorType } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RatingStars } from "@/components/RatingStars";
@@ -13,29 +13,6 @@ import { FilterTabs } from "@/components/FilterTabs";
 import { formatMoney } from "@/components/MoneyDisplay";
 
 const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
-
-const TYPE_ICONS: Record<VendorType, keyof typeof Ionicons.glyphMap> = {
-  CATERER: "restaurant",
-  VENUE: "business",
-  PHOTOGRAPHER: "camera",
-  VIDEOGRAPHER: "videocam",
-  DJ: "musical-notes",
-  BAND: "musical-notes",
-  FLORIST: "flower",
-  WEDDING_PLANNER: "clipboard",
-  OFFICIANT: "person",
-  HAIR_MAKEUP: "cut",
-  TRANSPORT: "car",
-  SHUTTLE: "bus",
-  CAKE: "cafe",
-  PHOTO_BOOTH: "aperture",
-  KIDS_ENTERTAINER: "happy",
-  STATIONERY: "mail",
-  FURNITURE_RENTAL: "cube",
-  HOTEL: "bed",
-  SECURITY: "shield-checkmark",
-  OTHER: "ellipsis-horizontal",
-};
 
 export default function PrestatairesListScreen() {
   const router = useRouter();
@@ -65,10 +42,7 @@ export default function PrestatairesListScreen() {
   ];
 
   const handleAdd = () => {
-    router.push({
-      pathname: "/(tabs)/prestataires/[type]/[id]",
-      params: { type: activeType === "ALL" ? "VENUE" : activeType, id: "new" },
-    });
+    router.push("/(tabs)/prestataires/new");
   };
 
   return (
@@ -136,7 +110,7 @@ export default function PrestatairesListScreen() {
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
                   <Ionicons
-                    name={TYPE_ICONS[vendor.type as VendorType] || "ellipsis-horizontal"}
+                    name={VENDOR_TYPE_ICONS[vendor.type as VendorType] || "ellipsis-horizontal"}
                     size={18}
                     color="#EC4899"
                   />

@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { openDatabaseSync, type SQLiteDatabase } from "expo-sqlite";
 import { drizzle, type ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Platform } from "react-native";
 import * as schema from "./schema";
-import { hydrateAllStores } from "@/lib/persistence";
-
-const DB_NAME = "weddingos.db";
+import { hydrateAllStores, clearAllStores } from "@/lib/persistence";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
@@ -27,15 +25,38 @@ export function useDatabase(): DrizzleDB {
   return db;
 }
 
-export function DatabaseProvider({ children }: { children: React.ReactNode }) {
+interface DatabaseProviderProps {
+  children: React.ReactNode;
+  dbFileName?: string;
+}
+
+export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps) {
   const [db, setDb] = useState<DrizzleDB | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function init() {
       try {
-        const sqliteDb: SQLiteDatabase = openDatabaseSync(DB_NAME);
-        // Enable WAL mode
+        if (Platform.OS === "web") {
+          setError(null);
+          setDb(null);
+          setLoading(false);
+          return;
+        }
+
+        if (!dbFileName) {
+          setLoading(false);
+          return;
+        }
+
+        // Clear stores before opening a new DB
+        clearAllStores();
+        dbInstance = null;
+
+        const sqliteDb: SQLiteDatabase = openDatabaseSync(dbFileName);
         sqliteDb.execSync("PRAGMA journal_mode = WAL;");
 
         const drizzleDb = drizzle(sqliteDb, { schema });
@@ -52,20 +73,29 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        // Set global instance
         dbInstance = drizzleDb;
 
-        // Hydrate all Zustand stores from SQLite
         await hydrateAllStores(drizzleDb);
 
-        setDb(drizzleDb);
+        if (!cancelled) {
+          setDb(drizzleDb);
+          setError(null);
+          setLoading(false);
+        }
       } catch (e: any) {
         console.error("Database init error:", e);
-        setError(e.message);
+        if (!cancelled) {
+          setError(e.message);
+          setLoading(false);
+        }
       }
     }
     init();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dbFileName]);
 
   if (error) {
     return (
@@ -75,7 +105,16 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!db) {
+  // On web, SQLite is unavailable — render children without DB context
+  if (Platform.OS === "web") {
+    return (
+      <DatabaseContext.Provider value={null as any}>
+        {children}
+      </DatabaseContext.Provider>
+    );
+  }
+
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />

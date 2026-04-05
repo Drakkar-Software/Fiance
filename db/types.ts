@@ -256,3 +256,28 @@ export const CATERER_SERVICES = [
   "Installation & débarrassage",
   "Animation / Sono",
 ] as const;
+
+// ─── Vendor type icons (Ionicons glyph names) ─────────────────────────────
+
+export const VENDOR_TYPE_ICONS: Record<VendorType, string> = {
+  CATERER: "restaurant",
+  VENUE: "business",
+  PHOTOGRAPHER: "camera",
+  VIDEOGRAPHER: "videocam",
+  DJ: "musical-notes",
+  BAND: "musical-notes",
+  FLORIST: "flower",
+  WEDDING_PLANNER: "clipboard",
+  OFFICIANT: "person",
+  HAIR_MAKEUP: "cut",
+  TRANSPORT: "car",
+  SHUTTLE: "bus",
+  CAKE: "cafe",
+  PHOTO_BOOTH: "aperture",
+  KIDS_ENTERTAINER: "happy",
+  STATIONERY: "mail",
+  FURNITURE_RENTAL: "cube",
+  HOTEL: "bed",
+  SECURITY: "shield-checkmark",
+  OTHER: "ellipsis-horizontal",
+};

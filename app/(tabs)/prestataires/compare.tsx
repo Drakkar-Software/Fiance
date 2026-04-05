@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
-import { useGuestsStore } from "@/store/useGuestsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { calculateCatererScore, calculateCatererTotal } from "@/lib/budget";
 import { PRICING_KEY_LABELS } from "@/db/types";
 import type { PricingKey } from "@/db/types";
@@ -14,7 +14,8 @@ export default function CompareScreen() {
     s.vendors.filter((v) => v.type === "CATERER")
   );
   const quotePricings = useVendorsStore((s) => s.quotePricings);
-  const counts = useGuestsStore((s) => s.getCounts());
+  const guests = useGuestsStore((s) => s.guests);
+  const counts = useMemo(() => computeCounts(guests), [guests]);
 
   const caterers = useMemo(() => {
     const allCaterers = vendors.map((v) => ({

@@ -17,6 +17,8 @@ import {
   VENDOR_STATUS_COLORS,
 } from "@/db/types";
 import type { VendorType, VendorStatus } from "@/db/types";
+import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
+import type { CustomSection } from "@/lib/vendorTypeConfig";
 import { RatingStars } from "@/components/RatingStars";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -41,6 +43,7 @@ export default function VendorDetailScreen() {
 
   const isNew = id === "new";
   const existingVendor = vendors.find((v) => v.id === id);
+  const typeConfig = getVendorTypeConfig(type as VendorType);
 
   const [name, setName] = useState(existingVendor?.name || "");
   const [contactName, setContactName] = useState(existingVendor?.contactName || "");
@@ -58,7 +61,25 @@ export default function VendorDetailScreen() {
   const [notes, setNotes] = useState(existingVendor?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
+  // Date fields (exist in schema but were not surfaced before)
+  const [quoteDate, setQuoteDate] = useState(existingVendor?.quoteDate || "");
+  const [validityDate, setValidityDate] = useState(existingVendor?.validityDate || "");
+  const [depositDueDate, setDepositDueDate] = useState(existingVendor?.depositDueDate || "");
+  const [balanceDueDate, setBalanceDueDate] = useState(existingVendor?.balanceDueDate || "");
+  const [showDates, setShowDates] = useState(
+    !!(existingVendor?.quoteDate || existingVendor?.validityDate || existingVendor?.depositDueDate || existingVendor?.balanceDueDate)
+  );
+
+  // Custom fields from JSON
+  const [customFieldsData, setCustomFieldsData] = useState<Record<string, any>>(
+    existingVendor?.customFields ? JSON.parse(existingVendor.customFields) : {}
+  );
+
   const typeName = VENDOR_TYPE_LABELS[type as VendorType] || type;
+
+  const updateCustomField = (key: string, value: any) => {
+    setCustomFieldsData((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -67,6 +88,10 @@ export default function VendorDetailScreen() {
     }
 
     const now = new Date().toISOString();
+    const hasCustomFields = Object.keys(customFieldsData).some(
+      (k) => customFieldsData[k] != null && customFieldsData[k] !== "" && customFieldsData[k] !== 0
+    );
+
     const vendorData: Partial<Vendor> = {
       name: name.trim(),
       type: type!,
@@ -81,6 +106,11 @@ export default function VendorDetailScreen() {
       depositPaid,
       rating,
       notes: notes || null,
+      quoteDate: quoteDate || null,
+      validityDate: validityDate || null,
+      depositDueDate: depositDueDate || null,
+      balanceDueDate: balanceDueDate || null,
+      customFields: hasCustomFields ? JSON.stringify(customFieldsData) : null,
       updatedAt: now,
     };
 
@@ -150,17 +180,19 @@ export default function VendorDetailScreen() {
         <SectionTitle>Tarification</SectionTitle>
         <FormCard>
           <InputRow
-            label="Prix total (€)"
+            label={typeConfig.basePriceLabel || "Prix total (€)"}
             value={basePrice}
             onChangeText={setBasePrice}
             keyboardType="numeric"
           />
-          <InputRow
-            label="Prix par personne (€)"
-            value={pricePerPerson}
-            onChangeText={setPricePerPerson}
-            keyboardType="numeric"
-          />
+          {typeConfig.showPricePerPerson === "visible" && (
+            <InputRow
+              label={typeConfig.pricePerPersonLabel || "Prix par personne (€)"}
+              value={pricePerPerson}
+              onChangeText={setPricePerPerson}
+              keyboardType="numeric"
+            />
+          )}
           <InputRow
             label="Acompte (€)"
             value={depositAmount}
@@ -173,6 +205,44 @@ export default function VendorDetailScreen() {
             onToggle={() => setDepositPaid(!depositPaid)}
           />
         </FormCard>
+
+        {/* Dates section (collapsible) */}
+        <Pressable
+          onPress={() => setShowDates(!showDates)}
+          className="flex-row items-center justify-between mb-2 mt-1"
+        >
+          <SectionTitle>Dates</SectionTitle>
+          <Ionicons
+            name={showDates ? "chevron-up" : "chevron-down"}
+            size={16}
+            color="#9CA3AF"
+          />
+        </Pressable>
+        {showDates && (
+          <FormCard>
+            <InputRow label="Date du devis" value={quoteDate} onChangeText={setQuoteDate} placeholder="2026-03-15" />
+            <InputRow label="Validité du devis" value={validityDate} onChangeText={setValidityDate} placeholder="2026-04-15" />
+            <InputRow label="Date limite acompte" value={depositDueDate} onChangeText={setDepositDueDate} placeholder="2026-05-01" />
+            <InputRow label="Date limite solde" value={balanceDueDate} onChangeText={setBalanceDueDate} placeholder="2026-08-01" />
+          </FormCard>
+        )}
+
+        {/* Type-specific custom sections */}
+        {typeConfig.customSections.length > 0 && (
+          <>
+            <SectionTitle>{`Détails ${typeName.toLowerCase()}`}</SectionTitle>
+            <FormCard>
+              {typeConfig.customSections.map((section) => (
+                <CustomFieldRenderer
+                  key={section.key}
+                  section={section}
+                  value={customFieldsData[section.key]}
+                  onChange={(val) => updateCustomField(section.key, val)}
+                />
+              ))}
+            </FormCard>
+          </>
+        )}
 
         {/* Rating */}
         <SectionTitle>Note personnelle</SectionTitle>
@@ -220,4 +290,75 @@ export default function VendorDetailScreen() {
       />
     </View>
   );
+}
+
+function CustomFieldRenderer({
+  section,
+  value,
+  onChange,
+}: {
+  section: CustomSection;
+  value: any;
+  onChange: (val: any) => void;
+}) {
+  if (section.type === "counter") {
+    return (
+      <InputRow
+        label={section.label}
+        value={value?.toString() || ""}
+        onChangeText={(t) => onChange(t ? parseInt(t, 10) || 0 : null)}
+        keyboardType="numeric"
+        placeholder={section.placeholder}
+      />
+    );
+  }
+
+  if (section.type === "text") {
+    return (
+      <InputRow
+        label={section.label}
+        value={value || ""}
+        onChangeText={onChange}
+        placeholder={section.placeholder}
+      />
+    );
+  }
+
+  if (section.type === "checklist" && section.options) {
+    const selected: string[] = Array.isArray(value) ? value : [];
+    return (
+      <View>
+        <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+          {section.label}
+        </Text>
+        {section.options.map((opt) => {
+          const isChecked = selected.includes(opt);
+          return (
+            <Pressable
+              key={opt}
+              onPress={() => {
+                if (isChecked) {
+                  onChange(selected.filter((s) => s !== opt));
+                } else {
+                  onChange([...selected, opt]);
+                }
+              }}
+              className="flex-row items-center py-2"
+            >
+              <Ionicons
+                name={isChecked ? "checkbox" : "square-outline"}
+                size={20}
+                color={isChecked ? "#EC4899" : "#D1D5DB"}
+              />
+              <Text className="text-sm text-gray-700 dark:text-gray-300 ml-2.5">
+                {opt}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }
+
+  return null;
 }
