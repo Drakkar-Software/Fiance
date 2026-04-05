@@ -7,7 +7,6 @@
     "icon": "./assets/icon.png",
     "scheme": "weddingos",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -31,13 +30,24 @@
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "WeddingOS",
+      "shortName": "WOS",
+      "themeColor": "#EC4899",
+      "backgroundColor": "#ffffff",
+      "display": "standalone",
+      "orientation": "portrait"
     },
     "plugins": [
       "expo-router",
       "expo-sqlite",
       "expo-secure-store",
       "expo-local-authentication"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "78314429-ee37-428e-85a6-1fa93f3286a7"
+      }
+    }
   }
 }

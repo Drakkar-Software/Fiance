@@ -1,0 +1,3 @@
+name = "wedding-os"
+compatibility_date = "2025-04-05"
+pages_build_output_dir = "dist"
