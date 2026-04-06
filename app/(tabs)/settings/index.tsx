@@ -32,6 +32,7 @@ import {
   FormCard,
   InputRow,
 } from "@/components/FormSection";
+import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function SettingsScreen() {
   const { t } = useTranslation("settings");
@@ -179,52 +180,33 @@ export default function SettingsScreen() {
     }
   }, [activeEntry?.label, t]);
 
-  const handleImport = useCallback(() => {
-    Alert.alert(
-      t("importConfirmTitle"),
-      t("importConfirmMsg"),
-      [
-        { text: t("cancel"), style: "cancel" },
-        {
-          text: t("import"),
-          style: "destructive",
-          onPress: async () => {
-            setImporting(true);
-            try {
-              const result = await importWedding();
-              if (result === true) {
-                Alert.alert(t("importSuccess"), t("importSuccessMsg"));
-              } else if (result === "invalid_json") {
-                Alert.alert(t("common:error"), t("invalidJson"));
-              } else if (result === "invalid_backup") {
-                Alert.alert(t("common:error"), t("invalidBackup"));
-              }
-            } catch (e: any) {
-              Alert.alert(t("common:error"), e.message);
-            } finally {
-              setImporting(false);
-            }
-          },
-        },
-      ]
-    );
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+
+  const doImport = useCallback(async () => {
+    setShowImportConfirm(false);
+    setImporting(true);
+    try {
+      const result = await importWedding();
+      if (result === true) {
+        Alert.alert(t("importSuccess"), t("importSuccessMsg"));
+      } else if (result === "invalid_json") {
+        Alert.alert(t("common:error"), t("invalidJson"));
+      } else if (result === "invalid_backup") {
+        Alert.alert(t("common:error"), t("invalidBackup"));
+      }
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setImporting(false);
+    }
   }, [t]);
 
-  const handleCreateNewWedding = useCallback(() => {
-    Alert.alert(
-      t("createNewWedding"),
-      t("newWeddingConfirm"),
-      [
-        { text: t("common:cancel"), style: "cancel" },
-        {
-          text: t("common:create"),
-          onPress: async () => {
-            const passphrase = generatePassphrase();
-            await createWedding(t("myWedding"), passphrase);
-          },
-        },
-      ]
-    );
+  const [showCreateConfirm, setShowCreateConfirm] = useState(false);
+
+  const doCreateWedding = useCallback(async () => {
+    setShowCreateConfirm(false);
+    const passphrase = generatePassphrase();
+    await createWedding(t("myWedding"), passphrase);
   }, [createWedding, t]);
 
   // App lock
@@ -235,29 +217,22 @@ export default function SettingsScreen() {
     isLockEnabled().then(setLockEnabledState);
   }, []);
 
+  const [showDisableLock, setShowDisableLock] = useState(false);
+
   const handleToggleLock = useCallback(() => {
     if (lockEnabled) {
-      Alert.alert(
-        t("disableLock"),
-        t("disableLockMsg"),
-        [
-          { text: t("common:cancel"), style: "cancel" },
-          {
-            text: t("disable"),
-            style: "destructive",
-            onPress: () => {
-              setLockEnabled(false).then(() => setLockEnabledState(false));
-            },
-          },
-        ]
-      );
+      setShowDisableLock(true);
     } else {
       setShowPinSetup(true);
     }
-  }, [lockEnabled, t]);
+  }, [lockEnabled]);
 
+
+  const [deleteWeddingId, setDeleteWeddingId] = useState<string | null>(null);
+  const deleteWeddingEntry = registry?.weddings.find((w) => w.id === deleteWeddingId);
 
   return (
+    <>
     <ScrollView
       className="flex-1 bg-gray-50 dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
@@ -361,7 +336,7 @@ export default function SettingsScreen() {
         </Pressable>
 
         <Pressable
-          onPress={handleImport}
+          onPress={() => setShowImportConfirm(true)}
           disabled={importing}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
         >
@@ -425,20 +400,7 @@ export default function SettingsScreen() {
                 )}
               </Pressable>
               <Pressable
-                onPress={() => {
-                  Alert.alert(
-                    t("deleteWeddingTitle"),
-                    t("deleteWeddingMsg", { label: w.label }),
-                    [
-                      { text: t("cancel"), style: "cancel" },
-                      {
-                        text: t("delete"),
-                        style: "destructive",
-                        onPress: () => deleteWedding(w.id),
-                      },
-                    ]
-                  );
-                }}
+                onPress={() => setDeleteWeddingId(w.id)}
                 className="ml-2 w-8 h-8 items-center justify-center rounded-lg"
               >
                 <Trash2 size={16} color="#EF4444" />
@@ -447,7 +409,7 @@ export default function SettingsScreen() {
           );
         })}
         <Pressable
-          onPress={handleCreateNewWedding}
+          onPress={() => setShowCreateConfirm(true)}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
         >
           <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-gray-50 dark:bg-gray-800">
@@ -551,6 +513,51 @@ export default function SettingsScreen() {
 
       <View className="h-8" />
     </ScrollView>
+
+    <ConfirmSheet
+      visible={!!deleteWeddingId}
+      title={t("deleteWeddingTitle")}
+      message={t("deleteWeddingMsg", { label: deleteWeddingEntry?.label ?? "" })}
+      confirmLabel={t("delete")}
+      destructive
+      onConfirm={() => {
+        if (deleteWeddingId) deleteWedding(deleteWeddingId);
+        setDeleteWeddingId(null);
+      }}
+      onCancel={() => setDeleteWeddingId(null)}
+    />
+
+    <ConfirmSheet
+      visible={showCreateConfirm}
+      title={t("createNewWedding")}
+      message={t("newWeddingConfirm")}
+      onConfirm={doCreateWedding}
+      onCancel={() => setShowCreateConfirm(false)}
+    />
+
+    <ConfirmSheet
+      visible={showImportConfirm}
+      title={t("importConfirmTitle")}
+      message={t("importConfirmMsg")}
+      confirmLabel={t("import")}
+      destructive
+      onConfirm={doImport}
+      onCancel={() => setShowImportConfirm(false)}
+    />
+
+    <ConfirmSheet
+      visible={showDisableLock}
+      title={t("disableLock")}
+      message={t("disableLockMsg")}
+      confirmLabel={t("disable")}
+      destructive
+      onConfirm={() => {
+        setShowDisableLock(false);
+        setLockEnabled(false).then(() => setLockEnabledState(false));
+      }}
+      onCancel={() => setShowDisableLock(false)}
+    />
+    </>
   );
 }
 
