@@ -140,5 +140,10 @@
     "nextDayBrunch": "Organiser le brunch du lendemain",
     "thankGuests": "Remercier les invités (cartes, cadeaux)",
     "collectPhotos": "Récupérer les photos / vidéos"
+  },
+  "notifications": {
+    "taskReminder": "Rappel : {{title}}",
+    "agendaReminder": "Aujourd'hui : {{title}}",
+    "agendaReminderWithTime": "Dans 1 heure : {{title}} à {{time}}"
   }
 }

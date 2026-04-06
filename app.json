@@ -49,7 +49,8 @@
       "expo-sqlite",
       "expo-secure-store",
       "expo-local-authentication",
-      "expo-updates"
+      "expo-updates",
+      "expo-notifications"
     ],
     "extra": {
       "eas": {

@@ -1,7 +1,7 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
-import { AppState, View, ActivityIndicator, Text } from "react-native";
+import { AppState, Platform, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
@@ -12,10 +12,12 @@ import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish
 import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
+import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { usePlanningStore } from "@/store/usePlanningStore";
 import OnboardingScreen from "./onboarding";
 
 /** Rendered inside DatabaseProvider so getDatabase() is guaranteed ready */
@@ -45,6 +47,22 @@ function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
     return () => { cancelled = true; };
   }, [wedding.id]);
 
+  return null;
+}
+
+/** Request permissions on boot and reschedule all notifications from current data */
+function NotificationInitializer() {
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+    (async () => {
+      const granted = await requestPermissions();
+      if (!granted) return;
+      if (useSettingsStore.getState().notificationsEnabled) {
+        const { tasks, agendaEvents } = usePlanningStore.getState();
+        await rescheduleAllNotifications(tasks, agendaEvents);
+      }
+    })();
+  }, []);
   return null;
 }
 
@@ -103,6 +121,7 @@ function AppContent() {
   return (
     <DatabaseProvider dbFileName={activeWedding!.dbFileName}>
       <SyncInitializer wedding={activeWedding!} />
+      <NotificationInitializer />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
       </Stack>
@@ -113,12 +132,13 @@ function AppContent() {
 export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
+  const loadNotifications = useSettingsStore((s) => s.loadNotifications);
   const [locked, setLocked] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadRegistry();
-    Promise.all([loadLanguage(), isLockEnabled()]).then(([, enabled]) =>
-      setLocked(enabled)
+    Promise.all([loadLanguage(), loadNotifications(), isLockEnabled()]).then(
+      ([, , enabled]) => setLocked(enabled)
     );
   }, []);
 

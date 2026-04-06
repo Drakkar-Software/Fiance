@@ -57,5 +57,9 @@
   "cancel": "Cancel",
   "weddingNamePlaceholder": "My wedding",
   "partnerPlaceholder": "First + Last name",
-  "venuePlaceholder": "Venue name"
+  "venuePlaceholder": "Venue name",
+  "notifications": "Notifications",
+  "notificationsToggle": "Reminders",
+  "notificationsOnDesc": "You'll receive reminders for tasks and appointments",
+  "notificationsOffDesc": "Disabled"
 }

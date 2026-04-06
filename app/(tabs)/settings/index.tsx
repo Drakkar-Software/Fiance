@@ -8,9 +8,10 @@ import {
   Pressable,
   Alert,
   Share,
+  Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -28,6 +29,11 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { recalculateDueDates } from "@/lib/planning";
 import { exportWedding, importWedding } from "@/lib/export-import";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  requestPermissions,
+  cancelAllNotifications,
+  rescheduleAllNotifications,
+} from "@/lib/notifications";
 import {
   SectionTitle,
   FormCard,
@@ -94,6 +100,7 @@ export default function SettingsScreen() {
     if (weddingDate && weddingDate !== wedding?.weddingDate) {
       const updated = recalculateDueDates(tasks, weddingDate);
       setTasks(updated);
+      rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents);
     }
   }, [weddingDate]);
 
@@ -189,6 +196,8 @@ export default function SettingsScreen() {
       const result = await importWedding();
       if (result === true) {
         Alert.alert(t("importSuccess"), t("importSuccessMsg"));
+        const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
+        rescheduleAllNotifications(newTasks, newEvents);
       } else if (result === "invalid_json") {
         Alert.alert(t("common:error"), t("invalidJson"));
       } else if (result === "invalid_backup") {
@@ -228,6 +237,23 @@ export default function SettingsScreen() {
     }
   }, [lockEnabled]);
 
+
+  // Notifications
+  const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
+  const setNotificationsEnabled = useSettingsStore((s) => s.setNotificationsEnabled);
+  const agendaEvents = usePlanningStore((s) => s.agendaEvents);
+
+  const handleToggleNotifications = useCallback(async () => {
+    if (notificationsEnabled) {
+      setNotificationsEnabled(false);
+      await cancelAllNotifications();
+    } else {
+      const granted = await requestPermissions();
+      if (!granted) return;
+      setNotificationsEnabled(true);
+      await rescheduleAllNotifications(tasks, agendaEvents);
+    }
+  }, [notificationsEnabled, tasks, agendaEvents]);
 
   const [deleteWeddingId, setDeleteWeddingId] = useState<string | null>(null);
   const deleteWeddingEntry = registry?.weddings.find((w) => w.id === deleteWeddingId);
@@ -460,6 +486,38 @@ export default function SettingsScreen() {
           </View>
         </Pressable>
       </View>
+
+      {/* Notifications */}
+      {Platform.OS !== "web" && (
+        <View className="px-4 mt-4">
+          <SectionTitle>{t("notifications")}</SectionTitle>
+          <Pressable
+            onPress={handleToggleNotifications}
+            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+          >
+            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+              <Bell size={20} color={notificationsEnabled ? "#EC4899" : "#C0C0C8"} />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-base text-gray-900 dark:text-white font-medium">
+                {t("notificationsToggle")}
+              </Text>
+              <Text className="text-xs text-gray-400 mt-0.5">
+                {notificationsEnabled ? t("notificationsOnDesc") : t("notificationsOffDesc")}
+              </Text>
+            </View>
+            <View
+              className="w-12 h-7 rounded-full justify-center px-0.5"
+              style={{ backgroundColor: notificationsEnabled ? "#EC4899" : "#D1D5DB" }}
+            >
+              <View
+                className="w-6 h-6 rounded-full bg-white"
+                style={{ alignSelf: notificationsEnabled ? "flex-end" : "flex-start" }}
+              />
+            </View>
+          </Pressable>
+        </View>
+      )}
 
       {/* Language */}
       <View className="px-4 mt-4">

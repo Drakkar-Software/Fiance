@@ -57,5 +57,9 @@
   "invalidBackup": "Ce fichier n'est pas une sauvegarde WeddingOS valide.",
   "weddingNamePlaceholder": "Mon mariage",
   "partnerPlaceholder": "Prénom + Nom",
-  "venuePlaceholder": "Nom du lieu"
+  "venuePlaceholder": "Nom du lieu",
+  "notifications": "Notifications",
+  "notificationsToggle": "Rappels",
+  "notificationsOnDesc": "Vous recevrez des rappels pour les tâches et rendez-vous",
+  "notificationsOffDesc": "Désactivé"
 }

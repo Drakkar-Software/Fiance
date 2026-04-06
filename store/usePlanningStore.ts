@@ -9,6 +9,7 @@ import {
   persistDayOfItem, updateDayOfItemDb, deleteDayOfItemDb,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { onTaskMutation, onAgendaMutation } from "@/lib/notifications";
 
 interface PlanningState {
   // Préparatifs
@@ -54,6 +55,7 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const db = getDatabase();
     if (db) persistTask(db, task);
     notifySync();
+    onTaskMutation(task, "add");
   },
   updateTask: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
@@ -65,12 +67,16 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const db = getDatabase();
     if (db) updateTaskDb(db, id, updatedFields);
     notifySync();
+    const updated = get().tasks.find((t) => t.id === id);
+    if (updated) onTaskMutation(updated, "update");
   },
   removeTask: (id) => {
+    const task = get().tasks.find((t) => t.id === id);
     set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
     const db = getDatabase();
     if (db) deleteTaskDb(db, id);
     notifySync();
+    if (task) onTaskMutation(task, "remove");
   },
   addCategory: (category) => {
     set((state) => ({ categories: [...state.categories, category] }));
@@ -142,6 +148,7 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const db = getDatabase();
     if (db) persistAgendaEvent(db, event);
     notifySync();
+    onAgendaMutation(event, "add");
   },
   updateAgendaEvent: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
@@ -153,12 +160,16 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const db = getDatabase();
     if (db) updateAgendaEventDb(db, id, updatedFields);
     notifySync();
+    const updated = get().agendaEvents.find((e) => e.id === id);
+    if (updated) onAgendaMutation(updated, "update");
   },
   removeAgendaEvent: (id) => {
+    const event = get().agendaEvents.find((e) => e.id === id);
     set((state) => ({ agendaEvents: state.agendaEvents.filter((e) => e.id !== id) }));
     const db = getDatabase();
     if (db) deleteAgendaEventDb(db, id);
     notifySync();
+    if (event) onAgendaMutation(event, "remove");
   },
 
   // ─── Jour J ──────────────────────────────────────────────────────────
