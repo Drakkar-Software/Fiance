@@ -21,7 +21,7 @@
   "activeWedding": "Mariage actif",
   "tapToSwitch": "Appuyez pour basculer",
   "createNewWedding": "Créer un nouveau mariage",
-  "newWeddingConfirm": "Créer un nouveau mariage ? Vous pourrez basculer entre vos mariages à tout moment.",
+  "newWeddingConfirm": "Vous avez déjà {{count}} mariage(s). Créer un nouveau mariage ? Vous pourrez basculer entre vos mariages à tout moment.",
   "myWedding": "Mon mariage",
   "security": "Sécurité",
   "appLock": "Verrouillage de l'app",

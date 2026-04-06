@@ -530,7 +530,7 @@ export default function SettingsScreen() {
     <ConfirmSheet
       visible={showCreateConfirm}
       title={t("createNewWedding")}
-      message={t("newWeddingConfirm")}
+      message={t("newWeddingConfirm", { count: registry?.weddings.length ?? 0 })}
       onConfirm={doCreateWedding}
       onCancel={() => setShowCreateConfirm(false)}
     />

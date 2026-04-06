@@ -21,7 +21,7 @@
   "activeWedding": "Active wedding",
   "tapToSwitch": "Tap to switch",
   "createNewWedding": "Create a new wedding",
-  "newWeddingConfirm": "Create a new wedding? You can switch between weddings at any time.",
+  "newWeddingConfirm": "You already have {{count}} wedding(s). Create a new wedding? You can switch between weddings at any time.",
   "myWedding": "My wedding",
   "security": "Security",
   "appLock": "App lock",

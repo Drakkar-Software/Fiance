@@ -41,6 +41,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
     async function init() {
       try {
         if (Platform.OS === "web") {
+          clearAllStores();
           loadFromLocalStorage();
           if (!cancelled) {
             setDb(null as any);
