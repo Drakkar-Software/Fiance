@@ -14,7 +14,6 @@ import {
   Search,
   Heart,
   Sparkles,
-
   Link,
   ChevronDown,
   X,
@@ -34,14 +33,7 @@ import type { IdeaCategory } from "@/db/types";
 import type { Idea } from "@/db/schema";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
-
-function parseCardLinks(sourceUrl: string): string[] {
-  try {
-    const parsed = JSON.parse(sourceUrl);
-    if (Array.isArray(parsed)) return parsed;
-  } catch {}
-  return [sourceUrl];
-}
+import { parseLinks } from "@/lib/links";
 
 // ─── Category metadata ──────────────────────────────────────────────────────
 
@@ -391,7 +383,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
 
         {/* Links */}
         {idea.sourceUrl && (() => {
-          const links = parseCardLinks(idea.sourceUrl);
+          const links = parseLinks(idea.sourceUrl);
           if (links.length === 0) return null;
           return (
             <View className="flex-row items-center mt-1.5">
@@ -402,7 +394,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
               >
                 {links.length === 1
                   ? links[0].replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
-                  : `${links.length} liens`}
+                  : t("linkCount", { count: links.length })}
               </Text>
             </View>
           );

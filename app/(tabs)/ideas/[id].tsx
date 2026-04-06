@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -32,26 +32,10 @@ import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
+import { parseLinks, serializeLinks, isValidUrl } from "@/lib/links";
 import type { Idea } from "@/db/schema";
 
 const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
-
-/** Parse sourceUrl which can be a single URL string or a JSON array of URLs */
-function parseLinks(sourceUrl: string | null | undefined): string[] {
-  if (!sourceUrl) return [];
-  try {
-    const parsed = JSON.parse(sourceUrl);
-    if (Array.isArray(parsed)) return parsed;
-  } catch {}
-  return [sourceUrl];
-}
-
-function serializeLinks(links: string[]): string | null {
-  const filtered = links.map((l) => l.trim()).filter(Boolean);
-  if (filtered.length === 0) return null;
-  if (filtered.length === 1) return filtered[0];
-  return JSON.stringify(filtered);
-}
 
 const CATEGORY_ICONS: Record<IdeaCategory, LucideIcon> = {
   TABLE_DECOR: Flower2,
@@ -93,9 +77,12 @@ export default function IdeaDetailScreen() {
 
   const [title, setTitle] = useState(existing?.title || "");
   const [notes, setNotes] = useState(existing?.notes || "");
-  const [links, setLinks] = useState<string[]>(() => {
+  const linkIdRef = useRef(0);
+  const nextLinkId = () => ++linkIdRef.current;
+  const [links, setLinks] = useState(() => {
     const parsed = parseLinks(existing?.sourceUrl);
-    return parsed.length > 0 ? parsed : [""];
+    const vals = parsed.length > 0 ? parsed : [""];
+    return vals.map((v) => ({ id: nextLinkId(), value: v }));
   });
   const [category, setCategory] = useState<IdeaCategory | "">(
     (existing?.category as IdeaCategory) || ""
@@ -118,7 +105,7 @@ export default function IdeaDetailScreen() {
     const ideaData: Partial<Idea> = {
       title: title || null,
       notes: notes || null,
-      sourceUrl: serializeLinks(links),
+      sourceUrl: serializeLinks(links.map((l) => l.value)),
       category: category || null,
       collectionId: collectionId || null,
       vendorId: vendorId || null,
@@ -203,16 +190,16 @@ export default function IdeaDetailScreen() {
         {/* Links */}
         <SectionTitle>{t("links")}</SectionTitle>
         <FormCard>
-          {links.map((link, idx) => (
-            <View key={idx} className="flex-row items-center mb-2">
+          {links.map((link) => (
+            <View key={link.id} className="flex-row items-center mb-2">
               <LinkIcon size={14} color="#EC4899" className="mr-2" />
               <TextInput
                 className="flex-1 text-base text-gray-900 dark:text-white mx-2"
-                value={link}
+                value={link.value}
                 onChangeText={(text) => {
-                  const updated = [...links];
-                  updated[idx] = text;
-                  setLinks(updated);
+                  setLinks((prev) =>
+                    prev.map((l) => (l.id === link.id ? { ...l, value: text } : l))
+                  );
                 }}
                 placeholder={t("linkPlaceholder")}
                 placeholderTextColor="#D0D0D8"
@@ -220,18 +207,22 @@ export default function IdeaDetailScreen() {
                 autoCorrect={false}
                 keyboardType="url"
               />
-              {link.trim() ? (
+              {link.value.trim() ? (
                 <View className="flex-row items-center gap-2">
-                  <Pressable
-                    onPress={() => Linking.openURL(link.trim())}
-                    hitSlop={8}
-                  >
-                    <ExternalLink size={18} color="#EC4899" />
-                  </Pressable>
+                  {isValidUrl(link.value) && (
+                    <Pressable
+                      onPress={() => Linking.openURL(link.value.trim())}
+                      hitSlop={8}
+                    >
+                      <ExternalLink size={18} color="#EC4899" />
+                    </Pressable>
+                  )}
                   <Pressable
                     onPress={() => {
-                      const updated = links.filter((_, i) => i !== idx);
-                      setLinks(updated.length > 0 ? updated : [""]);
+                      setLinks((prev) => {
+                        const updated = prev.filter((l) => l.id !== link.id);
+                        return updated.length > 0 ? updated : [{ id: nextLinkId(), value: "" }];
+                      });
                     }}
                     hitSlop={8}
                   >
@@ -241,7 +232,7 @@ export default function IdeaDetailScreen() {
               ) : links.length > 1 ? (
                 <Pressable
                   onPress={() => {
-                    setLinks(links.filter((_, i) => i !== idx));
+                    setLinks((prev) => prev.filter((l) => l.id !== link.id));
                   }}
                   hitSlop={8}
                 >
@@ -251,7 +242,7 @@ export default function IdeaDetailScreen() {
             </View>
           ))}
           <Pressable
-            onPress={() => setLinks([...links, ""])}
+            onPress={() => setLinks((prev) => [...prev, { id: nextLinkId(), value: "" }])}
             className="flex-row items-center mt-1"
           >
             <Plus size={16} color="#EC4899" />

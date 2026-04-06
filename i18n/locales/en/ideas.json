@@ -23,6 +23,8 @@
   "links": "Links",
   "addLink": "Add a link",
   "linkPlaceholder": "https://...",
+  "linkCount_one": "{{count}} link",
+  "linkCount_other": "{{count}} links",
   "notesLabel": "Notes",
   "notesPlaceholder": "Description, remarks...",
   "tags": "Tags",
