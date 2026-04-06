@@ -75,8 +75,11 @@ export default function DayOfItemScreen() {
         options={{
           title: isNew ? t("newMoment") : title || t("dayOf"),
           headerRight: () => (
-            <Pressable onPress={handleSave} className="mr-2">
-              <Text className="text-primary-500 font-semibold text-base">
+            <Pressable
+              onPress={handleSave}
+              className="mr-2 bg-primary-500 rounded-full px-4 py-1.5 active:bg-primary-600"
+            >
+              <Text className="text-white font-semibold text-sm">
                 {t("common:save")}
               </Text>
             </Pressable>

@@ -149,8 +149,11 @@ export default function IdeaDetailScreen() {
                   fill={isFavorite ? "#EF4444" : "transparent"}
                 />
               </Pressable>
-              <Pressable onPress={handleSave}>
-                <Text className="text-primary-500 font-semibold text-base">
+              <Pressable
+                onPress={handleSave}
+                className="bg-primary-500 rounded-full px-4 py-1.5 active:bg-primary-600"
+              >
+                <Text className="text-white font-semibold text-sm">
                   {t("common:save")}
                 </Text>
               </Pressable>
