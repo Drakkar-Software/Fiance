@@ -6,9 +6,7 @@
   },
   "status": {
     "TODO": "À faire",
-    "IN_PROGRESS": "En cours",
-    "DONE": "Terminée",
-    "CANCELLED": "Annulée"
+    "DONE": "Terminée"
   },
   "priority": {
     "LOW": "Basse",
@@ -22,7 +20,6 @@
   "tasks": "tâches",
   "allFilter": "Toutes",
   "todo": "À faire",
-  "inProgress": "En cours",
   "done": "Terminées",
   "overdue": "En retard ({{count}})",
   "noTasks": "Aucune tâche",

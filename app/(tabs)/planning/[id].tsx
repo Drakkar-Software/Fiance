@@ -10,7 +10,9 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
+import { addMonths } from "date-fns";
 import { usePlanningStore } from "@/store/usePlanningStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import {
   TASK_STATUS_LABELS,
@@ -23,7 +25,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { Task } from "@/db/schema";
 
-const STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "DONE", "CANCELLED"];
+const STATUSES: TaskStatus[] = ["TODO", "DONE"];
 const PRIORITIES: Priority[] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 
 export default function TaskDetailScreen() {
@@ -64,13 +66,21 @@ export default function TaskDetailScreen() {
     }
 
     const now = new Date().toISOString();
+    const weddingDate = useWeddingStore.getState().wedding?.weddingDate;
+    const mb = monthsBefore ? parseInt(monthsBefore) : null;
+    const dueDate =
+      mb != null && weddingDate
+        ? addMonths(new Date(weddingDate), -mb).toISOString()
+        : null;
+
     const taskData: Partial<Task> = {
       title: title.trim(),
       description: description || null,
       status,
       priority,
       categoryId: categoryId || null,
-      monthsBefore: monthsBefore ? parseInt(monthsBefore) : null,
+      monthsBefore: mb,
+      dueDate,
       vendorId: vendorId || null,
       assignee: assignee || null,
       notes: notes || null,
@@ -83,8 +93,6 @@ export default function TaskDetailScreen() {
         ...taskData,
         id: Crypto.randomUUID(),
         isSystem: false,
-        assignee: assignee || null,
-        dueDate: null,
         reminderDaysBefore: null,
         createdAt: now,
       } as Task);

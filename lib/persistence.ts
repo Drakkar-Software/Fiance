@@ -51,7 +51,14 @@ export function loadFromLocalStorage(): boolean {
     if (data.vendors) useVendorsStore.getState().setVendors(data.vendors);
     if (data.quotePricings) useVendorsStore.getState().setQuotePricings(data.quotePricings);
     if (data.taskCategories) usePlanningStore.getState().setCategories(data.taskCategories);
-    if (data.tasks) usePlanningStore.getState().setTasks(data.tasks);
+    if (data.tasks) {
+      const normalized = data.tasks.map((t: any) =>
+        t.status === "IN_PROGRESS" || t.status === "CANCELLED"
+          ? { ...t, status: "TODO" }
+          : t
+      );
+      usePlanningStore.getState().setTasks(normalized);
+    }
     if (data.agendaEvents) usePlanningStore.getState().setAgendaEvents(data.agendaEvents);
     const dayOfItems = data.dayOfItems ?? data.jourJItems;
     if (dayOfItems) usePlanningStore.getState().setDayOfItems(dayOfItems);
@@ -96,9 +103,17 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   const categoryRows = db.select().from(schema.taskCategories).all();
   usePlanningStore.getState().setCategories(categoryRows);
 
-  // Tasks
+  // Tasks (normalize legacy IN_PROGRESS/CANCELLED → TODO)
   const taskRows = db.select().from(schema.tasks).all();
-  usePlanningStore.getState().setTasks(taskRows);
+  const normalizedTasks = taskRows.map((t) => {
+    if (t.status === "IN_PROGRESS" || t.status === "CANCELLED") {
+      const fixed = { ...t, status: "TODO" as const };
+      updateTaskDb(db, t.id, { status: "TODO" });
+      return fixed;
+    }
+    return t;
+  });
+  usePlanningStore.getState().setTasks(normalizedTasks);
 
   // Agenda events
   const agendaRows = db.select().from(schema.agendaEvents).all();

@@ -19,13 +19,14 @@ import { DeadlineChip } from "@/components/DeadlineChip";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { ProgressBar } from "@/components/ProgressBar";
 import { FAB } from "@/components/FAB";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 import {
   generateDefaultCategories,
   generateTemplateTasks,
 } from "@/lib/planning";
 
 type ViewMode = "timeline" | "kanban";
-type FilterKey = "ALL" | "TODO" | "IN_PROGRESS" | "DONE" | "OVERDUE";
+type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
 
 const ASPECTS: PlanningAspect[] = ["preparation", "agenda", "day-of"];
 
@@ -112,10 +113,9 @@ function PreparationView() {
   }, [categories, tasks, weddingDate]);
 
   const completionRate = useMemo(() => {
-    const active = tasks.filter((task) => task.status !== "CANCELLED");
-    if (active.length === 0) return 0;
-    const done = active.filter((task) => task.status === "DONE").length;
-    return Math.round((done / active.length) * 100);
+    if (tasks.length === 0) return 0;
+    const done = tasks.filter((task) => task.status === "DONE").length;
+    return Math.round((done / tasks.length) * 100);
   }, [tasks]);
 
   const filteredTasks = useMemo(() => {
@@ -125,8 +125,7 @@ function PreparationView() {
           return (
             task.dueDate &&
             isBefore(new Date(task.dueDate), now) &&
-            task.status !== "DONE" &&
-            task.status !== "CANCELLED"
+            task.status !== "DONE"
           );
         }
         if (filter !== "ALL" && task.status !== filter) return false;
@@ -157,14 +156,12 @@ function PreparationView() {
     (task) =>
       task.dueDate &&
       isBefore(new Date(task.dueDate), now) &&
-      task.status !== "DONE" &&
-      task.status !== "CANCELLED"
+      task.status !== "DONE"
   );
 
   const filterTabs = [
     { key: "ALL", label: t("allFilter") },
     { key: "TODO", label: t("todo") },
-    { key: "IN_PROGRESS", label: t("inProgress") },
     { key: "DONE", label: t("done") },
     { key: "OVERDUE", label: t("overdue", { count: overdue.length }) },
   ];
@@ -216,9 +213,7 @@ function PreparationView() {
         <ProgressBar
           value={completionRate}
           max={100}
-          label={`${tasks.filter((task) => task.status === "DONE").length}/${
-            tasks.filter((task) => task.status !== "CANCELLED").length
-          } ${t("tasks")}`}
+          label={`${tasks.filter((task) => task.status === "DONE").length}/${tasks.length} ${t("tasks")}`}
         />
       </View>
 
@@ -261,10 +256,7 @@ function PreparationView() {
       ) : viewMode === "timeline" ? (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {Object.entries(groupedByMonth).map(([month, monthTasks]) => (
-            <View key={month} className="mb-4">
-              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                {month}
-              </Text>
+            <CollapsibleSection key={month} title={month} count={monthTasks.length}>
               {monthTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -277,7 +269,7 @@ function PreparationView() {
                   onToggleDone={() => toggleDone(task.id, task.status || "TODO")}
                 />
               ))}
-            </View>
+            </CollapsibleSection>
           ))}
           <View className="h-24" />
         </ScrollView>
@@ -288,7 +280,7 @@ function PreparationView() {
           contentContainerStyle={{ paddingHorizontal: 16 }}
           showsHorizontalScrollIndicator={false}
         >
-          {(["TODO", "IN_PROGRESS", "DONE", "CANCELLED"] as TaskStatus[]).map((status) => {
+          {(["TODO", "DONE"] as TaskStatus[]).map((status) => {
             const columnTasks = filteredTasks.filter((task) => task.status === status);
             return (
               <View key={status} className="w-72 mr-4">
@@ -386,10 +378,7 @@ function AgendaView() {
       ) : (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {Object.entries(groupedByMonth).map(([month, monthEvents]) => (
-            <View key={month} className="mb-4">
-              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-3">
-                {month}
-              </Text>
+            <CollapsibleSection key={month} title={month} count={monthEvents.length}>
               {monthEvents.map((event) => {
                 const vendor = event.vendorId
                   ? vendors.find((v) => v.id === event.vendorId)
@@ -455,7 +444,7 @@ function AgendaView() {
                   </Pressable>
                 );
               })}
-            </View>
+            </CollapsibleSection>
           ))}
           <View className="h-24" />
         </ScrollView>
@@ -590,8 +579,7 @@ function TaskCard({
   const isOverdue =
     task.dueDate &&
     isBefore(new Date(task.dueDate), new Date()) &&
-    !isDone &&
-    task.status !== "CANCELLED";
+    !isDone;
 
   return (
     <Pressable

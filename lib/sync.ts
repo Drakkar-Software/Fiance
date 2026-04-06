@@ -111,7 +111,12 @@ export function restoreFromBackup(
     useVendorsStore.getState().setVendors((backup.vendors || []) as any[]);
     useVendorsStore.getState().setQuotePricings(quotePricings as any[]);
     usePlanningStore.getState().setCategories((backup.taskCategories || []) as any[]);
-    usePlanningStore.getState().setTasks((backup.tasks || []) as any[]);
+    const restoredTasks = ((backup.tasks || []) as any[]).map((t: any) =>
+      t.status === "IN_PROGRESS" || t.status === "CANCELLED"
+        ? { ...t, status: "TODO" }
+        : t
+    );
+    usePlanningStore.getState().setTasks(restoredTasks);
     usePlanningStore.getState().setAgendaEvents((backup.agendaEvents || []) as any[]);
     usePlanningStore.getState().setDayOfItems(dayOfItems as any[]);
     useIdeasStore.getState().setCollections((backup.ideaCollections || []) as any[]);

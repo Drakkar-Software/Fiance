@@ -109,15 +109,13 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
       (t) =>
         t.dueDate &&
         isBefore(new Date(t.dueDate), now) &&
-        t.status !== "DONE" &&
-        t.status !== "CANCELLED"
+        t.status !== "DONE"
     );
   },
   getUrgentTasks: () => {
     const now = new Date();
     return get().tasks.filter((t) => {
-      if (!t.dueDate || t.status === "DONE" || t.status === "CANCELLED")
-        return false;
+      if (!t.dueDate || t.status === "DONE") return false;
       const days = differenceInDays(new Date(t.dueDate), now);
       return days >= 0 && days <= 7;
     });
@@ -135,10 +133,9 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     get().tasks.filter((t) => t.categoryId === categoryId),
   getCompletionRate: () => {
     const { tasks } = get();
-    const active = tasks.filter((t) => t.status !== "CANCELLED");
-    if (active.length === 0) return 0;
-    const done = active.filter((t) => t.status === "DONE").length;
-    return Math.round((done / active.length) * 100);
+    if (tasks.length === 0) return 0;
+    const done = tasks.filter((t) => t.status === "DONE").length;
+    return Math.round((done / tasks.length) * 100);
   },
 
   // ─── Agenda ──────────────────────────────────────────────────────────

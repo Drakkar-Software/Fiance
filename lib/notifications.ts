@@ -59,7 +59,7 @@ function getAgendaTriggerDate(event: AgendaEvent): Date | null {
 export async function scheduleTaskNotification(task: Task): Promise<void> {
   const id = taskIdentifier(task.id);
 
-  if (task.status === "DONE" || task.status === "CANCELLED") {
+  if (task.status === "DONE") {
     await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
     return;
   }
@@ -122,7 +122,7 @@ export async function rescheduleAllNotifications(
 
   // Collect schedulable items with their trigger dates, sort nearest-first, cap at 60
   const taskItems = tasks
-    .filter((t) => t.status !== "DONE" && t.status !== "CANCELLED" && t.dueDate)
+    .filter((t) => t.status !== "DONE" && t.dueDate)
     .map((t) => ({ trigger: getTaskTriggerDate(t), schedule: () => scheduleTaskNotification(t) }))
     .filter((x) => x.trigger !== null);
 

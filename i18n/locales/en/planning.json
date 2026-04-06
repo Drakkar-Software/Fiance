@@ -6,9 +6,7 @@
   },
   "status": {
     "TODO": "To do",
-    "IN_PROGRESS": "In progress",
-    "DONE": "Done",
-    "CANCELLED": "Cancelled"
+    "DONE": "Done"
   },
   "priority": {
     "LOW": "Low",
@@ -22,7 +20,6 @@
   "tasks": "tasks",
   "allFilter": "All",
   "todo": "To do",
-  "inProgress": "In progress",
   "done": "Done",
   "overdue": "Overdue ({{count}})",
   "noTasks": "No tasks",

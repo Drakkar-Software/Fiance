@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X, Clock } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
@@ -24,17 +24,20 @@ export default function DashboardScreen() {
   const counts = React.useMemo(() => computeCounts(guests), [guests]);
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
-    () => tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "DONE" && task.status !== "CANCELLED"),
+    () => tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "DONE"),
     [tasks]
   );
-  const urgentTasks = React.useMemo(
-    () => tasks.filter((task) => {
-      if (!task.dueDate || task.status === "DONE" || task.status === "CANCELLED") return false;
-      const days = differenceInDays(new Date(task.dueDate), new Date());
-      return days >= 0 && days <= 7;
-    }),
-    [tasks]
-  );
+  const agendaEvents = usePlanningStore((s) => s.agendaEvents);
+  const nextEvent = React.useMemo(() => {
+    const today = format(new Date(), "yyyy-MM-dd");
+    return [...agendaEvents]
+      .filter((e) => e.date >= today)
+      .sort((a, b) => {
+        const d = a.date.localeCompare(b.date);
+        if (d !== 0) return d;
+        return (a.time || "").localeCompare(b.time || "");
+      })[0] || null;
+  }, [agendaEvents]);
   const criticalUnstarted = React.useMemo(
     () => tasks.filter((task) => {
       if (task.priority !== "CRITICAL" || task.status !== "TODO" || !task.dueDate) return false;
@@ -44,10 +47,9 @@ export default function DashboardScreen() {
     [tasks]
   );
   const completionRate = React.useMemo(() => {
-    const active = tasks.filter((task) => task.status !== "CANCELLED");
-    if (active.length === 0) return 0;
-    const done = active.filter((task) => task.status === "DONE").length;
-    return Math.round((done / active.length) * 100);
+    if (tasks.length === 0) return 0;
+    const done = tasks.filter((task) => task.status === "DONE").length;
+    return Math.round((done / tasks.length) * 100);
   }, [tasks]);
   const budget = useBudgetSummary();
   const ideaCount = useIdeasStore((s) => s.ideas.length);
@@ -382,37 +384,63 @@ export default function DashboardScreen() {
           <ChevronRight size={18} color="#C0C0C8" />
         </Pressable>
 
-        {/* Planning progress */}
-        {tasks.length > 0 && (
-          <Pressable
-            onPress={() => router.push("/(tabs)/planning")}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
-          >
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-sm font-medium text-gray-500">
-                Progression du planning
-              </Text>
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
-                {tasks.filter((task) => task.status === "DONE").length}/
-                {tasks.filter((task) => task.status !== "CANCELLED").length}
+        {/* Next appointment */}
+        <Pressable
+          onPress={() => router.push("/(tabs)/planning")}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+        >
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-row items-center">
+              <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
+                <Calendar size={16} color="#EC4899" />
+              </View>
+              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                {t("nextAppointment")}
               </Text>
             </View>
-            <ProgressBar
-              value={completionRate}
-              max={100}
-              showPercentage={false}
-            />
-            {urgentTasks.length > 0 && (
-              <View className="flex-row items-center mt-2.5">
-                <View className="w-2 h-2 rounded-full bg-amber-400 mr-1.5" />
-                <Text className="text-xs text-amber-500 font-medium">
-                  {urgentTasks.length} tâche{urgentTasks.length > 1 ? "s" : ""}{" "}
-                  cette semaine
+            <ChevronRight size={18} color="#C0C0C8" />
+          </View>
+          {nextEvent ? (
+            <View className="flex-row items-start">
+              <View className="w-14 items-center mr-3">
+                <Text className="text-lg font-bold text-primary-500">
+                  {format(new Date(nextEvent.date + "T00:00:00"), "dd")}
+                </Text>
+                <Text className="text-xs text-gray-400 capitalize">
+                  {format(new Date(nextEvent.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                 </Text>
               </View>
-            )}
-          </Pressable>
-        )}
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  {nextEvent.title}
+                </Text>
+                <View className="flex-row items-center gap-3 mt-1 flex-wrap">
+                  {nextEvent.time && (
+                    <View className="flex-row items-center gap-1">
+                      <Clock size={12} color="#9CA3AF" />
+                      <Text className="text-xs text-gray-400">
+                        {nextEvent.time}
+                        {nextEvent.endTime ? ` - ${nextEvent.endTime}` : ""}
+                      </Text>
+                    </View>
+                  )}
+                  {nextEvent.location && (
+                    <View className="flex-row items-center gap-1">
+                      <MapPin size={12} color="#9CA3AF" />
+                      <Text className="text-xs text-gray-400" numberOfLines={1}>
+                        {nextEvent.location}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </View>
+          ) : (
+            <Text className="text-sm text-gray-400">
+              {t("noUpcomingAppointment")}
+            </Text>
+          )}
+        </Pressable>
       </View>
 
       <View className="h-6" />

@@ -300,6 +300,8 @@ function CustomFieldRenderer({
   value: any;
   onChange: (val: any) => void;
 }) {
+  const { t } = useTranslation("vendors");
+
   if (section.type === "counter") {
     return (
       <InputRow
