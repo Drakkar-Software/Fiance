@@ -6,8 +6,6 @@ import {
   FlatList,
   Pressable,
   TextInput,
-  Image,
-  Linking,
   useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -16,7 +14,7 @@ import {
   Search,
   Heart,
   Sparkles,
-  Image as ImageIcon,
+
   Link,
   ChevronDown,
   X,
@@ -36,6 +34,14 @@ import type { IdeaCategory } from "@/db/types";
 import type { Idea } from "@/db/schema";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
+
+function parseCardLinks(sourceUrl: string): string[] {
+  try {
+    const parsed = JSON.parse(sourceUrl);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+  return [sourceUrl];
+}
 
 // ─── Category metadata ──────────────────────────────────────────────────────
 
@@ -352,37 +358,6 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
       onPress={onPress}
       className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
-      {/* Image */}
-      {idea.imageUri ? (
-        <Image
-          source={{ uri: idea.imageUri }}
-          className="w-full"
-          style={{ height: 140 }}
-          resizeMode="cover"
-        />
-      ) : (
-        <View
-          className="w-full items-center justify-center bg-accent-cream dark:bg-gray-800"
-          style={{ height: 100 }}
-        >
-          <ImageIcon size={28} color="#E8D5C0" />
-        </View>
-      )}
-
-      {/* Color palette bar */}
-      {idea.colorPalette && (
-        <View className="flex-row">
-          {(JSON.parse(idea.colorPalette) as string[]).map((color, idx) => (
-            <View
-              key={idx}
-              className="flex-1 h-1.5"
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </View>
-      )}
-
-      {/* Content */}
       <View className="p-3">
         {/* Title + favorite */}
         <View className="flex-row items-start justify-between">
@@ -414,20 +389,24 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
           </View>
         )}
 
-        {/* Source URL */}
-        {idea.sourceUrl && (
-          <View className="flex-row items-center mt-1.5">
-            <Link size={10} color="#EC4899" />
-            <Text
-              className="text-[11px] text-primary-400 ml-1"
-              numberOfLines={1}
-            >
-              {idea.sourceUrl
-                .replace(/^https?:\/\/(www\.)?/, "")
-                .split("/")[0]}
-            </Text>
-          </View>
-        )}
+        {/* Links */}
+        {idea.sourceUrl && (() => {
+          const links = parseCardLinks(idea.sourceUrl);
+          if (links.length === 0) return null;
+          return (
+            <View className="flex-row items-center mt-1.5">
+              <Link size={10} color="#EC4899" />
+              <Text
+                className="text-[11px] text-primary-400 ml-1"
+                numberOfLines={1}
+              >
+                {links.length === 1
+                  ? links[0].replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
+                  : `${links.length} liens`}
+              </Text>
+            </View>
+          );
+        })()}
 
         {/* Tags */}
         {idea.tags && (

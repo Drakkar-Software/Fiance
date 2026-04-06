@@ -5,14 +5,12 @@ import {
   ScrollView,
   TextInput,
   Pressable,
-  Image,
-  Alert,
+  Linking,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Heart,
-  Image as ImageIcon,
   Flower2,
   Building2,
   Church,
@@ -21,6 +19,10 @@ import {
   Camera,
   MapPin,
   MoreHorizontal,
+  Link as LinkIcon,
+  Plus,
+  X,
+  ExternalLink,
 } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -33,6 +35,23 @@ import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { Idea } from "@/db/schema";
 
 const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
+
+/** Parse sourceUrl which can be a single URL string or a JSON array of URLs */
+function parseLinks(sourceUrl: string | null | undefined): string[] {
+  if (!sourceUrl) return [];
+  try {
+    const parsed = JSON.parse(sourceUrl);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+  return [sourceUrl];
+}
+
+function serializeLinks(links: string[]): string | null {
+  const filtered = links.map((l) => l.trim()).filter(Boolean);
+  if (filtered.length === 0) return null;
+  if (filtered.length === 1) return filtered[0];
+  return JSON.stringify(filtered);
+}
 
 const CATEGORY_ICONS: Record<IdeaCategory, LucideIcon> = {
   TABLE_DECOR: Flower2,
@@ -74,7 +93,10 @@ export default function IdeaDetailScreen() {
 
   const [title, setTitle] = useState(existing?.title || "");
   const [notes, setNotes] = useState(existing?.notes || "");
-  const [sourceUrl, setSourceUrl] = useState(existing?.sourceUrl || "");
+  const [links, setLinks] = useState<string[]>(() => {
+    const parsed = parseLinks(existing?.sourceUrl);
+    return parsed.length > 0 ? parsed : [""];
+  });
   const [category, setCategory] = useState<IdeaCategory | "">(
     (existing?.category as IdeaCategory) || ""
   );
@@ -96,7 +118,7 @@ export default function IdeaDetailScreen() {
     const ideaData: Partial<Idea> = {
       title: title || null,
       notes: notes || null,
-      sourceUrl: sourceUrl || null,
+      sourceUrl: serializeLinks(links),
       category: category || null,
       collectionId: collectionId || null,
       vendorId: vendorId || null,
@@ -150,43 +172,10 @@ export default function IdeaDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
-        {/* Image preview */}
-        {existing?.imageUri ? (
-          <View className="rounded-2xl overflow-hidden mb-5 border border-gray-100 dark:border-gray-800">
-            <Image
-              source={{ uri: existing.imageUri }}
-              className="w-full"
-              style={{ height: 250 }}
-              resizeMode="cover"
-            />
-            {existing.colorPalette && (
-              <View className="flex-row">
-                {(JSON.parse(existing.colorPalette) as string[]).map(
-                  (color, idx) => (
-                    <View
-                      key={idx}
-                      className="flex-1 h-5"
-                      style={{ backgroundColor: color }}
-                    />
-                  )
-                )}
-              </View>
-            )}
-          </View>
-        ) : (
-          <Pressable className="bg-accent-cream dark:bg-gray-900 rounded-2xl p-8 mb-5 items-center border border-gray-100 dark:border-gray-800">
-            <ImageIcon size={40} color="#E8D5C0" />
-            <Text className="text-gray-400 mt-2 text-sm">
-              {t("tapToAddImage")}
-            </Text>
-          </Pressable>
-        )}
-
         {/* Title & notes */}
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("title")} value={title} onChangeText={setTitle} />
-          <InputRow label={t("sourceUrl")} value={sourceUrl} onChangeText={setSourceUrl} />
           <Text className="text-xs text-gray-400 mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[60px]"
@@ -209,6 +198,67 @@ export default function IdeaDetailScreen() {
             placeholder={t("tagsPlaceholder")}
             placeholderTextColor="#D0D0D8"
           />
+        </FormCard>
+
+        {/* Links */}
+        <SectionTitle>{t("links")}</SectionTitle>
+        <FormCard>
+          {links.map((link, idx) => (
+            <View key={idx} className="flex-row items-center mb-2">
+              <LinkIcon size={14} color="#EC4899" className="mr-2" />
+              <TextInput
+                className="flex-1 text-base text-gray-900 dark:text-white mx-2"
+                value={link}
+                onChangeText={(text) => {
+                  const updated = [...links];
+                  updated[idx] = text;
+                  setLinks(updated);
+                }}
+                placeholder={t("linkPlaceholder")}
+                placeholderTextColor="#D0D0D8"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="url"
+              />
+              {link.trim() ? (
+                <View className="flex-row items-center gap-2">
+                  <Pressable
+                    onPress={() => Linking.openURL(link.trim())}
+                    hitSlop={8}
+                  >
+                    <ExternalLink size={18} color="#EC4899" />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      const updated = links.filter((_, i) => i !== idx);
+                      setLinks(updated.length > 0 ? updated : [""]);
+                    }}
+                    hitSlop={8}
+                  >
+                    <X size={18} color="#9CA3AF" />
+                  </Pressable>
+                </View>
+              ) : links.length > 1 ? (
+                <Pressable
+                  onPress={() => {
+                    setLinks(links.filter((_, i) => i !== idx));
+                  }}
+                  hitSlop={8}
+                >
+                  <X size={18} color="#9CA3AF" />
+                </Pressable>
+              ) : null}
+            </View>
+          ))}
+          <Pressable
+            onPress={() => setLinks([...links, ""])}
+            className="flex-row items-center mt-1"
+          >
+            <Plus size={16} color="#EC4899" />
+            <Text className="text-primary-500 text-sm font-medium ml-1">
+              {t("addLink")}
+            </Text>
+          </Pressable>
         </FormCard>
 
         {/* Category */}
