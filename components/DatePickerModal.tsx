@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -40,6 +40,13 @@ export function DatePickerModal({
   const [displayMonth, setDisplayMonth] = useState(
     selectedDate ?? new Date()
   );
+
+  // Reset to the selected date's month (or today) each time the modal opens
+  useEffect(() => {
+    if (visible) {
+      setDisplayMonth(selectedDate ?? new Date());
+    }
+  }, [visible]);
 
   const weeks = useMemo(() => {
     const monthStart = startOfMonth(displayMonth);

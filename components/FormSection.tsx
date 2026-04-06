@@ -81,9 +81,13 @@ export function DateRow({
   const [open, setOpen] = useState(false);
   const locale = getDateLocale();
 
-  const displayValue = value
-    ? format(parseISO(value), "d MMM yyyy", { locale })
-    : null;
+  let displayValue: string | null = null;
+  if (value) {
+    const parsed = parseISO(value);
+    if (!isNaN(parsed.getTime())) {
+      displayValue = format(parsed, "d MMM yyyy", { locale });
+    }
+  }
 
   return (
     <>
