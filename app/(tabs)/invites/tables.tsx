@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,15 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { AlertTriangle, LayoutGrid, Trash2 } from "lucide-react-native";
+import {
+  AlertTriangle,
+  LayoutGrid,
+  Trash2,
+  Plus,
+  X,
+  UserPlus,
+  UserMinus,
+} from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
@@ -20,10 +28,13 @@ export default function TablesScreen() {
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
   const removeTable = useGuestsStore((s) => s.removeTable);
+  const updateGuest = useGuestsStore((s) => s.updateGuest);
   const [showAdd, setShowAdd] = useState(false);
   const [newTableName, setNewTableName] = useState("");
   const [newTableCapacity, setNewTableCapacity] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  // Which table is in "assign mode" (showing unassigned guest picker)
+  const [assigningTableId, setAssigningTableId] = useState<string | null>(null);
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
@@ -41,9 +52,22 @@ export default function TablesScreen() {
     setShowAdd(false);
   };
 
-  const unassigned = guests.filter(
-    (g) => g.rsvpStatus === "ACCEPTED" && !g.tableId
+  const unassigned = useMemo(
+    () => guests
+      .filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId)
+      .sort((a, b) =>
+        `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`)
+      ),
+    [guests]
   );
+
+  const assignGuest = (guestId: string, tableId: string) => {
+    updateGuest(guestId, { tableId });
+  };
+
+  const unassignGuest = (guestId: string) => {
+    updateGuest(guestId, { tableId: null });
+  };
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
@@ -69,7 +93,10 @@ export default function TablesScreen() {
           onAction={() => setShowAdd(true)}
         />
       ) : (
-        <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1 px-4 pt-4"
+          showsVerticalScrollIndicator={false}
+        >
           {/* Add table form */}
           {showAdd && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
@@ -97,7 +124,9 @@ export default function TablesScreen() {
                   onPress={handleAdd}
                   className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
                 >
-                  <Text className="text-white font-semibold text-sm">Créer</Text>
+                  <Text className="text-white font-semibold text-sm">
+                    Créer
+                  </Text>
                 </Pressable>
                 <Pressable
                   onPress={() => setShowAdd(false)}
@@ -116,14 +145,20 @@ export default function TablesScreen() {
             const tableGuests = guests.filter((g) => g.tableId === table.id);
             const isFull =
               table.capacity != null && tableGuests.length >= table.capacity;
+            const isAssigning = assigningTableId === table.id;
 
             return (
               <View
                 key={table.id}
-                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border ${
+                  isAssigning
+                    ? "border-primary-300 dark:border-primary-700"
+                    : "border-gray-100 dark:border-gray-800"
+                }`}
               >
+                {/* Table header */}
                 <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center flex-1">
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
                       <LayoutGrid size={16} color="#EC4899" />
                     </View>
@@ -149,6 +184,20 @@ export default function TablesScreen() {
                       </Text>
                     </View>
                     <Pressable
+                      onPress={() =>
+                        setAssigningTableId(isAssigning ? null : table.id)
+                      }
+                      className={`w-8 h-8 items-center justify-center rounded-lg ${
+                        isAssigning ? "bg-primary-50 dark:bg-primary-900" : ""
+                      }`}
+                    >
+                      {isAssigning ? (
+                        <X size={16} color="#EC4899" />
+                      ) : (
+                        <UserPlus size={16} color="#EC4899" />
+                      )}
+                    </Pressable>
+                    <Pressable
                       onPress={() => setDeleteId(table.id)}
                       className="w-8 h-8 items-center justify-center"
                     >
@@ -157,30 +206,132 @@ export default function TablesScreen() {
                   </View>
                 </View>
 
+                {/* Assigned guests */}
                 {tableGuests.length > 0 ? (
                   tableGuests.map((g) => (
-                    <View
+                    <Pressable
                       key={g.id}
-                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
+                      onPress={() =>
+                        Alert.alert(
+                          g.firstName + " " + g.lastName,
+                          "Retirer de cette table ?",
+                          [
+                            { text: "Annuler", style: "cancel" },
+                            {
+                              text: "Retirer",
+                              style: "destructive",
+                              onPress: () => unassignGuest(g.id),
+                            },
+                          ]
+                        )
+                      }
+                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800 active:opacity-60"
                     >
+                      <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                        <Text className="text-xs font-bold text-gray-400">
+                          {g.firstName[0]}
+                          {g.lastName[0]}
+                        </Text>
+                      </View>
                       <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                         {g.firstName} {g.lastName}
                       </Text>
                       {g.diet && g.diet !== "STANDARD" && (
-                        <Text className="text-xs text-amber-500 font-medium">
+                        <Text className="text-xs text-amber-500 font-medium mr-2">
                           {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
                         </Text>
                       )}
-                    </View>
+                      <UserMinus size={14} color="#C0C0C8" />
+                    </Pressable>
                   ))
                 ) : (
                   <Text className="text-sm text-gray-400 mt-1">
                     Aucun invité assigné
                   </Text>
                 )}
+
+                {/* Inline guest picker for this table */}
+                {isAssigning && (
+                  <View className="mt-3 pt-3 border-t border-primary-100 dark:border-primary-900">
+                    <Text className="text-xs font-semibold text-primary-500 mb-2 uppercase tracking-wider">
+                      Ajouter un invité
+                    </Text>
+                    {unassigned.length === 0 ? (
+                      <Text className="text-sm text-gray-400">
+                        Tous les invités acceptés sont assignés
+                      </Text>
+                    ) : (
+                      <View className="flex-row flex-wrap gap-2">
+                        {unassigned.map((g) => (
+                          <Pressable
+                            key={g.id}
+                            onPress={() => assignGuest(g.id, table.id)}
+                            className="flex-row items-center bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-xl active:bg-primary-50 dark:active:bg-primary-900 border border-gray-100 dark:border-gray-700"
+                          >
+                            <Plus size={12} color="#EC4899" />
+                            <Text className="text-sm text-gray-700 dark:text-gray-300 ml-1.5">
+                              {g.firstName} {g.lastName}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
             );
           })}
+
+          {/* Unassigned guests section */}
+          {unassigned.length > 0 && tables.length > 0 && (
+            <View className="mt-4 mb-2">
+              <Text className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
+                Invités sans table ({unassigned.length})
+              </Text>
+              {unassigned.map((g) => (
+                <View
+                  key={g.id}
+                  className="bg-white dark:bg-gray-900 rounded-xl p-3 mb-1.5 border border-dashed border-gray-200 dark:border-gray-700 flex-row items-center"
+                >
+                  <View className="w-7 h-7 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
+                    <Text className="text-xs font-bold text-primary-500">
+                      {g.firstName[0]}
+                      {g.lastName[0]}
+                    </Text>
+                  </View>
+                  <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                    {g.firstName} {g.lastName}
+                  </Text>
+                  {g.diet && g.diet !== "STANDARD" && (
+                    <Text className="text-xs text-amber-500 font-medium mr-2">
+                      {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
+                    </Text>
+                  )}
+                  {/* Quick-assign to table */}
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    className="max-w-[160px]"
+                  >
+                    <View className="flex-row gap-1.5">
+                      {tables.map((t) => (
+                        <Pressable
+                          key={t.id}
+                          onPress={() => assignGuest(g.id, t.id)}
+                          className="px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-900 active:bg-primary-100"
+                        >
+                          <Text className="text-xs font-medium text-primary-500">
+                            {t.name}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
+              ))}
+            </View>
+          )}
+
           <View className="h-24" />
         </ScrollView>
       )}
