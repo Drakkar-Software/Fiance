@@ -155,6 +155,10 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
         isRestoring = false;
       }
     }
+    // Track last successful sync (push or pull completed without error)
+    if (prevState.syncing && !state.syncing && !state.error) {
+      lastSyncTimestamp = new Date().toISOString();
+    }
   });
 
   return store;
@@ -199,7 +203,6 @@ export function notifySync(): void {
     } finally {
       isRestoring = false;
     }
-    lastSyncTimestamp = new Date().toISOString();
   }, PUSH_DEBOUNCE_MS);
 }
 

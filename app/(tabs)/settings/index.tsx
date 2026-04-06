@@ -120,14 +120,17 @@ export default function SettingsScreen() {
   const [syncStatusLabel, setSyncStatusLabel] = useState<string | null>(null);
   useEffect(() => {
     if (!syncEnabled) { setSyncStatusLabel(null); return; }
-    const interval = setInterval(() => {
+    const sf = getStarfishStore();
+    if (!sf) return;
+    const update = () => {
       const s = getSyncStatus();
       if (s) {
         const key = `syncStatus${s.status.charAt(0).toUpperCase() + s.status.slice(1)}` as const;
         setSyncStatusLabel(t(key));
       }
-    }, 1000);
-    return () => clearInterval(interval);
+    };
+    update();
+    return sf.subscribe(update);
   }, [syncEnabled, t]);
 
   const premium = isPremium();
