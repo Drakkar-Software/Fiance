@@ -41,6 +41,7 @@
   "relativeDeadline": "Échéance relative",
   "monthsBeforeWedding": "mois avant le mariage",
   "negativeValue": "Valeur négative = après le mariage",
+  "setWeddingDateFirst": "Définissez d'abord la date du mariage dans les réglages pour calculer l'échéance.",
   "linkedVendor": "Prestataire lié",
   "notes": "Notes",
   "freeNotes": "Notes libres...",

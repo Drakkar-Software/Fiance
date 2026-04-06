@@ -41,6 +41,7 @@
   "relativeDeadline": "Relative deadline",
   "monthsBeforeWedding": "months before wedding",
   "negativeValue": "Negative value = after wedding",
+  "setWeddingDateFirst": "Set your wedding date in settings first to compute the deadline.",
   "linkedVendor": "Linked vendor",
   "notes": "Notes",
   "freeNotes": "Free notes...",

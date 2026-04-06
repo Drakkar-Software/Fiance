@@ -67,11 +67,16 @@ export default function TaskDetailScreen() {
 
     const now = new Date().toISOString();
     const weddingDate = useWeddingStore.getState().wedding?.weddingDate;
-    const mb = monthsBefore ? parseInt(monthsBefore) : null;
-    const dueDate =
-      mb != null && weddingDate
-        ? addMonths(new Date(weddingDate), -mb).toISOString()
-        : null;
+    const mb = monthsBefore ? parseInt(monthsBefore, 10) : null;
+    let dueDate: string | null = null;
+    if (mb != null && !isNaN(mb)) {
+      if (weddingDate) {
+        dueDate = addMonths(new Date(weddingDate), -mb).toISOString();
+      } else {
+        Alert.alert(t("common:error"), t("setWeddingDateFirst"));
+        return;
+      }
+    }
 
     const taskData: Partial<Task> = {
       title: title.trim(),

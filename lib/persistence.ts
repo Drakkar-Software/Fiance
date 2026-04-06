@@ -108,7 +108,7 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   const normalizedTasks = taskRows.map((t) => {
     if (t.status === "IN_PROGRESS" || t.status === "CANCELLED") {
       const fixed = { ...t, status: "TODO" as const };
-      updateTaskDb(db, t.id, { status: "TODO" });
+      try { updateTaskDb(db, t.id, { status: "TODO" }); } catch {}
       return fixed;
     }
     return t;
