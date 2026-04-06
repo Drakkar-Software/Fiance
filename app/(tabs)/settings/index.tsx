@@ -11,7 +11,6 @@ import {
 import { format } from "date-fns";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
-import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
 import {
   initStarfish,
@@ -105,17 +104,13 @@ export default function SettingsScreen() {
   const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
 
   const handleToggleSync = useCallback(async () => {
+    if (!activeEntry?.id) return;
+
     if (syncEnabled) {
+      // User explicitly disables sync — persist the choice
       teardownStarfish();
       setSyncEnabled(false);
-      return;
-    }
-
-    if (!isPremium()) {
-      Alert.alert(
-        t("premiumFeature"),
-        t("premiumSyncMsg")
-      );
+      updateRegistryWedding(activeEntry.id, { syncDisabled: true });
       return;
     }
 
@@ -130,14 +125,15 @@ export default function SettingsScreen() {
     }
 
     // Persist serverUrl if it was missing from the entry
-    if (!activeEntry?.serverUrl && activeEntry?.id) {
-      useWeddingRegistryStore.getState().updateWedding(activeEntry.id, { serverUrl });
+    if (!activeEntry?.serverUrl) {
+      updateRegistryWedding(activeEntry.id, { serverUrl });
     }
+
+    // Re-enable sync — clear the disabled flag and init
+    updateRegistryWedding(activeEntry.id, { syncDisabled: false });
 
     const authToken = await deriveAuthToken(password);
     const userId = authToken.slice(0, 16);
-    // Use userId (deterministic from password) as salt — NOT the local wedding UUID
-    // which differs per device and would cause encryption key mismatch.
     const encryptionKey = await deriveEncryptionKey(password, userId);
 
     initStarfish({

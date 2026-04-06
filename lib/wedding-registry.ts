@@ -17,6 +17,7 @@ export interface WeddingRegistryEntry {
   createdAt: string;
   seedPhrase?: string;
   serverUrl?: string;
+  syncDisabled?: boolean;
 }
 
 export interface WeddingRegistry {
@@ -93,7 +94,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

@@ -7,8 +7,8 @@ import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
 import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
-import { getStarfishStore } from "@/lib/starfish";
-import { parseInviteUrl } from "@/lib/identity";
+import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
+import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -49,8 +49,30 @@ function AppContent() {
     }
   }, [registry?.weddings.length]);
 
-  // Sync is manually enabled from Settings → "Sauvegarde et partage".
-  // No auto-init here — an unsolicited pull would overwrite local data.
+  // Auto-init Starfish sync when the active wedding has credentials.
+  // Teardown + re-init on wedding switch. Skip only if user explicitly disabled.
+  useEffect(() => {
+    // Teardown any existing sync (handles wedding switch)
+    if (getStarfishStore()) teardownStarfish();
+
+    if (!activeWedding?.seedPhrase) return;
+    if (activeWedding.syncDisabled) return;
+
+    const serverUrl = activeWedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    if (!serverUrl) return;
+
+    let cancelled = false;
+    (async () => {
+      const authToken = await deriveAuthToken(activeWedding.seedPhrase!);
+      if (cancelled) return;
+      const userId = authToken.slice(0, 16);
+      const encryptionKey = await deriveEncryptionKey(activeWedding.seedPhrase!, userId);
+      if (cancelled) return;
+      initStarfish({ serverUrl, authToken, userId, encryptionKey });
+    })();
+
+    return () => { cancelled = true; };
+  }, [activeWedding?.id]);
 
   if (!isLoaded) {
     return (
