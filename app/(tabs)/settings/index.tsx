@@ -34,6 +34,7 @@ import {
   SectionTitle,
   FormCard,
   InputRow,
+  ChipSelect,
 } from "@/components/FormSection";
 
 export default function SettingsScreen() {
@@ -219,7 +220,15 @@ export default function SettingsScreen() {
           <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
           <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" />
           <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" />
-          <InputRow label="Devise" value={currency} onChangeText={setCurrency} placeholder="EUR" />
+          <View className="py-3">
+            <Text className="text-xs text-gray-400 mb-2 font-medium">Devise</Text>
+            <ChipSelect
+              options={["EUR", "USD"] as const}
+              value={currency as "EUR" | "USD"}
+              onChange={setCurrency}
+              labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
+            />
+          </View>
         </FormCard>
       </View>
 
