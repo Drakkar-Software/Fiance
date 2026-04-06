@@ -3,17 +3,22 @@ import { View, Text, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heart, PlusCircle, ArrowLeft } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { getStarfishStore } from "@/lib/starfish";
-import { decodeInviteToken } from "@/lib/identity";
+import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
+import { initStarfish, getStarfishStore } from "@/lib/starfish";
+import { decodeInviteToken, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import OnboardingScreen from "./onboarding";
 
-function triggerSyncPull(retries = 10) {
+async function initAndPull(password: string, weddingId: string, serverUrl: string) {
+  const authToken = await deriveAuthToken(password);
+  const encryptionKey = await deriveEncryptionKey(password, weddingId);
+  initStarfish({
+    serverUrl,
+    authToken,
+    userId: authToken.slice(0, 16),
+    encryptionKey,
+  });
   const sf = getStarfishStore();
-  if (sf) {
-    sf.getState().pull();
-  } else if (retries > 0) {
-    setTimeout(() => triggerSyncPull(retries - 1), 200);
-  }
+  sf?.getState().pull();
 }
 
 function useJoinAndNavigate() {
@@ -24,15 +29,24 @@ function useJoinAndNavigate() {
 
   return useCallback(
     async (label: string, password: string) => {
+      let entry: WeddingRegistryEntry | undefined;
       const existing = registry?.weddings.find(
         (w) => w.seedPhrase === password,
       );
       if (existing) {
         await switchWedding(existing.id);
+        entry = existing;
       } else {
-        await createWedding(label, password);
+        entry = await createWedding(label, password);
       }
-      triggerSyncPull();
+      const serverUrl = entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+      if (serverUrl && entry) {
+        try {
+          await initAndPull(password, entry.id, serverUrl);
+        } catch {
+          // Sync failure shouldn't block the join — data will sync later
+        }
+      }
       router.replace("/");
     },
     [registry, createWedding, switchWedding, router],

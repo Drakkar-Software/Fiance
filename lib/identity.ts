@@ -67,52 +67,50 @@ export async function deriveEncryptionKey(
   );
 }
 
-// Hermes (RN 0.74+) provides btoa/atob, but we add a fallback just in case.
-const toBase64 = (s: string): string => {
-  if (typeof btoa === "function") return btoa(s);
-  // Manual fallback for older engines
+// URL-safe base64 (RFC 4648 §5): uses - and _ instead of + and /, no padding.
+const URL_SAFE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+function toUrlBase64(s: string): string {
   const bytes = Array.from(s).map((c) => c.charCodeAt(0));
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   let result = "";
   for (let i = 0; i < bytes.length; i += 3) {
     const b0 = bytes[i], b1 = bytes[i + 1] ?? 0, b2 = bytes[i + 2] ?? 0;
-    result += chars[b0 >> 2] + chars[((b0 & 3) << 4) | (b1 >> 4)];
-    result += i + 1 < bytes.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
-    result += i + 2 < bytes.length ? chars[b2 & 63] : "=";
+    result += URL_SAFE_CHARS[b0 >> 2] + URL_SAFE_CHARS[((b0 & 3) << 4) | (b1 >> 4)];
+    if (i + 1 < bytes.length) result += URL_SAFE_CHARS[((b1 & 15) << 2) | (b2 >> 6)];
+    if (i + 2 < bytes.length) result += URL_SAFE_CHARS[b2 & 63];
   }
   return result;
-};
+}
 
-const fromBase64 = (s: string): string => {
-  if (typeof atob === "function") return atob(s);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+function fromUrlBase64(s: string): string {
   let result = "";
-  const clean = s.replace(/=+$/, "");
-  for (let i = 0; i < clean.length; i += 4) {
-    const b = [0, 1, 2, 3].map((j) => chars.indexOf(clean[i + j] || "A"));
+  for (let i = 0; i < s.length; i += 4) {
+    const b = [0, 1, 2, 3].map((j) => {
+      const c = s[i + j];
+      return c ? URL_SAFE_CHARS.indexOf(c) : 0;
+    });
     result += String.fromCharCode((b[0] << 2) | (b[1] >> 4));
-    if (clean[i + 2]) result += String.fromCharCode(((b[1] & 15) << 4) | (b[2] >> 2));
-    if (clean[i + 3]) result += String.fromCharCode(((b[2] & 3) << 6) | b[3]);
+    if (s[i + 2]) result += String.fromCharCode(((b[1] & 15) << 4) | (b[2] >> 2));
+    if (s[i + 3]) result += String.fromCharCode(((b[2] & 3) << 6) | b[3]);
   }
   return result;
-};
+}
 
-/** Build a deep link URL to invite someone to a wedding (base64-encoded payload) */
+/** Build a deep link URL to invite someone to a wedding (URL-safe base64 payload) */
 export function buildInviteUrl(name: string, password: string): string {
-  const payload = JSON.stringify({ n: name, p: password });
-  const token = toBase64(payload);
+  const token = toUrlBase64(JSON.stringify({ n: name, p: password }));
   return Linking.createURL("join", {
     queryParams: { t: token },
   });
 }
 
-/** Decode a base64 invite token into name + password. Returns null if malformed. */
+/** Decode a URL-safe base64 invite token into name + password. Returns null if malformed. */
 export function decodeInviteToken(
   token: string | undefined
 ): { name: string; password: string } | null {
   if (!token) return null;
   try {
-    const payload = JSON.parse(fromBase64(token));
+    const payload = JSON.parse(fromUrlBase64(token));
     if (payload.n && payload.p) {
       return { name: payload.n, password: payload.p };
     }

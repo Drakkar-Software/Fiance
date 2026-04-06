@@ -12,7 +12,7 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
-  language: "en",
+  language: "fr",
   setLanguage: (lang) => {
     set({ language: lang });
     i18n.changeLanguage(lang);
@@ -24,8 +24,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       set({ language: stored });
       i18n.changeLanguage(stored);
     } else {
-      const deviceLang = getLocales()[0]?.languageCode ?? "en";
-      const lang: Language = deviceLang === "fr" ? "fr" : "en";
+      const deviceLang = getLocales()[0]?.languageCode ?? "fr";
+      const lang: Language = deviceLang === "en" ? "en" : "fr";
       set({ language: lang });
       i18n.changeLanguage(lang);
     }

@@ -162,7 +162,7 @@ export default function GuestDetailScreen() {
             options={SIDES}
             value={side}
             onChange={setSide}
-            labels={SIDE_LABELS as Record<Side, string>}
+            labels={Object.fromEntries(SIDES.map((s) => [s, t(SIDE_LABELS[s])])) as Record<Side, string>}
           />
         </FormCard>
 
@@ -176,7 +176,7 @@ export default function GuestDetailScreen() {
             options={INVITATION_TYPES}
             value={invitationType}
             onChange={setInvitationType}
-            labels={INVITATION_TYPE_LABELS as Record<InvitationType, string>}
+            labels={Object.fromEntries(INVITATION_TYPES.map((it) => [it, t(INVITATION_TYPE_LABELS[it])])) as Record<InvitationType, string>}
           />
 
           <View className="mt-3">
@@ -280,7 +280,7 @@ export default function GuestDetailScreen() {
             options={DIETS}
             value={diet}
             onChange={setDiet}
-            labels={DIET_LABELS as Record<Diet, string>}
+            labels={Object.fromEntries(DIETS.map((d) => [d, t(DIET_LABELS[d])])) as Record<Diet, string>}
           />
           {(diet === "ALLERGY" || diet === "VEGETARIAN" || diet === "VEGAN") && (
             <TextInput

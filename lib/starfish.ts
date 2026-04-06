@@ -58,6 +58,19 @@ let lastSyncTimestamp: string | null = null;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 const PUSH_DEBOUNCE_MS = 2000;
 
+// Reactive listeners for sync status changes
+type SyncStatusListener = (enabled: boolean) => void;
+const syncStatusListeners = new Set<SyncStatusListener>();
+
+function notifySyncStatus(enabled: boolean) {
+  for (const listener of syncStatusListeners) listener(enabled);
+}
+
+export function onSyncStatusChange(listener: SyncStatusListener): () => void {
+  syncStatusListeners.add(listener);
+  return () => { syncStatusListeners.delete(listener); };
+}
+
 export interface StarfishConfig {
   serverUrl: string;
   authToken: string;
@@ -91,6 +104,8 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     storage: false,
     devtools: __DEV__,
   });
+
+  notifySyncStatus(true);
 
   // Only restore from explicit remote pulls (user-initiated or join flow).
   // The subscription watches for pull results; local pushes never trigger it
@@ -159,4 +174,5 @@ export function teardownStarfish(): void {
   }
   store = null;
   lastSyncTimestamp = null;
+  notifySyncStatus(false);
 }

@@ -20,12 +20,12 @@ import frBudget from "./locales/fr/budget.json";
 import frIdeas from "./locales/fr/ideas.json";
 import frSettings from "./locales/fr/settings.json";
 
-const deviceLang = getLocales()[0]?.languageCode ?? "en";
+const deviceLang = getLocales()[0]?.languageCode ?? "fr";
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: "v4",
-  lng: deviceLang === "fr" ? "fr" : "en",
-  fallbackLng: "en",
+  lng: deviceLang === "en" ? "en" : "fr",
+  fallbackLng: "fr",
   ns: [
     "common",
     "dashboard",

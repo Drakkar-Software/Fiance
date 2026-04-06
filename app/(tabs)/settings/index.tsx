@@ -18,6 +18,7 @@ import {
   teardownStarfish,
   getStarfishStore,
   getLastSyncTimestamp,
+  onSyncStatusChange,
 } from "@/lib/starfish";
 import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -91,22 +92,19 @@ export default function SettingsScreen() {
     }
   }, [weddingDate]);
 
-  // Sync state — use local state to force re-render after toggle
+  // Sync state — reactive: listens for init/teardown events
   const [syncEnabled, setSyncEnabled] = useState(!!getStarfishStore());
+  useEffect(() => {
+    // Re-check on mount in case Starfish initialized after initial render
+    setSyncEnabled(!!getStarfishStore());
+    return onSyncStatusChange(setSyncEnabled);
+  }, []);
   const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
 
   const handleToggleSync = useCallback(async () => {
     if (syncEnabled) {
       teardownStarfish();
       setSyncEnabled(false);
-      return;
-    }
-
-    if (!isPremium()) {
-      Alert.alert(
-        "Fonctionnalité premium",
-        "La synchronisation et le partage nécessitent un abonnement premium."
-      );
       return;
     }
 
