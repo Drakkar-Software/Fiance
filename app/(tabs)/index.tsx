@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
@@ -80,7 +80,7 @@ export default function DashboardScreen() {
     expiringQuotes.length > 0 ||
     criticalUnstarted.length > 0;
 
-  const { canInstall, install } = usePwaInstall();
+  const { canInstall, install, isIosSafari, dismissIosBanner } = usePwaInstall();
 
   return (
     <ScrollView
@@ -184,7 +184,7 @@ export default function DashboardScreen() {
           </View>
         )}
 
-        {/* PWA install banner — only shown on web when browser offers it */}
+        {/* PWA install banner — Chromium browsers */}
         {canInstall && (
           <Pressable
             onPress={install}
@@ -195,14 +195,36 @@ export default function DashboardScreen() {
             </View>
             <View className="ml-3 flex-1">
               <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                Installer l'application
+                {t("installApp")}
               </Text>
               <Text className="text-xs text-gray-400 mt-0.5">
-                Accédez à WeddingOS depuis votre écran d'accueil
+                {t("installAppDesc")}
               </Text>
             </View>
             <ChevronRight size={18} color="#C0C0C8" />
           </Pressable>
+        )}
+
+        {/* PWA install banner — iOS Safari (no beforeinstallprompt support) */}
+        {isIosSafari && (
+          <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800">
+            <View className="flex-row items-center">
+              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+                <Download size={20} color="#EC4899" />
+              </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                  {t("installApp")}
+                </Text>
+                <Text className="text-xs text-gray-400 mt-1">
+                  {t("installIosSteps")}
+                </Text>
+              </View>
+              <Pressable onPress={dismissIosBanner} className="p-1">
+                <X size={18} color="#C0C0C8" />
+              </Pressable>
+            </View>
+          </View>
         )}
 
         {/* Budget summary card */}

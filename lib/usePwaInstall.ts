@@ -1,7 +1,8 @@
 /**
  * Hook to capture the PWA install prompt on web.
- * Returns null on native or if the browser doesn't offer the prompt
- * (i.e. the app is already installed or the browser doesn't support it).
+ * On Chromium browsers, captures the `beforeinstallprompt` event.
+ * On iOS Safari (which doesn't support that event), returns `isIosSafari`
+ * so the UI can show manual "Add to Home Screen" instructions.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -12,12 +13,26 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function getIsIosSafari(): boolean {
+  if (Platform.OS !== "web") return false;
+  const ua = navigator.userAgent;
+  const isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+  return isIos && !isStandalone;
+}
+
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
+  const [isIosSafari] = useState(getIsIosSafari);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     if (Platform.OS !== "web") return;
+
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      return;
+    }
 
     const handler = (e: Event) => {
       e.preventDefault();
@@ -25,12 +40,6 @@ export function usePwaInstall() {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
-    // If already in standalone mode, never show
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      return;
-    }
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
@@ -46,5 +55,7 @@ export function usePwaInstall() {
   return {
     canInstall: deferredPrompt !== null,
     install,
+    isIosSafari: isIosSafari && !dismissed,
+    dismissIosBanner: () => setDismissed(true),
   };
 }
