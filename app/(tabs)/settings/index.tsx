@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -53,15 +53,61 @@ export default function SettingsScreen() {
     (w) => w.id === registry.activeWeddingId
   );
 
-  const [weddingLabel, setWeddingLabel] = useState(activeEntry?.label || "");
-  const [partner1, setPartner1] = useState(wedding?.partner1Name || "");
-  const [partner2, setPartner2] = useState(wedding?.partner2Name || "");
-  const [weddingDate, setWeddingDate] = useState(wedding?.weddingDate || "");
-  const [venueName, setVenueName] = useState(wedding?.venueName || "");
-  const [budgetTarget, setBudgetTarget] = useState(
+  // Wedding label (stored in registry, not wedding store)
+  const [weddingLabel, _setWeddingLabel] = useState(activeEntry?.label || "");
+  const setWeddingLabel = useCallback((value: string) => {
+    _setWeddingLabel(value);
+    if (activeEntry?.id) {
+      updateRegistryWedding(activeEntry.id, { label: value });
+    }
+  }, [activeEntry?.id]);
+
+  // Wedding fields — local state for smooth typing, save to store immediately
+  const [partner1, _setPartner1] = useState(wedding?.partner1Name || "");
+  const setPartner1 = useCallback((value: string) => {
+    _setPartner1(value);
+    updateWedding({ partner1Name: value || null });
+  }, []);
+
+  const [partner2, _setPartner2] = useState(wedding?.partner2Name || "");
+  const setPartner2 = useCallback((value: string) => {
+    _setPartner2(value);
+    updateWedding({ partner2Name: value || null });
+  }, []);
+
+  const [weddingDate, _setWeddingDate] = useState(wedding?.weddingDate || "");
+  const setWeddingDate = useCallback((value: string) => {
+    _setWeddingDate(value);
+    updateWedding({ weddingDate: value || null });
+  }, []);
+
+  const [venueName, _setVenueName] = useState(wedding?.venueName || "");
+  const setVenueName = useCallback((value: string) => {
+    _setVenueName(value);
+    updateWedding({ venueName: value || null });
+  }, []);
+
+  const [budgetTarget, _setBudgetTarget] = useState(
     wedding?.budgetTarget?.toString() || ""
   );
-  const [currency, setCurrency] = useState(wedding?.currency || "EUR");
+  const setBudgetTarget = useCallback((value: string) => {
+    _setBudgetTarget(value);
+    updateWedding({ budgetTarget: value ? parseFloat(value) : null });
+  }, []);
+
+  const [currency, _setCurrency] = useState(wedding?.currency || "EUR");
+  const setCurrency = useCallback((value: string) => {
+    _setCurrency(value);
+    updateWedding({ currency: value || "EUR" });
+  }, []);
+
+  // Recalculate due dates when wedding date changes
+  useEffect(() => {
+    if (weddingDate && weddingDate !== wedding?.weddingDate) {
+      const updated = recalculateDueDates(tasks, weddingDate);
+      setTasks(updated);
+    }
+  }, [weddingDate]);
 
   // Sync state
   const syncEnabled = !!getStarfishStore();
@@ -118,37 +164,6 @@ export default function SettingsScreen() {
       // User cancelled share
     }
   }, [activeEntry]);
-
-  // Auto-save with debounce whenever any field changes
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    // Skip the initial render to avoid overwriting store with initial state
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const timer = setTimeout(() => {
-      const oldDate = wedding?.weddingDate;
-      updateWedding({
-        partner1Name: partner1 || null,
-        partner2Name: partner2 || null,
-        weddingDate: weddingDate || null,
-        venueName: venueName || null,
-        budgetTarget: budgetTarget ? parseFloat(budgetTarget) : null,
-        currency: currency || "EUR",
-      });
-
-      if (activeEntry?.id && weddingLabel && weddingLabel !== activeEntry.label) {
-        updateRegistryWedding(activeEntry.id, { label: weddingLabel });
-      }
-
-      if (weddingDate && weddingDate !== oldDate) {
-        const updated = recalculateDueDates(tasks, weddingDate);
-        setTasks(updated);
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency, weddingLabel]);
 
   const handleGenerateTemplate = useCallback(() => {
     const doGenerate = () => {
