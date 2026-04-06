@@ -69,14 +69,15 @@ export async function createWeddingEntry(
 export async function deleteWeddingEntry(id: string): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);
+  const wasActive = registry.activeWeddingId === id;
   registry.weddings = registry.weddings.filter((w) => w.id !== id);
-  if (registry.activeWeddingId === id) {
+  if (wasActive) {
     registry.activeWeddingId = registry.weddings[0]?.id ?? null;
   }
   await saveRegistry(registry);
 
   if (Platform.OS === "web") {
-    localStorage.removeItem("wedding_data");
+    if (wasActive) localStorage.removeItem("wedding_data");
   } else if (entry) {
     await deleteDatabaseAsync(entry.dbFileName);
   }
