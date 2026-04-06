@@ -5,15 +5,11 @@
 
 /** Generate a random encryption key */
 export async function generateKey(): Promise<string> {
-  const array = new Uint8Array(32);
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    crypto.getRandomValues(array);
-  } else {
-    // Fallback for environments without Web Crypto
-    for (let i = 0; i < array.length; i++) {
-      array[i] = Math.floor(Math.random() * 256);
-    }
+  if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+    throw new Error("Web Crypto API required for key generation");
   }
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
   return Array.from(array)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -25,8 +21,7 @@ export async function encryptData(
   keyHex: string
 ): Promise<string> {
   if (typeof crypto === "undefined" || !crypto.subtle) {
-    // Fallback: base64 encode (not secure, for dev only)
-    return btoa(data);
+    throw new Error("Web Crypto API required for encryption");
   }
 
   const keyBytes = hexToBytes(keyHex);
@@ -60,7 +55,7 @@ export async function decryptData(
   keyHex: string
 ): Promise<string> {
   if (typeof crypto === "undefined" || !crypto.subtle) {
-    return atob(encryptedBase64);
+    throw new Error("Web Crypto API required for decryption");
   }
 
   const combined = base64ToBytes(encryptedBase64);

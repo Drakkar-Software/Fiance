@@ -20,8 +20,9 @@ function isIdArray(val: unknown): val is { id: string }[] {
 
 /**
  * Merge two backup documents:
- * - Arrays of objects with `id`: ID-based union (local wins per-item, remote-only items kept)
- * - Everything else: latest timestamp wins
+ * - Arrays of objects with `id`: ID-based union, per-item newest `updatedAt` wins
+ * - Everything else: latest document timestamp wins
+ * Note: items deleted on one side will be restored from the other until both sides sync.
  */
 function mergeBackups(
   local: Record<string, unknown>,
@@ -37,11 +38,21 @@ function mergeBackups(
     const remoteVal = remote[key];
 
     if (isIdArray(localVal) || isIdArray(remoteVal)) {
-      const localArr = (localVal as { id: string }[] | undefined) ?? [];
-      const remoteArr = (remoteVal as { id: string }[] | undefined) ?? [];
+      const localArr = (localVal as { id: string; updatedAt?: string }[] | undefined) ?? [];
+      const remoteArr = (remoteVal as { id: string; updatedAt?: string }[] | undefined) ?? [];
       const byId = new Map(remoteArr.map((item) => [item.id, item]));
       for (const item of localArr) {
-        byId.set(item.id, item);
+        const existing = byId.get(item.id);
+        if (!existing) {
+          byId.set(item.id, item);
+        } else {
+          // Pick the version with the newer updatedAt; fall back to local if no timestamps
+          const localTime = item.updatedAt ?? "";
+          const remoteTime = existing.updatedAt ?? "";
+          if (localTime >= remoteTime) {
+            byId.set(item.id, item);
+          }
+        }
       }
       merged[key] = Array.from(byId.values());
     } else if (remoteNewer) {
@@ -50,6 +61,24 @@ function mergeBackups(
   }
 
   return merged;
+}
+
+/** Retry-capable fetch for transient network errors (DNS, connection reset, etc.) */
+function createRetryFetch(maxRetries = 3, initialDelayMs = 500): typeof globalThis.fetch {
+  return async (input, init) => {
+    let attempt = 0;
+    while (true) {
+      try {
+        return await globalThis.fetch(input, init);
+      } catch (err) {
+        // Only retry network-level errors; let SyncManager handle HTTP-level errors (409, 5xx)
+        if (attempt >= maxRetries) throw err;
+        const delay = Math.min(initialDelayMs * Math.pow(2, attempt), 10_000) + Math.random() * 100;
+        await new Promise((r) => setTimeout(r, delay));
+        attempt++;
+      }
+    }
+  };
 }
 
 let store: StoreApi<StarfishStore> | null = null;
@@ -82,6 +111,7 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
   const client = new StarfishClient({
     baseUrl: config.serverUrl,
     auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
+    fetch: createRetryFetch(3, 500),
   });
 
   const syncManager = new SyncManager({
@@ -153,9 +183,19 @@ export function notifySync(): void {
   pushTimer = setTimeout(() => {
     pushTimer = null;
     if (!store || isRestoring) return;
+    const doc = createBackupDocument();
+    const size = JSON.stringify(doc).length;
+    // Encryption adds ~33% overhead (base64); warn if approaching 1MB server limit
+    const estimatedEncryptedSize = Math.ceil(size * 1.34);
+    if (estimatedEncryptedSize > 900_000) {
+      console.warn(`[sync] Document size ${(size / 1024).toFixed(0)}KB (~${(estimatedEncryptedSize / 1024).toFixed(0)}KB encrypted) approaching 1MB server limit`);
+    }
+    if (estimatedEncryptedSize > 1_048_576) {
+      console.error("[sync] Document exceeds 1MB server limit, push may fail");
+    }
     isRestoring = true; // prevent subscription from restoring our own push
     try {
-      store.getState().set(() => createBackupDocument());
+      store.getState().set(() => doc);
     } finally {
       isRestoring = false;
     }
@@ -165,6 +205,18 @@ export function notifySync(): void {
 
 export function getLastSyncTimestamp(): string | null {
   return lastSyncTimestamp;
+}
+
+export type SyncStatusValue = "synced" | "pending" | "syncing" | "error" | "offline";
+
+export function getSyncStatus(): { status: SyncStatusValue; message: string } | null {
+  if (!store) return null;
+  const state = store.getState();
+  if (!state.online) return { status: "offline", message: "offline" };
+  if (state.error) return { status: "error", message: state.error };
+  if (state.syncing) return { status: "syncing", message: "syncing" };
+  if (state.dirty) return { status: "pending", message: "pending" };
+  return { status: "synced", message: "synced" };
 }
 
 export function teardownStarfish(): void {

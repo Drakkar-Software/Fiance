@@ -20,6 +20,7 @@ import {
   teardownStarfish,
   getStarfishStore,
   getLastSyncTimestamp,
+  getSyncStatus,
   onSyncStatusChange,
 } from "@/lib/starfish";
 import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
@@ -116,6 +117,18 @@ export default function SettingsScreen() {
     return onSyncStatusChange(setSyncEnabled);
   }, []);
   const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
+  const [syncStatusLabel, setSyncStatusLabel] = useState<string | null>(null);
+  useEffect(() => {
+    if (!syncEnabled) { setSyncStatusLabel(null); return; }
+    const interval = setInterval(() => {
+      const s = getSyncStatus();
+      if (s) {
+        const key = `syncStatus${s.status.charAt(0).toUpperCase() + s.status.slice(1)}` as const;
+        setSyncStatusLabel(t(key));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [syncEnabled, t]);
 
   const premium = isPremium();
 
@@ -317,9 +330,13 @@ export default function SettingsScreen() {
               {!premium
                 ? t("premiumSyncMsg")
                 : syncEnabled
-                  ? lastSync
-                    ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
-                    : t("syncAutomatic")
+                  ? syncStatusLabel
+                    ? lastSync
+                      ? `${syncStatusLabel} · ${t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })}`
+                      : syncStatusLabel
+                    : lastSync
+                      ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
+                      : t("syncAutomatic")
                   : t("tapToEnable")}
             </Text>
           </View>

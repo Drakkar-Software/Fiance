@@ -162,10 +162,17 @@ export default function RootLayout() {
 
   useEffect(() => {
     const appSub = AppState.addEventListener("change", (state) => {
+      const sf = getStarfishStore();
+      if (!sf) return;
       if (state === "background") {
-        const sf = getStarfishStore();
-        if (sf?.getState().dirty) {
+        if (sf.getState().dirty) {
           sf.getState().flush();
+        }
+      } else if (state === "active") {
+        // Pull partner's changes when returning to foreground
+        const { online, syncing } = sf.getState();
+        if (online && !syncing) {
+          sf.getState().pull().catch(() => {});
         }
       }
     });
