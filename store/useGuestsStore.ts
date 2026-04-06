@@ -109,10 +109,11 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   removeGuest: (id) => {
     const now = new Date().toISOString();
     // Clear all companion links pointing to or from the deleted guest
-    const pointingToDeleted = get().guests.filter(
+    const allGuests = get().guests;
+    const guest = allGuests.find((g) => g.id === id);
+    const pointingToDeleted = allGuests.filter(
       (g) => g.id !== id && (g.companionId === id)
     );
-    const guest = get().guests.find((g) => g.id === id);
     const toUnlink = guest?.companionId
       ? [...pointingToDeleted.filter((g) => g.id !== guest.companionId), { id: guest.companionId }]
       : pointingToDeleted;
