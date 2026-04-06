@@ -25,6 +25,8 @@
   "overdue": "Overdue",
   "months": "months",
   "days": "d",
+  "selectDate": "Select a date",
+  "clear": "Clear",
   "version": "Version",
   "noneF": "None",
   "noTableNeeded": "No table",

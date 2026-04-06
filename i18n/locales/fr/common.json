@@ -25,6 +25,8 @@
   "overdue": "En retard",
   "months": "mois",
   "days": "j",
+  "selectDate": "Sélectionner une date",
+  "clear": "Effacer",
   "version": "Version",
   "noneF": "Aucune",
   "noTableNeeded": "Pas de table",

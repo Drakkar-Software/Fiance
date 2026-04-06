@@ -6,7 +6,7 @@ import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, DateRow } from "@/components/FormSection";
 import type { AgendaEvent } from "@/db/schema";
 
 export default function AgendaEventScreen() {
@@ -88,7 +88,7 @@ export default function AgendaEventScreen() {
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("titleLabel")} value={title} onChangeText={setTitle} placeholder={t("visitPlaceholder")} />
-          <InputRow label={t("dateLabel")} value={date} onChangeText={setDate} placeholder="2026-03-15" />
+          <DateRow label={t("dateLabel")} value={date} onChange={setDate} />
           <InputRow label={t("startTime")} value={time} onChangeText={setTime} placeholder="14:00" />
           <InputRow label={t("endTime")} value={endTime} onChangeText={setEndTime} placeholder="15:30" />
           <InputRow label={t("location")} value={location} onChangeText={setLocation} placeholder={t("addressPlaceholder")} />

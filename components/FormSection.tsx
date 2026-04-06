@@ -65,6 +65,55 @@ export function InputRow({
   );
 }
 
+/** Date picker row — taps open a calendar modal */
+export function DateRow({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (date: string) => void;
+  placeholder?: string;
+}) {
+  const { t } = useTranslation("common");
+  const [open, setOpen] = useState(false);
+  const locale = getDateLocale();
+
+  const displayValue = value
+    ? format(parseISO(value), "d MMM yyyy", { locale })
+    : null;
+
+  return (
+    <>
+      <Pressable
+        onPress={() => setOpen(true)}
+        className="flex-row items-center justify-between border-b border-gray-50 dark:border-gray-800 py-3"
+      >
+        <View className="flex-1">
+          <Text className="text-xs text-gray-400 mb-1 font-medium">
+            {label}
+          </Text>
+          <Text
+            className={`text-base ${displayValue ? "text-gray-900 dark:text-white" : "text-gray-300"}`}
+          >
+            {displayValue ?? placeholder ?? t("selectDate")}
+          </Text>
+        </View>
+        <Calendar size={18} color="#9CA3AF" />
+      </Pressable>
+      <DatePickerModal
+        visible={open}
+        value={value}
+        onSelect={onChange}
+        onClear={() => onChange("")}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  );
+}
+
 /** Toggle row with checkbox */
 export function ToggleRow({
   label,

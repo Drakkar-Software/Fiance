@@ -6,7 +6,7 @@ type FieldVisibility = "visible" | "hidden";
 export interface CustomSection {
   key: string;
   label: string;
-  type: "checklist" | "counter" | "text";
+  type: "checklist" | "counter" | "text" | "date";
   options?: readonly string[];
   placeholder?: string;
 }
@@ -203,8 +203,7 @@ const CONFIGS: Partial<Record<VendorType, Partial<VendorTypeFormConfig>>> = {
       {
         key: "tastingDate",
         label: "Date de dégustation",
-        type: "text",
-        placeholder: "2026-06-15",
+        type: "date",
       },
     ],
   },
@@ -213,8 +212,7 @@ const CONFIGS: Partial<Record<VendorType, Partial<VendorTypeFormConfig>>> = {
       {
         key: "trialDate",
         label: "Date de l'essai",
-        type: "text",
-        placeholder: "2026-07-01",
+        type: "date",
       },
       {
         key: "details",
@@ -235,8 +233,7 @@ const CONFIGS: Partial<Record<VendorType, Partial<VendorTypeFormConfig>>> = {
       {
         key: "fittingDate",
         label: "Date de l'essayage",
-        type: "text",
-        placeholder: "2026-06-15",
+        type: "date",
       },
       {
         key: "alterations",

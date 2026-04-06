@@ -20,10 +20,9 @@ import {
 import type { VendorType, VendorStatus } from "@/db/types";
 import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
 import type { CustomSection } from "@/lib/vendorTypeConfig";
-import { RatingStars } from "@/components/RatingStars";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow, ToggleRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow } from "@/components/FormSection";
 import type { Vendor } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
@@ -59,7 +58,7 @@ export default function VendorDetailScreen() {
   const [pricePerPerson, setPricePerPerson] = useState(existingVendor?.pricePerPerson?.toString() || "");
   const [depositAmount, setDepositAmount] = useState(existingVendor?.depositAmount?.toString() || "");
   const [depositPaid, setDepositPaid] = useState(existingVendor?.depositPaid || false);
-  const [rating, setRating] = useState(existingVendor?.rating || 0);
+
   const [notes, setNotes] = useState(existingVendor?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
@@ -106,7 +105,7 @@ export default function VendorDetailScreen() {
       pricePerPerson: pricePerPerson ? parseFloat(pricePerPerson) : null,
       depositAmount: depositAmount ? parseFloat(depositAmount) : null,
       depositPaid,
-      rating,
+
       notes: notes || null,
       quoteDate: quoteDate || null,
       validityDate: validityDate || null,
@@ -225,10 +224,10 @@ export default function VendorDetailScreen() {
         </Pressable>
         {showDates && (
           <FormCard>
-            <InputRow label={t("quoteDate")} value={quoteDate} onChangeText={setQuoteDate} placeholder="2026-03-15" />
-            <InputRow label={t("validityDate")} value={validityDate} onChangeText={setValidityDate} placeholder="2026-04-15" />
-            <InputRow label={t("depositDueDate")} value={depositDueDate} onChangeText={setDepositDueDate} placeholder="2026-05-01" />
-            <InputRow label={t("balanceDueDate")} value={balanceDueDate} onChangeText={setBalanceDueDate} placeholder="2026-08-01" />
+            <DateRow label={t("quoteDate")} value={quoteDate} onChange={setQuoteDate} />
+            <DateRow label={t("validityDate")} value={validityDate} onChange={setValidityDate} />
+            <DateRow label={t("depositDueDate")} value={depositDueDate} onChange={setDepositDueDate} />
+            <DateRow label={t("balanceDueDate")} value={balanceDueDate} onChange={setBalanceDueDate} />
           </FormCard>
         )}
 
@@ -249,11 +248,6 @@ export default function VendorDetailScreen() {
           </>
         )}
 
-        {/* Rating */}
-        <SectionTitle>{t("personalRating")}</SectionTitle>
-        <FormCard>
-          <RatingStars rating={rating} onChange={setRating} size={32} />
-        </FormCard>
 
         {/* Notes */}
         <SectionTitle>{t("notesLabel")}</SectionTitle>
@@ -318,6 +312,16 @@ function CustomFieldRenderer({
     );
   }
 
+  if (section.type === "date") {
+    return (
+      <DateRow
+        label={section.label}
+        value={value || ""}
+        onChange={onChange}
+      />
+    );
+  }
+
   if (section.type === "text") {
     return (
       <InputRow
@@ -356,7 +360,7 @@ function CustomFieldRenderer({
                 <Square size={20} color="#D1D5DB" />
               )}
               <Text className="text-sm text-gray-700 dark:text-gray-300 ml-2.5">
-                {opt}
+                {t(opt)}
               </Text>
             </Pressable>
           );

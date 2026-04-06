@@ -38,6 +38,7 @@ import {
   SectionTitle,
   FormCard,
   InputRow,
+  DateRow,
 } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
@@ -281,7 +282,7 @@ export default function SettingsScreen() {
           <InputRow label={t("weddingName")} value={weddingLabel} onChangeText={setWeddingLabel} placeholder={t("weddingNamePlaceholder")} />
           <InputRow label={t("partner1")} value={partner1} onChangeText={setPartner1} placeholder={t("partnerPlaceholder")} />
           <InputRow label={t("partner2")} value={partner2} onChangeText={setPartner2} placeholder={t("partnerPlaceholder")} />
-          <InputRow label={t("weddingDate")} value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
+          <DateRow label={t("weddingDate")} value={weddingDate} onChange={setWeddingDate} />
           <InputRow label={t("mainVenue")} value={venueName} onChangeText={setVenueName} placeholder={t("venuePlaceholder")} />
         </FormCard>
       </View>
