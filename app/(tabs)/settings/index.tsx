@@ -47,11 +47,13 @@ export default function SettingsScreen() {
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
+  const updateRegistryWedding = useWeddingRegistryStore((s) => s.updateWedding);
 
   const activeEntry = registry?.weddings.find(
     (w) => w.id === registry.activeWeddingId
   );
 
+  const [weddingLabel, setWeddingLabel] = useState(activeEntry?.label || "");
   const [partner1, setPartner1] = useState(wedding?.partner1Name || "");
   const [partner2, setPartner2] = useState(wedding?.partner2Name || "");
   const [weddingDate, setWeddingDate] = useState(wedding?.weddingDate || "");
@@ -136,13 +138,17 @@ export default function SettingsScreen() {
         currency: currency || "EUR",
       });
 
+      if (activeEntry?.id && weddingLabel && weddingLabel !== activeEntry.label) {
+        updateRegistryWedding(activeEntry.id, { label: weddingLabel });
+      }
+
       if (weddingDate && weddingDate !== oldDate) {
         const updated = recalculateDueDates(tasks, weddingDate);
         setTasks(updated);
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency]);
+  }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency, weddingLabel]);
 
   const handleGenerateTemplate = useCallback(() => {
     const doGenerate = () => {
@@ -215,6 +221,7 @@ export default function SettingsScreen() {
       <View className="px-4 pt-4">
         <SectionTitle>Informations du mariage</SectionTitle>
         <FormCard>
+          <InputRow label="Nom du mariage" value={weddingLabel} onChangeText={setWeddingLabel} placeholder="Mon mariage" />
           <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" />
           <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" />
           <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
