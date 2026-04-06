@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
@@ -14,6 +15,7 @@ import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function CollectionsScreen() {
+  const { t } = useTranslation("ideas");
   const collections = useIdeasStore((s) => s.collections);
   const ideas = useIdeasStore((s) => s.ideas);
   const addCollection = useIdeasStore((s) => s.addCollection);
@@ -25,7 +27,7 @@ export default function CollectionsScreen() {
 
   const handleAdd = () => {
     if (!newName.trim()) {
-      Alert.alert("Erreur", "Le nom est obligatoire");
+      Alert.alert(t("common:error"), t("nameRequired"));
       return;
     }
     const now = new Date().toISOString();
@@ -49,11 +51,11 @@ export default function CollectionsScreen() {
         {showAdd && (
           <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-4">
             <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-              Nouvelle collection
+              {t("newCollection")}
             </Text>
             <TextInput
               className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-              placeholder="Nom de la collection"
+              placeholder={t("collectionName")}
               placeholderTextColor="#9CA3AF"
               value={newName}
               onChangeText={setNewName}
@@ -61,7 +63,7 @@ export default function CollectionsScreen() {
             />
             <TextInput
               className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-              placeholder="Description (optionnelle)"
+              placeholder={t("collectionDesc")}
               placeholderTextColor="#9CA3AF"
               value={newDescription}
               onChangeText={setNewDescription}
@@ -71,13 +73,13 @@ export default function CollectionsScreen() {
                 onPress={handleAdd}
                 className="flex-1 bg-primary-500 py-2 rounded-lg items-center"
               >
-                <Text className="text-white font-semibold">Créer</Text>
+                <Text className="text-white font-semibold">{t("common:create")}</Text>
               </Pressable>
               <Pressable
                 onPress={() => setShowAdd(false)}
                 className="flex-1 bg-gray-100 dark:bg-gray-800 py-2 rounded-lg items-center"
               >
-                <Text className="text-gray-600">Annuler</Text>
+                <Text className="text-gray-600">{t("common:cancel")}</Text>
               </Pressable>
             </View>
           </View>
@@ -101,7 +103,7 @@ export default function CollectionsScreen() {
                     </Text>
                   )}
                   <Text className="text-sm text-gray-400 mt-1">
-                    {count} idée{count !== 1 ? "s" : ""}
+                    {t("idea", { count })}
                   </Text>
                 </View>
                 <Pressable onPress={() => setDeleteId(col.id)}>
@@ -118,9 +120,9 @@ export default function CollectionsScreen() {
 
       <ConfirmSheet
         visible={!!deleteId}
-        title="Supprimer cette collection ?"
-        message="Les idées associées ne seront pas supprimées mais seront désassociées."
-        confirmLabel="Supprimer"
+        title={t("deleteCollection")}
+        message={t("deleteCollectionMsg")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={() => {
           if (deleteId) removeCollection(deleteId);

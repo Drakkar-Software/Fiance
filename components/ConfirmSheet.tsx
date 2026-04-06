@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Pressable, Modal } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface ConfirmSheetProps {
   visible: boolean;
@@ -16,12 +17,15 @@ export function ConfirmSheet({
   visible,
   title,
   message,
-  confirmLabel = "Confirmer",
-  cancelLabel = "Annuler",
+  confirmLabel,
+  cancelLabel,
   destructive = false,
   onConfirm,
   onCancel,
 }: ConfirmSheetProps) {
+  const { t } = useTranslation("common");
+  const confirm = confirmLabel ?? t("confirm");
+  const cancel = cancelLabel ?? t("cancel");
   return (
     <Modal
       visible={visible}
@@ -52,7 +56,7 @@ export function ConfirmSheet({
               } active:opacity-80`}
             >
               <Text className="text-white font-semibold text-base">
-                {confirmLabel}
+                {confirm}
               </Text>
             </Pressable>
             <Pressable
@@ -60,7 +64,7 @@ export function ConfirmSheet({
               className="py-3.5 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
             >
               <Text className="text-gray-700 dark:text-gray-300 font-medium text-base">
-                {cancelLabel}
+                {cancel}
               </Text>
             </Pressable>
           </View>

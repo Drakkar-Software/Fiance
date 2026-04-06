@@ -94,16 +94,16 @@ function PreparationView() {
       }
       const templateTasks = generateTemplateTasks(cats, weddingDate || undefined);
       setTasks([...tasks, ...templateTasks]);
-      Alert.alert("Planning généré", "Le planning type de préparation a été ajouté.");
+      Alert.alert(t("planningGenerated"), t("planningGeneratedMsg"));
     };
 
     if (tasks.length > 0) {
       Alert.alert(
-        "Planning existant",
-        "Des tâches existent déjà. Voulez-vous ajouter le planning type ? Cela pourrait créer des doublons.",
+        t("existingPlanning"),
+        t("existingPlanningMsg"),
         [
-          { text: "Annuler", style: "cancel" },
-          { text: "Ajouter", onPress: doGenerate },
+          { text: t("common:cancel"), style: "cancel" },
+          { text: t("common:add"), onPress: doGenerate },
         ]
       );
     } else {
@@ -129,8 +129,8 @@ function PreparationView() {
             task.status !== "CANCELLED"
           );
         }
-        if (filter !== "ALL" && t.status !== filter) return false;
-        if (categoryFilter !== "ALL" && t.categoryId !== categoryFilter)
+        if (filter !== "ALL" && task.status !== filter) return false;
+        if (categoryFilter !== "ALL" && task.categoryId !== categoryFilter)
           return false;
         return true;
       })

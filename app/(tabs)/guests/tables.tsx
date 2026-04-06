@@ -40,7 +40,7 @@ export default function TablesScreen() {
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
-      Alert.alert("Erreur", "Le nom de la table est obligatoire");
+      Alert.alert(t("common:error"), t("tableNameRequired"));
       return;
     }
     addTable({
@@ -80,8 +80,7 @@ export default function TablesScreen() {
             <AlertTriangle size={14} color="#F59E0B" />
           </View>
           <Text className="text-sm text-amber-700 dark:text-amber-300 flex-1">
-            {unassigned.length} invité{unassigned.length > 1 ? "s" : ""}{" "}
-            accepté{unassigned.length > 1 ? "s" : ""} sans table
+            {t("guestsAcceptedNoTable", { count: unassigned.length })}
           </Text>
         </View>
       )}
@@ -89,9 +88,9 @@ export default function TablesScreen() {
       {tables.length === 0 && !showAdd ? (
         <EmptyState
           icon={LayoutGrid}
-          title="Aucune table"
-          description="Créez des tables pour organiser votre plan de tables"
-          actionLabel="Créer une table"
+          title={t("noTables")}
+          description={t("createTablesDesc")}
+          actionLabel={t("createTable2")}
           onAction={() => setShowAdd(true)}
         />
       ) : (
@@ -103,11 +102,11 @@ export default function TablesScreen() {
           {showAdd && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                Nouvelle table
+                {t("newTable")}
               </Text>
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-                placeholder="Nom de la table"
+                placeholder={t("tableName")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableName}
                 onChangeText={setNewTableName}
@@ -115,7 +114,7 @@ export default function TablesScreen() {
               />
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-                placeholder="Capacité"
+                placeholder={t("capacity")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableCapacity}
                 onChangeText={setNewTableCapacity}
@@ -127,7 +126,7 @@ export default function TablesScreen() {
                   className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
                 >
                   <Text className="text-white font-semibold text-sm">
-                    Créer
+                    {t("createTable")}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -135,7 +134,7 @@ export default function TablesScreen() {
                   className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
                   <Text className="text-gray-500 dark:text-gray-400 text-sm">
-                    Annuler
+                    {t("common:cancel")}
                   </Text>
                 </Pressable>
               </View>
@@ -342,9 +341,9 @@ export default function TablesScreen() {
 
       <ConfirmSheet
         visible={!!deleteId}
-        title="Supprimer cette table ?"
-        message="Les invités assignés seront désassignés."
-        confirmLabel="Supprimer"
+        title={t("deleteTable")}
+        message={t("deleteTableMsg")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={() => {
           if (deleteId) removeTable(deleteId);

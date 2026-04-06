@@ -126,11 +126,11 @@ export default function DashboardScreen() {
           </View>
         ) : daysUntil != null && daysUntil < 0 ? (
           <Text className="text-white text-3xl font-bold mt-3">
-            Félicitations !
+            {t("congratulations")}
           </Text>
         ) : (
           <Text className="text-white/90 text-xl font-semibold mt-3">
-            Définissez votre date
+            {t("setYourDate")}
           </Text>
         )}
         {wedding?.venueName && (
@@ -173,9 +173,9 @@ export default function DashboardScreen() {
               </View>
             ))}
             {criticalUnstarted.map((task) => (
-              <View key={t.id} className="flex-row items-center mb-1.5 ml-8">
+              <View key={task.id} className="flex-row items-center mb-1.5 ml-8">
                 <Text className="text-sm text-red-600 dark:text-red-400 flex-1">
-                  {t.title}
+                  {task.title}
                 </Text>
               </View>
             ))}
@@ -222,7 +222,7 @@ export default function DashboardScreen() {
             </Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-sm text-gray-400">Engagé</Text>
+            <Text className="text-sm text-gray-400">{t("committed")}</Text>
             <Text className="text-sm font-semibold text-gray-900 dark:text-white">
               {formatMoney(budget.totalEngaged)} /{" "}
               {formatMoney(budget.budgetTarget)}
@@ -318,22 +318,22 @@ export default function DashboardScreen() {
           <View className="flex-row">
             <StatPill
               value={vendors.filter((v) => v.status === "BOOKED").length}
-              label="Réservés"
+              label={t("statusBooked")}
               color="#10B981"
             />
             <StatPill
               value={vendors.filter((v) => v.status === "NEGOTIATING").length}
-              label="En négo."
+              label={t("statusNegotiating")}
               color="#F59E0B"
             />
             <StatPill
               value={vendors.filter((v) => v.status === "QUOTE_RECEIVED").length}
-              label="Devis"
+              label={t("statusQuote")}
               color="#3B82F6"
             />
             <StatPill
               value={vendors.filter((v) => v.status === "PROSPECT").length}
-              label="Prospects"
+              label={t("statusProspect")}
               color="#9CA3AF"
             />
           </View>

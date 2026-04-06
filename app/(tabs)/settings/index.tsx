@@ -9,7 +9,7 @@ import {
   Share,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -25,6 +25,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { recalculateDueDates } from "@/lib/planning";
+import { exportWedding, importWedding } from "@/lib/export-import";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   SectionTitle,
@@ -44,6 +45,7 @@ export default function SettingsScreen() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
   const createWedding = useWeddingRegistryStore((s) => s.createWedding);
+  const deleteWedding = useWeddingRegistryStore((s) => s.deleteWedding);
   const updateRegistryWedding = useWeddingRegistryStore((s) => s.updateWedding);
 
   const activeEntry = registry?.weddings.find(
@@ -110,8 +112,8 @@ export default function SettingsScreen() {
 
     if (!isPremium()) {
       Alert.alert(
-        "Fonctionnalité premium",
-        "La synchronisation et le partage nécessitent un abonnement premium."
+        t("premiumFeature"),
+        t("premiumSyncMsg")
       );
       return;
     }
@@ -120,8 +122,8 @@ export default function SettingsScreen() {
     const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
     if (!password || !serverUrl) {
       Alert.alert(
-        "Synchronisation impossible",
-        "Aucun serveur ou mot de passe configuré pour ce mariage."
+        t("syncImpossible"),
+        t("noServerOrPassword")
       );
       return;
     }
@@ -132,15 +134,15 @@ export default function SettingsScreen() {
     }
 
     const authToken = await deriveAuthToken(password);
-    const encryptionKey = await deriveEncryptionKey(
-      password,
-      activeEntry?.id || "default"
-    );
+    const userId = authToken.slice(0, 16);
+    // Use userId (deterministic from password) as salt — NOT the local wedding UUID
+    // which differs per device and would cause encryption key mismatch.
+    const encryptionKey = await deriveEncryptionKey(password, userId);
 
     initStarfish({
       serverUrl,
       authToken,
-      userId: authToken.slice(0, 16),
+      userId,
       encryptionKey,
     });
     setSyncEnabled(true);
@@ -150,35 +152,80 @@ export default function SettingsScreen() {
     const password = activeEntry?.seedPhrase;
     const name = activeEntry?.label;
     if (!password || !name) {
-      Alert.alert("Erreur", "Aucun mot de passe associé à ce mariage.");
+      Alert.alert(t("common:error"), t("noPassword"));
       return;
     }
     const url = buildInviteUrl(name, password);
     try {
       await Share.share({
-        message: `Rejoins notre mariage sur WeddingOS !\n${url}`,
+        message: t("joinOurWedding", { url }),
       });
     } catch {
       // User cancelled share
     }
   }, [activeEntry]);
 
-  const handleCreateNewWedding = useCallback(() => {
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    setExporting(true);
+    try {
+      await exportWedding(activeEntry?.label || "wedding");
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setExporting(false);
+    }
+  }, [activeEntry?.label, t]);
+
+  const handleImport = useCallback(() => {
     Alert.alert(
-      "Nouveau mariage",
-      "Créer un nouveau mariage ? Vous pourrez basculer entre vos mariages à tout moment.",
+      t("importConfirmTitle"),
+      t("importConfirmMsg"),
       [
-        { text: "Annuler", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Créer",
+          text: t("import"),
+          style: "destructive",
           onPress: async () => {
-            const passphrase = generatePassphrase();
-            await createWedding("Mon mariage", passphrase);
+            setImporting(true);
+            try {
+              const result = await importWedding();
+              if (result === true) {
+                Alert.alert(t("importSuccess"), t("importSuccessMsg"));
+              } else if (result === "invalid_json") {
+                Alert.alert(t("common:error"), t("invalidJson"));
+              } else if (result === "invalid_backup") {
+                Alert.alert(t("common:error"), t("invalidBackup"));
+              }
+            } catch (e: any) {
+              Alert.alert(t("common:error"), e.message);
+            } finally {
+              setImporting(false);
+            }
           },
         },
       ]
     );
-  }, [createWedding]);
+  }, [t]);
+
+  const handleCreateNewWedding = useCallback(() => {
+    Alert.alert(
+      t("createNewWedding"),
+      t("newWeddingConfirm"),
+      [
+        { text: t("common:cancel"), style: "cancel" },
+        {
+          text: t("common:create"),
+          onPress: async () => {
+            const passphrase = generatePassphrase();
+            await createWedding(t("myWedding"), passphrase);
+          },
+        },
+      ]
+    );
+  }, [createWedding, t]);
 
   // App lock
   const [lockEnabled, setLockEnabledState] = useState(false);
@@ -191,12 +238,12 @@ export default function SettingsScreen() {
   const handleToggleLock = useCallback(() => {
     if (lockEnabled) {
       Alert.alert(
-        "Désactiver le verrouillage",
-        "L'application ne sera plus protégée par un code PIN.",
+        t("disableLock"),
+        t("disableLockMsg"),
         [
-          { text: "Annuler", style: "cancel" },
+          { text: t("common:cancel"), style: "cancel" },
           {
-            text: "Désactiver",
+            text: t("disable"),
             style: "destructive",
             onPress: () => {
               setLockEnabled(false).then(() => setLockEnabledState(false));
@@ -207,7 +254,7 @@ export default function SettingsScreen() {
     } else {
       setShowPinSetup(true);
     }
-  }, [lockEnabled]);
+  }, [lockEnabled, t]);
 
 
   return (
@@ -217,23 +264,21 @@ export default function SettingsScreen() {
     >
       {/* Wedding info */}
       <View className="px-4 pt-4">
-        <SectionTitle>Informations du mariage</SectionTitle>
+        <SectionTitle>{t("weddingInfo")}</SectionTitle>
         <FormCard>
-          <InputRow label="Nom du mariage" value={weddingLabel} onChangeText={setWeddingLabel} placeholder="Mon mariage" />
-          <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" />
-          <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" />
-          <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
-          <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" />
+          <InputRow label={t("weddingName")} value={weddingLabel} onChangeText={setWeddingLabel} placeholder={t("weddingNamePlaceholder")} />
+          <InputRow label={t("partner1")} value={partner1} onChangeText={setPartner1} placeholder={t("partnerPlaceholder")} />
+          <InputRow label={t("partner2")} value={partner2} onChangeText={setPartner2} placeholder={t("partnerPlaceholder")} />
+          <InputRow label={t("weddingDate")} value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
+          <InputRow label={t("mainVenue")} value={venueName} onChangeText={setVenueName} placeholder={t("venuePlaceholder")} />
         </FormCard>
       </View>
 
       {/* Sauvegarde et partage */}
       <View className="px-4">
-        <SectionTitle>Sauvegarde et partage</SectionTitle>
+        <SectionTitle>{t("backupAndSharing")}</SectionTitle>
         <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
-          {syncEnabled
-            ? "Vos données sont sauvegardées de manière chiffrée sur un serveur sécurisé. En cas de perte ou changement d'appareil, vous pourrez les restaurer. Vous pouvez partager le mariage avec votre partenaire via le lien d'invitation ci-dessous."
-            : "Vos données sont stockées uniquement sur cet appareil. En cas de suppression de l'app, de vidage du cache navigateur, ou de perte de l'appareil, toutes vos données seront définitivement perdues. Activez la synchronisation pour sauvegarder vos données et partager le mariage avec votre partenaire."}
+          {syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
         </Text>
         <Pressable
           onPress={handleToggleSync}
@@ -251,14 +296,14 @@ export default function SettingsScreen() {
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base font-medium text-gray-900 dark:text-white">
-              {syncEnabled ? "Synchronisation activée" : "Synchronisation désactivée"}
+              {syncEnabled ? t("syncEnabled") : t("syncDisabled")}
             </Text>
             <Text className="text-xs text-gray-400 mt-0.5">
               {syncEnabled
                 ? lastSync
-                  ? `Dernière synchro : ${format(new Date(lastSync), "dd/MM/yyyy HH:mm")}`
-                  : "Les données sont synchronisées automatiquement"
-                : "Appuyez pour activer la synchronisation"}
+                  ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
+                  : t("syncAutomatic")
+                : t("tapToEnable")}
             </Text>
           </View>
           <View
@@ -283,22 +328,61 @@ export default function SettingsScreen() {
             </View>
             <View className="ml-3 flex-1">
               <Text className="text-base font-medium text-gray-900 dark:text-white">
-                Partager un lien d'invitation
+                {t("shareInviteLink")}
               </Text>
               <Text className="text-xs text-gray-400 mt-0.5">
                 {syncEnabled
-                  ? "Envoyer un lien pour rejoindre ce mariage"
-                  : "Activez la synchronisation pour partager"}
+                  ? t("sendLinkToJoin")
+                  : t("enableSyncToShare")}
               </Text>
             </View>
             <ChevronRight size={18} color="#C0C0C8" />
           </Pressable>
         )}
+
+        {/* Export / Import */}
+        <Pressable
+          onPress={handleExport}
+          disabled={exporting}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
+        >
+          <View className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900 items-center justify-center">
+            <Download size={20} color="#3B82F6" />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base font-medium text-gray-900 dark:text-white">
+              {exporting ? t("exporting") : t("exportData")}
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {t("exportDesc")}
+            </Text>
+          </View>
+          <ChevronRight size={18} color="#C0C0C8" />
+        </Pressable>
+
+        <Pressable
+          onPress={handleImport}
+          disabled={importing}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
+        >
+          <View className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900 items-center justify-center">
+            <Upload size={20} color="#F59E0B" />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base font-medium text-gray-900 dark:text-white">
+              {importing ? t("importing") : t("importData")}
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {t("importDesc")}
+            </Text>
+          </View>
+          <ChevronRight size={18} color="#C0C0C8" />
+        </Pressable>
       </View>
 
       {/* Mes mariages */}
       <View className="px-4 mt-4">
-        <SectionTitle>Mes mariages</SectionTitle>
+        <SectionTitle>{t("myWeddings")}</SectionTitle>
         {registry?.weddings.map((w) => {
           const isActive = w.id === registry.activeWeddingId;
           return (
@@ -330,12 +414,31 @@ export default function SettingsScreen() {
                   {w.label}
                 </Text>
                 <Text className="text-xs text-gray-400 mt-0.5">
-                  {isActive ? "Mariage actif" : "Appuyez pour basculer"}
+                  {isActive ? t("activeWedding") : t("tapToSwitch")}
                 </Text>
               </View>
               {isActive && (
                 <CheckCircle2 size={20} color="#EC4899" />
               )}
+              <Pressable
+                onPress={() => {
+                  Alert.alert(
+                    t("deleteWeddingTitle"),
+                    t("deleteWeddingMsg", { label: w.label }),
+                    [
+                      { text: t("cancel"), style: "cancel" },
+                      {
+                        text: t("delete"),
+                        style: "destructive",
+                        onPress: () => deleteWedding(w.id),
+                      },
+                    ]
+                  );
+                }}
+                className="ml-2 w-8 h-8 items-center justify-center rounded-lg"
+              >
+                <Trash2 size={16} color="#EF4444" />
+              </Pressable>
             </Pressable>
           );
         })}
@@ -348,7 +451,7 @@ export default function SettingsScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-base font-medium text-gray-500 dark:text-gray-400">
-              Créer un nouveau mariage
+              {t("createNewWedding")}
             </Text>
           </View>
         </Pressable>
@@ -356,7 +459,7 @@ export default function SettingsScreen() {
 
       {/* Security */}
       <View className="px-4 mt-4">
-        <SectionTitle>Sécurité</SectionTitle>
+        <SectionTitle>{t("security")}</SectionTitle>
         <Pressable
           onPress={handleToggleLock}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
@@ -366,10 +469,10 @@ export default function SettingsScreen() {
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base text-gray-900 dark:text-white font-medium">
-              Verrouillage de l'app
+              {t("appLock")}
             </Text>
             <Text className="text-xs text-gray-400 mt-0.5">
-              {lockEnabled ? "PIN + biométrie activé" : "Désactivé"}
+              {lockEnabled ? t("pinBioEnabled") : t("disabled")}
             </Text>
           </View>
           <View
@@ -426,7 +529,7 @@ export default function SettingsScreen() {
 
       {/* About */}
       <View className="px-4 mt-4 mb-8">
-        <SectionTitle>À propos</SectionTitle>
+        <SectionTitle>{t("about")}</SectionTitle>
         <View className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             WeddingOS
@@ -436,8 +539,7 @@ export default function SettingsScreen() {
           </Text>
           <View className="mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
             <Text className="text-xs text-gray-400 leading-4">
-              Privacy-first · Offline-first · Aucune télémétrie{"\n"}
-              Vos données restent chiffrées, sur votre appareil et nos serveurs.
+              {t("privacyLine")}
             </Text>
           </View>
         </View>

@@ -89,7 +89,7 @@ export default function GuestDetailScreen() {
 
   const handleSave = () => {
     if (!firstName.trim() || !lastName.trim()) {
-      Alert.alert("Erreur", "Le prénom et le nom sont obligatoires");
+      Alert.alert(t("common:error"), t("firstLastRequired"));
       return;
     }
 
@@ -136,12 +136,12 @@ export default function GuestDetailScreen() {
       <Stack.Screen
         options={{
           title: isNew
-            ? "Nouvel invité"
-            : `${firstName} ${lastName}`.trim() || "Invité",
+            ? t("newGuest")
+            : `${firstName} ${lastName}`.trim() || t("guest"),
           headerRight: () => (
             <Pressable onPress={handleSave} className="mr-2">
               <Text className="text-primary-500 font-semibold text-base">
-                Enregistrer
+                {t("common:save")}
               </Text>
             </Pressable>
           ),
@@ -149,15 +149,15 @@ export default function GuestDetailScreen() {
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Personal info */}
-        <SectionTitle>Informations personnelles</SectionTitle>
+        <SectionTitle>{t("personalInfo")}</SectionTitle>
         <FormCard>
-          <InputRow label="Prénom *" value={firstName} onChangeText={setFirstName} />
-          <InputRow label="Nom *" value={lastName} onChangeText={setLastName} />
-          <InputRow label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-          <InputRow label="Téléphone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-          <InputRow label="Adresse" value={address} onChangeText={setAddress} />
+          <InputRow label={t("firstName")} value={firstName} onChangeText={setFirstName} />
+          <InputRow label={t("lastName")} value={lastName} onChangeText={setLastName} />
+          <InputRow label={t("email")} value={email} onChangeText={setEmail} keyboardType="email-address" />
+          <InputRow label={t("phone")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+          <InputRow label={t("address")} value={address} onChangeText={setAddress} />
 
-          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">Côté</Text>
+          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">{t("sideLabel")}</Text>
           <ChipSelect
             options={SIDES}
             value={side}
@@ -167,10 +167,10 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Invitation */}
-        <SectionTitle>Invitation</SectionTitle>
+        <SectionTitle>{t("invitation")}</SectionTitle>
         <FormCard>
           <Text className="text-xs text-gray-400 mb-2 font-medium">
-            Type d'invitation
+            {t("invitationType")}
           </Text>
           <ChipSelect
             options={INVITATION_TYPES}
@@ -181,12 +181,12 @@ export default function GuestDetailScreen() {
 
           <View className="mt-3">
             <ToggleRow
-              label="Dort sur place"
+              label={t("sleepsOnSite")}
               value={isSleeping}
               onToggle={() => setIsSleeping(!isSleeping)}
             />
             <ToggleRow
-              label="Enfant (< 12 ans)"
+              label={t("childLabel")}
               value={isChild}
               onToggle={() => setIsChild(!isChild)}
             />
@@ -212,7 +212,7 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Table */}
-        <SectionTitle>Table</SectionTitle>
+        <SectionTitle>{t("table")}</SectionTitle>
         <FormCard>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="flex-row gap-2">
@@ -229,7 +229,7 @@ export default function GuestDetailScreen() {
                     !tableId && !noTableNeeded ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Non assigné
+                  {t("unassigned")}
                 </Text>
               </Pressable>
               <Pressable
@@ -245,7 +245,7 @@ export default function GuestDetailScreen() {
                     noTableNeeded ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Pas de table
+                  {t("common:noTableNeeded")}
                 </Text>
               </Pressable>
               {tables.map((t) => (
@@ -274,7 +274,7 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Diet */}
-        <SectionTitle>Régime alimentaire</SectionTitle>
+        <SectionTitle>{t("dietLabel")}</SectionTitle>
         <FormCard>
           <ChipSelect
             options={DIETS}
@@ -285,7 +285,7 @@ export default function GuestDetailScreen() {
           {(diet === "ALLERGY" || diet === "VEGETARIAN" || diet === "VEGAN") && (
             <TextInput
               className="text-base text-gray-900 dark:text-white border-t border-gray-50 dark:border-gray-800 pt-3 mt-3"
-              placeholder="Précisions (allergies, restrictions...)"
+              placeholder={t("dietDetails")}
               placeholderTextColor="#D0D0D8"
               value={dietNotes}
               onChangeText={setDietNotes}
@@ -295,11 +295,11 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Notes */}
-        <SectionTitle>Notes</SectionTitle>
+        <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[80px]"
-            placeholder="Notes libres..."
+            placeholder={t("freeNotes")}
             placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
@@ -315,7 +315,7 @@ export default function GuestDetailScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer cet invité
+              {t("deleteGuest")}
             </Text>
           </Pressable>
         )}
@@ -325,9 +325,9 @@ export default function GuestDetailScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer cet invité ?"
-        message="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteGuestConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable, Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -8,6 +9,7 @@ import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { DayOfItem } from "@/db/schema";
 
 export default function DayOfItemScreen() {
+  const { t } = useTranslation("planning");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const items = usePlanningStore((s) => s.dayOfItems);
@@ -28,11 +30,11 @@ export default function DayOfItemScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert("Erreur", "Le titre est obligatoire");
+      Alert.alert(t("common:error"), t("titleRequired"));
       return;
     }
     if (!time.trim()) {
-      Alert.alert("Erreur", "L'heure est obligatoire");
+      Alert.alert(t("common:error"), t("timeRequired"));
       return;
     }
 
@@ -71,31 +73,31 @@ export default function DayOfItemScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Stack.Screen
         options={{
-          title: isNew ? "Nouveau moment" : title || "Jour J",
+          title: isNew ? t("newMoment") : title || t("dayOf"),
           headerRight: () => (
             <Pressable onPress={handleSave} className="mr-2">
               <Text className="text-primary-500 font-semibold text-base">
-                Enregistrer
+                {t("common:save")}
               </Text>
             </Pressable>
           ),
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
-        <SectionTitle>Informations</SectionTitle>
+        <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
-          <InputRow label="Moment *" value={title} onChangeText={setTitle} placeholder="Entrée de l'église" />
-          <InputRow label="Heure *" value={time} onChangeText={setTime} placeholder="13:00" />
-          <InputRow label="Heure de fin" value={endTime} onChangeText={setEndTime} placeholder="13:30" />
-          <InputRow label="Lieu" value={location} onChangeText={setLocation} placeholder="Église Saint-Pierre" />
-          <InputRow label="Responsable" value={responsible} onChangeText={setResponsible} placeholder="Wedding planner, témoin..." />
+          <InputRow label={t("momentLabel")} value={title} onChangeText={setTitle} placeholder={t("churchPlaceholder")} />
+          <InputRow label={t("timeLabel")} value={time} onChangeText={setTime} placeholder="13:00" />
+          <InputRow label={t("endTimeLabel")} value={endTime} onChangeText={setEndTime} placeholder="13:30" />
+          <InputRow label={t("locationLabel")} value={location} onChangeText={setLocation} placeholder={t("venuePlaceholder")} />
+          <InputRow label={t("responsible")} value={responsible} onChangeText={setResponsible} placeholder={t("responsiblePlaceholder")} />
         </FormCard>
 
-        <SectionTitle>Notes</SectionTitle>
+        <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[80px]"
-            placeholder="Détails, instructions..."
+            placeholder={t("detailsPlaceholder")}
             placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
@@ -110,7 +112,7 @@ export default function DayOfItemScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer ce moment
+              {t("deleteMoment")}
             </Text>
           </Pressable>
         )}
@@ -120,9 +122,9 @@ export default function DayOfItemScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer ce moment ?"
-        message="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteMomentConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

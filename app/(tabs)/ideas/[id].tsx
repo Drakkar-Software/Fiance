@@ -90,7 +90,7 @@ export default function IdeaDetailScreen() {
     const now = new Date().toISOString();
     const tags = tagsInput
       .split(",")
-      .map((t) => t.trim())
+      .map((s) => s.trim())
       .filter(Boolean);
 
     const ideaData: Partial<Idea> = {
@@ -130,7 +130,7 @@ export default function IdeaDetailScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Stack.Screen
         options={{
-          title: isNew ? "Nouvelle idée" : title || "Idée",
+          title: isNew ? t("newIdea") : title || t("idea"),
           headerRight: () => (
             <View className="flex-row items-center gap-3 mr-2">
               <Pressable onPress={() => setIsFavorite(!isFavorite)}>
@@ -142,7 +142,7 @@ export default function IdeaDetailScreen() {
               </Pressable>
               <Pressable onPress={handleSave}>
                 <Text className="text-primary-500 font-semibold text-base">
-                  Enregistrer
+                  {t("common:save")}
                 </Text>
               </Pressable>
             </View>
@@ -177,22 +177,22 @@ export default function IdeaDetailScreen() {
           <Pressable className="bg-accent-cream dark:bg-gray-900 rounded-2xl p-8 mb-5 items-center border border-gray-100 dark:border-gray-800">
             <ImageIcon size={40} color="#E8D5C0" />
             <Text className="text-gray-400 mt-2 text-sm">
-              Appuyez pour ajouter une image
+              {t("tapToAddImage")}
             </Text>
           </Pressable>
         )}
 
         {/* Title & notes */}
-        <SectionTitle>Informations</SectionTitle>
+        <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
-          <InputRow label="Titre" value={title} onChangeText={setTitle} />
-          <InputRow label="URL source" value={sourceUrl} onChangeText={setSourceUrl} />
-          <Text className="text-xs text-gray-400 mb-1 mt-3 font-medium">Notes</Text>
+          <InputRow label={t("title")} value={title} onChangeText={setTitle} />
+          <InputRow label={t("sourceUrl")} value={sourceUrl} onChangeText={setSourceUrl} />
+          <Text className="text-xs text-gray-400 mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[60px]"
             value={notes}
             onChangeText={setNotes}
-            placeholder="Description, remarques..."
+            placeholder={t("notesPlaceholder")}
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
@@ -200,13 +200,13 @@ export default function IdeaDetailScreen() {
         </FormCard>
 
         {/* Tags */}
-        <SectionTitle>Tags</SectionTitle>
+        <SectionTitle>{t("tags")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white"
             value={tagsInput}
             onChangeText={setTagsInput}
-            placeholder="rustique, verdure, suspendu..."
+            placeholder={t("tagsPlaceholder")}
             placeholderTextColor="#D0D0D8"
           />
         </FormCard>
@@ -244,7 +244,7 @@ export default function IdeaDetailScreen() {
         {/* Collection */}
         {collections.length > 0 && (
           <>
-            <SectionTitle>Collection</SectionTitle>
+            <SectionTitle>{t("collection")}</SectionTitle>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -264,7 +264,7 @@ export default function IdeaDetailScreen() {
                     !collectionId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Aucune
+                  {t("common:noneF")}
                 </Text>
               </Pressable>
               {collections.map((c) => (
@@ -295,7 +295,7 @@ export default function IdeaDetailScreen() {
         {/* Linked vendor */}
         {vendors.length > 0 && (
           <>
-            <SectionTitle>Prestataire associé</SectionTitle>
+            <SectionTitle>{t("linkedVendor")}</SectionTitle>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -315,7 +315,7 @@ export default function IdeaDetailScreen() {
                     !vendorId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Aucun
+                  {t("common:none")}
                 </Text>
               </Pressable>
               {vendors.map((v) => (
@@ -350,7 +350,7 @@ export default function IdeaDetailScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer cette idée
+              {t("deleteIdea")}
             </Text>
           </Pressable>
         )}
@@ -360,9 +360,9 @@ export default function IdeaDetailScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer cette idée ?"
-        message="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteIdeaConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

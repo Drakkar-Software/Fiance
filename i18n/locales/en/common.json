@@ -25,5 +25,26 @@
   "overdue": "Overdue",
   "months": "months",
   "days": "d",
-  "version": "Version"
+  "version": "Version",
+  "noneF": "None",
+  "noTableNeeded": "No table",
+  "onboarding": {
+    "tagline": "Plan your wedding with ease",
+    "createWedding": "Create a wedding",
+    "joinWedding": "Join a wedding",
+    "newWedding": "New wedding",
+    "autoPassword": "A password will be generated automatically. You can share it via an invite link in settings.",
+    "weddingNameLabel": "Wedding name",
+    "weddingNamePlaceholder": "Alice & Bob",
+    "weddingNameRequired": "Give your wedding a name (e.g. Alice & Bob)",
+    "creating": "Creating...",
+    "joinTitle": "Join a wedding",
+    "enterPassword": "Enter the shared password to join an existing wedding.",
+    "password": "Password",
+    "passwordPlaceholder": "Wedding password",
+    "passwordRequired": "Password is required to join this wedding.",
+    "nameRequired": "Give this wedding a name",
+    "joining": "Connecting...",
+    "join": "Join"
+  }
 }

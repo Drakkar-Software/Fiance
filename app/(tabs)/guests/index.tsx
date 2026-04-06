@@ -241,7 +241,7 @@ function TablesView() {
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
-      Alert.alert("Erreur", "Le nom de la table est obligatoire");
+      Alert.alert(t("common:error"), t("tableNameRequired"));
       return;
     }
     addTable({

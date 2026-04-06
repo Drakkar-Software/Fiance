@@ -110,5 +110,11 @@
   "servings": "Nombre de parts",
   "tastingDate": "Date de dégustation",
   "trialDate": "Date de l'essai",
-  "serviceDetails": "Détails prestation"
+  "serviceDetails": "Détails prestation",
+  "dates": "Dates",
+  "quoteDate": "Date du devis",
+  "validityDate": "Validité du devis",
+  "depositDueDate": "Date limite acompte",
+  "balanceDueDate": "Date limite solde",
+  "details": "Détails {{type}}"
 }

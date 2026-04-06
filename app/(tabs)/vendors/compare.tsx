@@ -48,7 +48,7 @@ export default function CompareScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-950">
         <Text className="text-gray-500">
-          Ajoutez au moins 2 traiteurs pour comparer
+          {t("addAtLeast2")}
         </Text>
       </View>
     );
@@ -58,7 +58,7 @@ export default function CompareScreen() {
     <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-950 px-4 pt-4">
       {/* Score cards */}
       <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-        Scores
+        {t("scores")}
       </Text>
       {caterers
         .sort((a, b) => b.score - a.score)
@@ -84,7 +84,7 @@ export default function CompareScreen() {
             <ProgressBar value={c.score} max={100} showPercentage={false} />
             <View className="flex-row justify-between mt-3">
               <View>
-                <Text className="text-sm text-gray-500">Total estimé</Text>
+                <Text className="text-sm text-gray-500">{t("estimatedTotal")}</Text>
                 <Text className="text-lg font-bold text-gray-900 dark:text-white">
                   {formatMoney(c.total)}
                 </Text>
@@ -96,13 +96,13 @@ export default function CompareScreen() {
 
       {/* Price comparison table */}
       <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3 mt-4">
-        Détail par poste
+        {t("detailByItem")}
       </Text>
       <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-8">
         {/* Header row */}
         <View className="flex-row border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
           <Text className="flex-1 text-sm font-medium text-gray-500">
-            Poste
+            {t("item")}
           </Text>
           {caterers.map((c) => (
             <Text

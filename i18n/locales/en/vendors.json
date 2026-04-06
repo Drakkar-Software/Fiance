@@ -110,5 +110,11 @@
   "servings": "Number of servings",
   "tastingDate": "Tasting date",
   "trialDate": "Trial date",
-  "serviceDetails": "Service details"
+  "serviceDetails": "Service details",
+  "dates": "Dates",
+  "quoteDate": "Quote date",
+  "validityDate": "Quote validity",
+  "depositDueDate": "Deposit deadline",
+  "balanceDueDate": "Balance deadline",
+  "details": "{{type}} details"
 }

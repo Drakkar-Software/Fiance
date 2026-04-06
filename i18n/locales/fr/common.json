@@ -25,5 +25,26 @@
   "overdue": "En retard",
   "months": "mois",
   "days": "j",
-  "version": "Version"
+  "version": "Version",
+  "noneF": "Aucune",
+  "noTableNeeded": "Pas de table",
+  "onboarding": {
+    "tagline": "Organisez votre mariage en toute simplicité",
+    "createWedding": "Créer un mariage",
+    "joinWedding": "Rejoindre un mariage",
+    "newWedding": "Nouveau mariage",
+    "autoPassword": "Un mot de passe sera généré automatiquement. Vous pourrez le partager via un lien d'invitation dans les réglages.",
+    "weddingNameLabel": "Nom du mariage",
+    "weddingNamePlaceholder": "Alice & Bob",
+    "weddingNameRequired": "Donnez un nom à votre mariage (ex: Alice & Bob)",
+    "creating": "Création...",
+    "joinTitle": "Rejoindre un mariage",
+    "enterPassword": "Entrez le mot de passe partagé pour rejoindre un mariage existant.",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe du mariage",
+    "passwordRequired": "Le mot de passe est requis pour rejoindre ce mariage.",
+    "nameRequired": "Donnez un nom à ce mariage",
+    "joining": "Connexion...",
+    "join": "Rejoindre"
+  }
 }

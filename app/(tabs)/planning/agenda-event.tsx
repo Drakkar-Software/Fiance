@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable, Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -9,6 +10,7 @@ import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { AgendaEvent } from "@/db/schema";
 
 export default function AgendaEventScreen() {
+  const { t } = useTranslation("planning");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const events = usePlanningStore((s) => s.agendaEvents);
@@ -31,11 +33,11 @@ export default function AgendaEventScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert("Erreur", "Le titre est obligatoire");
+      Alert.alert(t("common:error"), t("titleRequired"));
       return;
     }
     if (!date.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date.trim()) || isNaN(new Date(date.trim()).getTime())) {
-      Alert.alert("Erreur", "La date est obligatoire au format AAAA-MM-JJ");
+      Alert.alert(t("common:error"), t("dateRequired"));
       return;
     }
 
@@ -69,29 +71,29 @@ export default function AgendaEventScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Stack.Screen
         options={{
-          title: isNew ? "Nouveau rendez-vous" : title || "Rendez-vous",
+          title: isNew ? t("newAppointment") : title || t("appointment"),
           headerRight: () => (
             <Pressable onPress={handleSave} className="mr-2">
               <Text className="text-primary-500 font-semibold text-base">
-                Enregistrer
+                {t("common:save")}
               </Text>
             </Pressable>
           ),
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
-        <SectionTitle>Informations</SectionTitle>
+        <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
-          <InputRow label="Titre *" value={title} onChangeText={setTitle} placeholder="Visite du lieu" />
-          <InputRow label="Date *" value={date} onChangeText={setDate} placeholder="2026-03-15" />
-          <InputRow label="Heure de début" value={time} onChangeText={setTime} placeholder="14:00" />
-          <InputRow label="Heure de fin" value={endTime} onChangeText={setEndTime} placeholder="15:30" />
-          <InputRow label="Lieu" value={location} onChangeText={setLocation} placeholder="Adresse ou nom du lieu" />
+          <InputRow label={t("titleLabel")} value={title} onChangeText={setTitle} placeholder={t("visitPlaceholder")} />
+          <InputRow label={t("dateLabel")} value={date} onChangeText={setDate} placeholder="2026-03-15" />
+          <InputRow label={t("startTime")} value={time} onChangeText={setTime} placeholder="14:00" />
+          <InputRow label={t("endTime")} value={endTime} onChangeText={setEndTime} placeholder="15:30" />
+          <InputRow label={t("location")} value={location} onChangeText={setLocation} placeholder={t("addressPlaceholder")} />
         </FormCard>
 
         {vendors.length > 0 && (
           <>
-            <SectionTitle>Prestataire lié</SectionTitle>
+            <SectionTitle>{t("linkedVendorSection")}</SectionTitle>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -107,7 +109,7 @@ export default function AgendaEventScreen() {
                 }`}
               >
                 <Text className={`text-sm ${!vendorId ? "text-white font-medium" : "text-gray-500"}`}>
-                  Aucun
+                  {t("common:none")}
                 </Text>
               </Pressable>
               {vendors.map((v) => (
@@ -129,11 +131,11 @@ export default function AgendaEventScreen() {
           </>
         )}
 
-        <SectionTitle>Notes</SectionTitle>
+        <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[80px]"
-            placeholder="Notes libres..."
+            placeholder={t("freeNotes")}
             placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
@@ -148,7 +150,7 @@ export default function AgendaEventScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer ce rendez-vous
+              {t("deleteAppointment")}
             </Text>
           </Pressable>
         )}
@@ -158,9 +160,9 @@ export default function AgendaEventScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer ce rendez-vous ?"
-        message="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteAppointmentConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

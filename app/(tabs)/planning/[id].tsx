@@ -59,7 +59,7 @@ export default function TaskDetailScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert("Erreur", "Le titre est obligatoire");
+      Alert.alert(t("common:error"), t("titleRequired"));
       return;
     }
 
@@ -104,11 +104,11 @@ export default function TaskDetailScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Stack.Screen
         options={{
-          title: isNew ? "Nouvelle tâche" : title || "Tâche",
+          title: isNew ? t("newTask") : title || t("task"),
           headerRight: () => (
             <Pressable onPress={handleSave} className="mr-2">
               <Text className="text-primary-500 font-semibold text-base">
-                Enregistrer
+                {t("common:save")}
               </Text>
             </Pressable>
           ),
@@ -116,7 +116,7 @@ export default function TaskDetailScreen() {
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Status */}
-        <SectionTitle>Statut</SectionTitle>
+        <SectionTitle>{t("vendors:statusLabel")}</SectionTitle>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -135,24 +135,24 @@ export default function TaskDetailScreen() {
         </ScrollView>
 
         {/* Title & description */}
-        <SectionTitle>Informations</SectionTitle>
+        <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <View className="border-b border-gray-50 dark:border-gray-800 pb-3 mb-3">
-            <Text className="text-xs text-gray-400 mb-1 font-medium">Titre *</Text>
+            <Text className="text-xs text-gray-400 mb-1 font-medium">{t("titleLabel")}</Text>
             <TextInput
               className="text-base text-gray-900 dark:text-white"
               value={title}
               onChangeText={setTitle}
-              placeholder="Titre de la tâche"
+              placeholder={t("taskTitlePlaceholder")}
               placeholderTextColor="#D0D0D8"
             />
           </View>
-          <Text className="text-xs text-gray-400 mb-1 font-medium">Description</Text>
+          <Text className="text-xs text-gray-400 mb-1 font-medium">{t("description")}</Text>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[60px]"
             value={description}
             onChangeText={setDescription}
-            placeholder="Détails, liens, contacts..."
+            placeholder={t("descriptionPlaceholder")}
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
@@ -160,7 +160,7 @@ export default function TaskDetailScreen() {
         </FormCard>
 
         {/* Priority */}
-        <SectionTitle>Priorité</SectionTitle>
+        <SectionTitle>{t("priorityLabel")}</SectionTitle>
         <View className="flex-row gap-2 mb-5">
           {PRIORITIES.map((p) => (
             <Pressable
@@ -190,7 +190,7 @@ export default function TaskDetailScreen() {
         {/* Category */}
         {categories.length > 0 && (
           <>
-            <SectionTitle>Catégorie</SectionTitle>
+            <SectionTitle>{t("category")}</SectionTitle>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -210,7 +210,7 @@ export default function TaskDetailScreen() {
                     !categoryId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Aucune
+                  {t("common:noneF")}
                 </Text>
               </Pressable>
               {categories.map((c) => (
@@ -243,7 +243,7 @@ export default function TaskDetailScreen() {
         )}
 
         {/* Relative deadline */}
-        <SectionTitle>Échéance relative</SectionTitle>
+        <SectionTitle>{t("relativeDeadline")}</SectionTitle>
         <FormCard>
           <View className="flex-row items-center">
             <TextInput
@@ -255,18 +255,18 @@ export default function TaskDetailScreen() {
               placeholderTextColor="#D0D0D8"
             />
             <Text className="text-base text-gray-500 dark:text-gray-400 ml-2">
-              mois avant le mariage
+              {t("monthsBeforeWedding")}
             </Text>
           </View>
           <Text className="text-xs text-gray-400 mt-2">
-            Valeur négative = après le mariage
+            {t("negativeValue")}
           </Text>
         </FormCard>
 
         {/* Linked vendor */}
         {vendors.length > 0 && (
           <>
-            <SectionTitle>Prestataire lié</SectionTitle>
+            <SectionTitle>{t("linkedVendor")}</SectionTitle>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -286,7 +286,7 @@ export default function TaskDetailScreen() {
                     !vendorId ? "text-white font-medium" : "text-gray-500"
                   }`}
                 >
-                  Aucun
+                  {t("common:none")}
                 </Text>
               </Pressable>
               {vendors.map((v) => (
@@ -315,22 +315,22 @@ export default function TaskDetailScreen() {
         )}
 
         {/* Assignee */}
-        <SectionTitle>Responsable</SectionTitle>
+        <SectionTitle>{t("responsibleSection")}</SectionTitle>
         <FormCard>
           <InputRow
-            label="Assigné à"
+            label={t("assignee")}
             value={assignee}
             onChangeText={setAssignee}
-            placeholder="Prénom ou rôle"
+            placeholder={t("assigneePlaceholder")}
           />
         </FormCard>
 
         {/* Notes */}
-        <SectionTitle>Notes</SectionTitle>
+        <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[80px]"
-            placeholder="Notes libres..."
+            placeholder={t("freeNotes")}
             placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
@@ -346,7 +346,7 @@ export default function TaskDetailScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer cette tâche
+              {t("deleteTask")}
             </Text>
           </Pressable>
         )}
@@ -356,9 +356,9 @@ export default function TaskDetailScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer cette tâche ?"
-        message="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteTaskConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

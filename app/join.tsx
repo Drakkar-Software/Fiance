@@ -8,17 +8,20 @@ import { initStarfish, getStarfishStore } from "@/lib/starfish";
 import { decodeInviteToken, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import OnboardingScreen from "./onboarding";
 
-async function initAndPull(password: string, weddingId: string, serverUrl: string) {
+async function initAndPull(password: string, serverUrl: string) {
   const authToken = await deriveAuthToken(password);
-  const encryptionKey = await deriveEncryptionKey(password, weddingId);
+  const userId = authToken.slice(0, 16);
+  // Use userId (deterministic from password) as salt — NOT the local wedding UUID
+  // which differs per device and would cause encryption key mismatch.
+  const encryptionKey = await deriveEncryptionKey(password, userId);
   initStarfish({
     serverUrl,
     authToken,
-    userId: authToken.slice(0, 16),
+    userId,
     encryptionKey,
   });
   const sf = getStarfishStore();
-  sf?.getState().pull();
+  await sf?.getState().pull();
 }
 
 function useJoinAndNavigate() {
@@ -42,7 +45,7 @@ function useJoinAndNavigate() {
       const serverUrl = entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
       if (serverUrl && entry) {
         try {
-          await initAndPull(password, entry.id, serverUrl);
+          await initAndPull(password, serverUrl);
         } catch {
           // Sync failure shouldn't block the join — data will sync later
         }

@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Heart, PlusCircle, Link, ArrowLeft } from "lucide-react-native";
 import { generatePassphrase } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -62,6 +63,7 @@ export default function OnboardingScreen({
 }
 
 function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
+  const { t } = useTranslation("common");
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
       <View className="items-center mb-10">
@@ -72,7 +74,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
           WeddingOS
         </Text>
         <Text className="text-base text-gray-400 mt-2 text-center">
-          Organisez votre mariage en toute simplicité
+          {t("onboarding.tagline")}
         </Text>
       </View>
 
@@ -83,7 +85,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
         <View className="flex-row items-center">
           <PlusCircle size={20} color="#fff" />
           <Text className="text-white font-semibold text-base ml-2">
-            Créer un mariage
+            {t("onboarding.createWedding")}
           </Text>
         </View>
       </Pressable>
@@ -95,7 +97,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
         <View className="flex-row items-center">
           <Link size={20} color="#EC4899" />
           <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
-            Rejoindre un mariage
+            {t("onboarding.joinWedding")}
           </Text>
         </View>
       </Pressable>
@@ -110,19 +112,20 @@ function CreateWeddingForm({
   onBack: () => void;
   onCreate: (label: string) => Promise<void>;
 }) {
+  const { t } = useTranslation("common");
   const [label, setLabel] = useState("");
   const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
     if (!label.trim()) {
-      Alert.alert("Erreur", "Donnez un nom à votre mariage (ex: Alice & Bob)");
+      Alert.alert(t("error"), t("onboarding.weddingNameRequired"));
       return;
     }
     setSaving(true);
     try {
       await onCreate(label.trim());
     } catch (e: any) {
-      Alert.alert("Erreur", e.message);
+      Alert.alert(t("error"), e.message);
       setSaving(false);
     }
   };
@@ -141,19 +144,18 @@ function CreateWeddingForm({
         </Pressable>
 
         <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Nouveau mariage
+          {t("onboarding.newWedding")}
         </Text>
         <Text className="text-base text-gray-400 mb-8">
-          Un mot de passe sera généré automatiquement. Vous pourrez
-          le partager via un lien d'invitation dans les réglages.
+          {t("onboarding.autoPassword")}
         </Text>
 
         <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-          Nom du mariage
+          {t("onboarding.weddingNameLabel")}
         </Text>
         <TextInput
           className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
-          placeholder="Alice & Bob"
+          placeholder={t("onboarding.weddingNamePlaceholder")}
           placeholderTextColor="#C0C0C8"
           value={label}
           onChangeText={setLabel}
@@ -166,7 +168,7 @@ function CreateWeddingForm({
           className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
         >
           <Text className="text-white font-semibold text-base">
-            {saving ? "Création..." : "Créer"}
+            {saving ? t("onboarding.creating") : t("create")}
           </Text>
         </Pressable>
       </ScrollView>
@@ -185,24 +187,25 @@ function JoinWeddingForm({
   initialName?: string;
   initialPassword?: string;
 }) {
+  const { t } = useTranslation("common");
   const [label, setLabel] = useState(initialName || "");
   const [password, setPassword] = useState(initialPassword || "");
   const [saving, setSaving] = useState(false);
 
   const handleJoin = async () => {
     if (!label.trim()) {
-      Alert.alert("Erreur", "Donnez un nom à ce mariage");
+      Alert.alert(t("error"), t("onboarding.nameRequired"));
       return;
     }
     if (!password.trim()) {
-      Alert.alert("Erreur", "Le mot de passe est requis pour rejoindre ce mariage.");
+      Alert.alert(t("error"), t("onboarding.passwordRequired"));
       return;
     }
     setSaving(true);
     try {
       await onJoin(label.trim(), password.trim());
     } catch (e: any) {
-      Alert.alert("Erreur", e.message);
+      Alert.alert(t("error"), e.message);
       setSaving(false);
     }
   };
@@ -221,29 +224,29 @@ function JoinWeddingForm({
         </Pressable>
 
         <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Rejoindre un mariage
+          {t("onboarding.joinTitle")}
         </Text>
         <Text className="text-base text-gray-400 mb-8">
-          Entrez le mot de passe partagé pour rejoindre un mariage existant.
+          {t("onboarding.enterPassword")}
         </Text>
 
         <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-          Nom du mariage
+          {t("onboarding.weddingNameLabel")}
         </Text>
         <TextInput
           className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
-          placeholder="Alice & Bob"
+          placeholder={t("onboarding.weddingNamePlaceholder")}
           placeholderTextColor="#C0C0C8"
           value={label}
           onChangeText={setLabel}
         />
 
         <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-          Mot de passe
+          {t("onboarding.password")}
         </Text>
         <TextInput
           className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
-          placeholder="Mot de passe du mariage"
+          placeholder={t("onboarding.passwordPlaceholder")}
           placeholderTextColor="#C0C0C8"
           value={password}
           onChangeText={setPassword}
@@ -258,7 +261,7 @@ function JoinWeddingForm({
           className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
         >
           <Text className="text-white font-semibold text-base">
-            {saving ? "Connexion..." : "Rejoindre"}
+            {saving ? t("onboarding.joining") : t("onboarding.join")}
           </Text>
         </Pressable>
       </ScrollView>

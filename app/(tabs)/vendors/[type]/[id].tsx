@@ -85,7 +85,7 @@ export default function VendorDetailScreen() {
 
   const handleSave = () => {
     if (!name.trim()) {
-      Alert.alert("Erreur", "Le nom est obligatoire");
+      Alert.alert(t("common:error"), t("nameRequired"));
       return;
     }
 
@@ -138,11 +138,11 @@ export default function VendorDetailScreen() {
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Stack.Screen
         options={{
-          title: isNew ? `Nouveau ${typeName}` : name || typeName,
+          title: isNew ? t("new", { type: typeName }) : name || typeName,
           headerRight: () => (
             <Pressable onPress={handleSave} className="mr-2">
               <Text className="text-primary-500 font-semibold text-base">
-                Enregistrer
+                {t("common:save")}
               </Text>
             </Pressable>
           ),
@@ -150,7 +150,7 @@ export default function VendorDetailScreen() {
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Status selector */}
-        <SectionTitle>Statut</SectionTitle>
+        <SectionTitle>{t("statusLabel")}</SectionTitle>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -169,40 +169,40 @@ export default function VendorDetailScreen() {
         </ScrollView>
 
         {/* Information section */}
-        <SectionTitle>Informations</SectionTitle>
+        <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
-          <InputRow label="Nom de l'entreprise *" value={name} onChangeText={setName} />
-          <InputRow label="Contact / Responsable" value={contactName} onChangeText={setContactName} />
-          <InputRow label="Téléphone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-          <InputRow label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-          <InputRow label="Site web" value={website} onChangeText={setWebsite} />
+          <InputRow label={t("companyName")} value={name} onChangeText={setName} />
+          <InputRow label={t("contact")} value={contactName} onChangeText={setContactName} />
+          <InputRow label={t("phoneLabel")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+          <InputRow label={t("emailLabel")} value={email} onChangeText={setEmail} keyboardType="email-address" />
+          <InputRow label={t("website")} value={website} onChangeText={setWebsite} />
         </FormCard>
 
         {/* Pricing section */}
-        <SectionTitle>Tarification</SectionTitle>
+        <SectionTitle>{t("pricing")}</SectionTitle>
         <FormCard>
           <InputRow
-            label={typeConfig.basePriceLabel || "Prix total (€)"}
+            label={typeConfig.basePriceLabel || t("totalPrice")}
             value={basePrice}
             onChangeText={setBasePrice}
             keyboardType="numeric"
           />
           {typeConfig.showPricePerPerson === "visible" && (
             <InputRow
-              label={typeConfig.pricePerPersonLabel || "Prix par personne (€)"}
+              label={typeConfig.pricePerPersonLabel || t("pricePerPerson")}
               value={pricePerPerson}
               onChangeText={setPricePerPerson}
               keyboardType="numeric"
             />
           )}
           <InputRow
-            label="Acompte (€)"
+            label={t("deposit")}
             value={depositAmount}
             onChangeText={setDepositAmount}
             keyboardType="numeric"
           />
           <ToggleRow
-            label="Acompte versé"
+            label={t("depositPaid")}
             value={depositPaid}
             onToggle={() => setDepositPaid(!depositPaid)}
           />
@@ -213,7 +213,7 @@ export default function VendorDetailScreen() {
           onPress={() => setShowDates(!showDates)}
           className="flex-row items-center justify-between mb-2 mt-1"
         >
-          <SectionTitle>Dates</SectionTitle>
+          <SectionTitle>{t("dates")}</SectionTitle>
           {showDates ? (
             <ChevronUp size={16} color="#9CA3AF" />
           ) : (
@@ -222,17 +222,17 @@ export default function VendorDetailScreen() {
         </Pressable>
         {showDates && (
           <FormCard>
-            <InputRow label="Date du devis" value={quoteDate} onChangeText={setQuoteDate} placeholder="2026-03-15" />
-            <InputRow label="Validité du devis" value={validityDate} onChangeText={setValidityDate} placeholder="2026-04-15" />
-            <InputRow label="Date limite acompte" value={depositDueDate} onChangeText={setDepositDueDate} placeholder="2026-05-01" />
-            <InputRow label="Date limite solde" value={balanceDueDate} onChangeText={setBalanceDueDate} placeholder="2026-08-01" />
+            <InputRow label={t("quoteDate")} value={quoteDate} onChangeText={setQuoteDate} placeholder="2026-03-15" />
+            <InputRow label={t("validityDate")} value={validityDate} onChangeText={setValidityDate} placeholder="2026-04-15" />
+            <InputRow label={t("depositDueDate")} value={depositDueDate} onChangeText={setDepositDueDate} placeholder="2026-05-01" />
+            <InputRow label={t("balanceDueDate")} value={balanceDueDate} onChangeText={setBalanceDueDate} placeholder="2026-08-01" />
           </FormCard>
         )}
 
         {/* Type-specific custom sections */}
         {typeConfig.customSections.length > 0 && (
           <>
-            <SectionTitle>{`Détails ${typeName.toLowerCase()}`}</SectionTitle>
+            <SectionTitle>{t("details", { type: typeName.toLowerCase() })}</SectionTitle>
             <FormCard>
               {typeConfig.customSections.map((section) => (
                 <CustomFieldRenderer
@@ -247,17 +247,17 @@ export default function VendorDetailScreen() {
         )}
 
         {/* Rating */}
-        <SectionTitle>Note personnelle</SectionTitle>
+        <SectionTitle>{t("personalRating")}</SectionTitle>
         <FormCard>
           <RatingStars rating={rating} onChange={setRating} size={32} />
         </FormCard>
 
         {/* Notes */}
-        <SectionTitle>Notes</SectionTitle>
+        <SectionTitle>{t("notesLabel")}</SectionTitle>
         <FormCard>
           <TextInput
             className="text-base text-gray-900 dark:text-white min-h-[100px]"
-            placeholder="Observations, détails du devis..."
+            placeholder={t("notesPlaceholder")}
             placeholderTextColor="#D0D0D8"
             value={notes}
             onChangeText={setNotes}
@@ -273,7 +273,7 @@ export default function VendorDetailScreen() {
             className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
           >
             <Text className="text-red-500 font-semibold text-sm">
-              Supprimer ce prestataire
+              {t("deleteVendor")}
             </Text>
           </Pressable>
         )}
@@ -283,9 +283,9 @@ export default function VendorDetailScreen() {
 
       <ConfirmSheet
         visible={showDelete}
-        title="Supprimer ce prestataire ?"
-        message="Cette action est irréversible. Toutes les données associées seront perdues."
-        confirmLabel="Supprimer"
+        title={t("deleteVendorConfirm")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
