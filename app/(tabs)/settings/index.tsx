@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -116,21 +116,32 @@ export default function SettingsScreen() {
     }
   }, [activeEntry]);
 
-  const handleFieldBlur = useCallback((changedField?: string) => {
-    updateWedding({
-      partner1Name: partner1 || null,
-      partner2Name: partner2 || null,
-      weddingDate: weddingDate || null,
-      venueName: venueName || null,
-      budgetTarget: budgetTarget ? parseFloat(budgetTarget) : null,
-      currency: currency || "EUR",
-    });
-
-    if (changedField === "weddingDate" && weddingDate && weddingDate !== wedding?.weddingDate) {
-      const updated = recalculateDueDates(tasks, weddingDate);
-      setTasks(updated);
+  // Auto-save with debounce whenever any field changes
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    // Skip the initial render to avoid overwriting store with initial state
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency, wedding, tasks]);
+    const timer = setTimeout(() => {
+      const oldDate = wedding?.weddingDate;
+      updateWedding({
+        partner1Name: partner1 || null,
+        partner2Name: partner2 || null,
+        weddingDate: weddingDate || null,
+        venueName: venueName || null,
+        budgetTarget: budgetTarget ? parseFloat(budgetTarget) : null,
+        currency: currency || "EUR",
+      });
+
+      if (weddingDate && weddingDate !== oldDate) {
+        const updated = recalculateDueDates(tasks, weddingDate);
+        setTasks(updated);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency]);
 
   const handleGenerateTemplate = useCallback(() => {
     const doGenerate = () => {
@@ -203,12 +214,12 @@ export default function SettingsScreen() {
       <View className="px-4 pt-4">
         <SectionTitle>Informations du mariage</SectionTitle>
         <FormCard>
-          <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" onBlur={() => handleFieldBlur()} />
-          <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" onBlur={() => handleFieldBlur()} />
-          <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" onBlur={() => handleFieldBlur("weddingDate")} />
-          <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" onBlur={() => handleFieldBlur()} />
-          <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" onBlur={() => handleFieldBlur()} />
-          <InputRow label="Devise" value={currency} onChangeText={setCurrency} placeholder="EUR" onBlur={() => handleFieldBlur()} />
+          <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" />
+          <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" />
+          <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
+          <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" />
+          <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" />
+          <InputRow label="Devise" value={currency} onChangeText={setCurrency} placeholder="EUR" />
         </FormCard>
       </View>
 
