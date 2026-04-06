@@ -266,7 +266,7 @@ function PreparationView() {
       ) : viewMode === "timeline" ? (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {Object.entries(groupedByMonth).map(([month, monthTasks]) => (
-            <CollapsibleSection key={month} title={month} count={monthTasks.length}>
+            <CollapsibleSection key={month} title={month} count={monthTasks.length} defaultExpanded>
               {monthTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -388,7 +388,7 @@ function AgendaView() {
       ) : (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {Object.entries(groupedByMonth).map(([month, monthEvents]) => (
-            <CollapsibleSection key={month} title={month} count={monthEvents.length}>
+            <CollapsibleSection key={month} title={month} count={monthEvents.length} defaultExpanded>
               {monthEvents.map((event) => {
                 const vendor = event.vendorId
                   ? vendors.find((v) => v.id === event.vendorId)

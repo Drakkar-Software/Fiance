@@ -23,7 +23,6 @@ import {
 } from "@/db/types";
 import type { RsvpStatus, InvitationType } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
-import { FilterTabs } from "@/components/FilterTabs";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -184,20 +183,11 @@ function GuestsView() {
     { key: "NO_TABLE", label: t("noTable"), count: counts.nb_no_table },
   ];
 
-  const typeCounts = useMemo(() => {
-    const c = { CEREMONY: 0, COCKTAIL: 0, FULL: 0, BOTH_DAYS: 0 };
-    for (const g of guests) {
-      if (g.invitationType in c) c[g.invitationType as keyof typeof c]++;
-    }
-    return c;
-  }, [guests]);
-
   const typeTabs = [
-    { key: "ALL", label: t("all"), count: counts.total },
-    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: typeCounts.CEREMONY },
-    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: typeCounts.COCKTAIL },
-    { key: "FULL", label: t("invitationTypes.FULL"), count: typeCounts.FULL },
-    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: typeCounts.BOTH_DAYS },
+    { key: "CEREMONY", label: t("invitationTypes.CEREMONY") },
+    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL") },
+    { key: "FULL", label: t("invitationTypes.FULL") },
+    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS") },
   ];
 
   return (
@@ -221,20 +211,61 @@ function GuestsView() {
         </View>
       </View>
 
-      {/* Filters */}
-      <View className="mt-3">
-        <FilterTabs
-          tabs={rsvpTabs}
-          activeKey={rsvpFilter}
-          onSelect={setRsvpFilter}
-          className="mb-1"
-        />
-        <FilterTabs
-          tabs={typeTabs}
-          activeKey={typeFilter}
-          onSelect={setTypeFilter}
-        />
-      </View>
+      {/* Filters — single row: RSVP (filled) + separator + Type (outline, toggle) */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="mt-3 mb-4"
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+      >
+        {rsvpTabs.map((tab) => {
+          const isActive = tab.key === rsvpFilter;
+          return (
+            <Pressable
+              key={tab.key}
+              onPress={() => setRsvpFilter(tab.key)}
+              className={`px-4 py-2 rounded-full border ${
+                isActive
+                  ? "bg-primary-500 border-primary-500"
+                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+              }`}
+            >
+              <Text
+                className={`text-sm font-medium ${
+                  isActive ? "text-white" : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {tab.label} ({tab.count})
+              </Text>
+            </Pressable>
+          );
+        })}
+        <View className="w-px bg-gray-200 dark:bg-gray-700 my-1" />
+        {typeTabs.map((tab) => {
+          const isActive = tab.key === typeFilter;
+          return (
+            <Pressable
+              key={tab.key}
+              onPress={() => setTypeFilter(isActive ? "ALL" : tab.key)}
+              className={`px-4 py-2 rounded-full border ${
+                isActive
+                  ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+              }`}
+            >
+              <Text
+                className={`text-sm font-medium ${
+                  isActive
+                    ? "text-primary-500"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
 
       {/* Guest list */}
       {filteredGuests.length === 0 ? (
@@ -260,7 +291,6 @@ function GuestsView() {
                   key={group.id}
                   title={group.name}
                   count={gList.length}
-                  defaultExpanded={false}
                 >
                   {gList.map((guest) => (
                     <GuestCard key={guest.id} guest={guest} />
