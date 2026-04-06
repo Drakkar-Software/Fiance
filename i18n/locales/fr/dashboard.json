@@ -26,8 +26,10 @@
   "myInspirations": "Mes inspirations",
   "idea_one": "{{count}} idée sauvegardée",
   "idea_other": "{{count}} idées sauvegardées",
-  "nextAppointment": "Prochain rendez-vous",
+  "nextAppointments": "Prochains rendez-vous",
   "noUpcomingAppointment": "Aucun rendez-vous à venir",
+  "nextTasks": "Prochaines tâches",
+  "noUpcomingTask": "Aucune tâche à faire",
   "installApp": "Installer l'application",
   "installAppDesc": "Accédez à WeddingOS depuis votre écran d'accueil",
   "installIosSteps": "Appuyez sur le bouton Partager puis « Sur l'écran d'accueil »"

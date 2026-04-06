@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X, Clock } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
@@ -28,7 +28,7 @@ export default function DashboardScreen() {
     [tasks]
   );
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
-  const nextEvent = React.useMemo(() => {
+  const next3Events = React.useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
     return [...agendaEvents]
       .filter((e) => e.date >= today)
@@ -36,8 +36,20 @@ export default function DashboardScreen() {
         const d = a.date.localeCompare(b.date);
         if (d !== 0) return d;
         return (a.time || "").localeCompare(b.time || "");
-      })[0] || null;
+      })
+      .slice(0, 3);
   }, [agendaEvents]);
+  const next3Tasks = React.useMemo(() => {
+    return [...tasks]
+      .filter((task) => task.status === "TODO")
+      .sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.localeCompare(b.dueDate);
+      })
+      .slice(0, 3);
+  }, [tasks]);
   const criticalUnstarted = React.useMemo(
     () => tasks.filter((task) => {
       if (task.priority !== "CRITICAL" || task.status !== "TODO" || !task.dueDate) return false;
@@ -384,9 +396,9 @@ export default function DashboardScreen() {
           <ChevronRight size={18} color="#C0C0C8" />
         </Pressable>
 
-        {/* Next appointment */}
+        {/* Next appointments */}
         <Pressable
-          onPress={() => router.push("/(tabs)/planning")}
+          onPress={() => router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center justify-between mb-3">
@@ -395,49 +407,94 @@ export default function DashboardScreen() {
                 <Calendar size={16} color="#EC4899" />
               </View>
               <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                {t("nextAppointment")}
+                {t("nextAppointments")}
               </Text>
             </View>
             <ChevronRight size={18} color="#C0C0C8" />
           </View>
-          {nextEvent ? (
-            <View className="flex-row items-start">
-              <View className="w-14 items-center mr-3">
-                <Text className="text-lg font-bold text-primary-500">
-                  {safeFormat(new Date(nextEvent.date + "T00:00:00"), "dd")}
-                </Text>
-                <Text className="text-xs text-gray-400 capitalize">
-                  {safeFormat(new Date(nextEvent.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900 dark:text-white">
-                  {nextEvent.title}
-                </Text>
-                <View className="flex-row items-center gap-3 mt-1 flex-wrap">
-                  {nextEvent.time && (
-                    <View className="flex-row items-center gap-1">
-                      <Clock size={12} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-400">
-                        {nextEvent.time}
-                        {nextEvent.endTime ? ` - ${nextEvent.endTime}` : ""}
-                      </Text>
+          {next3Events.length > 0 ? (
+            <View className="gap-3">
+              {next3Events.map((event) => (
+                <View key={event.id} className="flex-row items-start">
+                  <View className="w-14 items-center mr-3">
+                    <Text className="text-lg font-bold text-primary-500">
+                      {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
+                    </Text>
+                    <Text className="text-xs text-gray-400 capitalize">
+                      {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-gray-900 dark:text-white">
+                      {event.title}
+                    </Text>
+                    <View className="flex-row items-center gap-3 mt-1 flex-wrap">
+                      {event.time && (
+                        <View className="flex-row items-center gap-1">
+                          <Clock size={12} color="#9CA3AF" />
+                          <Text className="text-xs text-gray-400">
+                            {event.time}
+                            {event.endTime ? ` - ${event.endTime}` : ""}
+                          </Text>
+                        </View>
+                      )}
+                      {event.location && (
+                        <View className="flex-row items-center gap-1">
+                          <MapPin size={12} color="#9CA3AF" />
+                          <Text className="text-xs text-gray-400" numberOfLines={1}>
+                            {event.location}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                  )}
-                  {nextEvent.location && (
-                    <View className="flex-row items-center gap-1">
-                      <MapPin size={12} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-400" numberOfLines={1}>
-                        {nextEvent.location}
-                      </Text>
-                    </View>
-                  )}
+                  </View>
                 </View>
-              </View>
+              ))}
             </View>
           ) : (
             <Text className="text-sm text-gray-400">
               {t("noUpcomingAppointment")}
+            </Text>
+          )}
+        </Pressable>
+
+        {/* Next tasks */}
+        <Pressable
+          onPress={() => router.push("/(tabs)/planning")}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+        >
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-row items-center">
+              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
+                <Circle size={16} color="#C9956B" />
+              </View>
+              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                {t("nextTasks")}
+              </Text>
+            </View>
+            <ChevronRight size={18} color="#C0C0C8" />
+          </View>
+          {next3Tasks.length > 0 ? (
+            <View className="gap-2.5">
+              {next3Tasks.map((task) => (
+                <View key={task.id} className="flex-row items-center">
+                  <Circle size={16} color="#D1D5DB" />
+                  <View className="flex-1 ml-3">
+                    <Text className="text-sm font-medium text-gray-900 dark:text-white" numberOfLines={1}>
+                      {task.title}
+                    </Text>
+                    {task.dueDate && (
+                      <Text className="text-xs text-gray-400 mt-0.5">
+                        {safeFormat(new Date(task.dueDate + "T00:00:00"), "d MMM", { locale: getDateLocale() })}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text className="text-sm text-gray-400">
+              {t("noUpcomingTask")}
             </Text>
           )}
         </Pressable>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
@@ -33,7 +33,17 @@ const ASPECTS: PlanningAspect[] = ["preparation", "agenda", "day-of"];
 export default function PlanningScreen() {
   const { t } = useTranslation("planning");
   const router = useRouter();
-  const [aspect, setAspect] = useState<PlanningAspect>("preparation");
+  const params = useLocalSearchParams<{ aspect?: string }>();
+  const initialAspect = ASPECTS.includes(params.aspect as PlanningAspect)
+    ? (params.aspect as PlanningAspect)
+    : "preparation";
+  const [aspect, setAspect] = useState<PlanningAspect>(initialAspect);
+
+  React.useEffect(() => {
+    if (ASPECTS.includes(params.aspect as PlanningAspect)) {
+      setAspect(params.aspect as PlanningAspect);
+    }
+  }, [params.aspect]);
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
