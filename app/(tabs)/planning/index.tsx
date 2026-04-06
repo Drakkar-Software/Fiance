@@ -6,8 +6,8 @@ import {
   List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
   Clock, MapPin, User,
 } from "lucide-react-native";
-import { format, isBefore } from "date-fns";
-import { getDateLocale } from "@/i18n/dateFnsLocale";
+import { isBefore } from "date-fns";
+import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -144,7 +144,7 @@ function PreparationView() {
     const groups: Record<string, typeof filteredTasks> = {};
     filteredTasks.forEach((task) => {
       const key = task.dueDate
-        ? format(new Date(task.dueDate), "MMMM yyyy", { locale: getDateLocale() })
+        ? safeFormat(new Date(task.dueDate), "MMMM yyyy", { locale: getDateLocale() })
         : t("common:noDate");
       if (!groups[key]) groups[key] = [];
       groups[key].push(task);
@@ -337,7 +337,7 @@ function AgendaView() {
   const groupedByMonth = useMemo(() => {
     const groups: Record<string, typeof sortedEvents> = {};
     sortedEvents.forEach((e) => {
-      const key = format(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: getDateLocale() });
+      const key = safeFormat(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: getDateLocale() });
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
@@ -403,10 +403,10 @@ function AgendaView() {
                     <View className="flex-row items-start">
                       <View className="w-14 items-center mr-3">
                         <Text className="text-lg font-bold text-primary-500">
-                          {format(new Date(event.date + "T00:00:00"), "dd")}
+                          {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
                         </Text>
                         <Text className="text-xs text-gray-400 capitalize">
-                          {format(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
+                          {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                         </Text>
                       </View>
                       <View className="flex-1">

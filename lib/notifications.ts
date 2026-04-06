@@ -60,17 +60,17 @@ export async function scheduleTaskNotification(task: Task): Promise<void> {
   const id = taskIdentifier(task.id);
 
   if (task.status === "DONE") {
-    await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
+    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
   const trigger = getTaskTriggerDate(task);
   if (!trigger) {
-    await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
+    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
-  await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
   await Notifications.scheduleNotificationAsync({
     identifier: id,
     content: {
@@ -86,7 +86,7 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
   const id = agendaIdentifier(event.id);
   const trigger = getAgendaTriggerDate(event);
   if (!trigger) {
-    await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
+    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
@@ -94,7 +94,7 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
     ? i18n.t("planning:notifications.agendaReminderWithTime", { title: event.title, time: event.time })
     : i18n.t("planning:notifications.agendaReminder", { title: event.title });
 
-  await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
   await Notifications.scheduleNotificationAsync({
     identifier: id,
     content: {
@@ -107,7 +107,7 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
 }
 
 export async function cancelNotification(identifier: string): Promise<void> {
-  await Notifications.cancelScheduledNotificationAsync(identifier).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(identifier).catch((e) => console.warn("[notifications] cancel failed:", e));
 }
 
 export async function cancelAllNotifications(): Promise<void> {

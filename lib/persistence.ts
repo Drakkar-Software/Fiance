@@ -65,7 +65,8 @@ export function loadFromLocalStorage(): boolean {
     if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
     if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
     return true;
-  } catch {
+  } catch (err) {
+    console.error("[persistence] Failed to load from localStorage:", err);
     return false;
   }
 }

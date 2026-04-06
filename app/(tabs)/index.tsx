@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X, Clock } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
-import { getDateLocale } from "@/i18n/dateFnsLocale";
+import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -404,10 +404,10 @@ export default function DashboardScreen() {
             <View className="flex-row items-start">
               <View className="w-14 items-center mr-3">
                 <Text className="text-lg font-bold text-primary-500">
-                  {format(new Date(nextEvent.date + "T00:00:00"), "dd")}
+                  {safeFormat(new Date(nextEvent.date + "T00:00:00"), "dd")}
                 </Text>
                 <Text className="text-xs text-gray-400 capitalize">
-                  {format(new Date(nextEvent.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
+                  {safeFormat(new Date(nextEvent.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                 </Text>
               </View>
               <View className="flex-1">

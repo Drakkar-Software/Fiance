@@ -41,8 +41,8 @@ export function saveToLocalStorage(): void {
   if (Platform.OS !== "web") return;
   try {
     localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(createBackupDocument()));
-  } catch {
-    // localStorage full or unavailable
+  } catch (err) {
+    console.warn("[sync] saveToLocalStorage failed:", err);
   }
 }
 
