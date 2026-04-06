@@ -8,9 +8,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Heart, PlusCircle, Link, ArrowLeft } from "lucide-react-native";
+import { PlusCircle, Link, ArrowLeft } from "lucide-react-native";
 import { generatePassphrase } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 
@@ -67,9 +68,10 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
       <View className="items-center mb-10">
-        <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
-          <Heart size={36} color="#EC4899" />
-        </View>
+        <Image
+          source={require("@/assets/icon.png")}
+          className="w-20 h-20 rounded-2xl mb-5"
+        />
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
           WeddingOS
         </Text>
