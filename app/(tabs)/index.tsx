@@ -96,13 +96,15 @@ export default function DashboardScreen() {
           borderBottomRightRadius: 32,
         }}
       >
-        <Pressable
-          onPress={() => router.push("/(tabs)/settings")}
-          className="absolute top-16 right-4 w-11 h-11 rounded-full bg-white/15 items-center justify-center"
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Settings size={22} color="rgba(255,255,255,0.85)" />
-        </Pressable>
+        <View className="absolute top-14 right-3 z-10" pointerEvents="box-none">
+          <Pressable
+            onPress={() => router.push("/(tabs)/settings")}
+            className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Settings size={22} color="rgba(255,255,255,0.85)" />
+          </Pressable>
+        </View>
         <Text className="text-white/70 text-sm font-medium tracking-wide">
           {wedding?.partner1Name && wedding?.partner2Name
             ? `${wedding.partner1Name} & ${wedding.partner2Name}`
