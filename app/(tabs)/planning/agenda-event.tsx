@@ -31,7 +31,7 @@ export default function AgendaEventScreen() {
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
-  const canSave = title.trim().length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(date.trim()) && !isNaN(new Date(date.trim()).getTime());
+  const canSave = title.trim().length > 0 && date.trim().length > 0 && !isNaN(new Date(date.trim()).getTime());
 
   const handleSave = () => {
     if (!title.trim()) {

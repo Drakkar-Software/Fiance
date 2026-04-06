@@ -85,13 +85,13 @@ export function restoreFromBackup(
   const quotePricings = ((backup.quotePricings || []) as any[]).map(migrateQuotePricing);
   const ideas = ((backup.ideas || []) as any[]).map(migrateIdea);
 
-  // v3 → v4: added companionId field on guests (nullable, no migration needed)
-
   // v2 → v3: migrate DINNER/NEXT_DAY invitation types and pppSource
   const migrateInvType = (t: string) =>
     t === "DINNER" ? "FULL" : t === "NEXT_DAY" ? "BOTH_DAYS" : t;
   const migratePppSource = (s: string | null) =>
     s === "DINNER" ? "FULL" : s === "NEXT_DAY" ? "BOTH_DAYS" : s;
+
+  // v3 → v4: added companionId field on guests (nullable, no migration needed)
 
   if (db) {
     // Native: write to SQLite (source of truth) then re-hydrate stores from it

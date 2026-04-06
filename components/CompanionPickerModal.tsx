@@ -6,7 +6,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -55,7 +55,8 @@ export function CompanionPickerModal({
       .sort((a, b) => a.lastName.localeCompare(b.lastName));
   }, [guests, currentGuestId, search]);
 
-  const maxHeight = Dimensions.get("window").height * 0.6;
+  const { height: windowHeight } = useWindowDimensions();
+  const maxHeight = windowHeight * 0.6;
 
   return (
     <Modal
