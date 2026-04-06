@@ -224,6 +224,28 @@ const CONFIGS: Partial<Record<VendorType, Partial<VendorTypeFormConfig>>> = {
       },
     ],
   },
+  CLOTHING: {
+    customSections: [
+      {
+        key: "clothingType",
+        label: "Type de tenue",
+        type: "text",
+        placeholder: "Robe de mariée, costume marié, robes demoiselles...",
+      },
+      {
+        key: "fittingDate",
+        label: "Date de l'essayage",
+        type: "text",
+        placeholder: "2026-06-15",
+      },
+      {
+        key: "alterations",
+        label: "Retouches incluses",
+        type: "text",
+        placeholder: "Ourlet, ajustement taille, voile...",
+      },
+    ],
+  },
 };
 
 export function getVendorTypeConfig(type: VendorType): VendorTypeFormConfig {

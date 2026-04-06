@@ -38,6 +38,7 @@ export type VendorType =
   | "STATIONERY"
   | "FURNITURE_RENTAL"
   | "HOTEL"
+  | "CLOTHING"
   | "SECURITY"
   | "OTHER";
 
@@ -114,6 +115,7 @@ export const VENDOR_TYPE_LABELS: Record<VendorType, string> = {
   STATIONERY: "vendors:types.STATIONERY",
   FURNITURE_RENTAL: "vendors:types.FURNITURE_RENTAL",
   HOTEL: "vendors:types.HOTEL",
+  CLOTHING: "vendors:types.CLOTHING",
   SECURITY: "vendors:types.SECURITY",
   OTHER: "vendors:types.OTHER",
 };
@@ -212,7 +214,7 @@ export const BUDGET_CATEGORIES: Record<string, VendorType[]> = {
   photo_video: ["PHOTOGRAPHER", "VIDEOGRAPHER", "PHOTO_BOOTH"],
   music_entertainment: ["DJ", "BAND", "KIDS_ENTERTAINER"],
   flowers_decor: ["FLORIST"],
-  beauty: ["HAIR_MAKEUP"],
+  beauty: ["HAIR_MAKEUP", "CLOTHING"],
   transport: ["TRANSPORT", "SHUTTLE"],
   accommodation: ["HOTEL"],
   stationery: ["STATIONERY"],
@@ -301,6 +303,7 @@ import {
   Mail,
   Box,
   Hotel,
+  Shirt,
   ShieldCheck,
   Ellipsis,
 } from "lucide-react-native";
@@ -324,6 +327,7 @@ export const VENDOR_TYPE_ICONS: Record<VendorType, LucideIcon> = {
   STATIONERY: Mail,
   FURNITURE_RENTAL: Box,
   HOTEL: Hotel,
+  CLOTHING: Shirt,
   SECURITY: ShieldCheck,
   OTHER: Ellipsis,
 };

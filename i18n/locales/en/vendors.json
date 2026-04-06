@@ -18,6 +18,7 @@
     "STATIONERY": "Stationery / Designer",
     "FURNITURE_RENTAL": "Furniture rental / Decor",
     "HOTEL": "Hotel / Accommodation",
+    "CLOTHING": "Clothing / Dresses",
     "SECURITY": "Security",
     "OTHER": "Other vendor"
   },
@@ -116,5 +117,8 @@
   "validityDate": "Quote validity",
   "depositDueDate": "Deposit deadline",
   "balanceDueDate": "Balance deadline",
+  "clothingType": "Clothing type",
+  "fittingDate": "Fitting date",
+  "alterations": "Alterations included",
   "details": "{{type}} details"
 }

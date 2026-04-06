@@ -18,6 +18,7 @@
     "STATIONERY": "Faire-part / Graphiste",
     "FURNITURE_RENTAL": "Location mobilier / Déco",
     "HOTEL": "Hôtel / Hébergement",
+    "CLOTHING": "Tenues / Robes",
     "SECURITY": "Sécurité / Agent",
     "OTHER": "Autre prestataire"
   },
@@ -116,5 +117,8 @@
   "validityDate": "Validité du devis",
   "depositDueDate": "Date limite acompte",
   "balanceDueDate": "Date limite solde",
+  "clothingType": "Type de tenue",
+  "fittingDate": "Date de l'essayage",
+  "alterations": "Retouches incluses",
   "details": "Détails {{type}}"
 }
