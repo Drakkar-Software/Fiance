@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { calculateCatererScore, calculateCatererTotal } from "@/lib/budget";
@@ -10,6 +11,7 @@ import { formatMoney } from "@/components/MoneyDisplay";
 import { ProgressBar } from "@/components/ProgressBar";
 
 export default function CompareScreen() {
+  const { t } = useTranslation("vendors");
   const vendors = useVendorsStore((s) =>
     s.vendors.filter((v) => v.type === "CATERER")
   );
@@ -32,14 +34,14 @@ export default function CompareScreen() {
 
   const pricingKeys: PricingKey[] = [
     "cocktail",
-    "repas",
-    "boisson",
-    "lendemain",
-    "vaisselle",
-    "nappe",
-    "vegetarien",
-    "enfant",
-    "presta",
+    "dinner",
+    "drinks",
+    "next-day",
+    "tableware",
+    "linen",
+    "vegetarian",
+    "child",
+    "service",
   ];
 
   if (caterers.length === 0) {
@@ -120,7 +122,7 @@ export default function CompareScreen() {
             className="flex-row py-2 border-b border-gray-50 dark:border-gray-800"
           >
             <Text className="flex-1 text-sm text-gray-700 dark:text-gray-300">
-              {PRICING_KEY_LABELS[key]}
+              {t(PRICING_KEY_LABELS[key])}
             </Text>
             {caterers.map((c) => {
               const pricing = c.pricings.find((p) => p.pricingKey === key);

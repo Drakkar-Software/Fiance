@@ -1,0 +1,29 @@
+{
+  "tabs": {
+    "home": "Accueil",
+    "vendors": "Prestataires",
+    "guests": "Invités",
+    "planning": "Planning",
+    "ideas": "Idées",
+    "budget": "Budget",
+    "settings": "Réglages"
+  },
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "create": "Créer",
+  "add": "Ajouter",
+  "edit": "Modifier",
+  "none": "Aucun",
+  "error": "Erreur",
+  "confirm": "Confirmer",
+  "back": "Retour",
+  "search": "Rechercher",
+  "all": "Tous",
+  "noDate": "Sans date",
+  "today": "Aujourd'hui",
+  "overdue": "En retard",
+  "months": "mois",
+  "days": "j",
+  "version": "Version"
+}

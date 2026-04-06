@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Briefcase } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -11,13 +12,14 @@ import { EmptyState } from "@/components/EmptyState";
 import { formatMoney } from "@/components/MoneyDisplay";
 
 export default function VendorTypeListScreen() {
+  const { t } = useTranslation("vendors");
   const { type } = useLocalSearchParams<{ type: string }>();
   const router = useRouter();
   const vendors = useVendorsStore((s) =>
     s.vendors.filter((v) => v.type === type)
   );
 
-  const typeName = VENDOR_TYPE_LABELS[type as VendorType] || type;
+  const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
@@ -31,7 +33,7 @@ export default function VendorTypeListScreen() {
           actionLabel="Ajouter"
           onAction={() =>
             router.push({
-              pathname: "/(tabs)/prestataires/[type]/[id]",
+              pathname: "/(tabs)/vendors/[type]/[id]",
               params: { type: type!, id: "new" },
             })
           }
@@ -43,7 +45,7 @@ export default function VendorTypeListScreen() {
               key={vendor.id}
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/prestataires/[type]/[id]",
+                  pathname: "/(tabs)/vendors/[type]/[id]",
                   params: { type: vendor.type, id: vendor.id },
                 })
               }
@@ -61,7 +63,7 @@ export default function VendorTypeListScreen() {
                   )}
                 </View>
                 <StatusBadge
-                  label={VENDOR_STATUS_LABELS[vendor.status as keyof typeof VENDOR_STATUS_LABELS] || ""}
+                  label={t(VENDOR_STATUS_LABELS[vendor.status as keyof typeof VENDOR_STATUS_LABELS] || "")}
                   color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
                 />
               </View>
@@ -79,7 +81,7 @@ export default function VendorTypeListScreen() {
       <FAB
         onPress={() =>
           router.push({
-            pathname: "/(tabs)/prestataires/[type]/[id]",
+            pathname: "/(tabs)/vendors/[type]/[id]",
             params: { type: type!, id: "new" },
           })
         }

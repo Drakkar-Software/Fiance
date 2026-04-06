@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
-import { VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS } from "@/db/types";
+import { VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS, BUDGET_CATEGORY_LABELS } from "@/db/types";
 import type { VendorStatus } from "@/db/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
@@ -14,6 +15,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { InputRow, ChipSelect } from "@/components/FormSection";
 
 export default function BudgetScreen() {
+  const { t } = useTranslation("budget");
   const router = useRouter();
   const budget = useBudgetSummary();
   const vendors = useVendorsStore((s) => s.vendors);
@@ -49,7 +51,7 @@ export default function BudgetScreen() {
       if (v.depositDueDate && !v.depositPaid && v.depositAmount) {
         payments.push({
           vendorName: v.name,
-          type: "Acompte",
+          type: "depositPayment",
           amount: v.depositAmount,
           dueDate: v.depositDueDate,
         });
@@ -59,7 +61,7 @@ export default function BudgetScreen() {
         if (balance > 0) {
           payments.push({
             vendorName: v.name,
-            type: "Solde",
+            type: "balancePayment",
             amount: balance,
             dueDate: v.balanceDueDate,
           });
@@ -81,26 +83,26 @@ export default function BudgetScreen() {
       <View className="bg-white dark:bg-gray-900 mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
-            Budget global
+            {t("globalBudget")}
           </Text>
           {budget.isEstimate && (
             <View className="bg-blue-50 dark:bg-blue-900 px-2.5 py-1 rounded-full">
               <Text className="text-xs text-blue-600 dark:text-blue-300 font-medium">
-                Estimation
+                {t("estimate")}
               </Text>
             </View>
           )}
         </View>
 
         <InputRow
-          label="Budget cible"
+          label={t("targetBudget")}
           value={budgetTarget}
           onChangeText={setBudgetTarget}
           placeholder="30000"
           keyboardType="numeric"
         />
         <View className="mt-1 mb-3">
-          <Text className="text-xs text-gray-400 mb-2 font-medium">Devise</Text>
+          <Text className="text-xs text-gray-400 mb-2 font-medium">{t("currency")}</Text>
           <ChipSelect
             options={["EUR", "USD"] as const}
             value={currency as "EUR" | "USD"}
@@ -109,11 +111,11 @@ export default function BudgetScreen() {
           />
         </View>
         <View className="flex-row justify-between mb-1.5">
-          <Text className="text-sm text-gray-400">Total engagé</Text>
+          <Text className="text-sm text-gray-400">{t("totalCommitted")}</Text>
           <MoneyDisplay amount={budget.totalEngaged} size="sm" />
         </View>
         <View className="flex-row justify-between mb-4">
-          <Text className="text-sm text-gray-400">Total confirmé</Text>
+          <Text className="text-sm text-gray-400">{t("totalConfirmed")}</Text>
           <MoneyDisplay amount={budget.totalConfirmed} size="sm" />
         </View>
 
@@ -126,7 +128,7 @@ export default function BudgetScreen() {
 
         <View className="flex-row justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Reste à payer
+            {t("remainingToPay")}
           </Text>
           <Text
             className={`text-xl font-bold ${
@@ -139,7 +141,7 @@ export default function BudgetScreen() {
         {budget.budgetTarget > 0 && (
           <View className="flex-row justify-between mt-2">
             <Text className="text-sm text-gray-400">
-              Reste à engager
+              {t("remaining")}
             </Text>
             <Text
               className={`text-sm font-medium ${
@@ -155,16 +157,16 @@ export default function BudgetScreen() {
       {/* Deposits summary */}
       <View className="bg-white dark:bg-gray-900 mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-          Acomptes
+          {t("deposits")}
         </Text>
         <View className="flex-row justify-between mb-2">
-          <Text className="text-sm text-gray-400">Versés</Text>
+          <Text className="text-sm text-gray-400">{t("paid")}</Text>
           <Text className="text-sm font-semibold text-emerald-500">
             {formatMoney(budget.depositsPaid)}
           </Text>
         </View>
         <View className="flex-row justify-between mb-3">
-          <Text className="text-sm text-gray-400">Total prévu</Text>
+          <Text className="text-sm text-gray-400">{t("totalExpected")}</Text>
           <Text className="text-sm font-semibold text-gray-900 dark:text-white">
             {formatMoney(budget.depositsTotal)}
           </Text>
@@ -179,7 +181,7 @@ export default function BudgetScreen() {
       {/* Categories breakdown */}
       <View className="px-4 mt-6 mb-3 flex-row items-center">
         <Text className="text-base font-bold text-gray-900 dark:text-white">
-          Par catégorie
+          {t("byCategory")}
         </Text>
       </View>
 
@@ -203,12 +205,10 @@ export default function BudgetScreen() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
                     <Text className="text-base font-medium text-gray-900 dark:text-white">
-                      {cat.categoryName}
+                      {t(BUDGET_CATEGORY_LABELS[cat.categoryName])}
                     </Text>
                     <Text className="text-xs text-gray-400 mt-0.5">
-                      {cat.vendors.length} prestataire
-                      {cat.vendors.length > 1 ? "s" : ""} · {catPercent}% du
-                      budget
+                      {t("vendor", { count: cat.vendors.length })} · {catPercent}% {t("ofBudget")}
                     </Text>
                   </View>
                   <View className="items-end mr-2">
@@ -216,7 +216,7 @@ export default function BudgetScreen() {
                       {formatMoney(cat.totalEngaged)}
                     </Text>
                     <Text className="text-xs text-emerald-500">
-                      {formatMoney(cat.totalConfirmed)} confirmé
+                      {t("confirmedAmount", { amount: formatMoney(cat.totalConfirmed) })}
                     </Text>
                   </View>
                   {isExpanded ? (
@@ -241,7 +241,7 @@ export default function BudgetScreen() {
                     key={vendor.id}
                     onPress={() =>
                       router.push({
-                        pathname: "/(tabs)/prestataires/[type]/[id]",
+                        pathname: "/(tabs)/vendors/[type]/[id]",
                         params: { type: vendor.type, id: vendor.id },
                       })
                     }
@@ -255,9 +255,9 @@ export default function BudgetScreen() {
                         <View className="flex-row items-center gap-2 mt-1">
                           <StatusBadge
                             label={
-                              VENDOR_STATUS_LABELS[
+                              t(VENDOR_STATUS_LABELS[
                                 vendor.status as VendorStatus
-                              ] || ""
+                              ] || "")
                             }
                             color={
                               VENDOR_STATUS_COLORS[
@@ -267,7 +267,7 @@ export default function BudgetScreen() {
                           />
                           {vendor.depositPaid && (
                             <Text className="text-xs text-emerald-500 font-medium">
-                              Acompte versé
+                              {t("depositPaid")}
                             </Text>
                           )}
                         </View>
@@ -288,7 +288,7 @@ export default function BudgetScreen() {
       {budget.categories.filter((c) => c.vendors.length === 0).length > 0 && (
         <View className="mx-4 mt-4 mb-2">
           <Text className="text-xs text-gray-400 mb-2 uppercase tracking-wider">
-            Catégories sans prestataire
+            {t("noVendorCategories")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {budget.categories
@@ -299,7 +299,7 @@ export default function BudgetScreen() {
                   className="px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-full"
                 >
                   <Text className="text-sm text-gray-400">
-                    {c.categoryName}
+                    {t(BUDGET_CATEGORY_LABELS[c.categoryName])}
                   </Text>
                 </View>
               ))}
@@ -311,7 +311,7 @@ export default function BudgetScreen() {
       {upcomingPayments.length > 0 && (
         <View className="mx-4 mt-6 mb-4">
           <Text className="text-base font-bold text-gray-900 dark:text-white mb-3">
-            Paiements à venir
+            {t("upcomingPayments")}
           </Text>
           {upcomingPayments.slice(0, 10).map((payment, idx) => {
             const days = differenceInDays(
@@ -333,11 +333,11 @@ export default function BudgetScreen() {
                 <View className="flex-row justify-between items-center">
                   <View>
                     <Text className="text-sm font-medium text-gray-900 dark:text-white">
-                      {payment.type} — {payment.vendorName}
+                      {t(payment.type)} — {payment.vendorName}
                     </Text>
                     <Text className="text-xs text-gray-400 mt-0.5">
                       {format(new Date(payment.dueDate), "dd/MM/yyyy")}
-                      {days >= 0 ? ` · dans ${days}j` : " · passé"}
+                      {days >= 0 ? ` · ${t("inDays", { days })}` : ` · ${t("pastDue")}`}
                     </Text>
                   </View>
                   <Text className="text-base font-bold text-gray-900 dark:text-white">

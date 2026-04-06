@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Clock, AlertCircle } from "lucide-react-native";
 import {
   differenceInDays,
@@ -13,6 +14,7 @@ interface DeadlineChipProps {
 }
 
 export function DeadlineChip({ date }: DeadlineChipProps) {
+  const { t } = useTranslation("common");
   const target = new Date(date);
   const now = new Date();
   const days = differenceInDays(target, now);
@@ -24,12 +26,12 @@ export function DeadlineChip({ date }: DeadlineChipProps) {
   let useAlert = false;
 
   if (isToday(target)) {
-    label = "Aujourd'hui";
+    label = t("today");
     bg = "#FEF2F2";
     fg = "#DC2626";
     useAlert = true;
   } else if (isPast(target)) {
-    label = "En retard";
+    label = t("overdue");
     bg = "#FEF2F2";
     fg = "#DC2626";
     useAlert = true;
@@ -42,7 +44,7 @@ export function DeadlineChip({ date }: DeadlineChipProps) {
     bg = "#EFF6FF";
     fg = "#2563EB";
   } else {
-    label = `${months} mois`;
+    label = `${months} ${t("months")}`;
     bg = "#F3F4F6";
     fg = "#6B7280";
   }

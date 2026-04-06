@@ -1,4 +1,5 @@
 import "../global.css";
+import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
 import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
@@ -11,6 +12,7 @@ import { parseInviteUrl } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import OnboardingScreen from "./onboarding";
 
 function AppContent() {
@@ -79,11 +81,14 @@ function AppContent() {
 
 export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
+  const loadLanguage = useSettingsStore((s) => s.loadLanguage);
   const [locked, setLocked] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadRegistry();
-    isLockEnabled().then((enabled) => setLocked(enabled));
+    Promise.all([loadLanguage(), isLockEnabled()]).then(([, enabled]) =>
+      setLocked(enabled)
+    );
   }, []);
 
   useEffect(() => {

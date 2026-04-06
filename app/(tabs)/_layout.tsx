@@ -1,13 +1,15 @@
 import React from "react";
 import { Platform } from "react-native";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
 import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function TabLayout() {
+  const { t } = useTranslation("common");
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
-    () => tasks.filter((t) => t.status !== "DONE" && t.dueDate && new Date(t.dueDate) < new Date()),
+    () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),
     [tasks]
   );
 
@@ -48,23 +50,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Accueil",
+          title: t("tabs.home"),
           headerShown: false,
           tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="prestataires"
+        name="vendors"
         options={{
-          title: "Prestataires",
+          title: t("tabs.vendors"),
           headerShown: false,
           tabBarIcon: ({ color }) => <Briefcase size={22} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="invites"
+        name="guests"
         options={{
-          title: "Invités",
+          title: t("tabs.guests"),
           headerShown: false,
           tabBarIcon: ({ color }) => <Users size={22} color={color} />,
         }}
@@ -72,7 +74,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="planning"
         options={{
-          title: "Planning",
+          title: t("tabs.planning"),
           headerShown: false,
           tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
           tabBarBadge: overdueTasks.length > 0 ? overdueTasks.length : undefined,
@@ -86,9 +88,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="idees"
+        name="ideas"
         options={{
-          title: "Idées",
+          title: t("tabs.ideas"),
           headerShown: false,
           href: null,
           tabBarIcon: ({ color }) => <Sparkles size={22} color={color} />,
@@ -97,7 +99,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="budget"
         options={{
-          title: "Budget",
+          title: t("tabs.budget"),
           headerShown: false,
           tabBarIcon: ({ color }) => <PieChart size={22} color={color} />,
         }}
@@ -105,7 +107,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Réglages",
+          title: t("tabs.settings"),
           headerShown: false,
           href: null,
           tabBarIcon: ({ color }) => <Settings size={22} color={color} />,

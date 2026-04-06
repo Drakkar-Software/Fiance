@@ -1,79 +1,81 @@
 import { addMonths } from "date-fns";
 import * as Crypto from "expo-crypto";
 import type { Task, TaskCategory } from "@/db/schema";
+import i18n from "@/i18n";
 
 // ─── Default categories ─────────────────────────────────────────────────────
 
-export const DEFAULT_CATEGORIES: Omit<TaskCategory, "id">[] = [
-  { name: "Administratif & légal", icon: "file-text", color: "#3B82F6", sortOrder: 1 },
-  { name: "Lieu & logistique", icon: "map-pin", color: "#10B981", sortOrder: 2 },
-  { name: "Restauration", icon: "utensils", color: "#F59E0B", sortOrder: 3 },
-  { name: "Tenues", icon: "sparkles", color: "#EC4899", sortOrder: 4 },
-  { name: "Photographie & vidéo", icon: "camera", color: "#8B5CF6", sortOrder: 5 },
-  { name: "Musique & animation", icon: "music", color: "#6366F1", sortOrder: 6 },
-  { name: "Fleurs & décoration", icon: "flower", color: "#84CC16", sortOrder: 7 },
-  { name: "Beauté", icon: "heart", color: "#F9A8D4", sortOrder: 8 },
-  { name: "Invités", icon: "users", color: "#38BDF8", sortOrder: 9 },
-  { name: "Budget & paiements", icon: "credit-card", color: "#F97316", sortOrder: 10 },
-  { name: "Voyage de noces", icon: "plane", color: "#06B6D4", sortOrder: 11 },
-  { name: "Divers", icon: "more-horizontal", color: "#9CA3AF", sortOrder: 12 },
+const CATEGORY_KEYS = [
+  { key: "planning:categories.admin", icon: "file-text", color: "#3B82F6" },
+  { key: "planning:categories.venue", icon: "map-pin", color: "#10B981" },
+  { key: "planning:categories.catering", icon: "utensils", color: "#F59E0B" },
+  { key: "planning:categories.attire", icon: "sparkles", color: "#EC4899" },
+  { key: "planning:categories.photo", icon: "camera", color: "#8B5CF6" },
+  { key: "planning:categories.music", icon: "music", color: "#6366F1" },
+  { key: "planning:categories.flowers", icon: "flower", color: "#84CC16" },
+  { key: "planning:categories.beauty", icon: "heart", color: "#F9A8D4" },
+  { key: "planning:categories.guests", icon: "users", color: "#38BDF8" },
+  { key: "planning:categories.budget", icon: "credit-card", color: "#F97316" },
+  { key: "planning:categories.honeymoon", icon: "plane", color: "#06B6D4" },
+  { key: "planning:categories.misc", icon: "more-horizontal", color: "#9CA3AF" },
 ];
 
 // ─── Template tasks ─────────────────────────────────────────────────────────
 
 interface TemplateTask {
-  title: string;
-  categoryName: string;
+  titleKey: string;
+  categoryKey: string;
   monthsBefore: number | null;
   priority: string;
 }
 
-export const TEMPLATE_TASKS: TemplateTask[] = [
-  { title: "Fixer la date du mariage", categoryName: "Administratif & légal", monthsBefore: null, priority: "CRITICAL" },
-  { title: "Définir le budget global", categoryName: "Budget & paiements", monthsBefore: null, priority: "CRITICAL" },
-  { title: "Dresser la liste des invités", categoryName: "Invités", monthsBefore: null, priority: "HIGH" },
-  { title: "Choisir le type de cérémonie (civile, religieuse, laïque)", categoryName: "Administratif & légal", monthsBefore: null, priority: "HIGH" },
-  { title: "Visiter et réserver le lieu de réception", categoryName: "Lieu & logistique", monthsBefore: 18, priority: "CRITICAL" },
-  { title: "Réserver le photographe", categoryName: "Photographie & vidéo", monthsBefore: 18, priority: "HIGH" },
-  { title: "Réserver le vidéaste", categoryName: "Photographie & vidéo", monthsBefore: 18, priority: "MEDIUM" },
-  { title: "Choisir et réserver le traiteur", categoryName: "Restauration", monthsBefore: 12, priority: "CRITICAL" },
-  { title: "Réserver le DJ / groupe musical", categoryName: "Musique & animation", monthsBefore: 12, priority: "HIGH" },
-  { title: "Choisir le fleuriste", categoryName: "Fleurs & décoration", monthsBefore: 12, priority: "MEDIUM" },
-  { title: "Publier les bans à la mairie", categoryName: "Administratif & légal", monthsBefore: 12, priority: "CRITICAL" },
-  { title: "Démarches à la mairie (dossier mariage civil)", categoryName: "Administratif & légal", monthsBefore: 6, priority: "CRITICAL" },
-  { title: "Envoyer les faire-part", categoryName: "Invités", monthsBefore: 6, priority: "HIGH" },
-  { title: "Choisir la robe / le costume", categoryName: "Tenues", monthsBefore: 9, priority: "HIGH" },
-  { title: "Essayage final de la robe", categoryName: "Tenues", monthsBefore: 2, priority: "HIGH" },
-  { title: "Réserver le salon de coiffure / maquillage", categoryName: "Beauté", monthsBefore: 9, priority: "MEDIUM" },
-  { title: "Essai coiffure / maquillage", categoryName: "Beauté", monthsBefore: 3, priority: "MEDIUM" },
-  { title: "Réserver le transport (voiture, navettes)", categoryName: "Lieu & logistique", monthsBefore: 9, priority: "MEDIUM" },
-  { title: "Envoyer les RSVP (deadline aux invités)", categoryName: "Invités", monthsBefore: 4, priority: "HIGH" },
-  { title: "Finaliser le plan de tables", categoryName: "Invités", monthsBefore: 2, priority: "HIGH" },
-  { title: "Finaliser le menu avec le traiteur", categoryName: "Restauration", monthsBefore: 2, priority: "HIGH" },
-  { title: "Payer le solde du lieu", categoryName: "Budget & paiements", monthsBefore: 1, priority: "CRITICAL" },
-  { title: "Payer le solde du traiteur", categoryName: "Budget & paiements", monthsBefore: 1, priority: "CRITICAL" },
-  { title: "Payer le solde du photographe", categoryName: "Budget & paiements", monthsBefore: 1, priority: "HIGH" },
-  { title: "Commander le wedding cake", categoryName: "Restauration", monthsBefore: 6, priority: "MEDIUM" },
-  { title: "Réserver les hôtels pour les invités", categoryName: "Lieu & logistique", monthsBefore: 9, priority: "MEDIUM" },
-  { title: "Préparer les discours et animations", categoryName: "Divers", monthsBefore: 1, priority: "MEDIUM" },
-  { title: "Préparer la liste musicale", categoryName: "Musique & animation", monthsBefore: 1, priority: "MEDIUM" },
-  { title: "Préparer les alliances", categoryName: "Administratif & légal", monthsBefore: 3, priority: "HIGH" },
-  { title: "Réserver le voyage de noces", categoryName: "Voyage de noces", monthsBefore: 12, priority: "HIGH" },
-  { title: "Souscrire une assurance mariage", categoryName: "Administratif & légal", monthsBefore: 6, priority: "MEDIUM" },
-  { title: "Organiser le brunch du lendemain", categoryName: "Restauration", monthsBefore: 3, priority: "MEDIUM" },
-  { title: "Remercier les invités (cartes, cadeaux)", categoryName: "Invités", monthsBefore: -1, priority: "MEDIUM" },
-  { title: "Récupérer les photos / vidéos", categoryName: "Photographie & vidéo", monthsBefore: -2, priority: "MEDIUM" },
+const T = "planning:templateTasks";
+
+const TEMPLATE_TASKS: TemplateTask[] = [
+  { titleKey: `${T}.setDate`, categoryKey: "planning:categories.admin", monthsBefore: null, priority: "CRITICAL" },
+  { titleKey: `${T}.defineBudget`, categoryKey: "planning:categories.budget", monthsBefore: null, priority: "CRITICAL" },
+  { titleKey: `${T}.guestList`, categoryKey: "planning:categories.guests", monthsBefore: null, priority: "HIGH" },
+  { titleKey: `${T}.ceremonyType`, categoryKey: "planning:categories.admin", monthsBefore: null, priority: "HIGH" },
+  { titleKey: `${T}.bookVenue`, categoryKey: "planning:categories.venue", monthsBefore: 18, priority: "CRITICAL" },
+  { titleKey: `${T}.bookPhotographer`, categoryKey: "planning:categories.photo", monthsBefore: 18, priority: "HIGH" },
+  { titleKey: `${T}.bookVideographer`, categoryKey: "planning:categories.photo", monthsBefore: 18, priority: "MEDIUM" },
+  { titleKey: `${T}.bookCaterer`, categoryKey: "planning:categories.catering", monthsBefore: 12, priority: "CRITICAL" },
+  { titleKey: `${T}.bookDj`, categoryKey: "planning:categories.music", monthsBefore: 12, priority: "HIGH" },
+  { titleKey: `${T}.bookFlorist`, categoryKey: "planning:categories.flowers", monthsBefore: 12, priority: "MEDIUM" },
+  { titleKey: `${T}.publishBanns`, categoryKey: "planning:categories.admin", monthsBefore: 12, priority: "CRITICAL" },
+  { titleKey: `${T}.civilPaperwork`, categoryKey: "planning:categories.admin", monthsBefore: 6, priority: "CRITICAL" },
+  { titleKey: `${T}.sendInvitations`, categoryKey: "planning:categories.guests", monthsBefore: 6, priority: "HIGH" },
+  { titleKey: `${T}.chooseOutfit`, categoryKey: "planning:categories.attire", monthsBefore: 9, priority: "HIGH" },
+  { titleKey: `${T}.finalFitting`, categoryKey: "planning:categories.attire", monthsBefore: 2, priority: "HIGH" },
+  { titleKey: `${T}.bookHairMakeup`, categoryKey: "planning:categories.beauty", monthsBefore: 9, priority: "MEDIUM" },
+  { titleKey: `${T}.trialHairMakeup`, categoryKey: "planning:categories.beauty", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.bookTransport`, categoryKey: "planning:categories.venue", monthsBefore: 9, priority: "MEDIUM" },
+  { titleKey: `${T}.rsvpDeadline`, categoryKey: "planning:categories.guests", monthsBefore: 4, priority: "HIGH" },
+  { titleKey: `${T}.seatingPlan`, categoryKey: "planning:categories.guests", monthsBefore: 2, priority: "HIGH" },
+  { titleKey: `${T}.finalizeMenu`, categoryKey: "planning:categories.catering", monthsBefore: 2, priority: "HIGH" },
+  { titleKey: `${T}.payVenue`, categoryKey: "planning:categories.budget", monthsBefore: 1, priority: "CRITICAL" },
+  { titleKey: `${T}.payCaterer`, categoryKey: "planning:categories.budget", monthsBefore: 1, priority: "CRITICAL" },
+  { titleKey: `${T}.payPhotographer`, categoryKey: "planning:categories.budget", monthsBefore: 1, priority: "HIGH" },
+  { titleKey: `${T}.orderCake`, categoryKey: "planning:categories.catering", monthsBefore: 6, priority: "MEDIUM" },
+  { titleKey: `${T}.bookHotels`, categoryKey: "planning:categories.venue", monthsBefore: 9, priority: "MEDIUM" },
+  { titleKey: `${T}.prepareSpeeches`, categoryKey: "planning:categories.misc", monthsBefore: 1, priority: "MEDIUM" },
+  { titleKey: `${T}.preparePlaylist`, categoryKey: "planning:categories.music", monthsBefore: 1, priority: "MEDIUM" },
+  { titleKey: `${T}.prepareRings`, categoryKey: "planning:categories.admin", monthsBefore: 3, priority: "HIGH" },
+  { titleKey: `${T}.bookHoneymoon`, categoryKey: "planning:categories.honeymoon", monthsBefore: 12, priority: "HIGH" },
+  { titleKey: `${T}.weddingInsurance`, categoryKey: "planning:categories.admin", monthsBefore: 6, priority: "MEDIUM" },
+  { titleKey: `${T}.nextDayBrunch`, categoryKey: "planning:categories.catering", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.thankGuests`, categoryKey: "planning:categories.guests", monthsBefore: -1, priority: "MEDIUM" },
+  { titleKey: `${T}.collectPhotos`, categoryKey: "planning:categories.photo", monthsBefore: -2, priority: "MEDIUM" },
 ];
 
 /** Generate default categories with UUIDs */
 export function generateDefaultCategories(): TaskCategory[] {
-  const now = new Date().toISOString();
-  return DEFAULT_CATEGORIES.map((c) => ({
+  return CATEGORY_KEYS.map((c, idx) => ({
     id: Crypto.randomUUID(),
-    name: c.name,
+    name: i18n.t(c.key),
     icon: c.icon,
     color: c.color,
-    sortOrder: c.sortOrder,
+    sortOrder: idx + 1,
   }));
 }
 
@@ -91,10 +93,11 @@ export function generateTemplateTasks(
       dueDate = addMonths(new Date(weddingDate), -t.monthsBefore).toISOString();
     }
 
+    const categoryName = i18n.t(t.categoryKey);
     return {
       id: Crypto.randomUUID(),
-      categoryId: categoryMap.get(t.categoryName) || null,
-      title: t.title,
+      categoryId: categoryMap.get(categoryName) || null,
+      title: i18n.t(t.titleKey),
       description: null,
       status: "TODO",
       priority: t.priority,

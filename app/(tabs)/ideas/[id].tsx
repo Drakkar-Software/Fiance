@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Heart, Image as ImageIcon } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
@@ -25,6 +26,7 @@ const CATEGORIES = Object.entries(IDEA_CATEGORY_LABELS) as [
 ][];
 
 export default function IdeaDetailScreen() {
+  const { t } = useTranslation("ideas");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const ideas = useIdeasStore((s) => s.ideas);
@@ -196,7 +198,7 @@ export default function IdeaDetailScreen() {
                     : "text-gray-500"
                 }`}
               >
-                {label}
+                {t(label)}
               </Text>
             </Pressable>
           ))}

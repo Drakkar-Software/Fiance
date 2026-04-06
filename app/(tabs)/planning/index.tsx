@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
   Clock, MapPin, User,
 } from "lucide-react-native";
 import { format, isBefore } from "date-fns";
-import { fr } from "date-fns/locale";
+import { getDateLocale } from "@/i18n/dateFnsLocale";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -26,11 +27,12 @@ import {
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "IN_PROGRESS" | "DONE" | "OVERDUE";
 
-const ASPECTS: PlanningAspect[] = ["preparatifs", "agenda", "jourj"];
+const ASPECTS: PlanningAspect[] = ["preparation", "agenda", "day-of"];
 
 export default function PlanningScreen() {
+  const { t } = useTranslation("planning");
   const router = useRouter();
-  const [aspect, setAspect] = useState<PlanningAspect>("preparatifs");
+  const [aspect, setAspect] = useState<PlanningAspect>("preparation");
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
@@ -52,23 +54,24 @@ export default function PlanningScreen() {
                     : "text-gray-500 dark:text-gray-400"
                 }`}
               >
-                {PLANNING_ASPECT_LABELS[a]}
+                {t(PLANNING_ASPECT_LABELS[a])}
               </Text>
             </Pressable>
           ))}
         </View>
       </View>
 
-      {aspect === "preparatifs" && <PreparatifView />}
+      {aspect === "preparation" && <PreparationView />}
       {aspect === "agenda" && <AgendaView />}
-      {aspect === "jourj" && <JourJView />}
+      {aspect === "day-of" && <DayOfView />}
     </View>
   );
 }
 
 // ─── Préparatifs View ────────────────────────────────────────────────────
 
-function PreparatifView() {
+function PreparationView() {
+  const { t } = useTranslation("planning");
   const router = useRouter();
   const tasks = usePlanningStore((s) => s.tasks);
   const categories = usePlanningStore((s) => s.categories);
@@ -109,21 +112,21 @@ function PreparatifView() {
   }, [categories, tasks, weddingDate]);
 
   const completionRate = useMemo(() => {
-    const active = tasks.filter((t) => t.status !== "CANCELLED");
+    const active = tasks.filter((task) => task.status !== "CANCELLED");
     if (active.length === 0) return 0;
-    const done = active.filter((t) => t.status === "DONE").length;
+    const done = active.filter((task) => task.status === "DONE").length;
     return Math.round((done / active.length) * 100);
   }, [tasks]);
 
   const filteredTasks = useMemo(() => {
     return tasks
-      .filter((t) => {
+      .filter((task) => {
         if (filter === "OVERDUE") {
           return (
-            t.dueDate &&
-            isBefore(new Date(t.dueDate), now) &&
-            t.status !== "DONE" &&
-            t.status !== "CANCELLED"
+            task.dueDate &&
+            isBefore(new Date(task.dueDate), now) &&
+            task.status !== "DONE" &&
+            task.status !== "CANCELLED"
           );
         }
         if (filter !== "ALL" && t.status !== filter) return false;
@@ -140,30 +143,30 @@ function PreparatifView() {
 
   const groupedByMonth = useMemo(() => {
     const groups: Record<string, typeof filteredTasks> = {};
-    filteredTasks.forEach((t) => {
-      const key = t.dueDate
-        ? format(new Date(t.dueDate), "MMMM yyyy", { locale: fr })
-        : "Sans date";
+    filteredTasks.forEach((task) => {
+      const key = task.dueDate
+        ? format(new Date(task.dueDate), "MMMM yyyy", { locale: getDateLocale() })
+        : t("common:noDate");
       if (!groups[key]) groups[key] = [];
-      groups[key].push(t);
+      groups[key].push(task);
     });
     return groups;
   }, [filteredTasks]);
 
   const overdue = tasks.filter(
-    (t) =>
-      t.dueDate &&
-      isBefore(new Date(t.dueDate), now) &&
-      t.status !== "DONE" &&
-      t.status !== "CANCELLED"
+    (task) =>
+      task.dueDate &&
+      isBefore(new Date(task.dueDate), now) &&
+      task.status !== "DONE" &&
+      task.status !== "CANCELLED"
   );
 
   const filterTabs = [
-    { key: "ALL", label: "Toutes" },
-    { key: "TODO", label: "À faire" },
-    { key: "IN_PROGRESS", label: "En cours" },
-    { key: "DONE", label: "Terminées" },
-    { key: "OVERDUE", label: `En retard (${overdue.length})` },
+    { key: "ALL", label: t("allFilter") },
+    { key: "TODO", label: t("todo") },
+    { key: "IN_PROGRESS", label: t("inProgress") },
+    { key: "DONE", label: t("done") },
+    { key: "OVERDUE", label: t("overdue", { count: overdue.length }) },
   ];
 
   const toggleDone = (taskId: string, currentStatus: string) => {
@@ -180,7 +183,7 @@ function PreparatifView() {
       <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <View className="flex-row items-center justify-between mb-3">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
-            Progression
+            {t("progress")}
           </Text>
           <View className="flex-row items-center gap-2">
             <Pressable
@@ -188,7 +191,7 @@ function PreparatifView() {
               className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
             >
               <Sparkles size={14} color="#EC4899" />
-              <Text className="text-xs font-medium text-primary-500">Générer</Text>
+              <Text className="text-xs font-medium text-primary-500">{t("generate")}</Text>
             </Pressable>
             <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
               <Pressable
@@ -213,9 +216,9 @@ function PreparatifView() {
         <ProgressBar
           value={completionRate}
           max={100}
-          label={`${tasks.filter((t) => t.status === "DONE").length}/${
-            tasks.filter((t) => t.status !== "CANCELLED").length
-          } tâches`}
+          label={`${tasks.filter((task) => task.status === "DONE").length}/${
+            tasks.filter((task) => task.status !== "CANCELLED").length
+          } ${t("tasks")}`}
         />
       </View>
 
@@ -232,10 +235,10 @@ function PreparatifView() {
         <View className="flex-1 items-center justify-center px-6">
           <Calendar size={48} color="#D1D5DB" />
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
-            Aucune tâche
+            {t("noTasks")}
           </Text>
           <Text className="text-sm text-gray-400 text-center mt-1">
-            Ajoutez votre première tâche ou générez le planning type
+            {t("addFirstTask")}
           </Text>
           <View className="flex-row gap-3 mt-5">
             <Pressable
@@ -244,14 +247,14 @@ function PreparatifView() {
               }
               className="bg-primary-500 rounded-xl px-5 py-3 active:opacity-80"
             >
-              <Text className="text-white font-semibold text-sm">Ajouter une tâche</Text>
+              <Text className="text-white font-semibold text-sm">{t("addTask")}</Text>
             </Pressable>
             <Pressable
               onPress={handleGenerateTemplate}
               className="bg-white dark:bg-gray-900 border border-primary-300 dark:border-primary-700 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80"
             >
               <Sparkles size={16} color="#EC4899" />
-              <Text className="text-primary-500 font-semibold text-sm">Générer le planning</Text>
+              <Text className="text-primary-500 font-semibold text-sm">{t("generatePlanning")}</Text>
             </Pressable>
           </View>
         </View>
@@ -286,11 +289,11 @@ function PreparatifView() {
           showsHorizontalScrollIndicator={false}
         >
           {(["TODO", "IN_PROGRESS", "DONE", "CANCELLED"] as TaskStatus[]).map((status) => {
-            const columnTasks = filteredTasks.filter((t) => t.status === status);
+            const columnTasks = filteredTasks.filter((task) => task.status === status);
             return (
               <View key={status} className="w-72 mr-4">
                 <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                  {TASK_STATUS_LABELS[status]} ({columnTasks.length})
+                  {t(TASK_STATUS_LABELS[status])} ({columnTasks.length})
                 </Text>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {columnTasks.map((task) => (
@@ -324,6 +327,7 @@ function PreparatifView() {
 // ─── Agenda View ─────────────────────────────────────────────────────────
 
 function AgendaView() {
+  const { t } = useTranslation("planning");
   const router = useRouter();
   const events = usePlanningStore((s) => s.agendaEvents);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -341,7 +345,7 @@ function AgendaView() {
   const groupedByMonth = useMemo(() => {
     const groups: Record<string, typeof sortedEvents> = {};
     sortedEvents.forEach((e) => {
-      const key = format(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: fr });
+      const key = format(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: getDateLocale() });
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
@@ -357,7 +361,7 @@ function AgendaView() {
     <View className="flex-1">
       <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <Text className="text-sm text-gray-400">
-          {events.length} rendez-vous · {upcoming} à venir
+          {events.length} {t("appointments")} · {upcoming} {t("upcoming")}
         </Text>
       </View>
 
@@ -365,10 +369,10 @@ function AgendaView() {
         <View className="flex-1 items-center justify-center px-6">
           <Calendar size={48} color="#D1D5DB" />
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
-            Aucun rendez-vous
+            {t("noAppointments")}
           </Text>
           <Text className="text-sm text-gray-400 text-center mt-1">
-            Planifiez vos visites, essayages et rencontres
+            {t("planYourVisits")}
           </Text>
           <Pressable
             onPress={() =>
@@ -376,7 +380,7 @@ function AgendaView() {
             }
             className="bg-primary-500 rounded-xl px-5 py-3 mt-5 active:opacity-80"
           >
-            <Text className="text-white font-semibold text-sm">Ajouter un rendez-vous</Text>
+            <Text className="text-white font-semibold text-sm">{t("addAppointment")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -413,7 +417,7 @@ function AgendaView() {
                           {format(new Date(event.date + "T00:00:00"), "dd")}
                         </Text>
                         <Text className="text-xs text-gray-400 capitalize">
-                          {format(new Date(event.date + "T00:00:00"), "EEE", { locale: fr })}
+                          {format(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                         </Text>
                       </View>
                       <View className="flex-1">
@@ -468,9 +472,10 @@ function AgendaView() {
 
 // ─── Jour J View ─────────────────────────────────────────────────────────
 
-function JourJView() {
+function DayOfView() {
+  const { t } = useTranslation("planning");
   const router = useRouter();
-  const items = usePlanningStore((s) => s.jourJItems);
+  const items = usePlanningStore((s) => s.dayOfItems);
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => (a.time || "").localeCompare(b.time || "")),
@@ -481,7 +486,7 @@ function JourJView() {
     <View className="flex-1">
       <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <Text className="text-sm text-gray-400">
-          {items.length} moment{items.length !== 1 ? "s" : ""} planifié{items.length !== 1 ? "s" : ""}
+          {t("moment", { count: items.length })}
         </Text>
       </View>
 
@@ -489,18 +494,18 @@ function JourJView() {
         <View className="flex-1 items-center justify-center px-6">
           <Clock size={48} color="#D1D5DB" />
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
-            Aucun moment planifié
+            {t("noMoments")}
           </Text>
           <Text className="text-sm text-gray-400 text-center mt-1">
-            Construisez le déroulé de votre journée de mariage
+            {t("buildYourDay")}
           </Text>
           <Pressable
             onPress={() =>
-              router.push({ pathname: "/(tabs)/planning/jourj-item", params: { id: "new" } })
+              router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })
             }
             className="bg-primary-500 rounded-xl px-5 py-3 mt-5 active:opacity-80"
           >
-            <Text className="text-white font-semibold text-sm">Ajouter un moment</Text>
+            <Text className="text-white font-semibold text-sm">{t("addMoment")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -510,7 +515,7 @@ function JourJView() {
               key={item.id}
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/planning/jourj-item",
+                  pathname: "/(tabs)/planning/day-of-item",
                   params: { id: item.id },
                 })
               }
@@ -533,7 +538,7 @@ function JourJView() {
                 </Text>
                 {item.endTime && (
                   <Text className="text-xs text-gray-400 mt-0.5">
-                    jusqu'à {item.endTime}
+                    {t("until", { time: item.endTime })}
                   </Text>
                 )}
                 <View className="flex-row items-center gap-3 mt-1.5 flex-wrap">
@@ -559,7 +564,7 @@ function JourJView() {
 
       <FAB
         onPress={() =>
-          router.push({ pathname: "/(tabs)/planning/jourj-item", params: { id: "new" } })
+          router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })
         }
       />
     </View>

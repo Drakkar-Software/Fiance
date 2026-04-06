@@ -5,15 +5,15 @@ import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
-import type { JourJItem } from "@/db/schema";
+import type { DayOfItem } from "@/db/schema";
 
-export default function JourJItemScreen() {
+export default function DayOfItemScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const items = usePlanningStore((s) => s.jourJItems);
-  const addItem = usePlanningStore((s) => s.addJourJItem);
-  const updateItem = usePlanningStore((s) => s.updateJourJItem);
-  const removeItem = usePlanningStore((s) => s.removeJourJItem);
+  const items = usePlanningStore((s) => s.dayOfItems);
+  const addItem = usePlanningStore((s) => s.addDayOfItem);
+  const updateItem = usePlanningStore((s) => s.updateDayOfItem);
+  const removeItem = usePlanningStore((s) => s.removeDayOfItem);
 
   const isNew = id === "new";
   const existing = items.find((i) => i.id === id);
@@ -38,7 +38,7 @@ export default function JourJItemScreen() {
 
     const now = new Date().toISOString();
     const maxOrder = items.reduce((max, i) => Math.max(max, i.sortOrder || 0), 0);
-    const data: Partial<JourJItem> = {
+    const data: Partial<DayOfItem> = {
       title: title.trim(),
       time: time.trim(),
       endTime: endTime || null,
@@ -54,7 +54,7 @@ export default function JourJItemScreen() {
         id: Crypto.randomUUID(),
         sortOrder: maxOrder + 1,
         createdAt: now,
-      } as JourJItem);
+      } as DayOfItem);
     } else {
       updateItem(id!, data);
     }

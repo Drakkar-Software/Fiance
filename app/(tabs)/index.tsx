@@ -2,8 +2,9 @@ import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { getDateLocale } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -15,6 +16,7 @@ import { formatMoney } from "@/components/MoneyDisplay";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 
 export default function DashboardScreen() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -22,29 +24,29 @@ export default function DashboardScreen() {
   const counts = React.useMemo(() => computeCounts(guests), [guests]);
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
-    () => tasks.filter((t) => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== "DONE" && t.status !== "CANCELLED"),
+    () => tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "DONE" && task.status !== "CANCELLED"),
     [tasks]
   );
   const urgentTasks = React.useMemo(
-    () => tasks.filter((t) => {
-      if (!t.dueDate || t.status === "DONE" || t.status === "CANCELLED") return false;
-      const days = differenceInDays(new Date(t.dueDate), new Date());
+    () => tasks.filter((task) => {
+      if (!task.dueDate || task.status === "DONE" || task.status === "CANCELLED") return false;
+      const days = differenceInDays(new Date(task.dueDate), new Date());
       return days >= 0 && days <= 7;
     }),
     [tasks]
   );
   const criticalUnstarted = React.useMemo(
-    () => tasks.filter((t) => {
-      if (t.priority !== "CRITICAL" || t.status !== "TODO" || !t.dueDate) return false;
-      const days = differenceInDays(new Date(t.dueDate), new Date());
+    () => tasks.filter((task) => {
+      if (task.priority !== "CRITICAL" || task.status !== "TODO" || !task.dueDate) return false;
+      const days = differenceInDays(new Date(task.dueDate), new Date());
       return days >= 0 && days <= 30;
     }),
     [tasks]
   );
   const completionRate = React.useMemo(() => {
-    const active = tasks.filter((t) => t.status !== "CANCELLED");
+    const active = tasks.filter((task) => task.status !== "CANCELLED");
     if (active.length === 0) return 0;
-    const done = active.filter((t) => t.status === "DONE").length;
+    const done = active.filter((task) => task.status === "DONE").length;
     return Math.round((done / active.length) * 100);
   }, [tasks]);
   const budget = useBudgetSummary();
@@ -118,7 +120,7 @@ export default function DashboardScreen() {
             </View>
             <Text className="text-white/60 text-sm mt-1">
               {weddingDate
-                ? format(weddingDate, "EEEE d MMMM yyyy", { locale: fr })
+                ? format(weddingDate, "EEEE d MMMM yyyy", { locale: getDateLocale() })
                 : ""}
             </Text>
           </View>
@@ -170,7 +172,7 @@ export default function DashboardScreen() {
                 </Text>
               </View>
             ))}
-            {criticalUnstarted.map((t) => (
+            {criticalUnstarted.map((task) => (
               <View key={t.id} className="flex-row items-center mb-1.5 ml-8">
                 <Text className="text-sm text-red-600 dark:text-red-400 flex-1">
                   {t.title}
@@ -243,7 +245,7 @@ export default function DashboardScreen() {
         <View className="flex-row gap-3 mb-3">
           {/* Guests mini card */}
           <Pressable
-            onPress={() => router.push("/(tabs)/invites")}
+            onPress={() => router.push("/(tabs)/guests")}
             className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center mb-3">
@@ -302,7 +304,7 @@ export default function DashboardScreen() {
 
         {/* Prestataires summary */}
         <Pressable
-          onPress={() => router.push("/(tabs)/prestataires")}
+          onPress={() => router.push("/(tabs)/vendors")}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center mb-3">
@@ -339,7 +341,7 @@ export default function DashboardScreen() {
 
         {/* Inspirations */}
         <Pressable
-          onPress={() => router.push("/(tabs)/idees")}
+          onPress={() => router.push("/(tabs)/ideas")}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center"
         >
           <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
@@ -367,8 +369,8 @@ export default function DashboardScreen() {
                 Progression du planning
               </Text>
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">
-                {tasks.filter((t) => t.status === "DONE").length}/
-                {tasks.filter((t) => t.status !== "CANCELLED").length}
+                {tasks.filter((task) => task.status === "DONE").length}/
+                {tasks.filter((task) => task.status !== "CANCELLED").length}
               </Text>
             </View>
             <ProgressBar

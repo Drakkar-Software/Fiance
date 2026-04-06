@@ -96,8 +96,8 @@ export function calculateCatererTotal(
       counts
     );
     total += (p.pricePerPerson || 0) * guestCount;
-    total += p.forfaitPersonnel || 0;
-    total += p.forfaitDeplacement || 0;
+    total += p.staffFee || 0;
+    total += p.travelFee || 0;
   }
   return total;
 }
