@@ -226,6 +226,7 @@ function GuestsView() {
         horizontal
         showsHorizontalScrollIndicator={false}
         className="mt-3 mb-4"
+        style={{ flexGrow: 0 }}
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: "center" }}
       >
         {rsvpTabs.map((tab) => {
