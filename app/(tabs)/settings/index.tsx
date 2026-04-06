@@ -386,40 +386,44 @@ export default function SettingsScreen() {
         {registry?.weddings.map((w) => {
           const isActive = w.id === registry.activeWeddingId;
           return (
-            <Pressable
+            <View
               key={w.id}
-              onPress={() => {
-                if (!isActive) switchWedding(w.id);
-              }}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center active:opacity-80 ${
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center ${
                 isActive
                   ? "border-primary-300 dark:border-primary-700"
                   : "border-gray-100 dark:border-gray-800"
               }`}
             >
-              <View
-                className="w-10 h-10 rounded-xl items-center justify-center mr-3"
-                style={{
-                  backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
+              <Pressable
+                onPress={() => {
+                  if (!isActive) switchWedding(w.id);
                 }}
+                className="flex-row items-center flex-1 active:opacity-80"
               >
-                <Heart
-                  size={20}
-                  color={isActive ? "#EC4899" : "#9CA3AF"}
-                  fill={isActive ? "#EC4899" : "transparent"}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900 dark:text-white">
-                  {w.label}
-                </Text>
-                <Text className="text-xs text-gray-400 mt-0.5">
-                  {isActive ? t("activeWedding") : t("tapToSwitch")}
-                </Text>
-              </View>
-              {isActive && (
-                <CheckCircle2 size={20} color="#EC4899" />
-              )}
+                <View
+                  className="w-10 h-10 rounded-xl items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
+                  }}
+                >
+                  <Heart
+                    size={20}
+                    color={isActive ? "#EC4899" : "#9CA3AF"}
+                    fill={isActive ? "#EC4899" : "transparent"}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-base font-medium text-gray-900 dark:text-white">
+                    {w.label}
+                  </Text>
+                  <Text className="text-xs text-gray-400 mt-0.5">
+                    {isActive ? t("activeWedding") : t("tapToSwitch")}
+                  </Text>
+                </View>
+                {isActive && (
+                  <CheckCircle2 size={20} color="#EC4899" />
+                )}
+              </Pressable>
               <Pressable
                 onPress={() => {
                   Alert.alert(
@@ -439,7 +443,7 @@ export default function SettingsScreen() {
               >
                 <Trash2 size={16} color="#EF4444" />
               </Pressable>
-            </Pressable>
+            </View>
           );
         })}
         <Pressable
