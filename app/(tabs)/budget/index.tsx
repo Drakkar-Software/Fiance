@@ -106,6 +106,14 @@ export default function BudgetScreen() {
             {formatMoney(budget.remaining)}
           </Text>
         </View>
+        <View className="flex-row justify-between mt-2">
+          <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Reste à payer
+          </Text>
+          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            {formatMoney(budget.remainingToPay)}
+          </Text>
+        </View>
       </View>
 
       {/* Deposits summary */}

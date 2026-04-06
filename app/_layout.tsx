@@ -1,5 +1,5 @@
 import "../global.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -8,6 +8,8 @@ import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore, initStarfish } from "@/lib/starfish";
 import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
+import { isLockEnabled } from "@/lib/app-lock";
+import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import OnboardingScreen from "./onboarding";
 
@@ -94,9 +96,11 @@ function AppContent() {
 
 export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
+  const [locked, setLocked] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadRegistry();
+    isLockEnabled().then((enabled) => setLocked(enabled));
   }, []);
 
   useEffect(() => {
@@ -121,6 +125,25 @@ export default function RootLayout() {
       netSub();
     };
   }, []);
+
+  const handleUnlock = useCallback(() => setLocked(false), []);
+
+  if (locked === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (locked) {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <LockScreen onUnlock={handleUnlock} />
+      </>
+    );
+  }
 
   return (
     <>

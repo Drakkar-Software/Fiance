@@ -28,6 +28,7 @@ export function InputRow({
   placeholder,
   keyboardType = "default",
   multiline = false,
+  onBlur,
 }: {
   label: string;
   value: string;
@@ -35,6 +36,7 @@ export function InputRow({
   placeholder?: string;
   keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
   multiline?: boolean;
+  onBlur?: () => void;
 }) {
   return (
     <View className="border-b border-gray-50 dark:border-gray-800 py-3">
@@ -43,6 +45,7 @@ export function InputRow({
         className="text-base text-gray-900 dark:text-white"
         value={value}
         onChangeText={onChangeText}
+        onBlur={onBlur}
         placeholder={placeholder}
         placeholderTextColor="#D0D0D8"
         keyboardType={keyboardType}

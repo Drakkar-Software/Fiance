@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,16 @@ import {
   Alert,
   Share,
 } from "react-native";
+import { format } from "date-fns";
 import { Share2, ChevronRight, Calendar, Cloud, CloudOff, Heart, CheckCircle2, Lock, ShieldCheck } from "lucide-react-native";
+import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
+import { PinSetup } from "@/components/PinSetup";
 import type { LucideIcon } from "lucide-react-native";
 import {
   initStarfish,
   teardownStarfish,
   getStarfishStore,
+  getLastSyncTimestamp,
 } from "@/lib/starfish";
 import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -58,6 +62,7 @@ export default function SettingsScreen() {
 
   // Sync state
   const syncEnabled = !!getStarfishStore();
+  const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
 
   const handleToggleSync = useCallback(async () => {
     if (syncEnabled) {
@@ -111,39 +116,78 @@ export default function SettingsScreen() {
     }
   }, [activeEntry]);
 
-  const handleSave = useCallback(() => {
-    const oldDate = wedding?.weddingDate;
-    const newDate = weddingDate || null;
-
+  const handleFieldBlur = useCallback((changedField?: string) => {
     updateWedding({
       partner1Name: partner1 || null,
       partner2Name: partner2 || null,
-      weddingDate: newDate,
+      weddingDate: weddingDate || null,
       venueName: venueName || null,
       budgetTarget: budgetTarget ? parseFloat(budgetTarget) : null,
       currency: currency || "EUR",
     });
 
-    if (newDate && newDate !== oldDate) {
-      const updated = recalculateDueDates(tasks, newDate);
+    if (changedField === "weddingDate" && weddingDate && weddingDate !== wedding?.weddingDate) {
+      const updated = recalculateDueDates(tasks, weddingDate);
       setTasks(updated);
     }
-
-    Alert.alert("Enregistré", "Les réglages ont été mis à jour.");
   }, [partner1, partner2, weddingDate, venueName, budgetTarget, currency, wedding, tasks]);
 
   const handleGenerateTemplate = useCallback(() => {
-    if (categories.length === 0) {
-      const cats = generateDefaultCategories();
-      setCategories(cats);
-      const templateTasks = generateTemplateTasks(cats, wedding?.weddingDate || undefined);
-      setTasks([...tasks, ...templateTasks]);
+    const doGenerate = () => {
+      if (categories.length === 0) {
+        const cats = generateDefaultCategories();
+        setCategories(cats);
+        const templateTasks = generateTemplateTasks(cats, wedding?.weddingDate || undefined);
+        setTasks([...tasks, ...templateTasks]);
+      } else {
+        const templateTasks = generateTemplateTasks(categories, wedding?.weddingDate || undefined);
+        setTasks([...tasks, ...templateTasks]);
+      }
+      Alert.alert("Planning généré", "Le planning type de préparation a été ajouté.");
+    };
+
+    if (tasks.length > 0) {
+      Alert.alert(
+        "Planning existant",
+        "Des tâches existent déjà. Voulez-vous ajouter le planning type ? Cela pourrait créer des doublons.",
+        [
+          { text: "Annuler", style: "cancel" },
+          { text: "Ajouter", onPress: doGenerate },
+        ]
+      );
     } else {
-      const templateTasks = generateTemplateTasks(categories, wedding?.weddingDate || undefined);
-      setTasks([...tasks, ...templateTasks]);
+      doGenerate();
     }
-    Alert.alert("Planning généré", "Le planning type de préparation a été ajouté.");
   }, [categories, tasks, wedding]);
+
+  // App lock
+  const [lockEnabled, setLockEnabledState] = useState(false);
+  const [showPinSetup, setShowPinSetup] = useState(false);
+
+  useEffect(() => {
+    isLockEnabled().then(setLockEnabledState);
+  }, []);
+
+  const handleToggleLock = useCallback(() => {
+    if (lockEnabled) {
+      Alert.alert(
+        "Désactiver le verrouillage",
+        "L'application ne sera plus protégée par un code PIN.",
+        [
+          { text: "Annuler", style: "cancel" },
+          {
+            text: "Désactiver",
+            style: "destructive",
+            onPress: () => {
+              setLockEnabled(false).then(() => setLockEnabledState(false));
+            },
+          },
+        ]
+      );
+    } else {
+      setShowPinSetup(true);
+    }
+  }, [lockEnabled]);
 
   const guestCount = useGuestsStore((s) => s.guests.length);
   const vendorCount = useVendorsStore((s) => s.vendors.length);
@@ -159,22 +203,13 @@ export default function SettingsScreen() {
       <View className="px-4 pt-4">
         <SectionTitle>Informations du mariage</SectionTitle>
         <FormCard>
-          <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" />
-          <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" />
-          <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
-          <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" />
-          <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" />
-          <InputRow label="Devise" value={currency} onChangeText={setCurrency} placeholder="EUR" />
+          <InputRow label="Marié(e) 1" value={partner1} onChangeText={setPartner1} placeholder="Prénom + Nom" onBlur={() => handleFieldBlur()} />
+          <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" onBlur={() => handleFieldBlur()} />
+          <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" onBlur={() => handleFieldBlur("weddingDate")} />
+          <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" onBlur={() => handleFieldBlur()} />
+          <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" onBlur={() => handleFieldBlur()} />
+          <InputRow label="Devise" value={currency} onChangeText={setCurrency} placeholder="EUR" onBlur={() => handleFieldBlur()} />
         </FormCard>
-
-        <Pressable
-          onPress={handleSave}
-          className="bg-primary-500 rounded-2xl py-3.5 items-center mb-6 active:bg-primary-600"
-        >
-          <Text className="text-white font-semibold text-base">
-            Enregistrer les modifications
-          </Text>
-        </Pressable>
       </View>
 
       {/* Invite */}
@@ -216,7 +251,9 @@ export default function SettingsScreen() {
               Générer le planning type
             </Text>
             <Text className="text-xs text-gray-400 mt-0.5">
-              33 tâches avec deadlines relatives
+              {tasks.length > 0
+                ? `${tasks.length} tâches déjà présentes`
+                : "33 tâches avec deadlines relatives"}
             </Text>
           </View>
           <ChevronRight size={18} color="#C0C0C8" />
@@ -259,7 +296,9 @@ export default function SettingsScreen() {
             </Text>
             <Text className="text-xs text-gray-400 mt-0.5">
               {syncEnabled
-                ? "Les données sont synchronisées automatiquement"
+                ? lastSync
+                  ? `Dernière synchro : ${format(new Date(lastSync), "dd/MM/yyyy HH:mm")}`
+                  : "Les données sont synchronisées automatiquement"
                 : "Appuyez pour activer la synchronisation"}
             </Text>
           </View>
@@ -325,17 +364,46 @@ export default function SettingsScreen() {
       {/* Security */}
       <View className="px-4 mt-4">
         <SectionTitle>Sécurité</SectionTitle>
-        <SettingsRow
-          icon={Lock}
-          title="Verrouillage de l'app"
-          subtitle="PIN ou biométrie"
-        />
+        <Pressable
+          onPress={handleToggleLock}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+        >
+          <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+            <Lock size={20} color={lockEnabled ? "#EC4899" : "#C0C0C8"} />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-base text-gray-900 dark:text-white font-medium">
+              Verrouillage de l'app
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {lockEnabled ? "PIN + biométrie activé" : "Désactivé"}
+            </Text>
+          </View>
+          <View
+            className="w-12 h-7 rounded-full justify-center px-0.5"
+            style={{ backgroundColor: lockEnabled ? "#EC4899" : "#D1D5DB" }}
+          >
+            <View
+              className="w-6 h-6 rounded-full bg-white"
+              style={{ alignSelf: lockEnabled ? "flex-end" : "flex-start" }}
+            />
+          </View>
+        </Pressable>
         <SettingsRow
           icon={ShieldCheck}
           title="Chiffrement"
           subtitle="AES-256 · Backup chiffré AES-GCM"
         />
       </View>
+
+      <PinSetup
+        visible={showPinSetup}
+        onComplete={() => {
+          setShowPinSetup(false);
+          setLockEnabledState(true);
+        }}
+        onCancel={() => setShowPinSetup(false)}
+      />
 
       {/* About */}
       <View className="px-4 mt-4 mb-8">

@@ -121,6 +121,7 @@ export interface BudgetSummary {
   totalEngaged: number;
   totalConfirmed: number;
   remaining: number;
+  remainingToPay: number;
   categories: BudgetCategoryItem[];
   isEstimate: boolean;
   depositsTotal: number;
@@ -189,6 +190,7 @@ export function computeBudgetSummary(
     totalEngaged,
     totalConfirmed,
     remaining: budgetTarget - totalEngaged,
+    remainingToPay: totalEngaged - depositsPaid,
     categories,
     isEstimate,
     depositsTotal,

@@ -54,6 +54,7 @@ function mergeBackups(
 
 let store: StoreApi<StarfishStore> | null = null;
 let isRestoring = false;
+let lastSyncTimestamp: string | null = null;
 
 export interface StarfishConfig {
   serverUrl: string;
@@ -102,6 +103,7 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
       isRestoring = true;
       try {
         restoreFromBackup(state.data as Record<string, unknown>, getDatabase());
+        lastSyncTimestamp = new Date().toISOString();
       } finally {
         isRestoring = false;
       }
@@ -130,8 +132,14 @@ export function notifySync(): void {
   saveToLocalStorage();
   if (!store || isRestoring) return;
   store.getState().set(() => createBackupDocument());
+  lastSyncTimestamp = new Date().toISOString();
+}
+
+export function getLastSyncTimestamp(): string | null {
+  return lastSyncTimestamp;
 }
 
 export function teardownStarfish(): void {
   store = null;
+  lastSyncTimestamp = null;
 }
