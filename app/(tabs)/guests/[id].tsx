@@ -16,13 +16,11 @@ import {
   RSVP_STATUS_LABELS,
   RSVP_STATUS_COLORS,
   DIET_LABELS,
-  SIDE_LABELS,
 } from "@/db/types";
 import type {
   InvitationType,
   RsvpStatus,
   Diet,
-  Side,
 } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -38,9 +36,8 @@ import type { Guest } from "@/db/schema";
 const INVITATION_TYPES: InvitationType[] = [
   "CEREMONY",
   "COCKTAIL",
-  "DINNER",
   "FULL",
-  "NEXT_DAY",
+  "BOTH_DAYS",
 ];
 const RSVP_STATUSES: RsvpStatus[] = ["PENDING", "ACCEPTED", "DECLINED", "MAYBE"];
 const DIETS: Diet[] = [
@@ -51,7 +48,6 @@ const DIETS: Diet[] = [
   "KOSHER",
   "ALLERGY",
 ];
-const SIDES: Side[] = ["BRIDE", "GROOM", "BOTH"];
 
 export default function GuestDetailScreen() {
   const { t } = useTranslation("guests");
@@ -59,6 +55,7 @@ export default function GuestDetailScreen() {
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
   const tables = useGuestsStore((s) => s.tables);
+  const groups = useGuestsStore((s) => s.groups);
   const addGuest = useGuestsStore((s) => s.addGuest);
   const updateGuest = useGuestsStore((s) => s.updateGuest);
   const removeGuest = useGuestsStore((s) => s.removeGuest);
@@ -68,7 +65,7 @@ export default function GuestDetailScreen() {
 
   const [firstName, setFirstName] = useState(existing?.firstName || "");
   const [lastName, setLastName] = useState(existing?.lastName || "");
-  const [side, setSide] = useState<Side>((existing?.side as Side) || "BOTH");
+  const [groupId, setGroupId] = useState(existing?.groupId || "");
   const [invitationType, setInvitationType] = useState<InvitationType>(
     (existing?.invitationType as InvitationType) || "FULL"
   );
@@ -97,7 +94,7 @@ export default function GuestDetailScreen() {
     const guestData: Partial<Guest> = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      side,
+      groupId: groupId || null,
       invitationType,
       rsvpStatus,
       rsvpDate:
@@ -160,13 +157,52 @@ export default function GuestDetailScreen() {
           <InputRow label={t("phone")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
           <InputRow label={t("address")} value={address} onChangeText={setAddress} />
 
-          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">{t("sideLabel")}</Text>
-          <ChipSelect
-            options={SIDES}
-            value={side}
-            onChange={setSide}
-            labels={Object.fromEntries(SIDES.map((s) => [s, t(SIDE_LABELS[s])])) as Record<Side, string>}
-          />
+          {groups.length > 0 && (
+            <>
+              <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">{t("groupLabel")}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex-row gap-2">
+                  <Pressable
+                    onPress={() => setGroupId("")}
+                    className={`px-3.5 py-2 rounded-full border ${
+                      !groupId
+                        ? "bg-primary-500 border-primary-500"
+                        : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm ${
+                        !groupId ? "text-white font-medium" : "text-gray-500"
+                      }`}
+                    >
+                      {t("none")}
+                    </Text>
+                  </Pressable>
+                  {groups.map((g) => (
+                    <Pressable
+                      key={g.id}
+                      onPress={() => setGroupId(g.id)}
+                      className={`px-3.5 py-2 rounded-full border ${
+                        groupId === g.id
+                          ? "bg-primary-500 border-primary-500"
+                          : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm ${
+                          groupId === g.id
+                            ? "text-white font-medium"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {g.name}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </ScrollView>
+            </>
+          )}
         </FormCard>
 
         {/* Invitation */}

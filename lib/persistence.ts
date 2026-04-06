@@ -21,6 +21,7 @@ export function clearAllStores(): void {
   useWeddingStore.getState().setWedding(null as any);
   useGuestsStore.getState().setGuests([]);
   useGuestsStore.getState().setTables([]);
+  useGuestsStore.getState().setGroups([]);
   useVendorsStore.getState().setVendors([]);
   useVendorsStore.getState().setQuotePricings([]);
   usePlanningStore.getState().setCategories([]);
@@ -44,6 +45,7 @@ export function loadFromLocalStorage(): boolean {
     if (!data?.version) return false;
 
     if (data.wedding) useWeddingStore.getState().setWedding(data.wedding);
+    if (data.guestGroups) useGuestsStore.getState().setGroups(data.guestGroups);
     if (data.guests) useGuestsStore.getState().setGuests(data.guests);
     if (data.tables) useGuestsStore.getState().setTables(data.tables);
     if (data.vendors) useVendorsStore.getState().setVendors(data.vendors);
@@ -69,6 +71,10 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   if (weddingRows.length > 0) {
     useWeddingStore.getState().setWedding(weddingRows[0]);
   }
+
+  // Guest groups (must load before guests due to FK)
+  const groupRows = db.select().from(schema.guestGroups).all();
+  useGuestsStore.getState().setGroups(groupRows);
 
   // Tables (must load before guests due to FK)
   const tableRows = db.select().from(schema.tables).all();
@@ -153,6 +159,24 @@ export function deleteTableDb(db: DrizzleDB, id: string) {
   // Unassign guests first
   db.update(schema.guests).set({ tableId: null }).where(eq(schema.guests.tableId, id)).run();
   db.delete(schema.tables).where(eq(schema.tables.id, id)).run();
+}
+
+// Guest Groups
+export function persistGuestGroup(db: DrizzleDB, group: schema.GuestGroup) {
+  db.insert(schema.guestGroups).values(group).onConflictDoUpdate({
+    target: schema.guestGroups.id,
+    set: group,
+  }).run();
+}
+
+export function updateGuestGroupDb(db: DrizzleDB, id: string, updates: Partial<schema.GuestGroup>) {
+  db.update(schema.guestGroups).set(updates).where(eq(schema.guestGroups.id, id)).run();
+}
+
+export function deleteGuestGroupDb(db: DrizzleDB, id: string) {
+  // Unassign guests first
+  db.update(schema.guests).set({ groupId: null }).where(eq(schema.guests.groupId, id)).run();
+  db.delete(schema.guestGroups).where(eq(schema.guestGroups.id, id)).run();
 }
 
 // Vendors
@@ -292,6 +316,7 @@ export function restoreAllTables(db: DrizzleDB, data: {
   wedding: any;
   guests: any[];
   tables: any[];
+  guestGroups: any[];
   vendors: any[];
   quotePricings: any[];
   tasks: any[];
@@ -312,11 +337,13 @@ export function restoreAllTables(db: DrizzleDB, data: {
   db.delete(schema.vendors).run();
   db.delete(schema.guests).run();
   db.delete(schema.tables).run();
+  db.delete(schema.guestGroups).run();
 
   // Re-insert (order matters for FK constraints)
   if (data.wedding) {
     db.update(schema.wedding).set(data.wedding).where(eq(schema.wedding.id, 1)).run();
   }
+  for (const row of data.guestGroups) db.insert(schema.guestGroups).values(row).run();
   for (const row of data.tables) db.insert(schema.tables).values(row).run();
   for (const row of data.guests) db.insert(schema.guests).values(row).run();
   for (const row of data.vendors) db.insert(schema.vendors).values(row).run();

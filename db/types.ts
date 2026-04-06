@@ -1,13 +1,10 @@
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
-export type Side = "BRIDE" | "GROOM" | "BOTH";
-
 export type InvitationType =
   | "CEREMONY"
   | "COCKTAIL"
-  | "DINNER"
   | "FULL"
-  | "NEXT_DAY";
+  | "BOTH_DAYS";
 
 export type RsvpStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "MAYBE";
 
@@ -57,7 +54,7 @@ export const PLANNING_ASPECT_LABELS: Record<PlanningAspect, string> = {
   "day-of": "planning:aspects.day-of",
 };
 
-export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE" | "CANCELLED";
+export type TaskStatus = "TODO" | "DONE";
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -76,7 +73,7 @@ export type PppSource =
   | "COCKTAIL"
   | "DINNER"
   | "FULL"
-  | "NEXT_DAY"
+  | "BOTH_DAYS"
   | "CHILD"
   | "VEGETARIAN"
   | "TOTAL"
@@ -123,9 +120,8 @@ export const VENDOR_TYPE_LABELS: Record<VendorType, string> = {
 export const INVITATION_TYPE_LABELS: Record<InvitationType, string> = {
   CEREMONY: "guests:invitationTypes.CEREMONY",
   COCKTAIL: "guests:invitationTypes.COCKTAIL",
-  DINNER: "guests:invitationTypes.DINNER",
   FULL: "guests:invitationTypes.FULL",
-  NEXT_DAY: "guests:invitationTypes.NEXT_DAY",
+  BOTH_DAYS: "guests:invitationTypes.BOTH_DAYS",
 };
 
 export const RSVP_STATUS_LABELS: Record<RsvpStatus, string> = {
@@ -160,9 +156,7 @@ export const VENDOR_STATUS_COLORS: Record<VendorStatus, string> = {
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   TODO: "planning:status.TODO",
-  IN_PROGRESS: "planning:status.IN_PROGRESS",
   DONE: "planning:status.DONE",
-  CANCELLED: "planning:status.CANCELLED",
 };
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
@@ -200,11 +194,6 @@ export const IDEA_CATEGORY_LABELS: Record<IdeaCategory, string> = {
   OTHER: "ideas:categories.OTHER",
 };
 
-export const SIDE_LABELS: Record<Side, string> = {
-  BRIDE: "guests:side.BRIDE",
-  GROOM: "guests:side.GROOM",
-  BOTH: "guests:side.BOTH",
-};
 
 // ─── Budget categories ──────────────────────────────────────────────────────
 
@@ -244,7 +233,7 @@ export const PRICING_KEY_GUEST_SOURCE: Record<PricingKey, string> = {
   cocktail: "nb_cocktail",
   dinner: "nb_dinner",
   drinks: "nb_dinner",
-  "next-day": "nb_next_day",
+  "next-day": "nb_both_days",
   tableware: "nb_dinner",
   linen: "nb_dinner",
   vegetarian: "nb_vegetarian",

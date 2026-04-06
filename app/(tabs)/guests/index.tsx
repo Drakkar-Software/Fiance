@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Search, XCircle, Users, AlertTriangle, LayoutGrid,
-  Trash2,
+  Trash2, FolderOpen,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -28,7 +28,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
-type InviteAspect = "guests" | "tables";
+type InviteAspect = "guests" | "groups" | "tables";
 
 export default function GuestsListScreen() {
   const { t } = useTranslation("guests");
@@ -39,42 +39,39 @@ export default function GuestsListScreen() {
       {/* Segmented control */}
       <View className="px-4 pt-3 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
-          <Pressable
-            onPress={() => setAspect("guests")}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              aspect === "guests" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
-            }`}
-          >
-            <Text
-              className={`text-sm font-medium ${
-                aspect === "guests"
-                  ? "text-primary-500"
-                  : "text-gray-500 dark:text-gray-400"
+          {(["guests", "groups", "tables"] as const).map((key) => (
+            <Pressable
+              key={key}
+              onPress={() => setAspect(key)}
+              className={`flex-1 py-2 rounded-lg items-center ${
+                aspect === key ? "bg-white dark:bg-gray-700 shadow-sm" : ""
               }`}
             >
-              {t("common:tabs.guests")}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setAspect("tables")}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              aspect === "tables" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
-            }`}
-          >
-            <Text
-              className={`text-sm font-medium ${
-                aspect === "tables"
-                  ? "text-primary-500"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              {t("tables")}
-            </Text>
-          </Pressable>
+              <Text
+                className={`text-sm font-medium ${
+                  aspect === key
+                    ? "text-primary-500"
+                    : "text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                {key === "guests"
+                  ? t("common:tabs.guests")
+                  : key === "groups"
+                  ? t("groups")
+                  : t("tables")}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </View>
 
-      {aspect === "guests" ? <GuestsView /> : <TablesView />}
+      {aspect === "guests" ? (
+        <GuestsView />
+      ) : aspect === "groups" ? (
+        <GroupsView />
+      ) : (
+        <TablesView />
+      )}
     </View>
   );
 }
@@ -88,11 +85,20 @@ function GuestsView() {
   const counts = useMemo(() => computeCounts(guests), [guests]);
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
+  const [typeFilter, setTypeFilter] = useState<string>("ALL");
 
   const filteredGuests = useMemo(() => {
     return guests
       .filter((g) => {
-        if (rsvpFilter !== "ALL" && g.rsvpStatus !== rsvpFilter) return false;
+        // RSVP / no-table filter
+        if (rsvpFilter === "NO_TABLE") {
+          if (g.rsvpStatus !== "ACCEPTED" || g.tableId || g.noTableNeeded) return false;
+        } else if (rsvpFilter !== "ALL" && g.rsvpStatus !== rsvpFilter) {
+          return false;
+        }
+        // Invitation type filter
+        if (typeFilter !== "ALL" && g.invitationType !== typeFilter) return false;
+        // Search
         if (search) {
           const q = search.toLowerCase();
           return (
@@ -108,26 +114,27 @@ function GuestsView() {
           `${b.lastName}${b.firstName}`
         )
       );
-  }, [guests, search, rsvpFilter]);
+  }, [guests, search, rsvpFilter, typeFilter]);
 
-  const tabs = [
+  const rsvpTabs = [
     { key: "ALL", label: t("all"), count: counts.total },
     { key: "ACCEPTED", label: t("confirmed"), count: counts.accepted },
     { key: "PENDING", label: t("pending"), count: counts.pending },
     { key: "DECLINED", label: t("declined"), count: counts.declined },
     { key: "MAYBE", label: t("maybe"), count: counts.maybe },
+    { key: "NO_TABLE", label: t("noTable"), count: counts.nb_no_table },
+  ];
+
+  const typeTabs = [
+    { key: "ALL", label: t("all"), count: counts.total },
+    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: guests.filter((g) => g.invitationType === "CEREMONY").length },
+    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: guests.filter((g) => g.invitationType === "COCKTAIL").length },
+    { key: "FULL", label: t("invitationTypes.FULL"), count: guests.filter((g) => g.invitationType === "FULL").length },
+    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: guests.filter((g) => g.invitationType === "BOTH_DAYS").length },
   ];
 
   return (
     <View className="flex-1">
-      {/* Stats bar */}
-      <View className="bg-white dark:bg-gray-900 px-4 py-3.5 flex-row justify-between border-b border-gray-100 dark:border-gray-800">
-        <StatMini value={counts.accepted} label={t("confirmed")} color="#10B981" />
-        <StatMini value={counts.total} label={t("total")} color="#1F2937" />
-        <StatMini value={`${counts.response_rate}%`} label={t("responses")} color="#3B82F6" />
-        <StatMini value={counts.nb_no_table} label={t("noTable")} color="#F59E0B" />
-      </View>
-
       {/* Search */}
       <View className="px-4 pt-3">
         <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
@@ -150,9 +157,18 @@ function GuestsView() {
       {/* RSVP filter */}
       <View className="mt-3">
         <FilterTabs
-          tabs={tabs}
+          tabs={rsvpTabs}
           activeKey={rsvpFilter}
           onSelect={setRsvpFilter}
+        />
+      </View>
+
+      {/* Invitation type filter */}
+      <View className="mt-1">
+        <FilterTabs
+          tabs={typeTabs}
+          activeKey={typeFilter}
+          onSelect={setTypeFilter}
         />
       </View>
 
@@ -218,6 +234,194 @@ function GuestsView() {
             params: { id: "new" },
           })
         }
+      />
+    </View>
+  );
+}
+
+// ─── Groups View ────────────────────────────────────────────────────────
+
+function GroupsView() {
+  const { t } = useTranslation("guests");
+  const groups = useGuestsStore((s) => s.groups);
+  const guests = useGuestsStore((s) => s.guests);
+  const addGroup = useGuestsStore((s) => s.addGroup);
+  const updateGroup = useGuestsStore((s) => s.updateGroup);
+  const removeGroup = useGuestsStore((s) => s.removeGroup);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+
+  const handleAdd = () => {
+    if (!newGroupName.trim()) {
+      Alert.alert(t("common:error"), t("groupNameRequired"));
+      return;
+    }
+    const now = new Date().toISOString();
+    addGroup({
+      id: Crypto.randomUUID(),
+      name: newGroupName.trim(),
+      createdAt: now,
+      updatedAt: now,
+    });
+    setNewGroupName("");
+    setShowAdd(false);
+  };
+
+  return (
+    <View className="flex-1">
+      {groups.length === 0 && !showAdd ? (
+        <EmptyState
+          icon={FolderOpen}
+          title={t("noGroups")}
+          description={t("createGroupsDesc")}
+          actionLabel={t("createGroup2")}
+          onAction={() => setShowAdd(true)}
+        />
+      ) : (
+        <ScrollView
+          className="flex-1 px-4 pt-4"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Add group form */}
+          {showAdd && (
+            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                {t("newGroup")}
+              </Text>
+              <TextInput
+                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                placeholder={t("groupName")}
+                placeholderTextColor="#D0D0D8"
+                value={newGroupName}
+                onChangeText={setNewGroupName}
+                autoFocus
+              />
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={handleAdd}
+                  className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
+                >
+                  <Text className="text-white font-semibold text-sm">{t("createGroup")}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setShowAdd(false)}
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                >
+                  <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+
+          {/* Groups list */}
+          {groups.map((group) => {
+            const groupGuests = guests.filter((g) => g.groupId === group.id);
+
+            return (
+              <View
+                key={group.id}
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+              >
+                {/* Group header */}
+                <View className="flex-row items-center justify-between mb-2">
+                  <Pressable
+                    onPress={() => {
+                      setEditingGroupId(group.id);
+                      setEditingName(group.name);
+                    }}
+                    className="flex-row items-center flex-1"
+                  >
+                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
+                      <FolderOpen size={16} color="#EC4899" />
+                    </View>
+                    {editingGroupId === group.id ? (
+                      <TextInput
+                        className="text-base font-semibold text-gray-900 dark:text-white flex-1"
+                        value={editingName}
+                        onChangeText={setEditingName}
+                        onBlur={() => {
+                          if (editingName.trim()) {
+                            updateGroup(group.id, { name: editingName.trim() });
+                          }
+                          setEditingGroupId(null);
+                        }}
+                        onSubmitEditing={() => {
+                          if (editingName.trim()) {
+                            updateGroup(group.id, { name: editingName.trim() });
+                          }
+                          setEditingGroupId(null);
+                        }}
+                        autoFocus
+                        selectTextOnFocus
+                      />
+                    ) : (
+                      <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                        {group.name}
+                      </Text>
+                    )}
+                  </Pressable>
+                  <View className="flex-row items-center gap-2">
+                    <View className="px-2.5 py-1 rounded-full bg-gray-50 dark:bg-gray-800">
+                      <Text className="text-xs font-semibold text-gray-500">
+                        {groupGuests.length}
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setDeleteId(group.id)}
+                      className="w-8 h-8 items-center justify-center"
+                    >
+                      <Trash2 size={16} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* Group members */}
+                {groupGuests.length > 0 ? (
+                  groupGuests.map((g) => (
+                    <View
+                      key={g.id}
+                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
+                    >
+                      <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                        <Text className="text-xs font-bold text-gray-400">
+                          {g.firstName[0]}
+                          {g.lastName[0]}
+                        </Text>
+                      </View>
+                      <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                        {g.firstName} {g.lastName}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text className="text-sm text-gray-400 mt-1">
+                    {t("noGroupMembers")}
+                  </Text>
+                )}
+              </View>
+            );
+          })}
+
+          <View className="h-24" />
+        </ScrollView>
+      )}
+
+      <FAB onPress={() => setShowAdd(true)} />
+
+      <ConfirmSheet
+        visible={!!deleteId}
+        title={t("deleteGroup")}
+        message={t("deleteGroupMsg")}
+        confirmLabel={t("common:delete")}
+        destructive
+        onConfirm={() => {
+          if (deleteId) removeGroup(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
       />
     </View>
   );
@@ -451,27 +655,6 @@ function TablesView() {
         }}
         onCancel={() => setDeleteId(null)}
       />
-    </View>
-  );
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────
-
-function StatMini({
-  value,
-  label,
-  color,
-}: {
-  value: number | string;
-  label: string;
-  color: string;
-}) {
-  return (
-    <View className="items-center">
-      <Text className="text-lg font-bold" style={{ color }}>
-        {value}
-      </Text>
-      <Text className="text-[11px] text-gray-400">{label}</Text>
     </View>
   );
 }

@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import type { Guest, Table } from "@/db/schema";
+import type { Guest, Table, GuestGroup } from "@/db/schema";
 import { getDatabase } from "@/db/provider";
 import {
   persistGuest, updateGuestDb, deleteGuestDb,
   persistTable, updateTableDb, deleteTableDb,
+  persistGuestGroup, updateGuestGroupDb, deleteGuestGroupDb,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
@@ -16,7 +17,7 @@ export interface GuestCounts {
   nb_cocktail: number;
   nb_dinner: number;
   nb_full: number;
-  nb_next_day: number;
+  nb_both_days: number;
   nb_children: number;
   nb_vegetarian: number;
   nb_sleeping: number;
@@ -27,14 +28,19 @@ export interface GuestCounts {
 interface GuestsState {
   guests: Guest[];
   tables: Table[];
+  groups: GuestGroup[];
   setGuests: (guests: Guest[]) => void;
   setTables: (tables: Table[]) => void;
+  setGroups: (groups: GuestGroup[]) => void;
   addGuest: (guest: Guest) => void;
   updateGuest: (id: string, updates: Partial<Guest>) => void;
   removeGuest: (id: string) => void;
   addTable: (table: Table) => void;
   updateTable: (id: string, updates: Partial<Table>) => void;
   removeTable: (id: string) => void;
+  addGroup: (group: GuestGroup) => void;
+  updateGroup: (id: string, updates: Partial<GuestGroup>) => void;
+  removeGroup: (id: string) => void;
   getCounts: () => GuestCounts;
   getGuestsByTable: (tableId: string) => Guest[];
   getUnassignedGuests: () => Guest[];
@@ -53,13 +59,13 @@ export function computeCounts(guests: Guest[]): GuestCounts {
     pending: guests.filter((g) => g.rsvpStatus === "PENDING").length,
     maybe: guests.filter((g) => g.rsvpStatus === "MAYBE").length,
     nb_cocktail: accepted.filter((g) =>
-      ["COCKTAIL", "DINNER", "FULL"].includes(g.invitationType)
+      ["COCKTAIL", "FULL", "BOTH_DAYS"].includes(g.invitationType)
     ).length,
     nb_dinner: accepted.filter((g) =>
-      ["DINNER", "FULL"].includes(g.invitationType)
+      ["FULL", "BOTH_DAYS"].includes(g.invitationType)
     ).length,
     nb_full: accepted.filter((g) => g.invitationType === "FULL").length,
-    nb_next_day: accepted.filter((g) => g.invitationType === "NEXT_DAY").length,
+    nb_both_days: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
     nb_children: accepted.filter((g) => g.isChild).length,
     nb_vegetarian: accepted.filter((g) =>
       ["VEGETARIAN", "VEGAN"].includes(g.diet || "")
@@ -76,8 +82,10 @@ export function computeCounts(guests: Guest[]): GuestCounts {
 export const useGuestsStore = create<GuestsState>((set, get) => ({
   guests: [],
   tables: [],
+  groups: [],
   setGuests: (guests) => set({ guests }),
   setTables: (tables) => set({ tables }),
+  setGroups: (groups) => set({ groups }),
   addGuest: (guest) => {
     set((state) => ({ guests: [...state.guests, guest] }));
     const db = getDatabase();
@@ -125,6 +133,31 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     }));
     const db = getDatabase();
     if (db) deleteTableDb(db, id);
+    notifySync();
+  },
+  addGroup: (group) => {
+    set((state) => ({ groups: [...state.groups, group] }));
+    const db = getDatabase();
+    if (db) persistGuestGroup(db, group);
+    notifySync();
+  },
+  updateGroup: (id, updates) => {
+    set((state) => ({
+      groups: state.groups.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+    }));
+    const db = getDatabase();
+    if (db) updateGuestGroupDb(db, id, updates);
+    notifySync();
+  },
+  removeGroup: (id) => {
+    set((state) => ({
+      groups: state.groups.filter((g) => g.id !== id),
+      guests: state.guests.map((g) =>
+        g.groupId === id ? { ...g, groupId: null } : g
+      ),
+    }));
+    const db = getDatabase();
+    if (db) deleteGuestGroupDb(db, id);
     notifySync();
   },
   getCounts: () => computeCounts(get().guests),

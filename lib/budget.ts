@@ -18,8 +18,8 @@ export function getGuestCountForSource(
       return counts.nb_dinner || fallback;
     case "FULL":
       return counts.nb_full || fallback;
-    case "NEXT_DAY":
-      return counts.nb_next_day || fallback;
+    case "BOTH_DAYS":
+      return counts.nb_both_days || fallback;
     case "CHILD":
       return counts.nb_children || fallback;
     case "VEGETARIAN":

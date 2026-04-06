@@ -69,6 +69,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
           require("./migrations/0001_initial.sql"),
           require("./migrations/0002_planning_aspects.sql"),
           require("./migrations/0003_no_table_needed.sql"),
+          require("./migrations/0004_remove_dinner_add_groups.sql"),
         ];
         for (const migrationSQL of migrations) {
           if (typeof migrationSQL === "string") {

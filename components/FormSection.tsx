@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
-import { CheckCircle2, Circle } from "lucide-react-native";
+import { CheckCircle2, Circle, Calendar } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { format, parseISO } from "date-fns";
+import { getDateLocale } from "@/i18n/dateFnsLocale";
+import { DatePickerModal } from "./DatePickerModal";
 
 /** Section heading for form screens */
 export function SectionTitle({ children }: { children: string }) {
@@ -38,10 +42,15 @@ export function InputRow({
   multiline?: boolean;
   onBlur?: () => void;
 }) {
+  const inputRef = useRef<TextInput>(null);
   return (
-    <View className="border-b border-gray-50 dark:border-gray-800 py-3">
+    <Pressable
+      onPress={() => inputRef.current?.focus()}
+      className="border-b border-gray-50 dark:border-gray-800 py-3"
+    >
       <Text className="text-xs text-gray-400 mb-1 font-medium">{label}</Text>
       <TextInput
+        ref={inputRef}
         className="text-base text-gray-900 dark:text-white"
         value={value}
         onChangeText={onChangeText}
@@ -52,7 +61,7 @@ export function InputRow({
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "center"}
       />
-    </View>
+    </Pressable>
   );
 }
 

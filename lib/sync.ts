@@ -21,6 +21,7 @@ export interface BackupData {
   wedding: unknown;
   guests: unknown[];
   tables: unknown[];
+  guestGroups: unknown[];
   vendors: unknown[];
   quotePricings: unknown[];
   tasks: unknown[];
@@ -31,7 +32,7 @@ export interface BackupData {
   ideaCollections: unknown[];
 }
 
-const BACKUP_VERSION = 2;
+const BACKUP_VERSION = 3;
 
 const WEB_STORAGE_KEY = "wedding_data";
 
@@ -53,6 +54,7 @@ export function createBackupDocument(): Record<string, unknown> {
     wedding: useWeddingStore.getState().wedding,
     guests: useGuestsStore.getState().guests,
     tables: useGuestsStore.getState().tables,
+    guestGroups: useGuestsStore.getState().groups,
     vendors: useVendorsStore.getState().vendors,
     quotePricings: useVendorsStore.getState().quotePricings,
     tasks: usePlanningStore.getState().tasks,
@@ -89,6 +91,7 @@ export function restoreFromBackup(
       wedding: backup.wedding,
       guests: (backup.guests || []) as any[],
       tables: (backup.tables || []) as any[],
+      guestGroups: (backup.guestGroups || []) as any[],
       vendors: (backup.vendors || []) as any[],
       quotePricings: quotePricings as any[],
       tasks: (backup.tasks || []) as any[],
@@ -102,6 +105,7 @@ export function restoreFromBackup(
   } else {
     // Web: hydrate Zustand stores directly from the backup data
     if (backup.wedding) useWeddingStore.getState().setWedding(backup.wedding as any);
+    useGuestsStore.getState().setGroups((backup.guestGroups || []) as any[]);
     useGuestsStore.getState().setGuests((backup.guests || []) as any[]);
     useGuestsStore.getState().setTables((backup.tables || []) as any[]);
     useVendorsStore.getState().setVendors((backup.vendors || []) as any[]);

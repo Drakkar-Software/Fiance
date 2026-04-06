@@ -21,19 +21,29 @@ export const guests = sqliteTable("guests", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   side: text("side"), // BRIDE | GROOM | BOTH
-  invitationType: text("invitation_type").notNull(), // CEREMONY | COCKTAIL | DINNER | FULL | NEXT_DAY
+  invitationType: text("invitation_type").notNull(), // CEREMONY | COCKTAIL | FULL | BOTH_DAYS
   rsvpStatus: text("rsvp_status").default("PENDING"), // PENDING | ACCEPTED | DECLINED | MAYBE
   rsvpDate: text("rsvp_date"),
   isSleeping: integer("is_sleeping", { mode: "boolean" }).default(false),
   isChild: integer("is_child", { mode: "boolean" }).default(false),
   diet: text("diet").default("STANDARD"), // STANDARD | VEGETARIAN | VEGAN | HALAL | KOSHER | ALLERGY
   dietNotes: text("diet_notes"),
+  groupId: text("group_id").references(() => guestGroups.id),
   tableId: text("table_id").references(() => tables.id),
   noTableNeeded: integer("no_table_needed", { mode: "boolean" }).default(false),
   email: text("email"),
   phone: text("phone"),
   address: text("address"),
   notes: text("notes"),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Guest Groups ──────────────────────────────────────────────────────────
+
+export const guestGroups = sqliteTable("guest_groups", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
   createdAt: text("created_at"),
   updatedAt: text("updated_at"),
 });
@@ -106,7 +116,7 @@ export const tasks = sqliteTable("tasks", {
   categoryId: text("category_id").references(() => taskCategories.id),
   title: text("title").notNull(),
   description: text("description"),
-  status: text("status").default("TODO"), // TODO | IN_PROGRESS | DONE | CANCELLED
+  status: text("status").default("TODO"), // TODO | DONE
   priority: text("priority").default("MEDIUM"), // LOW | MEDIUM | HIGH | CRITICAL
   dueDate: text("due_date"),
   monthsBefore: integer("months_before"),
@@ -187,6 +197,8 @@ export type Wedding = typeof wedding.$inferSelect;
 export type WeddingInsert = typeof wedding.$inferInsert;
 export type Guest = typeof guests.$inferSelect;
 export type GuestInsert = typeof guests.$inferInsert;
+export type GuestGroup = typeof guestGroups.$inferSelect;
+export type GuestGroupInsert = typeof guestGroups.$inferInsert;
 export type Table = typeof tables.$inferSelect;
 export type TableInsert = typeof tables.$inferInsert;
 export type Vendor = typeof vendors.$inferSelect;

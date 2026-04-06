@@ -2,9 +2,8 @@
   "invitationTypes": {
     "CEREMONY": "Ceremony only",
     "COCKTAIL": "Cocktail only",
-    "DINNER": "Cocktail + Dinner",
     "FULL": "Full day",
-    "NEXT_DAY": "Next day only"
+    "BOTH_DAYS": "Full day and next day"
   },
   "rsvp": {
     "PENDING": "Pending",
@@ -19,11 +18,6 @@
     "HALAL": "Halal",
     "KOSHER": "Kosher",
     "ALLERGY": "Allergy"
-  },
-  "side": {
-    "BRIDE": "Partner 1",
-    "GROOM": "Partner 2",
-    "BOTH": "Both"
   },
   "confirmed": "Confirmed",
   "total": "Total",
@@ -46,7 +40,19 @@
   "email": "Email",
   "phone": "Phone",
   "address": "Address",
-  "sideLabel": "Side",
+  "groupLabel": "Group",
+  "groups": "Groups",
+  "newGroup": "New group",
+  "groupName": "Group name",
+  "createGroup": "Create",
+  "noGroups": "No groups",
+  "createGroupsDesc": "Create groups to organize your guests (family, friends, colleagues...)",
+  "createGroup2": "Create a group",
+  "deleteGroup": "Delete this group?",
+  "deleteGroupMsg": "Guests in this group will be unassigned.",
+  "groupNameRequired": "Group name is required",
+  "noGroupMembers": "No guests in this group",
+  "none": "None",
   "invitation": "Invitation",
   "invitationType": "Invitation type",
   "sleepsOnSite": "Sleeps on site",
