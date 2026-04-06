@@ -39,6 +39,7 @@ export const guests = sqliteTable("guests", {
   dietNotes: text("diet_notes"),
   groupId: text("group_id").references(() => guestGroups.id),
   tableId: text("table_id").references(() => tables.id),
+  companionId: text("companion_id"),
   noTableNeeded: integer("no_table_needed", { mode: "boolean" }).default(false),
   email: text("email"),
   phone: text("phone"),

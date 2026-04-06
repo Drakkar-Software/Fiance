@@ -32,7 +32,7 @@ export interface BackupData {
   ideaCollections: unknown[];
 }
 
-const BACKUP_VERSION = 3;
+const BACKUP_VERSION = 4;
 
 const WEB_STORAGE_KEY = "wedding_data";
 

@@ -28,6 +28,8 @@ export default function DayOfItemScreen() {
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
+  const canSave = title.trim().length > 0 && time.trim().length > 0;
+
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert(t("common:error"), t("titleRequired"));
@@ -76,8 +78,8 @@ export default function DayOfItemScreen() {
           title: isNew ? t("newMoment") : title || t("dayOf"),
           headerRight: () => (
             <Pressable
-              onPress={handleSave}
-              style={{ marginRight: 8, backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
+              onPress={canSave ? handleSave : undefined}
+              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
             >
               <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                 {t("common:save")}

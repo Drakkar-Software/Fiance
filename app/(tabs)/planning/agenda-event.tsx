@@ -31,6 +31,8 @@ export default function AgendaEventScreen() {
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
+  const canSave = title.trim().length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(date.trim()) && !isNaN(new Date(date.trim()).getTime());
+
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert(t("common:error"), t("titleRequired"));
@@ -74,8 +76,8 @@ export default function AgendaEventScreen() {
           title: isNew ? t("newAppointment") : title || t("appointment"),
           headerRight: () => (
             <Pressable
-              onPress={handleSave}
-              style={{ marginRight: 8, backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
+              onPress={canSave ? handleSave : undefined}
+              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
             >
               <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                 {t("common:save")}

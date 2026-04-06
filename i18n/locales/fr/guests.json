@@ -80,5 +80,11 @@
   "noGuestsAssigned": "Aucun invité assigné",
   "deleteTable": "Supprimer cette table ?",
   "deleteTableMsg": "Les invités assignés seront désassignés.",
-  "tableNameRequired": "Le nom de la table est obligatoire"
+  "tableNameRequired": "Le nom de la table est obligatoire",
+  "companionLabel": "Accompagnant / +1",
+  "selectCompanion": "Choisir un accompagnant...",
+  "searchCompanion": "Rechercher un invité...",
+  "withCompanion": "avec {{name}}",
+  "companionConflictTitle": "Remplacer l'accompagnant ?",
+  "companionConflictMessage": "{{name}} est actuellement lié(e) à {{currentCompanion}}. Cela remplacera le lien existant."
 }

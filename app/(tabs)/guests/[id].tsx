@@ -22,8 +22,10 @@ import type {
   RsvpStatus,
   Diet,
 } from "@/db/types";
+import { UserPlus, XCircle } from "lucide-react-native";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
   SectionTitle,
   FormCard,
@@ -59,6 +61,8 @@ export default function GuestDetailScreen() {
   const addGuest = useGuestsStore((s) => s.addGuest);
   const updateGuest = useGuestsStore((s) => s.updateGuest);
   const removeGuest = useGuestsStore((s) => s.removeGuest);
+  const linkCompanion = useGuestsStore((s) => s.linkCompanion);
+  const unlinkCompanion = useGuestsStore((s) => s.unlinkCompanion);
 
   const isNew = id === "new";
   const existing = guests.find((g) => g.id === id);
@@ -82,7 +86,13 @@ export default function GuestDetailScreen() {
   const [tableId, setTableId] = useState(existing?.tableId || "");
   const [noTableNeeded, setNoTableNeeded] = useState(existing?.noTableNeeded || false);
   const [notes, setNotes] = useState(existing?.notes || "");
+  const [companionId, setCompanionId] = useState(existing?.companionId || "");
   const [showDelete, setShowDelete] = useState(false);
+  const [showCompanionPicker, setShowCompanionPicker] = useState(false);
+  const [showCompanionConfirm, setShowCompanionConfirm] = useState(false);
+  const [pendingCompanionId, setPendingCompanionId] = useState("");
+
+  const canSave = firstName.trim().length > 0 && lastName.trim().length > 0;
 
   const handleSave = () => {
     if (!firstName.trim() || !lastName.trim()) {
@@ -114,11 +124,20 @@ export default function GuestDetailScreen() {
       updatedAt: now,
     };
 
+    const guestId = isNew ? Crypto.randomUUID() : id!;
     if (isNew) {
-      addGuest({ ...guestData, id: Crypto.randomUUID(), createdAt: now } as Guest);
+      addGuest({ ...guestData, id: guestId, createdAt: now } as Guest);
     } else {
-      updateGuest(id!, guestData);
+      updateGuest(guestId, guestData);
     }
+
+    // Handle companion linking
+    if (companionId && companionId !== existing?.companionId) {
+      linkCompanion(guestId, companionId);
+    } else if (!companionId && existing?.companionId) {
+      unlinkCompanion(guestId);
+    }
+
     router.back();
   };
 
@@ -137,8 +156,8 @@ export default function GuestDetailScreen() {
             : `${firstName} ${lastName}`.trim() || t("guest"),
           headerRight: () => (
             <Pressable
-              onPress={handleSave}
-              style={{ marginRight: 8, backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
+              onPress={canSave ? handleSave : undefined}
+              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
             >
               <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                 {t("common:save")}
@@ -203,6 +222,46 @@ export default function GuestDetailScreen() {
               </ScrollView>
             </>
           )}
+
+          {/* Companion picker */}
+          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">
+            {t("companionLabel")}
+          </Text>
+          <Pressable
+            onPress={() => setShowCompanionPicker(true)}
+            className={`px-3.5 py-2.5 rounded-xl border flex-row items-center ${
+              companionId
+                ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
+                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+            }`}
+          >
+            {companionId ? (
+              <>
+                <UserPlus size={16} color="#EC4899" />
+                <Text className="text-sm text-primary-500 font-medium ml-2 flex-1">
+                  {(() => {
+                    const c = guests.find((g) => g.id === companionId);
+                    return c ? `${c.firstName} ${c.lastName}` : "";
+                  })()}
+                </Text>
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setCompanionId("");
+                  }}
+                >
+                  <XCircle size={16} color="#9CA3AF" />
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <UserPlus size={16} color="#9CA3AF" />
+                <Text className="text-sm text-gray-400 ml-2">
+                  {t("selectCompanion")}
+                </Text>
+              </>
+            )}
+          </Pressable>
         </FormCard>
 
         {/* Invitation */}
@@ -370,6 +429,53 @@ export default function GuestDetailScreen() {
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
+      />
+
+      <CompanionPickerModal
+        visible={showCompanionPicker}
+        currentGuestId={isNew ? "__new__" : id!}
+        currentCompanionId={companionId || null}
+        onSelect={(selectedId) => {
+          const target = guests.find((g) => g.id === selectedId);
+          if (
+            target?.companionId &&
+            target.companionId !== (isNew ? "__new__" : id)
+          ) {
+            setPendingCompanionId(selectedId);
+            setShowCompanionPicker(false);
+            setShowCompanionConfirm(true);
+          } else {
+            setCompanionId(selectedId);
+            setShowCompanionPicker(false);
+          }
+        }}
+        onClear={() => {
+          setCompanionId("");
+          setShowCompanionPicker(false);
+        }}
+        onClose={() => setShowCompanionPicker(false)}
+      />
+
+      <ConfirmSheet
+        visible={showCompanionConfirm}
+        title={t("companionConflictTitle")}
+        message={(() => {
+          const target = guests.find((g) => g.id === pendingCompanionId);
+          const old = guests.find((g) => g.id === target?.companionId);
+          return t("companionConflictMessage", {
+            name: target ? `${target.firstName} ${target.lastName}` : "",
+            currentCompanion: old ? `${old.firstName} ${old.lastName}` : "",
+          });
+        })()}
+        onConfirm={() => {
+          setCompanionId(pendingCompanionId);
+          setPendingCompanionId("");
+          setShowCompanionConfirm(false);
+        }}
+        onCancel={() => {
+          setPendingCompanionId("");
+          setShowCompanionConfirm(false);
+        }}
       />
     </View>
   );

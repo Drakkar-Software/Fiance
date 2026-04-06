@@ -80,5 +80,11 @@
   "noGuestsAssigned": "No guests assigned",
   "deleteTable": "Delete this table?",
   "deleteTableMsg": "Assigned guests will be unassigned.",
-  "tableNameRequired": "Table name is required"
+  "tableNameRequired": "Table name is required",
+  "companionLabel": "Companion / +1",
+  "selectCompanion": "Select a companion...",
+  "searchCompanion": "Search a guest...",
+  "withCompanion": "with {{name}}",
+  "companionConflictTitle": "Replace companion?",
+  "companionConflictMessage": "{{name}} is currently linked to {{currentCompanion}}. This will replace their existing link."
 }

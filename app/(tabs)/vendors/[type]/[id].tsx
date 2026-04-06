@@ -76,6 +76,8 @@ export default function VendorDetailScreen() {
     existingVendor?.customFields ? JSON.parse(existingVendor.customFields) : {}
   );
 
+  const canSave = name.trim().length > 0;
+
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
   const updateCustomField = (key: string, value: any) => {
@@ -140,8 +142,8 @@ export default function VendorDetailScreen() {
           title: isNew ? t("new", { type: typeName }) : name || typeName,
           headerRight: () => (
             <Pressable
-              onPress={handleSave}
-              style={{ marginRight: 8, backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
+              onPress={canSave ? handleSave : undefined}
+              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
             >
               <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                 {t("common:save")}

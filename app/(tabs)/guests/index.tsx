@@ -82,6 +82,10 @@ export default function GuestsListScreen() {
 function GuestCard({ guest }: { guest: Guest }) {
   const { t } = useTranslation("guests");
   const router = useRouter();
+  const guests = useGuestsStore((s) => s.guests);
+  const companion = guest.companionId
+    ? guests.find((g) => g.id === guest.companionId)
+    : null;
 
   return (
     <Pressable
@@ -111,6 +115,11 @@ function GuestCard({ guest }: { guest: Guest }) {
               ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
               : ""}
           </Text>
+          {companion && (
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {t("withCompanion", { name: `${companion.firstName} ${companion.lastName}` })}
+            </Text>
+          )}
         </View>
         <StatusBadge
           label={t(RSVP_STATUS_LABELS[guest.rsvpStatus as RsvpStatus] || "")}
