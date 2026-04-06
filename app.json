@@ -38,11 +38,18 @@
       "display": "standalone",
       "orientation": "portrait"
     },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/78314429-ee37-428e-85a6-1fa93f3286a7"
+    },
     "plugins": [
       "expo-router",
       "expo-sqlite",
       "expo-secure-store",
-      "expo-local-authentication"
+      "expo-local-authentication",
+      "expo-updates"
     ],
     "extra": {
       "eas": {

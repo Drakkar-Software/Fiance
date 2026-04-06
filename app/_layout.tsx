@@ -5,6 +5,7 @@ import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
+import * as Updates from "expo-updates";
 import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
@@ -119,6 +120,21 @@ export default function RootLayout() {
     Promise.all([loadLanguage(), isLockEnabled()]).then(([, enabled]) =>
       setLocked(enabled)
     );
+  }, []);
+
+  useEffect(() => {
+    if (__DEV__) return;
+    (async () => {
+      try {
+        const { isAvailable } = await Updates.checkForUpdateAsync();
+        if (isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch {
+        // Silent fail — update check is best-effort
+      }
+    })();
   }, []);
 
   useEffect(() => {
