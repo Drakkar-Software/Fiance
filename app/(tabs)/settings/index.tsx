@@ -11,6 +11,7 @@ import {
 import { format } from "date-fns";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
+import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
 import {
   initStarfish,
@@ -103,16 +104,19 @@ export default function SettingsScreen() {
   }, []);
   const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
 
+  const premium = isPremium();
+
   const handleToggleSync = useCallback(async () => {
     if (!activeEntry?.id) return;
 
     if (syncEnabled) {
-      // User explicitly disables sync — persist the choice
       teardownStarfish();
       setSyncEnabled(false);
       updateRegistryWedding(activeEntry.id, { syncDisabled: true });
       return;
     }
+
+    if (!premium) return; // blocked by UI, but guard anyway
 
     const password = activeEntry?.seedPhrase;
     const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
@@ -124,12 +128,10 @@ export default function SettingsScreen() {
       return;
     }
 
-    // Persist serverUrl if it was missing from the entry
     if (!activeEntry?.serverUrl) {
       updateRegistryWedding(activeEntry.id, { serverUrl });
     }
 
-    // Re-enable sync — clear the disabled flag and init
     updateRegistryWedding(activeEntry.id, { syncDisabled: false });
 
     const authToken = await deriveAuthToken(password);
@@ -143,7 +145,7 @@ export default function SettingsScreen() {
       encryptionKey,
     });
     setSyncEnabled(true);
-  }, [syncEnabled, activeEntry]);
+  }, [syncEnabled, activeEntry, premium]);
 
   const handleInvite = useCallback(async () => {
     const password = activeEntry?.seedPhrase;
@@ -249,11 +251,13 @@ export default function SettingsScreen() {
       <View className="px-4">
         <SectionTitle>{t("backupAndSharing")}</SectionTitle>
         <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
-          {syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
+          {!premium ? t("premiumSyncMsg") : syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
         </Text>
         <Pressable
-          onPress={handleToggleSync}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
+          onPress={premium ? handleToggleSync : undefined}
+          className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 ${
+            premium ? "active:opacity-80" : "opacity-50"
+          }`}
         >
           <View
             className="w-10 h-10 rounded-xl items-center justify-center"
@@ -267,23 +271,25 @@ export default function SettingsScreen() {
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-base font-medium text-gray-900 dark:text-white">
-              {syncEnabled ? t("syncEnabled") : t("syncDisabled")}
+              {!premium ? t("premiumFeature") : syncEnabled ? t("syncEnabled") : t("syncDisabled")}
             </Text>
             <Text className="text-xs text-gray-400 mt-0.5">
-              {syncEnabled
-                ? lastSync
-                  ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
-                  : t("syncAutomatic")
-                : t("tapToEnable")}
+              {!premium
+                ? t("premiumSyncMsg")
+                : syncEnabled
+                  ? lastSync
+                    ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
+                    : t("syncAutomatic")
+                  : t("tapToEnable")}
             </Text>
           </View>
           <View
             className="w-12 h-7 rounded-full justify-center px-0.5"
-            style={{ backgroundColor: syncEnabled ? "#EC4899" : "#D1D5DB" }}
+            style={{ backgroundColor: syncEnabled && premium ? "#EC4899" : "#D1D5DB" }}
           >
             <View
               className="w-6 h-6 rounded-full bg-white"
-              style={{ alignSelf: syncEnabled ? "flex-end" : "flex-start" }}
+              style={{ alignSelf: syncEnabled && premium ? "flex-end" : "flex-start" }}
             />
           </View>
         </Pressable>

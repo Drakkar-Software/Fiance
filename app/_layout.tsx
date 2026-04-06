@@ -10,6 +10,7 @@ import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
 import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
+import { isPremium } from "@/lib/premium";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -57,6 +58,7 @@ function AppContent() {
 
     if (!activeWedding?.seedPhrase) return;
     if (activeWedding.syncDisabled) return;
+    if (!isPremium()) return;
 
     const serverUrl = activeWedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
     if (!serverUrl) return;
