@@ -125,12 +125,20 @@ function GuestsView() {
     { key: "NO_TABLE", label: t("noTable"), count: counts.nb_no_table },
   ];
 
+  const typeCounts = useMemo(() => {
+    const c = { CEREMONY: 0, COCKTAIL: 0, FULL: 0, BOTH_DAYS: 0 };
+    for (const g of guests) {
+      if (g.invitationType in c) c[g.invitationType as keyof typeof c]++;
+    }
+    return c;
+  }, [guests]);
+
   const typeTabs = [
     { key: "ALL", label: t("all"), count: counts.total },
-    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: guests.filter((g) => g.invitationType === "CEREMONY").length },
-    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: guests.filter((g) => g.invitationType === "COCKTAIL").length },
-    { key: "FULL", label: t("invitationTypes.FULL"), count: guests.filter((g) => g.invitationType === "FULL").length },
-    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: guests.filter((g) => g.invitationType === "BOTH_DAYS").length },
+    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: typeCounts.CEREMONY },
+    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: typeCounts.COCKTAIL },
+    { key: "FULL", label: t("invitationTypes.FULL"), count: typeCounts.FULL },
+    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: typeCounts.BOTH_DAYS },
   ];
 
   return (

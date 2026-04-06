@@ -75,7 +75,7 @@ export function computeCounts(guests: Guest[]): GuestCounts {
       total > 0
         ? Math.round(((acceptedCount + declinedCount) / total) * 100)
         : 0,
-    nb_no_table: accepted.filter((g) => !g.tableId).length,
+    nb_no_table: accepted.filter((g) => !g.tableId && !g.noTableNeeded).length,
   };
 }
 
@@ -143,10 +143,14 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   },
   updateGroup: (id, updates) => {
     set((state) => ({
-      groups: state.groups.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+      groups: state.groups.map((g) =>
+        g.id === id
+          ? { ...g, ...updates, updatedAt: new Date().toISOString() }
+          : g
+      ),
     }));
     const db = getDatabase();
-    if (db) updateGuestGroupDb(db, id, updates);
+    if (db) updateGuestGroupDb(db, id, { ...updates, updatedAt: new Date().toISOString() });
     notifySync();
   },
   removeGroup: (id) => {

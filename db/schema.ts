@@ -14,13 +14,22 @@ export const wedding = sqliteTable("wedding", {
   updatedAt: text("updated_at"),
 });
 
+// ─── Guest Groups ──────────────────────────────────────────────────────────
+
+export const guestGroups = sqliteTable("guest_groups", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
 // ─── Guests ─────────────────────────────────────────────────────────────────
 
 export const guests = sqliteTable("guests", {
   id: text("id").primaryKey(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
-  side: text("side"), // BRIDE | GROOM | BOTH
+  side: text("side"), // legacy, replaced by groupId
   invitationType: text("invitation_type").notNull(), // CEREMONY | COCKTAIL | FULL | BOTH_DAYS
   rsvpStatus: text("rsvp_status").default("PENDING"), // PENDING | ACCEPTED | DECLINED | MAYBE
   rsvpDate: text("rsvp_date"),
@@ -35,15 +44,6 @@ export const guests = sqliteTable("guests", {
   phone: text("phone"),
   address: text("address"),
   notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Guest Groups ──────────────────────────────────────────────────────────
-
-export const guestGroups = sqliteTable("guest_groups", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
   createdAt: text("created_at"),
   updatedAt: text("updated_at"),
 });
