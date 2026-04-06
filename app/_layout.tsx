@@ -13,8 +13,39 @@ import { isLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import OnboardingScreen from "./onboarding";
+
+/** Rendered inside DatabaseProvider so getDatabase() is guaranteed ready */
+function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  useEffect(() => {
+    if (getStarfishStore()) teardownStarfish();
+
+    if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
+    const serverUrl = wedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    if (!serverUrl) return;
+
+    let cancelled = false;
+    (async () => {
+      const authToken = await deriveAuthToken(wedding.seedPhrase!);
+      if (cancelled) return;
+      const userId = authToken.slice(0, 16);
+      const encryptionKey = await deriveEncryptionKey(wedding.seedPhrase!, userId);
+      if (cancelled) return;
+      initStarfish({ serverUrl, authToken, userId, encryptionKey });
+      // Pull remote data — critical for join flow so data appears immediately
+      const sf = getStarfishStore();
+      if (sf && !cancelled) {
+        try { await sf.getState().pull(); } catch { /* sync will retry */ }
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [wedding.id]);
+
+  return null;
+}
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -50,32 +81,6 @@ function AppContent() {
     }
   }, [registry?.weddings.length]);
 
-  // Auto-init Starfish sync when the active wedding has credentials.
-  // Teardown + re-init on wedding switch. Skip only if user explicitly disabled.
-  useEffect(() => {
-    // Teardown any existing sync (handles wedding switch)
-    if (getStarfishStore()) teardownStarfish();
-
-    if (!activeWedding?.seedPhrase) return;
-    if (activeWedding.syncDisabled) return;
-    if (!isPremium()) return;
-
-    const serverUrl = activeWedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-    if (!serverUrl) return;
-
-    let cancelled = false;
-    (async () => {
-      const authToken = await deriveAuthToken(activeWedding.seedPhrase!);
-      if (cancelled) return;
-      const userId = authToken.slice(0, 16);
-      const encryptionKey = await deriveEncryptionKey(activeWedding.seedPhrase!, userId);
-      if (cancelled) return;
-      initStarfish({ serverUrl, authToken, userId, encryptionKey });
-    })();
-
-    return () => { cancelled = true; };
-  }, [activeWedding?.id]);
-
   if (!isLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -96,6 +101,7 @@ function AppContent() {
 
   return (
     <DatabaseProvider dbFileName={activeWedding!.dbFileName}>
+      <SyncInitializer wedding={activeWedding!} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
       </Stack>

@@ -3,26 +3,8 @@ import { View, Text, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heart, PlusCircle, ArrowLeft } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
-import { initStarfish, getStarfishStore } from "@/lib/starfish";
-import { decodeInviteToken, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
+import { decodeInviteToken } from "@/lib/identity";
 import OnboardingScreen from "./onboarding";
-
-async function initAndPull(password: string, serverUrl: string) {
-  const authToken = await deriveAuthToken(password);
-  const userId = authToken.slice(0, 16);
-  // Use userId (deterministic from password) as salt — NOT the local wedding UUID
-  // which differs per device and would cause encryption key mismatch.
-  const encryptionKey = await deriveEncryptionKey(password, userId);
-  initStarfish({
-    serverUrl,
-    authToken,
-    userId,
-    encryptionKey,
-  });
-  const sf = getStarfishStore();
-  await sf?.getState().pull();
-}
 
 function useJoinAndNavigate() {
   const router = useRouter();
@@ -32,24 +14,16 @@ function useJoinAndNavigate() {
 
   return useCallback(
     async (label: string, password: string) => {
-      let entry: WeddingRegistryEntry | undefined;
       const existing = registry?.weddings.find(
         (w) => w.seedPhrase === password,
       );
       if (existing) {
         await switchWedding(existing.id);
-        entry = existing;
       } else {
-        entry = await createWedding(label, password);
+        await createWedding(label, password);
       }
-      const serverUrl = entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-      if (serverUrl && entry) {
-        try {
-          await initAndPull(password, serverUrl);
-        } catch {
-          // Sync failure shouldn't block the join — data will sync later
-        }
-      }
+      // Navigation triggers _layout.tsx re-render → DatabaseProvider init →
+      // SyncInitializer auto-inits Starfish + pulls remote data
       router.replace("/");
     },
     [registry, createWedding, switchWedding, router],
