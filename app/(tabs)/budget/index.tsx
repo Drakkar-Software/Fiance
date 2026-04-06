@@ -96,24 +96,30 @@ export default function BudgetScreen() {
 
         <View className="flex-row justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Reste à engager
+            Reste à payer
           </Text>
           <Text
             className={`text-xl font-bold ${
-              budget.remaining >= 0 ? "text-emerald-500" : "text-red-500"
+              budget.remainingToPay >= 0 ? "text-emerald-500" : "text-red-500"
             }`}
           >
-            {formatMoney(budget.remaining)}
-          </Text>
-        </View>
-        <View className="flex-row justify-between mt-2">
-          <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Reste à payer
-          </Text>
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
             {formatMoney(budget.remainingToPay)}
           </Text>
         </View>
+        {budget.budgetTarget > 0 && (
+          <View className="flex-row justify-between mt-2">
+            <Text className="text-sm text-gray-400">
+              Reste à engager
+            </Text>
+            <Text
+              className={`text-sm font-medium ${
+                budget.remaining >= 0 ? "text-gray-500" : "text-red-500"
+              }`}
+            >
+              {formatMoney(budget.remaining)}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Deposits summary */}
