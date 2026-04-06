@@ -18,8 +18,6 @@ function getGuestCountForSource(
   switch (source) {
     case "COCKTAIL":
       return counts.nb_cocktail || fallback;
-    case "DINNER":
-      return counts.nb_dinner || fallback;
     case "FULL":
       return counts.nb_full || fallback;
     case "BOTH_DAYS":

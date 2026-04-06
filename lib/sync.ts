@@ -85,16 +85,32 @@ export function restoreFromBackup(
   const quotePricings = ((backup.quotePricings || []) as any[]).map(migrateQuotePricing);
   const ideas = ((backup.ideas || []) as any[]).map(migrateIdea);
 
+  // v2 → v3: migrate DINNER/NEXT_DAY invitation types and pppSource
+  const migrateInvType = (t: string) =>
+    t === "DINNER" ? "FULL" : t === "NEXT_DAY" ? "BOTH_DAYS" : t;
+  const migratePppSource = (s: string | null) =>
+    s === "DINNER" ? "FULL" : s === "NEXT_DAY" ? "BOTH_DAYS" : s;
+
   if (db) {
     // Native: write to SQLite (source of truth) then re-hydrate stores from it
     restoreAllTables(db, {
       wedding: backup.wedding,
-      guests: (backup.guests || []) as any[],
+      guests: ((backup.guests || []) as any[]).map((g: any) => ({
+        ...g,
+        invitationType: migrateInvType(g.invitationType ?? g.invitation_type ?? "FULL"),
+      })),
       tables: (backup.tables || []) as any[],
       guestGroups: (backup.guestGroups || []) as any[],
-      vendors: (backup.vendors || []) as any[],
+      vendors: ((backup.vendors || []) as any[]).map((v: any) => ({
+        ...v,
+        pppSource: migratePppSource(v.pppSource ?? v.ppp_source ?? null),
+      })),
       quotePricings: quotePricings as any[],
-      tasks: (backup.tasks || []) as any[],
+      tasks: ((backup.tasks || []) as any[]).map((t: any) =>
+        t.status === "IN_PROGRESS" || t.status === "CANCELLED"
+          ? { ...t, status: "TODO" }
+          : t
+      ),
       taskCategories: (backup.taskCategories || []) as any[],
       agendaEvents: (backup.agendaEvents || []) as any[],
       dayOfItems: dayOfItems as any[],
@@ -106,9 +122,19 @@ export function restoreFromBackup(
     // Web: hydrate Zustand stores directly from the backup data
     if (backup.wedding) useWeddingStore.getState().setWedding(backup.wedding as any);
     useGuestsStore.getState().setGroups((backup.guestGroups || []) as any[]);
-    useGuestsStore.getState().setGuests((backup.guests || []) as any[]);
+    useGuestsStore.getState().setGuests(
+      ((backup.guests || []) as any[]).map((g: any) => ({
+        ...g,
+        invitationType: migrateInvType(g.invitationType ?? g.invitation_type ?? "FULL"),
+      }))
+    );
     useGuestsStore.getState().setTables((backup.tables || []) as any[]);
-    useVendorsStore.getState().setVendors((backup.vendors || []) as any[]);
+    useVendorsStore.getState().setVendors(
+      ((backup.vendors || []) as any[]).map((v: any) => ({
+        ...v,
+        pppSource: migratePppSource(v.pppSource ?? v.ppp_source ?? null),
+      }))
+    );
     useVendorsStore.getState().setQuotePricings(quotePricings as any[]);
     usePlanningStore.getState().setCategories((backup.taskCategories || []) as any[]);
     const restoredTasks = ((backup.tasks || []) as any[]).map((t: any) =>
