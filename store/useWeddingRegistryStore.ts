@@ -17,7 +17,7 @@ interface WeddingRegistryState {
   createWedding: (label: string, seedPhrase?: string, serverUrl?: string) => Promise<WeddingRegistryEntry>;
   switchWedding: (id: string) => Promise<void>;
   deleteWedding: (id: string) => Promise<void>;
-  updateWedding: (id: string, updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl">>) => Promise<void>;
+  updateWedding: (id: string, updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled">>) => Promise<void>;
 }
 
 export const useWeddingRegistryStore = create<WeddingRegistryState>((set, get) => ({

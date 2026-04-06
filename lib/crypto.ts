@@ -27,7 +27,7 @@ export async function encryptData(
   const keyBytes = hexToBytes(keyHex);
   const key = await crypto.subtle.importKey(
     "raw",
-    keyBytes,
+    keyBytes.buffer as ArrayBuffer,
     { name: "AES-GCM" },
     false,
     ["encrypt"]
@@ -65,7 +65,7 @@ export async function decryptData(
   const keyBytes = hexToBytes(keyHex);
   const key = await crypto.subtle.importKey(
     "raw",
-    keyBytes,
+    keyBytes.buffer as ArrayBuffer,
     { name: "AES-GCM" },
     false,
     ["decrypt"]

@@ -90,8 +90,8 @@ export default function IdeaDetailScreen() {
   const [collectionId, setCollectionId] = useState(existing?.collectionId || "");
   const [vendorId, setVendorId] = useState(existing?.vendorId || "");
   const [isFavorite, setIsFavorite] = useState(existing?.isFavorite || false);
-  const [tagsInput, setTagsInput] = useState(
-    existing?.tags ? JSON.parse(existing.tags).join(", ") : ""
+  const [tagsInput, setTagsInput] = useState<string>(
+    existing?.tags ? (JSON.parse(existing.tags) as string[]).join(", ") : ""
   );
   const [showDelete, setShowDelete] = useState(false);
 
