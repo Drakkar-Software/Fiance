@@ -3,7 +3,9 @@
  * Each wedding gets its own SQLite database file.
  */
 
+import { Platform } from "react-native";
 import * as Crypto from "expo-crypto";
+import { deleteDatabaseAsync } from "expo-sqlite";
 import { secureGet, secureSet } from "./secure-store";
 
 const REGISTRY_KEY = "wedding_registry";
@@ -66,11 +68,18 @@ export async function createWeddingEntry(
 
 export async function deleteWeddingEntry(id: string): Promise<void> {
   const registry = await loadRegistry();
+  const entry = registry.weddings.find((w) => w.id === id);
   registry.weddings = registry.weddings.filter((w) => w.id !== id);
   if (registry.activeWeddingId === id) {
     registry.activeWeddingId = registry.weddings[0]?.id ?? null;
   }
   await saveRegistry(registry);
+
+  if (Platform.OS === "web") {
+    localStorage.removeItem("wedding_data");
+  } else if (entry) {
+    await deleteDatabaseAsync(entry.dbFileName);
+  }
 }
 
 export async function setActiveWeddingEntry(id: string): Promise<void> {
