@@ -12,7 +12,7 @@ interface CollapsibleSectionProps {
 export function CollapsibleSection({
   title,
   count,
-  defaultExpanded = false,
+  defaultExpanded = true,
   children,
 }: CollapsibleSectionProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
