@@ -262,6 +262,18 @@ function GroupsView() {
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
 
+  const guestsByGroup = useMemo(() => {
+    const map = new Map<string, typeof guests>();
+    for (const g of guests) {
+      if (g.groupId) {
+        const arr = map.get(g.groupId);
+        if (arr) arr.push(g);
+        else map.set(g.groupId, [g]);
+      }
+    }
+    return map;
+  }, [guests]);
+
   const handleAdd = () => {
     if (!newGroupName.trim()) {
       Alert.alert(t("common:error"), t("groupNameRequired"));
@@ -326,7 +338,7 @@ function GroupsView() {
 
           {/* Groups list */}
           {groups.map((group) => {
-            const groupGuests = guests.filter((g) => g.groupId === group.id);
+            const groupGuests = guestsByGroup.get(group.id) ?? [];
 
             return (
               <View

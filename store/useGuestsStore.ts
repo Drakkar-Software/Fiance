@@ -142,15 +142,14 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     notifySync();
   },
   updateGroup: (id, updates) => {
+    const now = new Date().toISOString();
     set((state) => ({
       groups: state.groups.map((g) =>
-        g.id === id
-          ? { ...g, ...updates, updatedAt: new Date().toISOString() }
-          : g
+        g.id === id ? { ...g, ...updates, updatedAt: now } : g
       ),
     }));
     const db = getDatabase();
-    if (db) updateGuestGroupDb(db, id, { ...updates, updatedAt: new Date().toISOString() });
+    if (db) updateGuestGroupDb(db, id, { ...updates, updatedAt: now });
     notifySync();
   },
   removeGroup: (id) => {
