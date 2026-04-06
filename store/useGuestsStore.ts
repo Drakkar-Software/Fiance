@@ -107,17 +107,28 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     notifySync();
   },
   removeGuest: (id) => {
+    const now = new Date().toISOString();
+    // Clear all companion links pointing to or from the deleted guest
+    const pointingToDeleted = get().guests.filter(
+      (g) => g.id !== id && (g.companionId === id)
+    );
     const guest = get().guests.find((g) => g.id === id);
-    if (guest?.companionId) {
-      const cId = guest.companionId;
-      const now = new Date().toISOString();
+    const toUnlink = guest?.companionId
+      ? [...pointingToDeleted.filter((g) => g.id !== guest.companionId), { id: guest.companionId }]
+      : pointingToDeleted;
+    if (toUnlink.length > 0) {
+      const ids = new Set(toUnlink.map((g) => g.id));
       set((state) => ({
         guests: state.guests.map((g) =>
-          g.id === cId ? { ...g, companionId: null, updatedAt: now } : g
+          ids.has(g.id) ? { ...g, companionId: null, updatedAt: now } : g
         ),
       }));
       const db = getDatabase();
-      if (db) updateGuestDb(db, cId, { companionId: null, updatedAt: now });
+      if (db) {
+        for (const u of toUnlink) {
+          updateGuestDb(db, u.id, { companionId: null, updatedAt: now });
+        }
+      }
     }
     set((state) => ({ guests: state.guests.filter((g) => g.id !== id) }));
     const db = getDatabase();
@@ -126,24 +137,30 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   },
   linkCompanion: (guestId, companionId) => {
     const now = new Date().toISOString();
-    const oldState = get().guests;
-    const oldCompanionOfGuest = oldState.find((g) => g.companionId === guestId && g.id !== companionId);
-    const oldCompanionOfTarget = oldState.find((g) => g.companionId === companionId && g.id !== guestId);
-    set((state) => ({
-      guests: state.guests.map((g) => {
-        if (g.id === guestId) return { ...g, companionId, updatedAt: now };
-        if (g.id === companionId) return { ...g, companionId: guestId, updatedAt: now };
-        if (oldCompanionOfGuest && g.id === oldCompanionOfGuest.id) return { ...g, companionId: null, updatedAt: now };
-        if (oldCompanionOfTarget && g.id === oldCompanionOfTarget.id) return { ...g, companionId: null, updatedAt: now };
-        return g;
-      }),
-    }));
+    // Capture old companions inside set() for consistency, but also outside for DB writes
+    let oldCompanionOfGuestId: string | null = null;
+    let oldCompanionOfTargetId: string | null = null;
+    set((state) => {
+      const ocg = state.guests.find((g) => g.companionId === guestId && g.id !== companionId);
+      const oct = state.guests.find((g) => g.companionId === companionId && g.id !== guestId);
+      oldCompanionOfGuestId = ocg?.id ?? null;
+      oldCompanionOfTargetId = oct?.id ?? null;
+      return {
+        guests: state.guests.map((g) => {
+          if (g.id === guestId) return { ...g, companionId, updatedAt: now };
+          if (g.id === companionId) return { ...g, companionId: guestId, updatedAt: now };
+          if (ocg && g.id === ocg.id) return { ...g, companionId: null, updatedAt: now };
+          if (oct && g.id === oct.id) return { ...g, companionId: null, updatedAt: now };
+          return g;
+        }),
+      };
+    });
     const db = getDatabase();
     if (db) {
       updateGuestDb(db, guestId, { companionId, updatedAt: now });
       updateGuestDb(db, companionId, { companionId: guestId, updatedAt: now });
-      if (oldCompanionOfGuest) updateGuestDb(db, oldCompanionOfGuest.id, { companionId: null, updatedAt: now });
-      if (oldCompanionOfTarget) updateGuestDb(db, oldCompanionOfTarget.id, { companionId: null, updatedAt: now });
+      if (oldCompanionOfGuestId) updateGuestDb(db, oldCompanionOfGuestId, { companionId: null, updatedAt: now });
+      if (oldCompanionOfTargetId) updateGuestDb(db, oldCompanionOfTargetId, { companionId: null, updatedAt: now });
     }
     notifySync();
   },

@@ -136,7 +136,7 @@ export function CompanionPickerModal({
               </Text>
             </Pressable>
             <Pressable
-              onPress={onClear}
+              onPress={onClose}
               className="flex-1 py-3.5 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
             >
               <Text className="text-gray-700 dark:text-gray-300 font-medium text-base">
