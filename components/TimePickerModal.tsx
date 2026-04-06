@@ -29,35 +29,45 @@ export function TimePickerModal({
   const hourRef = useRef<ScrollView>(null);
   const minuteRef = useRef<ScrollView>(null);
 
-  const [hh, mm] = value ? value.split(":") : ["", ""];
-  const [selectedHour, setSelectedHour] = useState(hh || "12");
-  const [selectedMinute, setSelectedMinute] = useState(
-    MINUTES.includes(mm) ? mm : "00"
-  );
+  const [selectedHour, setSelectedHour] = useState("12");
+  const [selectedMinute, setSelectedMinute] = useState("00");
 
   useEffect(() => {
-    if (visible) {
-      const h = hh || "12";
-      const m = MINUTES.includes(mm) ? mm : "00";
-      setSelectedHour(h);
-      setSelectedMinute(m);
+    if (!visible) return;
 
-      // Auto-scroll to selection after render
-      setTimeout(() => {
-        const hIdx = HOURS.indexOf(h);
-        const mIdx = MINUTES.indexOf(m);
-        if (hIdx >= 0) {
-          hourRef.current?.scrollTo({ y: hIdx * ITEM_HEIGHT, animated: false });
-        }
-        if (mIdx >= 0) {
-          minuteRef.current?.scrollTo({
-            y: mIdx * ITEM_HEIGHT,
-            animated: false,
-          });
-        }
-      }, 50);
-    }
-  }, [visible]);
+    // Parse and validate value — handle legacy free-text data gracefully
+    const parts = value ? value.split(":") : [];
+    const rawHH = parts[0] ?? "";
+    const rawMM = parts[1] ?? "";
+    const h = HOURS.includes(rawHH) ? rawHH : "12";
+    // Round non-5-minute values to nearest 5
+    const parsedMin = parseInt(rawMM, 10);
+    const m =
+      MINUTES.includes(rawMM)
+        ? rawMM
+        : !isNaN(parsedMin)
+          ? ((Math.round(parsedMin / 5) * 5) % 60).toString().padStart(2, "0")
+          : "00";
+    setSelectedHour(h);
+    setSelectedMinute(m);
+
+    // Auto-scroll to selection after layout
+    const timer = setTimeout(() => {
+      const hIdx = HOURS.indexOf(h);
+      const mIdx = MINUTES.indexOf(m);
+      if (hIdx >= 0) {
+        hourRef.current?.scrollTo({ y: hIdx * ITEM_HEIGHT, animated: false });
+      }
+      if (mIdx >= 0) {
+        minuteRef.current?.scrollTo({
+          y: mIdx * ITEM_HEIGHT,
+          animated: false,
+        });
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [visible, value]);
 
   const handleConfirm = () => {
     onSelect(`${selectedHour}:${selectedMinute}`);
