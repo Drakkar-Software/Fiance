@@ -77,9 +77,9 @@ export default function DayOfItemScreen() {
           headerRight: () => (
             <Pressable
               onPress={handleSave}
-              className="mr-2 bg-primary-500 rounded-full px-4 py-1.5 active:bg-primary-600"
+              style={{ marginRight: 8, backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
             >
-              <Text className="text-white font-semibold text-sm">
+              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                 {t("common:save")}
               </Text>
             </Pressable>

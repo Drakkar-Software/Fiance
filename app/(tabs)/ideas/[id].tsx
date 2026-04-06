@@ -151,9 +151,9 @@ export default function IdeaDetailScreen() {
               </Pressable>
               <Pressable
                 onPress={handleSave}
-                className="bg-primary-500 rounded-full px-4 py-1.5 active:bg-primary-600"
+                style={{ backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
               >
-                <Text className="text-white font-semibold text-sm">
+                <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
                   {t("common:save")}
                 </Text>
               </Pressable>
