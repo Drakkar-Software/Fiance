@@ -70,7 +70,8 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
       <View className="items-center mb-10">
         <Image
           source={require("@/assets/icon.png")}
-          className="w-20 h-20 rounded-2xl mb-5"
+          style={{ width: 80, height: 80, borderRadius: 16, marginBottom: 20 }}
+          resizeMode="contain"
         />
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
           WeddingOS
