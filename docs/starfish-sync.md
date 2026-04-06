@@ -20,6 +20,8 @@ WeddingOS uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakk
 12. [Network & Lifecycle Handling](#network--lifecycle-handling)
 13. [Feature Gates](#feature-gates)
 14. [Schema Versioning & Migrations](#schema-versioning--migrations)
+15. [Network Resilience](#network-resilience)
+16. [Sync Status](#sync-status)
 
 ---
 
@@ -150,22 +152,24 @@ const PUSH_DEBOUNCE_MS = 2000;
 
 Called by `SyncInitializer` in `_layout.tsx`. Creates the full stack:
 
-1. Instantiates `StarfishClient` with Bearer auth
+1. Instantiates `StarfishClient` with Bearer auth and a **retry-capable fetch wrapper** (see [Network Resilience](#network-resilience))
 2. Creates `SyncManager` with encryption config + custom `mergeBackups` conflict resolver
 3. Creates the Zustand store via `createStarfishStore()`
 4. Subscribes to `store.data` changes to detect incoming remote pulls and trigger `restoreFromBackup()`
+5. Subscribes to `syncing` transitions to track `lastSyncTimestamp` on successful push/pull completion
 
-The subscription has a guard: it only restores when `!isRestoring`, preventing a feedback loop where pushing our own data triggers a restore.
+The data subscription has a guard: it only restores when `!isRestoring`, preventing a feedback loop where pushing our own data triggers a restore.
 
 ### `notifySync()`
 
-Called by every domain store mutation (add/update/remove). Two responsibilities:
+Called by every domain store mutation (add/update/remove). Three responsibilities:
 
 1. **Web persistence:** calls `saveToLocalStorage()` immediately
-2. **Remote push:** debounced by 2000ms. On fire:
+2. **Pre-push validation:** estimates encrypted document size (JSON size × 1.34 for base64 overhead). Logs a warning at 900KB and an error at 1MB (the server's `maxBodyBytes` limit)
+3. **Remote push:** debounced by 2000ms. On fire:
+   - Creates the backup document and validates its size
    - Sets `isRestoring = true` (prevents subscription loop)
-   - Calls `store.getState().set(() => createBackupDocument())` which triggers `flush()`
-   - Records `lastSyncTimestamp`
+   - Calls `store.getState().set(() => doc)` which triggers `flush()`
 
 The debounce prevents rapid-fire pushes during typing.
 
@@ -181,7 +185,8 @@ Clears store, timers, and notifies listeners that sync is disabled. Called befor
 | `getStarfishStore()` | Get the Zustand store (or `null`) |
 | `useStarfishSync(selector)` | React hook to read sync state |
 | `notifySync()` | Trigger debounced push after mutation |
-| `getLastSyncTimestamp()` | Last successful sync time |
+| `getLastSyncTimestamp()` | Last successful sync time (push or pull) |
+| `getSyncStatus()` | Derived sync status: `synced \| pending \| syncing \| error \| offline` |
 | `teardownStarfish()` | Clean up everything |
 | `onSyncStatusChange(listener)` | Subscribe to sync enable/disable events |
 
@@ -295,11 +300,12 @@ The backup document is a flat snapshot of all domain store state:
 
 ```ts
 interface BackupData {
-  version: 2;              // schema version
+  version: 4;              // schema version (current)
   timestamp: string;       // ISO 8601 creation time
   wedding: Wedding;        // singleton record
   guests: Guest[];
   tables: Table[];
+  guestGroups: GuestGroup[];
   vendors: Vendor[];
   quotePricings: QuotePricing[];
   tasks: Task[];
@@ -333,9 +339,10 @@ notifySync()
          │
          ▼  (after 2000ms of no further edits)
 Debounce fires
+  ├─ Creates backup document (snapshots all 5 stores)
+  ├─ Validates size (~900KB warn, ~1MB error)
   ├─ Sets isRestoring = true (prevents restore loop)
-  ├─ Calls store.set(() => createBackupDocument())
-  │    └─ Snapshots all 5 domain stores
+  ├─ Calls store.set(() => doc) → triggers flush()
   └─ Sets isRestoring = false
          │
          ▼
@@ -429,21 +436,23 @@ Conflicts occur when two devices push simultaneously. The server detects this vi
 
 For each key in the backup document:
 
-- **Arrays with `id` fields** (guests, vendors, tasks, etc.): **ID-based union**
+- **Arrays with `id` fields** (guests, vendors, tasks, etc.): **ID-based union with per-item `updatedAt` comparison**
   - Build a map from remote array (keyed by `id`)
-  - Overlay local array (local items win per-id)
-  - Result: union of both sets, with local versions of shared items
-  - Remote-only items are preserved
+  - For each local item:
+    - If no remote counterpart exists → add to map (local-only item)
+    - If a remote counterpart exists → compare `updatedAt` timestamps, keep the newer version
+    - If neither has `updatedAt` → fall back to local (preserves pre-existing behavior)
+  - Result: union of both sets, with per-item newest version winning
 
-- **Scalar values** (version, timestamp, wedding singleton): **Latest timestamp wins**
+- **Scalar values** (version, timestamp, wedding singleton): **Latest document timestamp wins**
   - Compare `local.timestamp` vs `remote.timestamp` (string comparison)
   - If remote is newer: use remote value
   - Otherwise: keep local value
 
 ### Limitations
 
-- Per-item, not per-field: if two devices edit different fields of the same guest, the merge picks one entire item (the local device's version)
-- Deletions on one device while the other edits the same item will cause the item to reappear (union merge)
+- Per-item, not per-field: if two devices edit different fields of the same guest, the merge picks the item with the newer `updatedAt` (not a field-level merge)
+- Deletions on one device will be restored from the other device's stale copy (union merge). A soft-delete/tombstone pattern would be needed to fix this
 - The Starfish SDK's default merge (`deepMerge`) is overridden by this custom strategy
 
 ---
@@ -472,7 +481,7 @@ For each key in the backup document:
 
 ### Native (iOS/Android)
 
-- **SQLite** is the source of truth. 11 tables via Drizzle ORM.
+- **SQLite** is the source of truth. 12 tables via Drizzle ORM.
 - Every store mutation writes through to SQLite immediately.
 - On boot: `hydrateAllStores(db)` loads all tables into Zustand stores.
 - On sync pull: `restoreAllTables(db, data)` atomically replaces all data, then re-hydrates stores.
@@ -491,12 +500,12 @@ For each key in the backup document:
 **Delete phase** (children first):
 ```
 ideas → ideaCollections → dayOfItems → agendaEvents → tasks →
-taskCategories → quotePricing → vendors → guests → tables
+taskCategories → quotePricing → vendors → guests → tables → guestGroups
 ```
 
 **Insert phase** (parents first):
 ```
-wedding (update) → tables → guests → vendors → quotePricings →
+wedding (update) → guestGroups → tables → guests → vendors → quotePricings →
 taskCategories → tasks → agendaEvents → dayOfItems →
 ideaCollections → ideas
 ```
@@ -588,20 +597,29 @@ Re-runs when `wedding.id` changes (wedding switching).
 
 ## Network & Lifecycle Handling
 
-### Background flush
+### AppState listener
 
-When the app goes to background, if there are dirty (un-pushed) changes, flush immediately:
+A single `AppState` listener handles both background flush and foreground pull:
 
 ```ts
 AppState.addEventListener("change", (state) => {
+  const sf = getStarfishStore();
+  if (!sf) return;
   if (state === "background") {
-    const sf = getStarfishStore();
-    if (sf?.getState().dirty) {
+    if (sf.getState().dirty) {
       sf.getState().flush();
+    }
+  } else if (state === "active") {
+    const { online, syncing } = sf.getState();
+    if (online && !syncing) {
+      sf.getState().pull().catch(() => {});
     }
   }
 });
 ```
+
+- **Background:** flushes pending changes immediately so data is synced before the OS may suspend the app
+- **Foreground (pull-on-resume):** pulls partner's changes when the app returns from background. Guards against pulling while offline or already syncing. Errors are silently caught (the SDK will retry on next opportunity)
 
 ### Network connectivity
 
@@ -635,15 +653,13 @@ If any condition is not met, `SyncInitializer` returns early and no sync infrast
 
 ### Backup version
 
-Current version: **2**. Stored in `backup.version`.
+Current version: **4**. Stored in `backup.version`.
 
 On restore, the app checks:
 - `backup.version > BACKUP_VERSION` → error: user must update the app
-- `backup.version < BACKUP_VERSION` → migration applied
+- `backup.version < BACKUP_VERSION` → inline migrations applied during `restoreFromBackup()`
 
 ### v1 → v2 migrations
-
-Applied during `restoreFromBackup()`:
 
 **Field renames:**
 | v1 | v2 |
@@ -673,6 +689,24 @@ Applied during `restoreFromBackup()`:
 | `TENUE` | `ATTIRE` |
 | `GATEAU` | `CAKE` |
 | `LIEU` | `VENUE` |
+
+### v2 → v3 migrations
+
+**Invitation type renames on guests:**
+| v2 | v3 |
+|----|----|
+| `DINNER` | `FULL` |
+| `NEXT_DAY` | `BOTH_DAYS` |
+
+Also migrates `pppSource` on vendors with the same mapping.
+
+### v3 → v4 migrations
+
+Added `companionId` field on guests (nullable). No data transformation needed — the field defaults to `null` on older backups.
+
+### Task status normalization
+
+Applied at all versions: legacy `IN_PROGRESS` and `CANCELLED` task statuses are silently normalized to `TODO` during restore.
 
 ---
 
@@ -719,11 +753,86 @@ The `hash` is a SHA-256 digest of the stable-stringified (sorted keys) encrypted
 
 | File | Role |
 |------|------|
-| `lib/starfish.ts` | Integration layer: init, notifySync, merge, store management |
-| `lib/sync.ts` | Backup document creation, restoration, v1→v2 migration |
+| `lib/starfish.ts` | Integration layer: init, notifySync, merge, retry fetch, sync status |
+| `lib/sync.ts` | Backup document creation, restoration, v1→v4 migration chain |
 | `lib/identity.ts` | Passphrase generation, auth/encryption key derivation, invite URLs |
-| `lib/crypto.ts` | Standalone AES-256-GCM utilities (not used by sync pipeline) |
+| `lib/crypto.ts` | Standalone AES-256-GCM utilities (not used by sync pipeline, requires Web Crypto API) |
 | `lib/persistence.ts` | SQLite write-through, hydration, bulk restore |
-| `app/_layout.tsx` | `SyncInitializer` component, background/network listeners |
+| `app/_layout.tsx` | `SyncInitializer` component, background flush, foreground pull, network listeners |
+| `app/(tabs)/settings/index.tsx` | Sync toggle UI, derived sync status display, import/export |
 | `store/*.ts` | Domain stores — each mutation calls `notifySync()` |
-| `db/schema.ts` | 11 SQLite tables defining the data model |
+| `db/schema.ts` | 12 SQLite tables defining the data model |
+
+---
+
+## Network Resilience
+
+**File:** `lib/starfish.ts` — `createRetryFetch()`
+
+The `StarfishClient` is initialized with a custom fetch wrapper that retries on **network-level errors** (DNS failures, connection resets, timeouts):
+
+```ts
+const client = new StarfishClient({
+  baseUrl: config.serverUrl,
+  auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
+  fetch: createRetryFetch(3, 500),
+});
+```
+
+### Retry behavior
+
+- **Retries:** up to 3 attempts
+- **Backoff:** exponential — `min(500ms × 2^attempt, 10s) + random(0–100ms)` jitter
+- **Scope:** only catches network-level `fetch` errors (e.g., `TypeError: Failed to fetch`). HTTP responses (including 5xx) are **not** retried by this layer — those are handled by the `SyncManager`'s built-in conflict retry (`maxRetries: 3` for 409 responses)
+
+This separation prevents retry amplification: if both layers retried 5xx errors, a single failing push could produce dozens of requests.
+
+### Pre-push size validation
+
+Before each push, the serialized document size is estimated with a 1.34× multiplier (base64 overhead from encryption). The server's `maxBodyBytes` is 1MB:
+
+- **Warning** at 900KB estimated encrypted size
+- **Error** at 1MB — the push will likely fail server-side
+
+Both are logged to console. The push still proceeds (to avoid silently dropping data), but the logs help diagnose why sync might be failing for large weddings.
+
+---
+
+## Sync Status
+
+**File:** `lib/starfish.ts` — `getSyncStatus()`
+
+Derives a human-readable sync status from the Starfish store state:
+
+```ts
+type SyncStatusValue = "synced" | "pending" | "syncing" | "error" | "offline";
+```
+
+Priority order (first match wins):
+1. `!online` → **offline**
+2. `error` set → **error** (includes the error message)
+3. `syncing` → **syncing** (operation in flight)
+4. `dirty` → **pending** (local changes not yet pushed)
+5. Otherwise → **synced**
+
+### Settings UI
+
+The settings screen (`app/(tabs)/settings/index.tsx`) subscribes reactively to the Starfish store and displays the derived status alongside the last sync timestamp:
+
+```
+Toutes les données sont synchronisées · Dernière synchro : 06/04/2026 14:32
+```
+
+The subscription updates on every store state change (no polling). i18n keys are provided in both French and English:
+
+| Key | FR | EN |
+|-----|----|----|
+| `syncStatusSynced` | Toutes les données sont synchronisées | All data is synced |
+| `syncStatusSyncing` | Synchronisation en cours… | Syncing… |
+| `syncStatusPending` | Modifications en attente | Unsaved changes |
+| `syncStatusOffline` | Hors ligne — synchronisation à la reconnexion | Offline — will sync on reconnect |
+| `syncStatusError` | Erreur de synchronisation | Sync error |
+
+### `lastSyncTimestamp`
+
+Tracked via a store subscription that watches `syncing` transitions: when `syncing` goes from `true` → `false` with no `error`, the timestamp is recorded. This ensures it only reflects actual server-confirmed sync completions (not optimistic local writes).

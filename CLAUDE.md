@@ -31,7 +31,7 @@ File-based routing via Expo Router. Screens live in `app/(tabs)/` — each subdi
 Three-layer persistence:
 
 1. **Zustand stores** (`store/`) — runtime state, 5 domain stores (`useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`) plus `useWeddingRegistryStore` for multi-wedding support.
-2. **SQLite via Drizzle** (`db/schema.ts`) — 9 tables, all IDs are UUIDs (except singleton `wedding` table with id=1). `lib/persistence.ts` handles hydration on boot and write-through on every mutation.
+2. **SQLite via Drizzle** (`db/schema.ts`) — 12 tables, all IDs are UUIDs (except singleton `wedding` table with id=1). `lib/persistence.ts` handles hydration on boot and write-through on every mutation.
 3. **Starfish sync** (optional) — `lib/starfish.ts` and `lib/sync.ts` push AES-256-GCM encrypted backups to a remote server. Triggered via `notifySync()` after store mutations.
 
 ### Adding a new store
