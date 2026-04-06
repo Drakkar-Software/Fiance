@@ -1,10 +1,11 @@
 import React, { useRef, useState } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
-import { CheckCircle2, Circle, Calendar } from "lucide-react-native";
+import { CheckCircle2, Circle, Calendar, Clock } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
 import { DatePickerModal } from "./DatePickerModal";
+import { TimePickerModal } from "./TimePickerModal";
 
 /** Section heading for form screens */
 export function SectionTitle({ children }: { children: string }) {
@@ -108,6 +109,50 @@ export function DateRow({
         <Calendar size={18} color="#9CA3AF" />
       </Pressable>
       <DatePickerModal
+        visible={open}
+        value={value}
+        onSelect={onChange}
+        onClear={() => onChange("")}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  );
+}
+
+/** Time picker row — taps open a time picker modal */
+export function TimeRow({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (time: string) => void;
+  placeholder?: string;
+}) {
+  const { t } = useTranslation("common");
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Pressable
+        onPress={() => setOpen(true)}
+        className="flex-row items-center justify-between border-b border-gray-50 dark:border-gray-800 py-3"
+      >
+        <View className="flex-1">
+          <Text className="text-xs text-gray-400 mb-1 font-medium">
+            {label}
+          </Text>
+          <Text
+            className={`text-base ${value ? "text-gray-900 dark:text-white" : "text-gray-300"}`}
+          >
+            {value || placeholder || t("selectTime")}
+          </Text>
+        </View>
+        <Clock size={18} color="#9CA3AF" />
+      </Pressable>
+      <TimePickerModal
         visible={open}
         value={value}
         onSelect={onChange}

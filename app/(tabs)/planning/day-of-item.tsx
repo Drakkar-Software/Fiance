@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, TimeRow } from "@/components/FormSection";
 import type { DayOfItem } from "@/db/schema";
 
 export default function DayOfItemScreen() {
@@ -90,8 +90,8 @@ export default function DayOfItemScreen() {
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("momentLabel")} value={title} onChangeText={setTitle} placeholder={t("churchPlaceholder")} />
-          <InputRow label={t("timeLabel")} value={time} onChangeText={setTime} placeholder="13:00" />
-          <InputRow label={t("endTimeLabel")} value={endTime} onChangeText={setEndTime} placeholder="13:30" />
+          <TimeRow label={t("timeLabel")} value={time} onChange={setTime} placeholder="13:00" />
+          <TimeRow label={t("endTimeLabel")} value={endTime} onChange={setEndTime} placeholder="13:30" />
           <InputRow label={t("locationLabel")} value={location} onChangeText={setLocation} placeholder={t("venuePlaceholder")} />
           <InputRow label={t("responsible")} value={responsible} onChangeText={setResponsible} placeholder={t("responsiblePlaceholder")} />
         </FormCard>
