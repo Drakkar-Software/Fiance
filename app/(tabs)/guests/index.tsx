@@ -28,6 +28,8 @@ import { FilterTabs } from "@/components/FilterTabs";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
+import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
 
@@ -77,12 +79,57 @@ export default function GuestsListScreen() {
   );
 }
 
+// ─── Guest Card ─────────────────────────────────────────────────────────
+
+function GuestCard({ guest }: { guest: Guest }) {
+  const { t } = useTranslation("guests");
+  const router = useRouter();
+
+  return (
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/(tabs)/guests/[id]",
+          params: { id: guest.id },
+        })
+      }
+      className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+    >
+      <View className="flex-row items-center">
+        <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
+          <Text className="text-primary-500 font-bold text-sm">
+            {guest.firstName[0]}
+            {guest.lastName[0]}
+          </Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            {guest.firstName} {guest.lastName}
+          </Text>
+          <Text className="text-sm text-gray-400 mt-0.5">
+            {t(INVITATION_TYPE_LABELS[guest.invitationType as InvitationType])}
+            {guest.isChild ? " · " + t("child") : ""}
+            {guest.diet && guest.diet !== "STANDARD"
+              ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
+              : ""}
+          </Text>
+        </View>
+        <StatusBadge
+          label={t(RSVP_STATUS_LABELS[guest.rsvpStatus as RsvpStatus] || "")}
+          color={RSVP_STATUS_COLORS[guest.rsvpStatus as RsvpStatus] || "#9CA3AF"}
+        />
+      </View>
+    </Pressable>
+  );
+}
+
 // ─── Guests View ─────────────────────────────────────────────────────────
 
 function GuestsView() {
   const { t } = useTranslation("guests");
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
+  const groups = useGuestsStore((s) => s.groups);
   const counts = useMemo(() => computeCounts(guests), [guests]);
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
@@ -118,6 +165,18 @@ function GuestsView() {
         )
       );
   }, [guests, search, rsvpFilter, typeFilter]);
+
+  const groupedGuests = useMemo(() => {
+    if (groups.length === 0) return null;
+    const ungrouped = filteredGuests.filter((g) => !g.groupId);
+    const byGroup = groups
+      .map((group) => ({
+        group,
+        guests: filteredGuests.filter((g) => g.groupId === group.id),
+      }))
+      .filter((section) => section.guests.length > 0);
+    return { ungrouped, byGroup };
+  }, [filteredGuests, groups]);
 
   const rsvpTabs = [
     { key: "ALL", label: t("all"), count: counts.total },
@@ -213,43 +272,29 @@ function GuestsView() {
           className="flex-1 px-4"
           showsVerticalScrollIndicator={false}
         >
-          {filteredGuests.map((guest) => (
-            <Pressable
-              key={guest.id}
-              onPress={() =>
-                router.push({
-                  pathname: "/(tabs)/guests/[id]",
-                  params: { id: guest.id },
-                })
-              }
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
-            >
-              <View className="flex-row items-center">
-                <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
-                  <Text className="text-primary-500 font-bold text-sm">
-                    {guest.firstName[0]}
-                    {guest.lastName[0]}
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                    {guest.firstName} {guest.lastName}
-                  </Text>
-                  <Text className="text-sm text-gray-400 mt-0.5">
-                    {t(INVITATION_TYPE_LABELS[guest.invitationType as InvitationType])}
-                    {guest.isChild ? " · " + t("child") : ""}
-                    {guest.diet && guest.diet !== "STANDARD"
-                      ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
-                      : ""}
-                  </Text>
-                </View>
-                <StatusBadge
-                  label={t(RSVP_STATUS_LABELS[guest.rsvpStatus as RsvpStatus] || "")}
-                  color={RSVP_STATUS_COLORS[guest.rsvpStatus as RsvpStatus] || "#9CA3AF"}
-                />
-              </View>
-            </Pressable>
-          ))}
+          {groupedGuests ? (
+            <>
+              {groupedGuests.ungrouped.map((guest) => (
+                <GuestCard key={guest.id} guest={guest} />
+              ))}
+              {groupedGuests.byGroup.map(({ group, guests: gList }) => (
+                <CollapsibleSection
+                  key={group.id}
+                  title={group.name}
+                  count={gList.length}
+                  defaultExpanded={false}
+                >
+                  {gList.map((guest) => (
+                    <GuestCard key={guest.id} guest={guest} />
+                  ))}
+                </CollapsibleSection>
+              ))}
+            </>
+          ) : (
+            filteredGuests.map((guest) => (
+              <GuestCard key={guest.id} guest={guest} />
+            ))
+          )}
           <View className="h-24" />
         </ScrollView>
       )}
