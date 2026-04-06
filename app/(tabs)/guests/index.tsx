@@ -165,6 +165,7 @@ function GuestsView() {
           <Pressable
             onPress={() => setShowTypeSheet(true)}
             className="ml-2 w-8 h-8 items-center justify-center"
+            accessibilityLabel={t("invitationType")}
           >
             <SlidersHorizontal size={18} color={hasTypeFilter ? "#EC4899" : "#C0C0C8"} />
             {hasTypeFilter && (
