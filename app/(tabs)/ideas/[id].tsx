@@ -10,7 +10,19 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Heart, Image as ImageIcon } from "lucide-react-native";
+import {
+  Heart,
+  Image as ImageIcon,
+  Flower2,
+  Building2,
+  Church,
+  Shirt,
+  Cake,
+  Camera,
+  MapPin,
+  MoreHorizontal,
+} from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -20,10 +32,31 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { Idea } from "@/db/schema";
 
-const CATEGORIES = Object.entries(IDEA_CATEGORY_LABELS) as [
-  IdeaCategory,
-  string
-][];
+const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
+
+const CATEGORY_ICONS: Record<IdeaCategory, LucideIcon> = {
+  TABLE_DECOR: Flower2,
+  VENUE_DECOR: Building2,
+  CEREMONY_DECOR: Church,
+  BOUQUET: Flower2,
+  ATTIRE: Shirt,
+  CAKE: Cake,
+  PHOTO_STYLE: Camera,
+  VENUE: MapPin,
+  OTHER: MoreHorizontal,
+};
+
+const CATEGORY_COLORS: Record<IdeaCategory, string> = {
+  TABLE_DECOR: "#84CC16",
+  VENUE_DECOR: "#10B981",
+  CEREMONY_DECOR: "#8B5CF6",
+  BOUQUET: "#EC4899",
+  ATTIRE: "#F59E0B",
+  CAKE: "#F97316",
+  PHOTO_STYLE: "#6366F1",
+  VENUE: "#3B82F6",
+  OTHER: "#9CA3AF",
+};
 
 export default function IdeaDetailScreen() {
   const { t } = useTranslation("ideas");
@@ -179,29 +212,33 @@ export default function IdeaDetailScreen() {
         </FormCard>
 
         {/* Category */}
-        <SectionTitle>Catégorie</SectionTitle>
+        <SectionTitle>{t("categoryLabel")}</SectionTitle>
         <View className="flex-row flex-wrap gap-2 mb-5">
-          {CATEGORIES.map(([key, label]) => (
-            <Pressable
-              key={key}
-              onPress={() => setCategory(category === key ? "" : key)}
-              className={`px-3.5 py-2 rounded-full border ${
-                category === key
-                  ? "bg-primary-500 border-primary-500"
-                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <Text
-                className={`text-sm ${
-                  category === key
-                    ? "text-white font-medium"
-                    : "text-gray-500"
+          {CATEGORIES.map((key) => {
+            const Icon = CATEGORY_ICONS[key];
+            const color = CATEGORY_COLORS[key];
+            const isActive = category === key;
+            return (
+              <Pressable
+                key={key}
+                onPress={() => setCategory(isActive ? "" : key)}
+                className={`flex-row items-center px-3 py-2 rounded-xl border ${
+                  isActive
+                    ? "border-primary-300 dark:border-primary-700"
+                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
                 }`}
+                style={isActive ? { backgroundColor: color + "15" } : {}}
               >
-                {t(label)}
-              </Text>
-            </Pressable>
-          ))}
+                <Icon size={14} color={isActive ? color : "#9CA3AF"} />
+                <Text
+                  className="text-sm font-medium ml-1.5"
+                  style={{ color: isActive ? color : "#6B7280" }}
+                >
+                  {t(IDEA_CATEGORY_LABELS[key])}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         {/* Collection */}
