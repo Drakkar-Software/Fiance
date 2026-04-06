@@ -11,14 +11,15 @@ interface FilterTabsProps {
   tabs: FilterTab[];
   activeKey: string;
   onSelect: (key: string) => void;
+  className?: string;
 }
 
-export function FilterTabs({ tabs, activeKey, onSelect }: FilterTabsProps) {
+export function FilterTabs({ tabs, activeKey, onSelect, className }: FilterTabsProps) {
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      className="mb-4"
+      className={className ?? "mb-4"}
       contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
     >
       {tabs.map((tab) => {

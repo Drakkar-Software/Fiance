@@ -6,13 +6,12 @@ import {
   Pressable,
   TextInput,
   Alert,
-  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Search, XCircle, Users, AlertTriangle, LayoutGrid,
-  Trash2, FolderOpen, SlidersHorizontal, X,
+  Trash2, FolderOpen,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -134,8 +133,6 @@ function GuestsView() {
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const [showTypeSheet, setShowTypeSheet] = useState(false);
-  const hasTypeFilter = typeFilter !== "ALL";
 
   const filteredGuests = useMemo(() => {
     return guests
@@ -205,7 +202,7 @@ function GuestsView() {
 
   return (
     <View className="flex-1">
-      {/* Search + filter icon */}
+      {/* Search */}
       <View className="px-4 pt-3">
         <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
           <Search size={18} color="#C0C0C8" />
@@ -221,40 +218,21 @@ function GuestsView() {
               <XCircle size={18} color="#C0C0C8" />
             </Pressable>
           )}
-          <Pressable
-            onPress={() => setShowTypeSheet(true)}
-            className="ml-2 w-8 h-8 items-center justify-center"
-            accessibilityLabel={t("invitationType")}
-          >
-            <SlidersHorizontal size={18} color={hasTypeFilter ? "#EC4899" : "#C0C0C8"} />
-            {hasTypeFilter && (
-              <View className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-primary-500" />
-            )}
-          </Pressable>
         </View>
       </View>
 
-      {/* Active type filter chip */}
-      {hasTypeFilter && (
-        <View className="flex-row px-4 mt-2">
-          <Pressable
-            onPress={() => setTypeFilter("ALL")}
-            className="flex-row items-center bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-full px-3 py-1.5"
-          >
-            <Text className="text-sm text-primary-600 dark:text-primary-300 font-medium mr-1.5">
-              {t(`invitationTypes.${typeFilter}`)}
-            </Text>
-            <X size={14} color="#EC4899" />
-          </Pressable>
-        </View>
-      )}
-
-      {/* RSVP filter */}
+      {/* Filters */}
       <View className="mt-3">
         <FilterTabs
           tabs={rsvpTabs}
           activeKey={rsvpFilter}
           onSelect={setRsvpFilter}
+          className="mb-1"
+        />
+        <FilterTabs
+          tabs={typeTabs}
+          activeKey={typeFilter}
+          onSelect={setTypeFilter}
         />
       </View>
 
@@ -308,57 +286,6 @@ function GuestsView() {
         }
       />
 
-      {/* Invitation type filter sheet */}
-      <Modal
-        visible={showTypeSheet}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowTypeSheet(false)}
-      >
-        <Pressable
-          className="flex-1 bg-black/40 justify-end"
-          onPress={() => setShowTypeSheet(false)}
-        >
-          <Pressable
-            className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10"
-            onPress={(e) => e.stopPropagation()}
-          >
-            <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-5" />
-            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-              {t("invitationType")}
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              {typeTabs.map((tab) => {
-                const isActive = tab.key === typeFilter;
-                return (
-                  <Pressable
-                    key={tab.key}
-                    onPress={() => {
-                      setTypeFilter(tab.key);
-                      setShowTypeSheet(false);
-                    }}
-                    className={`px-4 py-2.5 rounded-full border ${
-                      isActive
-                        ? "bg-primary-500 border-primary-500"
-                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                    }`}
-                  >
-                    <Text
-                      className={`text-sm font-medium ${
-                        isActive
-                          ? "text-white"
-                          : "text-gray-600 dark:text-gray-400"
-                      }`}
-                    >
-                      {tab.label} ({tab.count})
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </View>
   );
 }
