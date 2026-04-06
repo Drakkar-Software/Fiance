@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -26,6 +27,7 @@ const STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "DONE", "CANCELLED"];
 const PRIORITIES: Priority[] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 
 export default function TaskDetailScreen() {
+  const { t } = useTranslation("planning");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const tasks = usePlanningStore((s) => s.tasks);
@@ -124,7 +126,7 @@ export default function TaskDetailScreen() {
           {STATUSES.map((s) => (
             <Pressable key={s} onPress={() => setStatus(s)}>
               <StatusBadge
-                label={TASK_STATUS_LABELS[s]}
+                label={t(TASK_STATUS_LABELS[s])}
                 color={status === s ? "#EC4899" : "#D1D5DB"}
                 size="md"
               />
@@ -179,7 +181,7 @@ export default function TaskDetailScreen() {
                   color: priority === p ? PRIORITY_COLORS[p] : "#9CA3AF",
                 }}
               >
-                {PRIORITY_LABELS[p]}
+                {t(PRIORITY_LABELS[p])}
               </Text>
             </Pressable>
           ))}

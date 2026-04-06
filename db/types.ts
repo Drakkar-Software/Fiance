@@ -48,12 +48,12 @@ export type VendorStatus =
   | "BOOKED"
   | "CANCELLED";
 
-export type PlanningAspect = "preparatifs" | "agenda" | "jourj";
+export type PlanningAspect = "preparation" | "agenda" | "day-of";
 
 export const PLANNING_ASPECT_LABELS: Record<PlanningAspect, string> = {
-  preparatifs: "Préparatifs",
-  agenda: "Agenda",
-  jourj: "Jour J",
+  preparation: "planning:aspects.preparation",
+  agenda: "planning:aspects.agenda",
+  "day-of": "planning:aspects.day-of",
 };
 
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE" | "CANCELLED";
@@ -62,14 +62,14 @@ export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export type PricingKey =
   | "cocktail"
-  | "repas"
-  | "boisson"
-  | "lendemain"
-  | "vaisselle"
-  | "nappe"
-  | "vegetarien"
-  | "enfant"
-  | "presta";
+  | "dinner"
+  | "drinks"
+  | "next-day"
+  | "tableware"
+  | "linen"
+  | "vegetarian"
+  | "child"
+  | "service";
 
 export type PppSource =
   | "COCKTAIL"
@@ -83,54 +83,54 @@ export type PppSource =
   | null;
 
 export type IdeaCategory =
-  | "DECO_TABLE"
-  | "DECO_SALLE"
-  | "DECO_CEREMONIE"
+  | "TABLE_DECOR"
+  | "VENUE_DECOR"
+  | "CEREMONY_DECOR"
   | "BOUQUET"
-  | "TENUE"
-  | "GATEAU"
+  | "ATTIRE"
+  | "CAKE"
   | "PHOTO_STYLE"
-  | "LIEU"
+  | "VENUE"
   | "OTHER";
 
 // ─── Labels ─────────────────────────────────────────────────────────────────
 
 export const VENDOR_TYPE_LABELS: Record<VendorType, string> = {
-  CATERER: "Traiteur",
-  VENUE: "Lieu de réception",
-  PHOTOGRAPHER: "Photographe",
-  VIDEOGRAPHER: "Vidéaste",
-  DJ: "DJ / Sono",
-  BAND: "Groupe / Orchestre",
-  FLORIST: "Fleuriste",
-  WEDDING_PLANNER: "Wedding planner",
-  OFFICIANT: "Officiant de cérémonie",
-  HAIR_MAKEUP: "Coiffeur / Maquilleur",
-  TRANSPORT: "Location véhicule",
-  SHUTTLE: "Navette invités",
-  CAKE: "Pâtissier / Wedding cake",
-  PHOTO_BOOTH: "Photo booth / Borne photo",
-  KIDS_ENTERTAINER: "Animateur enfants",
-  STATIONERY: "Faire-part / Graphiste",
-  FURNITURE_RENTAL: "Location mobilier / Déco",
-  HOTEL: "Hôtel / Hébergement",
-  SECURITY: "Sécurité / Agent",
-  OTHER: "Autre prestataire",
+  CATERER: "vendors:types.CATERER",
+  VENUE: "vendors:types.VENUE",
+  PHOTOGRAPHER: "vendors:types.PHOTOGRAPHER",
+  VIDEOGRAPHER: "vendors:types.VIDEOGRAPHER",
+  DJ: "vendors:types.DJ",
+  BAND: "vendors:types.BAND",
+  FLORIST: "vendors:types.FLORIST",
+  WEDDING_PLANNER: "vendors:types.WEDDING_PLANNER",
+  OFFICIANT: "vendors:types.OFFICIANT",
+  HAIR_MAKEUP: "vendors:types.HAIR_MAKEUP",
+  TRANSPORT: "vendors:types.TRANSPORT",
+  SHUTTLE: "vendors:types.SHUTTLE",
+  CAKE: "vendors:types.CAKE",
+  PHOTO_BOOTH: "vendors:types.PHOTO_BOOTH",
+  KIDS_ENTERTAINER: "vendors:types.KIDS_ENTERTAINER",
+  STATIONERY: "vendors:types.STATIONERY",
+  FURNITURE_RENTAL: "vendors:types.FURNITURE_RENTAL",
+  HOTEL: "vendors:types.HOTEL",
+  SECURITY: "vendors:types.SECURITY",
+  OTHER: "vendors:types.OTHER",
 };
 
 export const INVITATION_TYPE_LABELS: Record<InvitationType, string> = {
-  CEREMONY: "Cérémonie uniquement",
-  COCKTAIL: "Cocktail uniquement",
-  DINNER: "Cocktail + Repas",
-  FULL: "Journée complète",
-  NEXT_DAY: "Lendemain uniquement",
+  CEREMONY: "guests:invitationTypes.CEREMONY",
+  COCKTAIL: "guests:invitationTypes.COCKTAIL",
+  DINNER: "guests:invitationTypes.DINNER",
+  FULL: "guests:invitationTypes.FULL",
+  NEXT_DAY: "guests:invitationTypes.NEXT_DAY",
 };
 
 export const RSVP_STATUS_LABELS: Record<RsvpStatus, string> = {
-  PENDING: "En attente",
-  ACCEPTED: "Accepté",
-  DECLINED: "Décliné",
-  MAYBE: "Peut-être",
+  PENDING: "guests:rsvp.PENDING",
+  ACCEPTED: "guests:rsvp.ACCEPTED",
+  DECLINED: "guests:rsvp.DECLINED",
+  MAYBE: "guests:rsvp.MAYBE",
 };
 
 export const RSVP_STATUS_COLORS: Record<RsvpStatus, string> = {
@@ -141,11 +141,11 @@ export const RSVP_STATUS_COLORS: Record<RsvpStatus, string> = {
 };
 
 export const VENDOR_STATUS_LABELS: Record<VendorStatus, string> = {
-  PROSPECT: "Prospect",
-  QUOTE_RECEIVED: "Devis reçu",
-  NEGOTIATING: "En négociation",
-  BOOKED: "Réservé",
-  CANCELLED: "Annulé",
+  PROSPECT: "vendors:status.PROSPECT",
+  QUOTE_RECEIVED: "vendors:status.QUOTE_RECEIVED",
+  NEGOTIATING: "vendors:status.NEGOTIATING",
+  BOOKED: "vendors:status.BOOKED",
+  CANCELLED: "vendors:status.CANCELLED",
 };
 
 export const VENDOR_STATUS_COLORS: Record<VendorStatus, string> = {
@@ -157,17 +157,17 @@ export const VENDOR_STATUS_COLORS: Record<VendorStatus, string> = {
 };
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
-  TODO: "À faire",
-  IN_PROGRESS: "En cours",
-  DONE: "Terminée",
-  CANCELLED: "Annulée",
+  TODO: "planning:status.TODO",
+  IN_PROGRESS: "planning:status.IN_PROGRESS",
+  DONE: "planning:status.DONE",
+  CANCELLED: "planning:status.CANCELLED",
 };
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
-  LOW: "Basse",
-  MEDIUM: "Moyenne",
-  HIGH: "Haute",
-  CRITICAL: "Critique",
+  LOW: "planning:priority.LOW",
+  MEDIUM: "planning:priority.MEDIUM",
+  HIGH: "planning:priority.HIGH",
+  CRITICAL: "planning:priority.CRITICAL",
 };
 
 export const PRIORITY_COLORS: Record<Priority, string> = {
@@ -178,91 +178,106 @@ export const PRIORITY_COLORS: Record<Priority, string> = {
 };
 
 export const DIET_LABELS: Record<Diet, string> = {
-  STANDARD: "Standard",
-  VEGETARIAN: "Végétarien",
-  VEGAN: "Végan",
-  HALAL: "Halal",
-  KOSHER: "Casher",
-  ALLERGY: "Allergie",
+  STANDARD: "guests:diet.STANDARD",
+  VEGETARIAN: "guests:diet.VEGETARIAN",
+  VEGAN: "guests:diet.VEGAN",
+  HALAL: "guests:diet.HALAL",
+  KOSHER: "guests:diet.KOSHER",
+  ALLERGY: "guests:diet.ALLERGY",
 };
 
 export const IDEA_CATEGORY_LABELS: Record<IdeaCategory, string> = {
-  DECO_TABLE: "Décoration de table",
-  DECO_SALLE: "Décoration de salle",
-  DECO_CEREMONIE: "Décoration cérémonie",
-  BOUQUET: "Fleurs & bouquets",
-  TENUE: "Tenues",
-  GATEAU: "Gâteau & desserts",
-  PHOTO_STYLE: "Style photographique",
-  LIEU: "Lieu & espace",
-  OTHER: "Autre inspiration",
+  TABLE_DECOR: "ideas:categories.TABLE_DECOR",
+  VENUE_DECOR: "ideas:categories.VENUE_DECOR",
+  CEREMONY_DECOR: "ideas:categories.CEREMONY_DECOR",
+  BOUQUET: "ideas:categories.BOUQUET",
+  ATTIRE: "ideas:categories.ATTIRE",
+  CAKE: "ideas:categories.CAKE",
+  PHOTO_STYLE: "ideas:categories.PHOTO_STYLE",
+  VENUE: "ideas:categories.VENUE",
+  OTHER: "ideas:categories.OTHER",
 };
 
 export const SIDE_LABELS: Record<Side, string> = {
-  BRIDE: "Marié(e) 1",
-  GROOM: "Marié(e) 2",
-  BOTH: "Les deux",
+  BRIDE: "guests:side.BRIDE",
+  GROOM: "guests:side.GROOM",
+  BOTH: "guests:side.BOTH",
 };
 
 // ─── Budget categories ──────────────────────────────────────────────────────
 
 export const BUDGET_CATEGORIES: Record<string, VendorType[]> = {
-  "Lieu & logistique": ["VENUE", "FURNITURE_RENTAL", "SECURITY"],
-  Restauration: ["CATERER"],
-  "Photographie & vidéo": ["PHOTOGRAPHER", "VIDEOGRAPHER", "PHOTO_BOOTH"],
-  "Musique & animation": ["DJ", "BAND", "KIDS_ENTERTAINER"],
-  "Fleurs & décoration": ["FLORIST"],
-  Beauté: ["HAIR_MAKEUP"],
-  Transport: ["TRANSPORT", "SHUTTLE"],
-  Hébergement: ["HOTEL"],
-  Papeterie: ["STATIONERY"],
-  Coordination: ["WEDDING_PLANNER", "OFFICIANT"],
-  Gâteau: ["CAKE"],
-  Divers: ["OTHER"],
+  venue: ["VENUE", "FURNITURE_RENTAL", "SECURITY"],
+  catering: ["CATERER"],
+  photo_video: ["PHOTOGRAPHER", "VIDEOGRAPHER", "PHOTO_BOOTH"],
+  music_entertainment: ["DJ", "BAND", "KIDS_ENTERTAINER"],
+  flowers_decor: ["FLORIST"],
+  beauty: ["HAIR_MAKEUP"],
+  transport: ["TRANSPORT", "SHUTTLE"],
+  accommodation: ["HOTEL"],
+  stationery: ["STATIONERY"],
+  coordination: ["WEDDING_PLANNER", "OFFICIANT"],
+  cake: ["CAKE"],
+  other: ["OTHER"],
+};
+
+export const BUDGET_CATEGORY_LABELS: Record<string, string> = {
+  venue: "budget:categories.venue",
+  catering: "budget:categories.catering",
+  photo_video: "budget:categories.photo_video",
+  music_entertainment: "budget:categories.music_entertainment",
+  flowers_decor: "budget:categories.flowers_decor",
+  beauty: "budget:categories.beauty",
+  transport: "budget:categories.transport",
+  accommodation: "budget:categories.accommodation",
+  stationery: "budget:categories.stationery",
+  coordination: "budget:categories.coordination",
+  cake: "budget:categories.cake",
+  other: "budget:categories.other",
 };
 
 // ─── Pricing key to guest counter mapping ───────────────────────────────────
 
 export const PRICING_KEY_GUEST_SOURCE: Record<PricingKey, string> = {
   cocktail: "nb_cocktail",
-  repas: "nb_dinner",
-  boisson: "nb_dinner",
-  lendemain: "nb_next_day",
-  vaisselle: "nb_dinner",
-  nappe: "nb_dinner",
-  vegetarien: "nb_vegetarian",
-  enfant: "nb_children",
-  presta: "manual",
+  dinner: "nb_dinner",
+  drinks: "nb_dinner",
+  "next-day": "nb_next_day",
+  tableware: "nb_dinner",
+  linen: "nb_dinner",
+  vegetarian: "nb_vegetarian",
+  child: "nb_children",
+  service: "manual",
 };
 
 export const PRICING_KEY_LABELS: Record<PricingKey, string> = {
-  cocktail: "Cocktail apéritif",
-  repas: "Repas",
-  boisson: "Boissons",
-  lendemain: "Le lendemain",
-  vaisselle: "Vaisselle",
-  nappe: "Nappe + serviette",
-  vegetarien: "Option végétarienne",
-  enfant: "Menu enfant",
-  presta: "Prix / prestation",
+  cocktail: "vendors:pricingKeys.cocktail",
+  dinner: "vendors:pricingKeys.dinner",
+  drinks: "vendors:pricingKeys.drinks",
+  "next-day": "vendors:pricingKeys.next-day",
+  tableware: "vendors:pricingKeys.tableware",
+  linen: "vendors:pricingKeys.linen",
+  vegetarian: "vendors:pricingKeys.vegetarian",
+  child: "vendors:pricingKeys.child",
+  service: "vendors:pricingKeys.service",
 };
 
 // ─── Caterer services ───────────────────────────────────────────────────────
 
 export const CATERER_SERVICES = [
-  "Cocktail apéritif",
-  "Vin d'honneur",
-  "Trou normand",
-  "Dîner assis",
-  "Buffet",
-  "Bar open",
-  "Pièce montée",
-  "Personnel de service",
-  "Vaisselle & linge de table",
-  "Décoration de table",
-  "Livraison sur site",
-  "Installation & débarrassage",
-  "Animation / Sono",
+  "vendors:catererServices.0",
+  "vendors:catererServices.1",
+  "vendors:catererServices.2",
+  "vendors:catererServices.3",
+  "vendors:catererServices.4",
+  "vendors:catererServices.5",
+  "vendors:catererServices.6",
+  "vendors:catererServices.7",
+  "vendors:catererServices.8",
+  "vendors:catererServices.9",
+  "vendors:catererServices.10",
+  "vendors:catererServices.11",
+  "vendors:catererServices.12",
 ] as const;
 
 // ─── Vendor type icons (Lucide components) ─────────────────────────────────

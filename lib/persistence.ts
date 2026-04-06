@@ -26,7 +26,7 @@ export function clearAllStores(): void {
   usePlanningStore.getState().setCategories([]);
   usePlanningStore.getState().setTasks([]);
   usePlanningStore.getState().setAgendaEvents([]);
-  usePlanningStore.getState().setJourJItems([]);
+  usePlanningStore.getState().setDayOfItems([]);
   useIdeasStore.getState().setCollections([]);
   useIdeasStore.getState().setIdeas([]);
 }
@@ -51,7 +51,8 @@ export function loadFromLocalStorage(): boolean {
     if (data.taskCategories) usePlanningStore.getState().setCategories(data.taskCategories);
     if (data.tasks) usePlanningStore.getState().setTasks(data.tasks);
     if (data.agendaEvents) usePlanningStore.getState().setAgendaEvents(data.agendaEvents);
-    if (data.jourJItems) usePlanningStore.getState().setJourJItems(data.jourJItems);
+    const dayOfItems = data.dayOfItems ?? data.jourJItems;
+    if (dayOfItems) usePlanningStore.getState().setDayOfItems(dayOfItems);
     if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
     if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
     return true;
@@ -98,8 +99,8 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   usePlanningStore.getState().setAgendaEvents(agendaRows);
 
   // Jour J items
-  const jourJRows = db.select().from(schema.jourJItems).all();
-  usePlanningStore.getState().setJourJItems(jourJRows);
+  const dayOfRows = db.select().from(schema.dayOfItems).all();
+  usePlanningStore.getState().setDayOfItems(dayOfRows);
 
   // Idea collections
   const collectionRows = db.select().from(schema.ideaCollections).all();
@@ -236,19 +237,19 @@ export function deleteAgendaEventDb(db: DrizzleDB, id: string) {
 }
 
 // Jour J Items
-export function persistJourJItem(db: DrizzleDB, item: schema.JourJItem) {
-  db.insert(schema.jourJItems).values(item).onConflictDoUpdate({
-    target: schema.jourJItems.id,
+export function persistDayOfItem(db: DrizzleDB, item: schema.DayOfItem) {
+  db.insert(schema.dayOfItems).values(item).onConflictDoUpdate({
+    target: schema.dayOfItems.id,
     set: item,
   }).run();
 }
 
-export function updateJourJItemDb(db: DrizzleDB, id: string, updates: Partial<schema.JourJItem>) {
-  db.update(schema.jourJItems).set(updates).where(eq(schema.jourJItems.id, id)).run();
+export function updateDayOfItemDb(db: DrizzleDB, id: string, updates: Partial<schema.DayOfItem>) {
+  db.update(schema.dayOfItems).set(updates).where(eq(schema.dayOfItems.id, id)).run();
 }
 
-export function deleteJourJItemDb(db: DrizzleDB, id: string) {
-  db.delete(schema.jourJItems).where(eq(schema.jourJItems.id, id)).run();
+export function deleteDayOfItemDb(db: DrizzleDB, id: string) {
+  db.delete(schema.dayOfItems).where(eq(schema.dayOfItems.id, id)).run();
 }
 
 // Ideas
@@ -296,14 +297,14 @@ export function restoreAllTables(db: DrizzleDB, data: {
   tasks: any[];
   taskCategories: any[];
   agendaEvents: any[];
-  jourJItems: any[];
+  dayOfItems: any[];
   ideas: any[];
   ideaCollections: any[];
 }) {
   // Clear all tables (order matters for FK constraints)
   db.delete(schema.ideas).run();
   db.delete(schema.ideaCollections).run();
-  db.delete(schema.jourJItems).run();
+  db.delete(schema.dayOfItems).run();
   db.delete(schema.agendaEvents).run();
   db.delete(schema.tasks).run();
   db.delete(schema.taskCategories).run();
@@ -323,7 +324,7 @@ export function restoreAllTables(db: DrizzleDB, data: {
   for (const row of data.taskCategories) db.insert(schema.taskCategories).values(row).run();
   for (const row of data.tasks) db.insert(schema.tasks).values(row).run();
   for (const row of data.agendaEvents) db.insert(schema.agendaEvents).values(row).run();
-  for (const row of data.jourJItems) db.insert(schema.jourJItems).values(row).run();
+  for (const row of data.dayOfItems) db.insert(schema.dayOfItems).values(row).run();
   for (const row of data.ideaCollections) db.insert(schema.ideaCollections).values(row).run();
   for (const row of data.ideas) db.insert(schema.ideas).values(row).run();
 }

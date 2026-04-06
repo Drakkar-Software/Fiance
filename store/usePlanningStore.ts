@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import type { Task, TaskCategory, AgendaEvent, JourJItem } from "@/db/schema";
+import type { Task, TaskCategory, AgendaEvent, DayOfItem } from "@/db/schema";
 import { addMonths, isBefore, differenceInDays } from "date-fns";
 import { getDatabase } from "@/db/provider";
 import {
   persistTask, updateTaskDb, deleteTaskDb,
   persistTaskCategory, updateTaskCategoryDb, deleteTaskCategoryDb,
   persistAgendaEvent, updateAgendaEventDb, deleteAgendaEventDb,
-  persistJourJItem, updateJourJItemDb, deleteJourJItemDb,
+  persistDayOfItem, updateDayOfItemDb, deleteDayOfItemDb,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
@@ -36,11 +36,11 @@ interface PlanningState {
   removeAgendaEvent: (id: string) => void;
 
   // Jour J
-  jourJItems: JourJItem[];
-  setJourJItems: (items: JourJItem[]) => void;
-  addJourJItem: (item: JourJItem) => void;
-  updateJourJItem: (id: string, updates: Partial<JourJItem>) => void;
-  removeJourJItem: (id: string) => void;
+  dayOfItems: DayOfItem[];
+  setDayOfItems: (items: DayOfItem[]) => void;
+  addDayOfItem: (item: DayOfItem) => void;
+  updateDayOfItem: (id: string, updates: Partial<DayOfItem>) => void;
+  removeDayOfItem: (id: string) => void;
 }
 
 export const usePlanningStore = create<PlanningState>((set, get) => ({
@@ -162,29 +162,29 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   },
 
   // ─── Jour J ──────────────────────────────────────────────────────────
-  jourJItems: [],
-  setJourJItems: (jourJItems) => set({ jourJItems }),
-  addJourJItem: (item) => {
-    set((state) => ({ jourJItems: [...state.jourJItems, item] }));
+  dayOfItems: [],
+  setDayOfItems: (dayOfItems) => set({ dayOfItems }),
+  addDayOfItem: (item) => {
+    set((state) => ({ dayOfItems: [...state.dayOfItems, item] }));
     const db = getDatabase();
-    if (db) persistJourJItem(db, item);
+    if (db) persistDayOfItem(db, item);
     notifySync();
   },
-  updateJourJItem: (id, updates) => {
+  updateDayOfItem: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
     set((state) => ({
-      jourJItems: state.jourJItems.map((i) =>
+      dayOfItems: state.dayOfItems.map((i) =>
         i.id === id ? { ...i, ...updatedFields } : i
       ),
     }));
     const db = getDatabase();
-    if (db) updateJourJItemDb(db, id, updatedFields);
+    if (db) updateDayOfItemDb(db, id, updatedFields);
     notifySync();
   },
-  removeJourJItem: (id) => {
-    set((state) => ({ jourJItems: state.jourJItems.filter((i) => i.id !== id) }));
+  removeDayOfItem: (id) => {
+    set((state) => ({ dayOfItems: state.dayOfItems.filter((i) => i.id !== id) }));
     const db = getDatabase();
-    if (db) deleteJourJItemDb(db, id);
+    if (db) deleteDayOfItemDb(db, id);
     notifySync();
   },
 }));

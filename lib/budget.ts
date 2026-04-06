@@ -67,8 +67,8 @@ export function calculateCatererTotal(
       counts
     );
     total += (p.pricePerPerson || 0) * guestCount;
-    total += p.forfaitPersonnel || 0;
-    total += p.forfaitDeplacement || 0;
+    total += p.staffFee || 0;
+    total += p.travelFee || 0;
   }
   return total;
 }
@@ -104,12 +104,12 @@ export function calculateCatererScore(
 
   // 1. Prix rapport (30pts) — lower is better
   const repasPrice =
-    pricings.find((p) => p.pricingKey === "repas")?.pricePerPerson || 0;
+    pricings.find((p) => p.pricingKey === "dinner")?.pricePerPerson || 0;
   if (allCaterers.length > 1) {
     const allPrices = allCaterers
       .map(
         (c) =>
-          c.pricings.find((p) => p.pricingKey === "repas")?.pricePerPerson || 0
+          c.pricings.find((p) => p.pricingKey === "dinner")?.pricePerPerson || 0
       )
       .filter((p) => p > 0);
     if (allPrices.length > 0) {

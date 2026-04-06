@@ -1,7 +1,9 @@
 import React from "react";
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
-export default function PrestatairesLayout() {
+export default function VendorsLayout() {
+  const { t } = useTranslation("vendors");
   return (
     <Stack
       screenOptions={{
@@ -12,23 +14,23 @@ export default function PrestatairesLayout() {
     >
       <Stack.Screen
         name="index"
-        options={{ title: "Prestataires" }}
+        options={{ title: t("vendors:types.OTHER").replace(/.*/, t("common:tabs.vendors")) }}
       />
       <Stack.Screen
         name="new"
-        options={{ title: "Nouveau prestataire" }}
+        options={{ title: t("newVendor") }}
       />
       <Stack.Screen
         name="[type]/index"
-        options={{ title: "Prestataires" }}
+        options={{ title: t("common:tabs.vendors") }}
       />
       <Stack.Screen
         name="[type]/[id]"
-        options={{ title: "Détail" }}
+        options={{ title: "" }}
       />
       <Stack.Screen
         name="compare"
-        options={{ title: "Comparateur traiteurs" }}
+        options={{ title: t("compareCaterers") }}
       />
     </Stack>
   );

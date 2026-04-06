@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   Search, XCircle, Users, AlertTriangle, LayoutGrid,
   Trash2,
@@ -30,6 +31,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 type InviteAspect = "guests" | "tables";
 
 export default function GuestsListScreen() {
+  const { t } = useTranslation("guests");
   const [aspect, setAspect] = useState<InviteAspect>("guests");
 
   return (
@@ -50,7 +52,7 @@ export default function GuestsListScreen() {
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >
-              Invités
+              {t("common:tabs.guests")}
             </Text>
           </Pressable>
           <Pressable
@@ -66,7 +68,7 @@ export default function GuestsListScreen() {
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >
-              Plan de tables
+              {t("tables")}
             </Text>
           </Pressable>
         </View>
@@ -80,6 +82,7 @@ export default function GuestsListScreen() {
 // ─── Guests View ─────────────────────────────────────────────────────────
 
 function GuestsView() {
+  const { t } = useTranslation("guests");
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
   const counts = useMemo(() => computeCounts(guests), [guests]);
@@ -108,21 +111,21 @@ function GuestsView() {
   }, [guests, search, rsvpFilter]);
 
   const tabs = [
-    { key: "ALL", label: "Tous", count: counts.total },
-    { key: "ACCEPTED", label: "Confirmés", count: counts.accepted },
-    { key: "PENDING", label: "En attente", count: counts.pending },
-    { key: "DECLINED", label: "Déclinés", count: counts.declined },
-    { key: "MAYBE", label: "Peut-être", count: counts.maybe },
+    { key: "ALL", label: t("all"), count: counts.total },
+    { key: "ACCEPTED", label: t("confirmed"), count: counts.accepted },
+    { key: "PENDING", label: t("pending"), count: counts.pending },
+    { key: "DECLINED", label: t("declined"), count: counts.declined },
+    { key: "MAYBE", label: t("maybe"), count: counts.maybe },
   ];
 
   return (
     <View className="flex-1">
       {/* Stats bar */}
       <View className="bg-white dark:bg-gray-900 px-4 py-3.5 flex-row justify-between border-b border-gray-100 dark:border-gray-800">
-        <StatMini value={counts.accepted} label="Confirmés" color="#10B981" />
-        <StatMini value={counts.total} label="Total" color="#1F2937" />
-        <StatMini value={`${counts.response_rate}%`} label="Réponses" color="#3B82F6" />
-        <StatMini value={counts.nb_no_table} label="Sans table" color="#F59E0B" />
+        <StatMini value={counts.accepted} label={t("confirmed")} color="#10B981" />
+        <StatMini value={counts.total} label={t("total")} color="#1F2937" />
+        <StatMini value={`${counts.response_rate}%`} label={t("responses")} color="#3B82F6" />
+        <StatMini value={counts.nb_no_table} label={t("noTable")} color="#F59E0B" />
       </View>
 
       {/* Search */}
@@ -131,7 +134,7 @@ function GuestsView() {
           <Search size={18} color="#C0C0C8" />
           <TextInput
             className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
-            placeholder="Rechercher un invité..."
+            placeholder={t("searchGuest")}
             placeholderTextColor="#C0C0C8"
             value={search}
             onChangeText={setSearch}
@@ -157,10 +160,10 @@ function GuestsView() {
       {filteredGuests.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="Aucun invité"
-          description="Ajoutez votre premier invité pour commencer"
-          actionLabel="Ajouter un invité"
-          onAction={() => router.push("/(tabs)/invites/new" as any)}
+          title={t("noGuests")}
+          description={t("addFirstGuest")}
+          actionLabel={t("addGuest")}
+          onAction={() => router.push("/(tabs)/guests/new" as any)}
         />
       ) : (
         <ScrollView
@@ -172,7 +175,7 @@ function GuestsView() {
               key={guest.id}
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/invites/[id]",
+                  pathname: "/(tabs)/guests/[id]",
                   params: { id: guest.id },
                 })
               }
@@ -190,15 +193,15 @@ function GuestsView() {
                     {guest.firstName} {guest.lastName}
                   </Text>
                   <Text className="text-sm text-gray-400 mt-0.5">
-                    {INVITATION_TYPE_LABELS[guest.invitationType as InvitationType]}
-                    {guest.isChild ? " · Enfant" : ""}
+                    {t(INVITATION_TYPE_LABELS[guest.invitationType as InvitationType])}
+                    {guest.isChild ? " · " + t("child") : ""}
                     {guest.diet && guest.diet !== "STANDARD"
-                      ? ` · ${DIET_LABELS[guest.diet as keyof typeof DIET_LABELS]}`
+                      ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
                       : ""}
                   </Text>
                 </View>
                 <StatusBadge
-                  label={RSVP_STATUS_LABELS[guest.rsvpStatus as RsvpStatus] || ""}
+                  label={t(RSVP_STATUS_LABELS[guest.rsvpStatus as RsvpStatus] || "")}
                   color={RSVP_STATUS_COLORS[guest.rsvpStatus as RsvpStatus] || "#9CA3AF"}
                 />
               </View>
@@ -211,7 +214,7 @@ function GuestsView() {
       <FAB
         onPress={() =>
           router.push({
-            pathname: "/(tabs)/invites/[id]",
+            pathname: "/(tabs)/guests/[id]",
             params: { id: "new" },
           })
         }
@@ -223,6 +226,7 @@ function GuestsView() {
 // ─── Tables View ─────────────────────────────────────────────────────────
 
 function TablesView() {
+  const { t } = useTranslation("guests");
   const tables = useGuestsStore((s) => s.tables);
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
@@ -265,8 +269,7 @@ function TablesView() {
             <AlertTriangle size={14} color="#F59E0B" />
           </View>
           <Text className="text-sm text-amber-700 dark:text-amber-300 flex-1">
-            {unassignedCount} invité{unassignedCount > 1 ? "s" : ""}{" "}
-            accepté{unassignedCount > 1 ? "s" : ""} sans table
+            {t("guestsAcceptedNoTable", { count: unassignedCount })}
           </Text>
         </View>
       )}
@@ -274,9 +277,9 @@ function TablesView() {
       {tables.length === 0 && !showAdd ? (
         <EmptyState
           icon={LayoutGrid}
-          title="Aucune table"
-          description="Créez des tables pour organiser votre plan de tables"
-          actionLabel="Créer une table"
+          title={t("noTables")}
+          description={t("createTablesDesc")}
+          actionLabel={t("createTable2")}
           onAction={() => setShowAdd(true)}
         />
       ) : (
@@ -288,11 +291,11 @@ function TablesView() {
           {showAdd && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                Nouvelle table
+                {t("newTable")}
               </Text>
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-                placeholder="Nom de la table"
+                placeholder={t("tableName")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableName}
                 onChangeText={setNewTableName}
@@ -300,7 +303,7 @@ function TablesView() {
               />
               <TextInput
                 className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
-                placeholder="Capacité"
+                placeholder={t("capacity")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableCapacity}
                 onChangeText={setNewTableCapacity}
@@ -311,13 +314,13 @@ function TablesView() {
                   onPress={handleAdd}
                   className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
                 >
-                  <Text className="text-white font-semibold text-sm">Créer</Text>
+                  <Text className="text-white font-semibold text-sm">{t("createTable")}</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => setShowAdd(false)}
                   className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
-                  <Text className="text-gray-500 dark:text-gray-400 text-sm">Annuler</Text>
+                  <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -416,14 +419,14 @@ function TablesView() {
                       </Text>
                       {g.diet && g.diet !== "STANDARD" && (
                         <Text className="text-xs text-amber-500 font-medium">
-                          {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
+                          {t(DIET_LABELS[g.diet as keyof typeof DIET_LABELS])}
                         </Text>
                       )}
                     </View>
                   ))
                 ) : (
                   <Text className="text-sm text-gray-400 mt-1">
-                    Aucun invité assigné
+                    {t("noGuestsAssigned")}
                   </Text>
                 )}
               </View>
@@ -438,9 +441,9 @@ function TablesView() {
 
       <ConfirmSheet
         visible={!!deleteId}
-        title="Supprimer cette table ?"
-        message="Les invités assignés seront désassignés."
-        confirmLabel="Supprimer"
+        title={t("deleteTable")}
+        message={t("deleteTableMsg")}
+        confirmLabel={t("common:delete")}
         destructive
         onConfirm={() => {
           if (deleteId) removeTable(deleteId);

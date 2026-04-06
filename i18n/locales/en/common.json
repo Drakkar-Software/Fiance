@@ -1,0 +1,29 @@
+{
+  "tabs": {
+    "home": "Home",
+    "vendors": "Vendors",
+    "guests": "Guests",
+    "planning": "Planning",
+    "ideas": "Ideas",
+    "budget": "Budget",
+    "settings": "Settings"
+  },
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "create": "Create",
+  "add": "Add",
+  "edit": "Edit",
+  "none": "None",
+  "error": "Error",
+  "confirm": "Confirm",
+  "back": "Back",
+  "search": "Search",
+  "all": "All",
+  "noDate": "No date",
+  "today": "Today",
+  "overdue": "Overdue",
+  "months": "months",
+  "days": "d",
+  "version": "Version"
+}

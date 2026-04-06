@@ -1,19 +1,22 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   VENDOR_TYPE_LABELS,
   VENDOR_TYPE_ICONS,
   BUDGET_CATEGORIES,
+  BUDGET_CATEGORY_LABELS,
 } from "@/db/types";
 import type { VendorType } from "@/db/types";
 
 export default function NewVendorPickerScreen() {
+  const { t } = useTranslation("vendors");
   const router = useRouter();
 
   const handleSelect = (type: VendorType) => {
     router.push({
-      pathname: "/(tabs)/prestataires/[type]/[id]",
+      pathname: "/(tabs)/vendors/[type]/[id]",
       params: { type, id: "new" },
     });
   };
@@ -28,7 +31,7 @@ export default function NewVendorPickerScreen() {
         {Object.entries(BUDGET_CATEGORIES).map(([category, types]) => (
           <View key={category} className="mb-5">
             <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-              {category}
+              {t(BUDGET_CATEGORY_LABELS[category])}
             </Text>
             <View className="flex-row flex-wrap" style={{ gap: 10 }}>
               {types.map((type) => {
@@ -47,7 +50,7 @@ export default function NewVendorPickerScreen() {
                       className="text-sm font-medium text-gray-900 dark:text-white text-center"
                       numberOfLines={2}
                     >
-                      {VENDOR_TYPE_LABELS[type]}
+                      {t(VENDOR_TYPE_LABELS[type])}
                     </Text>
                   </Pressable>
                 );

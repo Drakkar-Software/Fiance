@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import {
@@ -53,6 +54,7 @@ const DIETS: Diet[] = [
 const SIDES: Side[] = ["BRIDE", "GROOM", "BOTH"];
 
 export default function GuestDetailScreen() {
+  const { t } = useTranslation("guests");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
@@ -198,7 +200,7 @@ export default function GuestDetailScreen() {
             {RSVP_STATUSES.map((s) => (
               <Pressable key={s} onPress={() => setRsvpStatus(s)}>
                 <StatusBadge
-                  label={RSVP_STATUS_LABELS[s]}
+                  label={t(RSVP_STATUS_LABELS[s])}
                   color={
                     rsvpStatus === s ? RSVP_STATUS_COLORS[s] : "#D1D5DB"
                   }

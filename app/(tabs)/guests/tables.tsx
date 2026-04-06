@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   LayoutGrid,
@@ -24,6 +25,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { DIET_LABELS } from "@/db/types";
 
 export default function TablesScreen() {
+  const { t } = useTranslation("guests");
   const tables = useGuestsStore((s) => s.tables);
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
@@ -238,7 +240,7 @@ export default function TablesScreen() {
                       </Text>
                       {g.diet && g.diet !== "STANDARD" && (
                         <Text className="text-xs text-amber-500 font-medium mr-2">
-                          {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
+                          {t(DIET_LABELS[g.diet as keyof typeof DIET_LABELS])}
                         </Text>
                       )}
                       <UserMinus size={14} color="#C0C0C8" />
@@ -304,7 +306,7 @@ export default function TablesScreen() {
                   </Text>
                   {g.diet && g.diet !== "STANDARD" && (
                     <Text className="text-xs text-amber-500 font-medium mr-2">
-                      {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
+                      {t(DIET_LABELS[g.diet as keyof typeof DIET_LABELS])}
                     </Text>
                   )}
                   {/* Quick-assign to table */}

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   View,
   Text,
@@ -23,6 +24,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { recalculateDueDates } from "@/lib/planning";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   SectionTitle,
   FormCard,
@@ -30,6 +32,9 @@ import {
 } from "@/components/FormSection";
 
 export default function SettingsScreen() {
+  const { t } = useTranslation("settings");
+  const language = useSettingsStore((s) => s.language);
+  const setLanguage = useSettingsStore((s) => s.setLanguage);
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const tasks = usePlanningStore((s) => s.tasks);
@@ -94,6 +99,14 @@ export default function SettingsScreen() {
     if (syncEnabled) {
       teardownStarfish();
       setSyncEnabled(false);
+      return;
+    }
+
+    if (!isPremium()) {
+      Alert.alert(
+        "Fonctionnalité premium",
+        "La synchronisation et le partage nécessitent un abonnement premium."
+      );
       return;
     }
 
@@ -371,6 +384,37 @@ export default function SettingsScreen() {
             />
           </View>
         </Pressable>
+      </View>
+
+      {/* Language */}
+      <View className="px-4 mt-4">
+        <SectionTitle>{t("language")}</SectionTitle>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={() => setLanguage("fr")}
+            className={`flex-1 py-3 rounded-2xl items-center border ${
+              language === "fr"
+                ? "bg-primary-500 border-primary-500"
+                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+            }`}
+          >
+            <Text className={`text-base font-medium ${language === "fr" ? "text-white" : "text-gray-500"}`}>
+              Français
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setLanguage("en")}
+            className={`flex-1 py-3 rounded-2xl items-center border ${
+              language === "en"
+                ? "bg-primary-500 border-primary-500"
+                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+            }`}
+          >
+            <Text className={`text-base font-medium ${language === "en" ? "text-white" : "text-gray-500"}`}>
+              English
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <PinSetup

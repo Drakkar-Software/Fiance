@@ -10,6 +10,7 @@ import {
   Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Search, Heart, Sparkles, Image as ImageIcon, Link } from "lucide-react-native";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
@@ -20,6 +21,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 
 export default function IdeasScreen() {
+  const { t } = useTranslation("ideas");
   const router = useRouter();
   const ideas = useIdeasStore((s) => s.ideas);
   const collections = useIdeasStore((s) => s.collections);
@@ -54,16 +56,16 @@ export default function IdeasScreen() {
   }, [ideas, search, categoryFilter, collectionFilter, showFavoritesOnly]);
 
   const categoryTabs = [
-    { key: "ALL", label: "Toutes" },
+    { key: "ALL", label: t("all") },
     ...Object.entries(IDEA_CATEGORY_LABELS).map(([key, label]) => ({
       key,
-      label,
+      label: t(label),
       count: ideas.filter((i) => i.category === key).length,
     })),
   ];
 
   const navigateToIdea = (id: string) =>
-    router.push({ pathname: "/(tabs)/idees/[id]", params: { id } });
+    router.push({ pathname: "/(tabs)/ideas/[id]", params: { id } });
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
@@ -73,7 +75,7 @@ export default function IdeasScreen() {
           <Search size={18} color="#C0C0C8" />
           <TextInput
             className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
-            placeholder="Rechercher une idée..."
+            placeholder={t("searchIdea")}
             placeholderTextColor="#C0C0C8"
             value={search}
             onChangeText={setSearch}
@@ -114,7 +116,7 @@ export default function IdeasScreen() {
                   : "text-gray-500"
               }`}
             >
-              Toutes
+              {t("all")}
             </Text>
           </Pressable>
           {collections.map((c) => (
@@ -152,9 +154,9 @@ export default function IdeasScreen() {
       {filteredIdeas.length === 0 ? (
         <EmptyState
           icon={Sparkles}
-          title="Aucune idée"
-          description="Ajoutez vos premières inspirations"
-          actionLabel="Ajouter une idée"
+          title={t("noIdeas")}
+          description={t("addFirstIdea")}
+          actionLabel={t("addIdea")}
           onAction={() => navigateToIdea("new")}
         />
       ) : (
@@ -176,6 +178,7 @@ export default function IdeasScreen() {
 }
 
 function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
+  const { t } = useTranslation("ideas");
   const tags = idea.tags ? (JSON.parse(idea.tags) as string[]) : [];
   const displayUrl = idea.sourceUrl
     ? idea.sourceUrl.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
@@ -206,7 +209,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
                 className="text-base font-semibold text-gray-900 dark:text-white flex-1 mr-2"
                 numberOfLines={1}
               >
-                {idea.title || "Sans titre"}
+                {idea.title || t("noTitle")}
               </Text>
               {idea.isFavorite && (
                 <Heart size={16} color="#EF4444" fill="#EF4444" />
@@ -215,7 +218,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
             {idea.category && (
               <View className="self-start mt-1 px-2 py-0.5 rounded-full bg-accent-cream dark:bg-gray-800">
                 <Text className="text-xs text-gray-500">
-                  {IDEA_CATEGORY_LABELS[idea.category as IdeaCategory]}
+                  {t(IDEA_CATEGORY_LABELS[idea.category as IdeaCategory])}
                 </Text>
               </View>
             )}

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { ChevronUp, ChevronDown, CheckSquare, Square } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import {
@@ -34,6 +35,7 @@ const STATUS_OPTIONS: VendorStatus[] = [
 ];
 
 export default function VendorDetailScreen() {
+  const { t } = useTranslation("vendors");
   const { type, id } = useLocalSearchParams<{ type: string; id: string }>();
   const router = useRouter();
   const vendors = useVendorsStore((s) => s.vendors);
@@ -75,7 +77,7 @@ export default function VendorDetailScreen() {
     existingVendor?.customFields ? JSON.parse(existingVendor.customFields) : {}
   );
 
-  const typeName = VENDOR_TYPE_LABELS[type as VendorType] || type;
+  const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
   const updateCustomField = (key: string, value: any) => {
     setCustomFieldsData((prev) => ({ ...prev, [key]: value }));
@@ -158,7 +160,7 @@ export default function VendorDetailScreen() {
           {STATUS_OPTIONS.map((s) => (
             <Pressable key={s} onPress={() => setStatus(s)}>
               <StatusBadge
-                label={VENDOR_STATUS_LABELS[s]}
+                label={t(VENDOR_STATUS_LABELS[s])}
                 color={status === s ? VENDOR_STATUS_COLORS[s] : "#D1D5DB"}
                 size="md"
               />

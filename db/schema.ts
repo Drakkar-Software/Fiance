@@ -82,11 +82,11 @@ export const quotePricing = sqliteTable("quote_pricing", {
   vendorId: text("vendor_id")
     .notNull()
     .references(() => vendors.id, { onDelete: "cascade" }),
-  pricingKey: text("pricing_key").notNull(), // cocktail | repas | boisson | lendemain | vaisselle | nappe | vegetarien | enfant | presta
+  pricingKey: text("pricing_key").notNull(), // cocktail | dinner | drinks | next-day | tableware | linen | vegetarian | child | service
   pricePerPerson: real("price_per_person"),
   guestCountOverride: integer("guest_count_override"),
-  forfaitPersonnel: real("forfait_personnel"),
-  forfaitDeplacement: real("forfait_deplacement"),
+  staffFee: real("staff_fee"),
+  travelFee: real("travel_fee"),
 });
 
 // ─── Task Categories ────────────────────────────────────────────────────────
@@ -135,9 +135,9 @@ export const agendaEvents = sqliteTable("agenda_events", {
   updatedAt: text("updated_at"),
 });
 
-// ─── Jour J Items (wedding day timeline) ────────────────────────────────
+// ─── Day-Of Items (wedding day timeline) ────────────────────────────────
 
-export const jourJItems = sqliteTable("jour_j_items", {
+export const dayOfItems = sqliteTable("day_of_items", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   time: text("time").notNull(), // "13:00"
@@ -173,7 +173,7 @@ export const ideas = sqliteTable("ideas", {
   imageThumbnailUri: text("image_thumbnail_uri"),
   sourceUrl: text("source_url"),
   tags: text("tags"), // JSON array string
-  category: text("category"), // DECO_TABLE | DECO_SALLE | DECO_CEREMONIE | BOUQUET | TENUE | GATEAU | PHOTO_STYLE | LIEU | OTHER
+  category: text("category"), // TABLE_DECOR | VENUE_DECOR | CEREMONY_DECOR | BOUQUET | ATTIRE | CAKE | PHOTO_STYLE | VENUE | OTHER
   vendorId: text("vendor_id").references(() => vendors.id),
   isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
   colorPalette: text("color_palette"), // JSON array of hex strings
@@ -199,8 +199,8 @@ export type TaskCategory = typeof taskCategories.$inferSelect;
 export type TaskCategoryInsert = typeof taskCategories.$inferInsert;
 export type AgendaEvent = typeof agendaEvents.$inferSelect;
 export type AgendaEventInsert = typeof agendaEvents.$inferInsert;
-export type JourJItem = typeof jourJItems.$inferSelect;
-export type JourJItemInsert = typeof jourJItems.$inferInsert;
+export type DayOfItem = typeof dayOfItems.$inferSelect;
+export type DayOfItemInsert = typeof dayOfItems.$inferInsert;
 export type Idea = typeof ideas.$inferSelect;
 export type IdeaInsert = typeof ideas.$inferInsert;
 export type IdeaCollection = typeof ideaCollections.$inferSelect;
