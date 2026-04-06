@@ -100,7 +100,10 @@ export default function SettingsScreen() {
     if (weddingDate && weddingDate !== wedding?.weddingDate) {
       const updated = recalculateDueDates(tasks, weddingDate);
       setTasks(updated);
-      rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents);
+      if (useSettingsStore.getState().notificationsEnabled) {
+        rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents)
+          .catch((err) => console.warn("[notifications] Reschedule failed:", err));
+      }
     }
   }, [weddingDate]);
 
@@ -196,8 +199,11 @@ export default function SettingsScreen() {
       const result = await importWedding();
       if (result === true) {
         Alert.alert(t("importSuccess"), t("importSuccessMsg"));
-        const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
-        rescheduleAllNotifications(newTasks, newEvents);
+        if (useSettingsStore.getState().notificationsEnabled) {
+          const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
+          rescheduleAllNotifications(newTasks, newEvents)
+            .catch((err) => console.warn("[notifications] Reschedule failed:", err));
+        }
       } else if (result === "invalid_json") {
         Alert.alert(t("common:error"), t("invalidJson"));
       } else if (result === "invalid_backup") {
@@ -244,14 +250,18 @@ export default function SettingsScreen() {
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
 
   const handleToggleNotifications = useCallback(async () => {
-    if (notificationsEnabled) {
-      setNotificationsEnabled(false);
-      await cancelAllNotifications();
-    } else {
-      const granted = await requestPermissions();
-      if (!granted) return;
-      setNotificationsEnabled(true);
-      await rescheduleAllNotifications(tasks, agendaEvents);
+    try {
+      if (notificationsEnabled) {
+        await cancelAllNotifications();
+        setNotificationsEnabled(false);
+      } else {
+        const granted = await requestPermissions();
+        if (!granted) return;
+        await rescheduleAllNotifications(tasks, agendaEvents);
+        setNotificationsEnabled(true);
+      }
+    } catch (err) {
+      console.warn("[notifications] Toggle failed:", err);
     }
   }, [notificationsEnabled, tasks, agendaEvents]);
 

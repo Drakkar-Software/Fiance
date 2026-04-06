@@ -1,7 +1,7 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
-import { AppState, Platform, View, ActivityIndicator, Text } from "react-native";
+import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
@@ -53,13 +53,16 @@ function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
 /** Request permissions on boot and reschedule all notifications from current data */
 function NotificationInitializer() {
   useEffect(() => {
-    if (Platform.OS === "web") return;
     (async () => {
-      const granted = await requestPermissions();
-      if (!granted) return;
-      if (useSettingsStore.getState().notificationsEnabled) {
-        const { tasks, agendaEvents } = usePlanningStore.getState();
-        await rescheduleAllNotifications(tasks, agendaEvents);
+      try {
+        const granted = await requestPermissions();
+        if (!granted) return;
+        if (useSettingsStore.getState().notificationsEnabled) {
+          const { tasks, agendaEvents } = usePlanningStore.getState();
+          await rescheduleAllNotifications(tasks, agendaEvents);
+        }
+      } catch (err) {
+        console.warn("[notifications] Initialization failed:", err);
       }
     })();
   }, []);
