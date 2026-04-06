@@ -29,6 +29,7 @@ export const guests = sqliteTable("guests", {
   diet: text("diet").default("STANDARD"), // STANDARD | VEGETARIAN | VEGAN | HALAL | KOSHER | ALLERGY
   dietNotes: text("diet_notes"),
   tableId: text("table_id").references(() => tables.id),
+  noTableNeeded: integer("no_table_needed", { mode: "boolean" }).default(false),
   email: text("email"),
   phone: text("phone"),
   address: text("address"),
@@ -111,9 +112,40 @@ export const tasks = sqliteTable("tasks", {
   monthsBefore: integer("months_before"),
   isSystem: integer("is_system", { mode: "boolean" }).default(false),
   vendorId: text("vendor_id").references(() => vendors.id),
+  assignee: text("assignee"),
   reminderDaysBefore: integer("reminder_days_before"),
   completedAt: text("completed_at"),
   notes: text("notes"),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Agenda Events (meetings & rendez-vous) ────────────────────────────
+
+export const agendaEvents = sqliteTable("agenda_events", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  date: text("date").notNull(), // ISO date "2026-03-15"
+  time: text("time"), // "14:00"
+  endTime: text("end_time"), // "15:30"
+  location: text("location"),
+  vendorId: text("vendor_id").references(() => vendors.id),
+  notes: text("notes"),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Jour J Items (wedding day timeline) ────────────────────────────────
+
+export const jourJItems = sqliteTable("jour_j_items", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  time: text("time").notNull(), // "13:00"
+  endTime: text("end_time"), // "13:30"
+  location: text("location"),
+  responsible: text("responsible"), // who handles this
+  notes: text("notes"),
+  sortOrder: integer("sort_order"),
   createdAt: text("created_at"),
   updatedAt: text("updated_at"),
 });
@@ -165,6 +197,10 @@ export type Task = typeof tasks.$inferSelect;
 export type TaskInsert = typeof tasks.$inferInsert;
 export type TaskCategory = typeof taskCategories.$inferSelect;
 export type TaskCategoryInsert = typeof taskCategories.$inferInsert;
+export type AgendaEvent = typeof agendaEvents.$inferSelect;
+export type AgendaEventInsert = typeof agendaEvents.$inferInsert;
+export type JourJItem = typeof jourJItems.$inferSelect;
+export type JourJItemInsert = typeof jourJItems.$inferInsert;
 export type Idea = typeof ideas.$inferSelect;
 export type IdeaInsert = typeof ideas.$inferInsert;
 export type IdeaCollection = typeof ideaCollections.$inferSelect;

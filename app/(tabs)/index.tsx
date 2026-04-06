@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download } from "lucide-react-native";
 import { differenceInDays, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -12,6 +12,7 @@ import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
+import { usePwaInstall } from "@/lib/usePwaInstall";
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -76,6 +77,8 @@ export default function DashboardScreen() {
     urgentDeposits.length > 0 ||
     expiringQuotes.length > 0 ||
     criticalUnstarted.length > 0;
+
+  const { canInstall, install } = usePwaInstall();
 
   return (
     <ScrollView
@@ -175,6 +178,27 @@ export default function DashboardScreen() {
               </View>
             ))}
           </View>
+        )}
+
+        {/* PWA install banner — only shown on web when browser offers it */}
+        {canInstall && (
+          <Pressable
+            onPress={install}
+            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <Download size={20} color="#EC4899" />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                Installer l'application
+              </Text>
+              <Text className="text-xs text-gray-400 mt-0.5">
+                Accédez à WeddingOS depuis votre écran d'accueil
+              </Text>
+            </View>
+            <ChevronRight size={18} color="#C0C0C8" />
+          </Pressable>
         )}
 
         {/* Budget summary card */}

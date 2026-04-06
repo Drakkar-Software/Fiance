@@ -25,6 +25,8 @@ export function clearAllStores(): void {
   useVendorsStore.getState().setQuotePricings([]);
   usePlanningStore.getState().setCategories([]);
   usePlanningStore.getState().setTasks([]);
+  usePlanningStore.getState().setAgendaEvents([]);
+  usePlanningStore.getState().setJourJItems([]);
   useIdeasStore.getState().setCollections([]);
   useIdeasStore.getState().setIdeas([]);
 }
@@ -48,6 +50,8 @@ export function loadFromLocalStorage(): boolean {
     if (data.quotePricings) useVendorsStore.getState().setQuotePricings(data.quotePricings);
     if (data.taskCategories) usePlanningStore.getState().setCategories(data.taskCategories);
     if (data.tasks) usePlanningStore.getState().setTasks(data.tasks);
+    if (data.agendaEvents) usePlanningStore.getState().setAgendaEvents(data.agendaEvents);
+    if (data.jourJItems) usePlanningStore.getState().setJourJItems(data.jourJItems);
     if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
     if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
     return true;
@@ -89,6 +93,14 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   const taskRows = db.select().from(schema.tasks).all();
   usePlanningStore.getState().setTasks(taskRows);
 
+  // Agenda events
+  const agendaRows = db.select().from(schema.agendaEvents).all();
+  usePlanningStore.getState().setAgendaEvents(agendaRows);
+
+  // Jour J items
+  const jourJRows = db.select().from(schema.jourJItems).all();
+  usePlanningStore.getState().setJourJItems(jourJRows);
+
   // Idea collections
   const collectionRows = db.select().from(schema.ideaCollections).all();
   useIdeasStore.getState().setCollections(collectionRows);
@@ -102,7 +114,10 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
 
 // Wedding
 export function persistWedding(db: DrizzleDB, updates: Partial<schema.Wedding>) {
-  db.update(schema.wedding).set(updates).where(eq(schema.wedding.id, 1)).run();
+  db.insert(schema.wedding).values({ id: 1, ...updates }).onConflictDoUpdate({
+    target: schema.wedding.id,
+    set: updates,
+  }).run();
 }
 
 // Guests
@@ -204,6 +219,38 @@ export function deleteTaskCategoryDb(db: DrizzleDB, id: string) {
   db.delete(schema.taskCategories).where(eq(schema.taskCategories.id, id)).run();
 }
 
+// Agenda Events
+export function persistAgendaEvent(db: DrizzleDB, event: schema.AgendaEvent) {
+  db.insert(schema.agendaEvents).values(event).onConflictDoUpdate({
+    target: schema.agendaEvents.id,
+    set: event,
+  }).run();
+}
+
+export function updateAgendaEventDb(db: DrizzleDB, id: string, updates: Partial<schema.AgendaEvent>) {
+  db.update(schema.agendaEvents).set(updates).where(eq(schema.agendaEvents.id, id)).run();
+}
+
+export function deleteAgendaEventDb(db: DrizzleDB, id: string) {
+  db.delete(schema.agendaEvents).where(eq(schema.agendaEvents.id, id)).run();
+}
+
+// Jour J Items
+export function persistJourJItem(db: DrizzleDB, item: schema.JourJItem) {
+  db.insert(schema.jourJItems).values(item).onConflictDoUpdate({
+    target: schema.jourJItems.id,
+    set: item,
+  }).run();
+}
+
+export function updateJourJItemDb(db: DrizzleDB, id: string, updates: Partial<schema.JourJItem>) {
+  db.update(schema.jourJItems).set(updates).where(eq(schema.jourJItems.id, id)).run();
+}
+
+export function deleteJourJItemDb(db: DrizzleDB, id: string) {
+  db.delete(schema.jourJItems).where(eq(schema.jourJItems.id, id)).run();
+}
+
 // Ideas
 export function persistIdea(db: DrizzleDB, idea: schema.Idea) {
   db.insert(schema.ideas).values(idea).onConflictDoUpdate({
@@ -248,12 +295,16 @@ export function restoreAllTables(db: DrizzleDB, data: {
   quotePricings: any[];
   tasks: any[];
   taskCategories: any[];
+  agendaEvents: any[];
+  jourJItems: any[];
   ideas: any[];
   ideaCollections: any[];
 }) {
   // Clear all tables (order matters for FK constraints)
   db.delete(schema.ideas).run();
   db.delete(schema.ideaCollections).run();
+  db.delete(schema.jourJItems).run();
+  db.delete(schema.agendaEvents).run();
   db.delete(schema.tasks).run();
   db.delete(schema.taskCategories).run();
   db.delete(schema.quotePricing).run();
@@ -271,6 +322,8 @@ export function restoreAllTables(db: DrizzleDB, data: {
   for (const row of data.quotePricings) db.insert(schema.quotePricing).values(row).run();
   for (const row of data.taskCategories) db.insert(schema.taskCategories).values(row).run();
   for (const row of data.tasks) db.insert(schema.tasks).values(row).run();
+  for (const row of data.agendaEvents) db.insert(schema.agendaEvents).values(row).run();
+  for (const row of data.jourJItems) db.insert(schema.jourJItems).values(row).run();
   for (const row of data.ideaCollections) db.insert(schema.ideaCollections).values(row).run();
   for (const row of data.ideas) db.insert(schema.ideas).values(row).run();
 }

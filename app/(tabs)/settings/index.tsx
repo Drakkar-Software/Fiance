@@ -8,33 +8,25 @@ import {
   Share,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Calendar, Cloud, CloudOff, Heart, CheckCircle2, Lock, ShieldCheck } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, PlusCircle } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
+import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
-import type { LucideIcon } from "lucide-react-native";
 import {
   initStarfish,
   teardownStarfish,
   getStarfishStore,
   getLastSyncTimestamp,
 } from "@/lib/starfish";
-import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl } from "@/lib/identity";
+import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
-import { useGuestsStore } from "@/store/useGuestsStore";
-import { useVendorsStore } from "@/store/useVendorsStore";
-import { useIdeasStore } from "@/store/useIdeasStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import {
-  generateDefaultCategories,
-  generateTemplateTasks,
-  recalculateDueDates,
-} from "@/lib/planning";
+import { recalculateDueDates } from "@/lib/planning";
 import {
   SectionTitle,
   FormCard,
   InputRow,
-  ChipSelect,
 } from "@/components/FormSection";
 
 export default function SettingsScreen() {
@@ -42,11 +34,10 @@ export default function SettingsScreen() {
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const tasks = usePlanningStore((s) => s.tasks);
   const setTasks = usePlanningStore((s) => s.setTasks);
-  const categories = usePlanningStore((s) => s.categories);
-  const setCategories = usePlanningStore((s) => s.setCategories);
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
+  const createWedding = useWeddingRegistryStore((s) => s.createWedding);
   const updateRegistryWedding = useWeddingRegistryStore((s) => s.updateWedding);
 
   const activeEntry = registry?.weddings.find(
@@ -87,20 +78,6 @@ export default function SettingsScreen() {
     updateWedding({ venueName: value || null });
   }, []);
 
-  const [budgetTarget, _setBudgetTarget] = useState(
-    wedding?.budgetTarget?.toString() || ""
-  );
-  const setBudgetTarget = useCallback((value: string) => {
-    _setBudgetTarget(value);
-    updateWedding({ budgetTarget: value ? parseFloat(value) : null });
-  }, []);
-
-  const [currency, _setCurrency] = useState(wedding?.currency || "EUR");
-  const setCurrency = useCallback((value: string) => {
-    _setCurrency(value);
-    updateWedding({ currency: value || "EUR" });
-  }, []);
-
   // Recalculate due dates when wedding date changes
   useEffect(() => {
     if (weddingDate && weddingDate !== wedding?.weddingDate) {
@@ -109,13 +86,22 @@ export default function SettingsScreen() {
     }
   }, [weddingDate]);
 
-  // Sync state
-  const syncEnabled = !!getStarfishStore();
+  // Sync state — use local state to force re-render after toggle
+  const [syncEnabled, setSyncEnabled] = useState(!!getStarfishStore());
   const lastSync = syncEnabled ? getLastSyncTimestamp() : null;
 
   const handleToggleSync = useCallback(async () => {
     if (syncEnabled) {
       teardownStarfish();
+      setSyncEnabled(false);
+      return;
+    }
+
+    if (!isPremium()) {
+      Alert.alert(
+        "Fonctionnalité premium",
+        "La synchronisation et le partage nécessitent un abonnement premium."
+      );
       return;
     }
 
@@ -146,6 +132,7 @@ export default function SettingsScreen() {
       userId: authToken.slice(0, 16),
       encryptionKey,
     });
+    setSyncEnabled(true);
   }, [syncEnabled, activeEntry]);
 
   const handleInvite = useCallback(async () => {
@@ -165,33 +152,22 @@ export default function SettingsScreen() {
     }
   }, [activeEntry]);
 
-  const handleGenerateTemplate = useCallback(() => {
-    const doGenerate = () => {
-      if (categories.length === 0) {
-        const cats = generateDefaultCategories();
-        setCategories(cats);
-        const templateTasks = generateTemplateTasks(cats, wedding?.weddingDate || undefined);
-        setTasks([...tasks, ...templateTasks]);
-      } else {
-        const templateTasks = generateTemplateTasks(categories, wedding?.weddingDate || undefined);
-        setTasks([...tasks, ...templateTasks]);
-      }
-      Alert.alert("Planning généré", "Le planning type de préparation a été ajouté.");
-    };
-
-    if (tasks.length > 0) {
-      Alert.alert(
-        "Planning existant",
-        "Des tâches existent déjà. Voulez-vous ajouter le planning type ? Cela pourrait créer des doublons.",
-        [
-          { text: "Annuler", style: "cancel" },
-          { text: "Ajouter", onPress: doGenerate },
-        ]
-      );
-    } else {
-      doGenerate();
-    }
-  }, [categories, tasks, wedding]);
+  const handleCreateNewWedding = useCallback(() => {
+    Alert.alert(
+      "Nouveau mariage",
+      "Créer un nouveau mariage ? Vous pourrez basculer entre vos mariages à tout moment.",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Créer",
+          onPress: async () => {
+            const passphrase = generatePassphrase();
+            await createWedding("Mon mariage", passphrase);
+          },
+        },
+      ]
+    );
+  }, [createWedding]);
 
   // App lock
   const [lockEnabled, setLockEnabledState] = useState(false);
@@ -222,10 +198,6 @@ export default function SettingsScreen() {
     }
   }, [lockEnabled]);
 
-  const guestCount = useGuestsStore((s) => s.guests.length);
-  const vendorCount = useVendorsStore((s) => s.vendors.length);
-  const taskCount = usePlanningStore((s) => s.tasks.length);
-  const ideaCount = useIdeasStore((s) => s.ideas.length);
 
   return (
     <ScrollView
@@ -241,83 +213,17 @@ export default function SettingsScreen() {
           <InputRow label="Marié(e) 2" value={partner2} onChangeText={setPartner2} placeholder="Prénom + Nom" />
           <InputRow label="Date du mariage" value={weddingDate} onChangeText={setWeddingDate} placeholder="2026-09-12" />
           <InputRow label="Lieu principal" value={venueName} onChangeText={setVenueName} placeholder="Nom du lieu" />
-          <InputRow label="Budget cible (€)" value={budgetTarget} onChangeText={setBudgetTarget} placeholder="30000" keyboardType="numeric" />
-          <View className="py-3">
-            <Text className="text-xs text-gray-400 mb-2 font-medium">Devise</Text>
-            <ChipSelect
-              options={["EUR", "USD"] as const}
-              value={currency as "EUR" | "USD"}
-              onChange={setCurrency}
-              labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
-            />
-          </View>
         </FormCard>
       </View>
 
-      {/* Invite */}
-      {activeEntry?.seedPhrase && (
-        <View className="px-4">
-          <SectionTitle>Inviter</SectionTitle>
-          <Pressable
-            onPress={handleInvite}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
-          >
-            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Share2 size={20} color="#EC4899" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-medium text-gray-900 dark:text-white">
-                Partager un lien d'invitation
-              </Text>
-              <Text className="text-xs text-gray-400 mt-0.5">
-                Envoyer un lien pour rejoindre ce mariage
-              </Text>
-            </View>
-            <ChevronRight size={18} color="#C0C0C8" />
-          </Pressable>
-        </View>
-      )}
-
-      {/* Planning template */}
+      {/* Sauvegarde et partage */}
       <View className="px-4">
-        <SectionTitle>Planning</SectionTitle>
-        <Pressable
-          onPress={handleGenerateTemplate}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
-        >
-          <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center">
-            <Calendar size={20} color="#EC4899" />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base font-medium text-gray-900 dark:text-white">
-              Générer le planning type
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {tasks.length > 0
-                ? `${tasks.length} tâches déjà présentes`
-                : "33 tâches avec deadlines relatives"}
-            </Text>
-          </View>
-          <ChevronRight size={18} color="#C0C0C8" />
-        </Pressable>
-      </View>
-
-      {/* Stats */}
-      <View className="px-4 mt-4">
-        <SectionTitle>Statistiques</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-5 border border-gray-100 dark:border-gray-800">
-          <View className="flex-row flex-wrap">
-            <StatCell label="Invités" value={guestCount} color="#E8B4B8" />
-            <StatCell label="Prestataires" value={vendorCount} color="#C9956B" />
-            <StatCell label="Tâches" value={taskCount} color="#7B9A7B" />
-            <StatCell label="Idées" value={ideaCount} color="#EC4899" />
-          </View>
-        </View>
-      </View>
-
-      {/* Synchronisation */}
-      <View className="px-4">
-        <SectionTitle>Synchronisation</SectionTitle>
+        <SectionTitle>Sauvegarde et partage</SectionTitle>
+        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+          {syncEnabled
+            ? "Vos données sont sauvegardées de manière chiffrée sur un serveur sécurisé. En cas de perte ou changement d'appareil, vous pourrez les restaurer. Vous pouvez partager le mariage avec votre partenaire via le lien d'invitation ci-dessous."
+            : "Vos données sont stockées uniquement sur cet appareil. En cas de suppression de l'app, de vidage du cache navigateur, ou de perte de l'appareil, toutes vos données seront définitivement perdues. Activez la synchronisation pour sauvegarder vos données et partager le mariage avec votre partenaire."}
+        </Text>
         <Pressable
           onPress={handleToggleSync}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
@@ -354,54 +260,88 @@ export default function SettingsScreen() {
             />
           </View>
         </Pressable>
+        {activeEntry?.seedPhrase && (
+          <Pressable
+            onPress={syncEnabled ? handleInvite : undefined}
+            className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 ${
+              syncEnabled ? "active:opacity-80" : "opacity-50"
+            }`}
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <Share2 size={20} color={syncEnabled ? "#EC4899" : "#9CA3AF"} />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-base font-medium text-gray-900 dark:text-white">
+                Partager un lien d'invitation
+              </Text>
+              <Text className="text-xs text-gray-400 mt-0.5">
+                {syncEnabled
+                  ? "Envoyer un lien pour rejoindre ce mariage"
+                  : "Activez la synchronisation pour partager"}
+              </Text>
+            </View>
+            <ChevronRight size={18} color="#C0C0C8" />
+          </Pressable>
+        )}
       </View>
 
       {/* Mes mariages */}
-      {registry && registry.weddings.length > 0 && (
-        <View className="px-4 mt-4">
-          <SectionTitle>Mes mariages</SectionTitle>
-          {registry.weddings.map((w) => {
-            const isActive = w.id === registry.activeWeddingId;
-            return (
-              <Pressable
-                key={w.id}
-                onPress={() => {
-                  if (!isActive) switchWedding(w.id);
+      <View className="px-4 mt-4">
+        <SectionTitle>Mes mariages</SectionTitle>
+        {registry?.weddings.map((w) => {
+          const isActive = w.id === registry.activeWeddingId;
+          return (
+            <Pressable
+              key={w.id}
+              onPress={() => {
+                if (!isActive) switchWedding(w.id);
+              }}
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center active:opacity-80 ${
+                isActive
+                  ? "border-primary-300 dark:border-primary-700"
+                  : "border-gray-100 dark:border-gray-800"
+              }`}
+            >
+              <View
+                className="w-10 h-10 rounded-xl items-center justify-center mr-3"
+                style={{
+                  backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
                 }}
-                className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center active:opacity-80 ${
-                  isActive
-                    ? "border-primary-300 dark:border-primary-700"
-                    : "border-gray-100 dark:border-gray-800"
-                }`}
               >
-                <View
-                  className="w-10 h-10 rounded-xl items-center justify-center mr-3"
-                  style={{
-                    backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
-                  }}
-                >
-                  <Heart
-                    size={20}
-                    color={isActive ? "#EC4899" : "#9CA3AF"}
-                    fill={isActive ? "#EC4899" : "transparent"}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-base font-medium text-gray-900 dark:text-white">
-                    {w.label}
-                  </Text>
-                  <Text className="text-xs text-gray-400 mt-0.5">
-                    {isActive ? "Mariage actif" : "Appuyez pour basculer"}
-                  </Text>
-                </View>
-                {isActive && (
-                  <CheckCircle2 size={20} color="#EC4899" />
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
-      )}
+                <Heart
+                  size={20}
+                  color={isActive ? "#EC4899" : "#9CA3AF"}
+                  fill={isActive ? "#EC4899" : "transparent"}
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  {w.label}
+                </Text>
+                <Text className="text-xs text-gray-400 mt-0.5">
+                  {isActive ? "Mariage actif" : "Appuyez pour basculer"}
+                </Text>
+              </View>
+              {isActive && (
+                <CheckCircle2 size={20} color="#EC4899" />
+              )}
+            </Pressable>
+          );
+        })}
+        <Pressable
+          onPress={handleCreateNewWedding}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
+        >
+          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-gray-50 dark:bg-gray-800">
+            <PlusCircle size={20} color="#9CA3AF" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-base font-medium text-gray-500 dark:text-gray-400">
+              Créer un nouveau mariage
+            </Text>
+          </View>
+        </Pressable>
+      </View>
 
       {/* Security */}
       <View className="px-4 mt-4">
@@ -431,11 +371,6 @@ export default function SettingsScreen() {
             />
           </View>
         </Pressable>
-        <SettingsRow
-          icon={ShieldCheck}
-          title="Chiffrement"
-          subtitle="AES-256 · Backup chiffré AES-GCM"
-        />
       </View>
 
       <PinSetup
@@ -460,7 +395,7 @@ export default function SettingsScreen() {
           <View className="mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
             <Text className="text-xs text-gray-400 leading-4">
               Privacy-first · Offline-first · Aucune télémétrie{"\n"}
-              Vos données restent chiffrées, sur votre appareil et votre serveur.
+              Vos données restent chiffrées, sur votre appareil et nos serveurs.
             </Text>
           </View>
         </View>
@@ -471,47 +406,3 @@ export default function SettingsScreen() {
   );
 }
 
-function SettingsRow({
-  icon: Icon,
-  title,
-  subtitle,
-}: {
-  icon: LucideIcon;
-  title: string;
-  subtitle: string;
-}) {
-  return (
-    <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center">
-      <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-        <Icon size={20} color="#C0C0C8" />
-      </View>
-      <View className="ml-3">
-        <Text className="text-base text-gray-900 dark:text-white font-medium">
-          {title}
-        </Text>
-        <Text className="text-xs text-gray-400 mt-0.5">
-          {subtitle}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <View className="w-1/2 items-center py-2">
-      <Text className="text-2xl font-bold" style={{ color }}>
-        {value}
-      </Text>
-      <Text className="text-xs text-gray-400 mt-0.5">{label}</Text>
-    </View>
-  );
-}

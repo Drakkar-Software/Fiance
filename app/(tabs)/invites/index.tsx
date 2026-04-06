@@ -1,7 +1,18 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  TextInput,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { Search, XCircle, Users } from "lucide-react-native";
+import {
+  Search, XCircle, Users, AlertTriangle, LayoutGrid,
+  Trash2,
+} from "lucide-react-native";
+import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import {
   RSVP_STATUS_LABELS,
@@ -14,8 +25,61 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { FilterTabs } from "@/components/FilterTabs";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
+import { ConfirmSheet } from "@/components/ConfirmSheet";
+
+type InviteAspect = "guests" | "tables";
 
 export default function GuestsListScreen() {
+  const [aspect, setAspect] = useState<InviteAspect>("guests");
+
+  return (
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+      {/* Segmented control */}
+      <View className="px-4 pt-3 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+        <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+          <Pressable
+            onPress={() => setAspect("guests")}
+            className={`flex-1 py-2 rounded-lg items-center ${
+              aspect === "guests" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
+            }`}
+          >
+            <Text
+              className={`text-sm font-medium ${
+                aspect === "guests"
+                  ? "text-primary-500"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              Invités
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setAspect("tables")}
+            className={`flex-1 py-2 rounded-lg items-center ${
+              aspect === "tables" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
+            }`}
+          >
+            <Text
+              className={`text-sm font-medium ${
+                aspect === "tables"
+                  ? "text-primary-500"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              Plan de tables
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {aspect === "guests" ? <GuestsView /> : <TablesView />}
+    </View>
+  );
+}
+
+// ─── Guests View ─────────────────────────────────────────────────────────
+
+function GuestsView() {
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
   const counts = useMemo(() => computeCounts(guests), [guests]);
@@ -52,21 +116,13 @@ export default function GuestsListScreen() {
   ];
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1">
       {/* Stats bar */}
       <View className="bg-white dark:bg-gray-900 px-4 py-3.5 flex-row justify-between border-b border-gray-100 dark:border-gray-800">
         <StatMini value={counts.accepted} label="Confirmés" color="#10B981" />
         <StatMini value={counts.total} label="Total" color="#1F2937" />
         <StatMini value={`${counts.response_rate}%`} label="Réponses" color="#3B82F6" />
-        <Pressable
-          onPress={() => router.push("/(tabs)/invites/tables")}
-          className="items-center"
-        >
-          <Text className="text-lg font-bold text-primary-500">
-            {counts.nb_no_table}
-          </Text>
-          <Text className="text-[11px] text-gray-400">Sans table</Text>
-        </Pressable>
+        <StatMini value={counts.nb_no_table} label="Sans table" color="#F59E0B" />
       </View>
 
       {/* Search */}
@@ -163,6 +219,240 @@ export default function GuestsListScreen() {
     </View>
   );
 }
+
+// ─── Tables View ─────────────────────────────────────────────────────────
+
+function TablesView() {
+  const tables = useGuestsStore((s) => s.tables);
+  const guests = useGuestsStore((s) => s.guests);
+  const addTable = useGuestsStore((s) => s.addTable);
+  const updateTable = useGuestsStore((s) => s.updateTable);
+  const removeTable = useGuestsStore((s) => s.removeTable);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTableName, setNewTableName] = useState("");
+  const [newTableCapacity, setNewTableCapacity] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [editingTableId, setEditingTableId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+
+  const handleAdd = () => {
+    if (!newTableName.trim()) {
+      Alert.alert("Erreur", "Le nom de la table est obligatoire");
+      return;
+    }
+    addTable({
+      id: Crypto.randomUUID(),
+      name: newTableName.trim(),
+      capacity: newTableCapacity ? parseInt(newTableCapacity) : null,
+      notes: null,
+    });
+    setNewTableName("");
+    setNewTableCapacity("");
+    setShowAdd(false);
+  };
+
+  const unassignedCount = useMemo(
+    () => guests.filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId).length,
+    [guests]
+  );
+
+  return (
+    <View className="flex-1">
+      {/* Unassigned guests warning */}
+      {unassignedCount > 0 && (
+        <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">
+          <View className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center mr-2">
+            <AlertTriangle size={14} color="#F59E0B" />
+          </View>
+          <Text className="text-sm text-amber-700 dark:text-amber-300 flex-1">
+            {unassignedCount} invité{unassignedCount > 1 ? "s" : ""}{" "}
+            accepté{unassignedCount > 1 ? "s" : ""} sans table
+          </Text>
+        </View>
+      )}
+
+      {tables.length === 0 && !showAdd ? (
+        <EmptyState
+          icon={LayoutGrid}
+          title="Aucune table"
+          description="Créez des tables pour organiser votre plan de tables"
+          actionLabel="Créer une table"
+          onAction={() => setShowAdd(true)}
+        />
+      ) : (
+        <ScrollView
+          className="flex-1 px-4 pt-4"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Add table form */}
+          {showAdd && (
+            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                Nouvelle table
+              </Text>
+              <TextInput
+                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                placeholder="Nom de la table"
+                placeholderTextColor="#D0D0D8"
+                value={newTableName}
+                onChangeText={setNewTableName}
+                autoFocus
+              />
+              <TextInput
+                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                placeholder="Capacité"
+                placeholderTextColor="#D0D0D8"
+                value={newTableCapacity}
+                onChangeText={setNewTableCapacity}
+                keyboardType="numeric"
+              />
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={handleAdd}
+                  className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
+                >
+                  <Text className="text-white font-semibold text-sm">Créer</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setShowAdd(false)}
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                >
+                  <Text className="text-gray-500 dark:text-gray-400 text-sm">Annuler</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+
+          {/* Tables list */}
+          {tables.map((table) => {
+            const tableGuests = guests.filter((g) => g.tableId === table.id);
+            const isFull =
+              table.capacity != null && tableGuests.length >= table.capacity;
+
+            return (
+              <View
+                key={table.id}
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+              >
+                {/* Table header */}
+                <View className="flex-row items-center justify-between mb-2">
+                  <Pressable
+                    onPress={() => {
+                      setEditingTableId(table.id);
+                      setEditingName(table.name);
+                    }}
+                    className="flex-row items-center flex-1"
+                  >
+                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
+                      <LayoutGrid size={16} color="#EC4899" />
+                    </View>
+                    {editingTableId === table.id ? (
+                      <TextInput
+                        className="text-base font-semibold text-gray-900 dark:text-white flex-1"
+                        value={editingName}
+                        onChangeText={setEditingName}
+                        onBlur={() => {
+                          if (editingName.trim()) {
+                            updateTable(table.id, { name: editingName.trim() });
+                          }
+                          setEditingTableId(null);
+                        }}
+                        onSubmitEditing={() => {
+                          if (editingName.trim()) {
+                            updateTable(table.id, { name: editingName.trim() });
+                          }
+                          setEditingTableId(null);
+                        }}
+                        autoFocus
+                        selectTextOnFocus
+                      />
+                    ) : (
+                      <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                        {table.name}
+                      </Text>
+                    )}
+                  </Pressable>
+                  <View className="flex-row items-center gap-2">
+                    <View
+                      className={`px-2.5 py-1 rounded-full ${
+                        isFull
+                          ? "bg-red-50 dark:bg-red-900"
+                          : "bg-gray-50 dark:bg-gray-800"
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-semibold ${
+                          isFull ? "text-red-500" : "text-gray-500"
+                        }`}
+                      >
+                        {tableGuests.length}
+                        {table.capacity ? `/${table.capacity}` : ""}
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setDeleteId(table.id)}
+                      className="w-8 h-8 items-center justify-center"
+                    >
+                      <Trash2 size={16} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* Assigned guests (read-only) */}
+                {tableGuests.length > 0 ? (
+                  tableGuests.map((g) => (
+                    <View
+                      key={g.id}
+                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
+                    >
+                      <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                        <Text className="text-xs font-bold text-gray-400">
+                          {g.firstName[0]}
+                          {g.lastName[0]}
+                        </Text>
+                      </View>
+                      <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                        {g.firstName} {g.lastName}
+                      </Text>
+                      {g.diet && g.diet !== "STANDARD" && (
+                        <Text className="text-xs text-amber-500 font-medium">
+                          {DIET_LABELS[g.diet as keyof typeof DIET_LABELS]}
+                        </Text>
+                      )}
+                    </View>
+                  ))
+                ) : (
+                  <Text className="text-sm text-gray-400 mt-1">
+                    Aucun invité assigné
+                  </Text>
+                )}
+              </View>
+            );
+          })}
+
+          <View className="h-24" />
+        </ScrollView>
+      )}
+
+      <FAB onPress={() => setShowAdd(true)} />
+
+      <ConfirmSheet
+        visible={!!deleteId}
+        title="Supprimer cette table ?"
+        message="Les invités assignés seront désassignés."
+        confirmLabel="Supprimer"
+        destructive
+        onConfirm={() => {
+          if (deleteId) removeTable(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
+      />
+    </View>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
 
 function StatMini({
   value,

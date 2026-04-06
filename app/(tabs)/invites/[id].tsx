@@ -81,6 +81,7 @@ export default function GuestDetailScreen() {
   const [phone, setPhone] = useState(existing?.phone || "");
   const [address, setAddress] = useState(existing?.address || "");
   const [tableId, setTableId] = useState(existing?.tableId || "");
+  const [noTableNeeded, setNoTableNeeded] = useState(existing?.noTableNeeded || false);
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
@@ -109,6 +110,7 @@ export default function GuestDetailScreen() {
       phone: phone || null,
       address: address || null,
       tableId: tableId || null,
+      noTableNeeded,
       notes: notes || null,
       updatedAt: now,
     };
@@ -208,54 +210,66 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Table */}
-        {tables.length > 0 && (
-          <>
-            <SectionTitle>Table</SectionTitle>
-            <FormCard>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-2">
-                  <Pressable
-                    onPress={() => setTableId("")}
-                    className={`px-3.5 py-2 rounded-full border ${
-                      !tableId
-                        ? "bg-primary-500 border-primary-500"
-                        : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+        <SectionTitle>Table</SectionTitle>
+        <FormCard>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View className="flex-row gap-2">
+              <Pressable
+                onPress={() => { setTableId(""); setNoTableNeeded(false); }}
+                className={`px-3.5 py-2 rounded-full border ${
+                  !tableId && !noTableNeeded
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                }`}
+              >
+                <Text
+                  className={`text-sm ${
+                    !tableId && !noTableNeeded ? "text-white font-medium" : "text-gray-500"
+                  }`}
+                >
+                  Non assigné
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => { setTableId(""); setNoTableNeeded(true); }}
+                className={`px-3.5 py-2 rounded-full border ${
+                  noTableNeeded
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                }`}
+              >
+                <Text
+                  className={`text-sm ${
+                    noTableNeeded ? "text-white font-medium" : "text-gray-500"
+                  }`}
+                >
+                  Pas de table
+                </Text>
+              </Pressable>
+              {tables.map((t) => (
+                <Pressable
+                  key={t.id}
+                  onPress={() => { setTableId(t.id); setNoTableNeeded(false); }}
+                  className={`px-3.5 py-2 rounded-full border ${
+                    tableId === t.id
+                      ? "bg-primary-500 border-primary-500"
+                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm ${
+                      tableId === t.id
+                        ? "text-white font-medium"
+                        : "text-gray-500"
                     }`}
                   >
-                    <Text
-                      className={`text-sm ${
-                        !tableId ? "text-white font-medium" : "text-gray-500"
-                      }`}
-                    >
-                      Non assigné
-                    </Text>
-                  </Pressable>
-                  {tables.map((t) => (
-                    <Pressable
-                      key={t.id}
-                      onPress={() => setTableId(t.id)}
-                      className={`px-3.5 py-2 rounded-full border ${
-                        tableId === t.id
-                          ? "bg-primary-500 border-primary-500"
-                          : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                      }`}
-                    >
-                      <Text
-                        className={`text-sm ${
-                          tableId === t.id
-                            ? "text-white font-medium"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {t.name}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </ScrollView>
-            </FormCard>
-          </>
-        )}
+                    {t.name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
+        </FormCard>
 
         {/* Diet */}
         <SectionTitle>Régime alimentaire</SectionTitle>

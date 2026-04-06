@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heart, PlusCircle, ArrowLeft } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { getStarfishStore } from "@/lib/starfish";
+import { decodeInviteToken } from "@/lib/identity";
 import OnboardingScreen from "./onboarding";
 
 function triggerSyncPull(retries = 10) {
@@ -39,10 +40,13 @@ function useJoinAndNavigate() {
 }
 
 export default function JoinScreen() {
-  const { name, password } = useLocalSearchParams<{
-    name?: string;
-    password?: string;
-  }>();
+  const { t } = useLocalSearchParams<{ t?: string }>();
+
+  const invite = useMemo(() => decodeInviteToken(t), [t]);
+
+  const name = invite?.name;
+  const password = invite?.password;
+
   const registry = useWeddingRegistryStore((s) => s.registry);
   const alreadyJoined = registry?.weddings.some((w) => w.seedPhrase === password);
   const hasWeddings = registry != null && registry.weddings.length > 0;

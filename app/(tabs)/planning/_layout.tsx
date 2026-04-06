@@ -13,6 +13,8 @@ export default function PlanningLayout() {
       <Stack.Screen name="index" options={{ title: "Planning" }} />
       <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
       <Stack.Screen name="categories" options={{ title: "Catégories" }} />
+      <Stack.Screen name="agenda-event" options={{ title: "Rendez-vous" }} />
+      <Stack.Screen name="jourj-item" options={{ title: "Jour J" }} />
     </Stack>
   );
 }

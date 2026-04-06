@@ -13,19 +13,26 @@ interface WeddingState {
 export const useWeddingStore = create<WeddingState>((set) => ({
   wedding: null,
   setWedding: (wedding) => set({ wedding }),
-  updateWedding: (updates) =>
+  updateWedding: (updates) => {
+    const now = new Date().toISOString();
     set((state) => {
-      if (!state.wedding) return state;
-      const updated = {
-        ...state.wedding,
-        ...updates,
-        updatedAt: new Date().toISOString(),
+      const base = state.wedding ?? {
+        id: 1,
+        partner1Name: null,
+        partner2Name: null,
+        weddingDate: null,
+        venueName: null,
+        budgetTarget: null,
+        currency: "EUR",
+        createdAt: now,
+        updatedAt: now,
       };
-      // Write-through to SQLite
-      const db = getDatabase();
-      if (db) persistWedding(db, { ...updates, updatedAt: updated.updatedAt });
-      // Notify Starfish sync
-      notifySync();
-      return { wedding: updated };
-    }),
+      return { wedding: { ...base, ...updates, updatedAt: now } };
+    });
+    // Write-through to SQLite (after state is committed)
+    const db = getDatabase();
+    if (db) persistWedding(db, { ...updates, updatedAt: now });
+    // Notify Starfish sync (reads committed state)
+    notifySync();
+  },
 }));

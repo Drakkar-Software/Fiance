@@ -6,8 +6,8 @@ import { StatusBar } from "expo-status-bar";
 import * as Linking from "expo-linking";
 import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
-import { getStarfishStore, initStarfish } from "@/lib/starfish";
-import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
+import { getStarfishStore } from "@/lib/starfish";
+import { parseInviteUrl } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -47,25 +47,8 @@ function AppContent() {
     }
   }, [registry?.weddings.length]);
 
-  // Auto-enable sync if the wedding has a server URL and seed phrase
-  useEffect(() => {
-    if (!activeWedding) return;
-    const { serverUrl, seedPhrase, id } = activeWedding;
-    if (!serverUrl || !seedPhrase || getStarfishStore()) return;
-
-    (async () => {
-      const authToken = await deriveAuthToken(seedPhrase);
-      const userId = authToken.slice(0, 16);
-      const encryptionKey = await deriveEncryptionKey(seedPhrase, userId);
-      const sf = initStarfish({
-        serverUrl,
-        authToken,
-        userId,
-        encryptionKey,
-      });
-      sf.getState().pull().catch(console.error);
-    })();
-  }, [activeWedding?.id]);
+  // Sync is manually enabled from Settings → "Sauvegarde et partage".
+  // No auto-init here — an unsolicited pull would overwrite local data.
 
   if (!isLoaded) {
     return (

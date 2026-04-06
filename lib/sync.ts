@@ -25,6 +25,8 @@ export interface BackupData {
   quotePricings: unknown[];
   tasks: unknown[];
   taskCategories: unknown[];
+  agendaEvents: unknown[];
+  jourJItems: unknown[];
   ideas: unknown[];
   ideaCollections: unknown[];
 }
@@ -55,6 +57,8 @@ export function createBackupDocument(): Record<string, unknown> {
     quotePricings: useVendorsStore.getState().quotePricings,
     tasks: usePlanningStore.getState().tasks,
     taskCategories: usePlanningStore.getState().categories,
+    agendaEvents: usePlanningStore.getState().agendaEvents,
+    jourJItems: usePlanningStore.getState().jourJItems,
     ideas: useIdeasStore.getState().ideas,
     ideaCollections: useIdeasStore.getState().collections,
   };
@@ -83,6 +87,8 @@ export function restoreFromBackup(
       quotePricings: (backup.quotePricings || []) as any[],
       tasks: (backup.tasks || []) as any[],
       taskCategories: (backup.taskCategories || []) as any[],
+      agendaEvents: (backup.agendaEvents || []) as any[],
+      jourJItems: (backup.jourJItems || []) as any[],
       ideas: (backup.ideas || []) as any[],
       ideaCollections: (backup.ideaCollections || []) as any[],
     });
@@ -96,6 +102,8 @@ export function restoreFromBackup(
     useVendorsStore.getState().setQuotePricings((backup.quotePricings || []) as any[]);
     usePlanningStore.getState().setCategories((backup.taskCategories || []) as any[]);
     usePlanningStore.getState().setTasks((backup.tasks || []) as any[]);
+    usePlanningStore.getState().setAgendaEvents((backup.agendaEvents || []) as any[]);
+    usePlanningStore.getState().setJourJItems((backup.jourJItems || []) as any[]);
     useIdeasStore.getState().setCollections((backup.ideaCollections || []) as any[]);
     useIdeasStore.getState().setIdeas((backup.ideas || []) as any[]);
     saveToLocalStorage();

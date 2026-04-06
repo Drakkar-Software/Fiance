@@ -48,6 +48,14 @@ export type VendorStatus =
   | "BOOKED"
   | "CANCELLED";
 
+export type PlanningAspect = "preparatifs" | "agenda" | "jourj";
+
+export const PLANNING_ASPECT_LABELS: Record<PlanningAspect, string> = {
+  preparatifs: "Préparatifs",
+  agenda: "Agenda",
+  jourj: "Jour J",
+};
+
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE" | "CANCELLED";
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";

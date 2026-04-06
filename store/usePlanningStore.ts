@@ -1,14 +1,17 @@
 import { create } from "zustand";
-import type { Task, TaskCategory } from "@/db/schema";
+import type { Task, TaskCategory, AgendaEvent, JourJItem } from "@/db/schema";
 import { addMonths, isBefore, differenceInDays } from "date-fns";
 import { getDatabase } from "@/db/provider";
 import {
   persistTask, updateTaskDb, deleteTaskDb,
   persistTaskCategory, updateTaskCategoryDb, deleteTaskCategoryDb,
+  persistAgendaEvent, updateAgendaEventDb, deleteAgendaEventDb,
+  persistJourJItem, updateJourJItemDb, deleteJourJItemDb,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
 interface PlanningState {
+  // Préparatifs
   tasks: Task[];
   categories: TaskCategory[];
   setTasks: (tasks: Task[]) => void;
@@ -24,9 +27,24 @@ interface PlanningState {
   getCriticalUnstarted: () => Task[];
   getTasksByCategory: (categoryId: string) => Task[];
   getCompletionRate: () => number;
+
+  // Agenda
+  agendaEvents: AgendaEvent[];
+  setAgendaEvents: (events: AgendaEvent[]) => void;
+  addAgendaEvent: (event: AgendaEvent) => void;
+  updateAgendaEvent: (id: string, updates: Partial<AgendaEvent>) => void;
+  removeAgendaEvent: (id: string) => void;
+
+  // Jour J
+  jourJItems: JourJItem[];
+  setJourJItems: (items: JourJItem[]) => void;
+  addJourJItem: (item: JourJItem) => void;
+  updateJourJItem: (id: string, updates: Partial<JourJItem>) => void;
+  removeJourJItem: (id: string) => void;
 }
 
 export const usePlanningStore = create<PlanningState>((set, get) => ({
+  // ─── Préparatifs ─────────────────────────────────────────────────────
   tasks: [],
   categories: [],
   setTasks: (tasks) => set({ tasks }),
@@ -114,6 +132,60 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     if (active.length === 0) return 0;
     const done = active.filter((t) => t.status === "DONE").length;
     return Math.round((done / active.length) * 100);
+  },
+
+  // ─── Agenda ──────────────────────────────────────────────────────────
+  agendaEvents: [],
+  setAgendaEvents: (agendaEvents) => set({ agendaEvents }),
+  addAgendaEvent: (event) => {
+    set((state) => ({ agendaEvents: [...state.agendaEvents, event] }));
+    const db = getDatabase();
+    if (db) persistAgendaEvent(db, event);
+    notifySync();
+  },
+  updateAgendaEvent: (id, updates) => {
+    const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
+    set((state) => ({
+      agendaEvents: state.agendaEvents.map((e) =>
+        e.id === id ? { ...e, ...updatedFields } : e
+      ),
+    }));
+    const db = getDatabase();
+    if (db) updateAgendaEventDb(db, id, updatedFields);
+    notifySync();
+  },
+  removeAgendaEvent: (id) => {
+    set((state) => ({ agendaEvents: state.agendaEvents.filter((e) => e.id !== id) }));
+    const db = getDatabase();
+    if (db) deleteAgendaEventDb(db, id);
+    notifySync();
+  },
+
+  // ─── Jour J ──────────────────────────────────────────────────────────
+  jourJItems: [],
+  setJourJItems: (jourJItems) => set({ jourJItems }),
+  addJourJItem: (item) => {
+    set((state) => ({ jourJItems: [...state.jourJItems, item] }));
+    const db = getDatabase();
+    if (db) persistJourJItem(db, item);
+    notifySync();
+  },
+  updateJourJItem: (id, updates) => {
+    const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
+    set((state) => ({
+      jourJItems: state.jourJItems.map((i) =>
+        i.id === id ? { ...i, ...updatedFields } : i
+      ),
+    }));
+    const db = getDatabase();
+    if (db) updateJourJItemDb(db, id, updatedFields);
+    notifySync();
+  },
+  removeJourJItem: (id) => {
+    set((state) => ({ jourJItems: state.jourJItems.filter((i) => i.id !== id) }));
+    const db = getDatabase();
+    if (db) deleteJourJItemDb(db, id);
+    notifySync();
   },
 }));
 

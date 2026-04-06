@@ -64,14 +64,20 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
         const drizzleDb = drizzle(sqliteDb, { schema });
 
         // Run migrations
-        const migrationSQL = require("./migrations/0001_initial.sql");
-        if (typeof migrationSQL === "string") {
-          const statements = migrationSQL
-            .split(";")
-            .map((s: string) => s.trim())
-            .filter(Boolean);
-          for (const stmt of statements) {
-            sqliteDb.execSync(stmt + ";");
+        const migrations = [
+          require("./migrations/0001_initial.sql"),
+          require("./migrations/0002_planning_aspects.sql"),
+          require("./migrations/0003_no_table_needed.sql"),
+        ];
+        for (const migrationSQL of migrations) {
+          if (typeof migrationSQL === "string") {
+            const statements = migrationSQL
+              .split(";")
+              .map((s: string) => s.trim())
+              .filter(Boolean);
+            for (const stmt of statements) {
+              sqliteDb.execSync(stmt + ";");
+            }
           }
         }
 

@@ -55,6 +55,8 @@ function mergeBackups(
 let store: StoreApi<StarfishStore> | null = null;
 let isRestoring = false;
 let lastSyncTimestamp: string | null = null;
+let pushTimer: ReturnType<typeof setTimeout> | null = null;
+const PUSH_DEBOUNCE_MS = 2000;
 
 export interface StarfishConfig {
   serverUrl: string;
@@ -90,15 +92,15 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     devtools: __DEV__,
   });
 
-  // Subscribe to remote pull results → restore to stores + SQLite
-  // restoreFromBackup updates stores via hydrateAllStores which does NOT
-  // call notifySync, so no infinite loop. The isRestoring flag is an extra
-  // safeguard to prevent notifySync during restore.
+  // Only restore from explicit remote pulls (user-initiated or join flow).
+  // The subscription watches for pull results; local pushes never trigger it
+  // because notifySync uses a debounced push that sets isRestoring first.
   store.subscribe((state, prevState) => {
     if (
       state.data &&
       state.data !== prevState.data &&
-      (state.data as Record<string, unknown>).version
+      (state.data as Record<string, unknown>).version &&
+      !isRestoring
     ) {
       isRestoring = true;
       try {
@@ -125,14 +127,25 @@ export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
 
 /**
  * Called by domain stores after every mutation.
- * Pushes the full backup document into the Starfish store,
- * which auto-flushes to the server when online.
+ * Saves to localStorage immediately (web persistence).
+ * Debounces the Starfish push to avoid feedback loops during rapid typing.
  */
 export function notifySync(): void {
   saveToLocalStorage();
   if (!store || isRestoring) return;
-  store.getState().set(() => createBackupDocument());
-  lastSyncTimestamp = new Date().toISOString();
+  // Debounce the remote push — only push after typing settles
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    pushTimer = null;
+    if (!store || isRestoring) return;
+    isRestoring = true; // prevent subscription from restoring our own push
+    try {
+      store.getState().set(() => createBackupDocument());
+    } finally {
+      isRestoring = false;
+    }
+    lastSyncTimestamp = new Date().toISOString();
+  }, PUSH_DEBOUNCE_MS);
 }
 
 export function getLastSyncTimestamp(): string | null {
@@ -140,6 +153,10 @@ export function getLastSyncTimestamp(): string | null {
 }
 
 export function teardownStarfish(): void {
+  if (pushTimer) {
+    clearTimeout(pushTimer);
+    pushTimer = null;
+  }
   store = null;
   lastSyncTimestamp = null;
 }

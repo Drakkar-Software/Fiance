@@ -19,7 +19,7 @@ import {
 import type { TaskStatus, Priority } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "DONE", "CANCELLED"];
@@ -51,6 +51,7 @@ export default function TaskDetailScreen() {
     existing?.monthsBefore?.toString() || ""
   );
   const [vendorId, setVendorId] = useState(existing?.vendorId || "");
+  const [assignee, setAssignee] = useState(existing?.assignee || "");
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
 
@@ -69,6 +70,7 @@ export default function TaskDetailScreen() {
       categoryId: categoryId || null,
       monthsBefore: monthsBefore ? parseInt(monthsBefore) : null,
       vendorId: vendorId || null,
+      assignee: assignee || null,
       notes: notes || null,
       completedAt: status === "DONE" ? now : null,
       updatedAt: now,
@@ -79,6 +81,7 @@ export default function TaskDetailScreen() {
         ...taskData,
         id: Crypto.randomUUID(),
         isSystem: false,
+        assignee: assignee || null,
         dueDate: null,
         reminderDaysBefore: null,
         createdAt: now,
@@ -308,6 +311,17 @@ export default function TaskDetailScreen() {
             </ScrollView>
           </>
         )}
+
+        {/* Assignee */}
+        <SectionTitle>Responsable</SectionTitle>
+        <FormCard>
+          <InputRow
+            label="Assigné à"
+            value={assignee}
+            onChangeText={setAssignee}
+            placeholder="Prénom ou rôle"
+          />
+        </FormCard>
 
         {/* Notes */}
         <SectionTitle>Notes</SectionTitle>

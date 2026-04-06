@@ -54,7 +54,7 @@ export default function TablesScreen() {
 
   const unassigned = useMemo(
     () => guests
-      .filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId)
+      .filter((g) => g.rsvpStatus === "ACCEPTED" && !g.tableId && !g.noTableNeeded)
       .sort((a, b) =>
         `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`)
       ),

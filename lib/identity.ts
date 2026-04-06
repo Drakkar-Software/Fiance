@@ -36,9 +36,9 @@ const WORDLIST = [
   "cider","cloak","craft","crisp","drape","elbow",
 ] as const;
 
-/** Generate a random 8-word passphrase using crypto-secure randomness */
+/** Generate a random 12-word passphrase using crypto-secure randomness */
 export function generatePassphrase(): string {
-  const bytes = Crypto.getRandomValues(new Uint8Array(8));
+  const bytes = Crypto.getRandomValues(new Uint8Array(12));
   return Array.from(bytes)
     .map((b) => WORDLIST[b])
     .join("-");
@@ -67,14 +67,59 @@ export async function deriveEncryptionKey(
   );
 }
 
-/** Build a deep link URL to invite someone to a wedding */
+// Hermes (RN 0.74+) provides btoa/atob, but we add a fallback just in case.
+const toBase64 = (s: string): string => {
+  if (typeof btoa === "function") return btoa(s);
+  // Manual fallback for older engines
+  const bytes = Array.from(s).map((c) => c.charCodeAt(0));
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let result = "";
+  for (let i = 0; i < bytes.length; i += 3) {
+    const b0 = bytes[i], b1 = bytes[i + 1] ?? 0, b2 = bytes[i + 2] ?? 0;
+    result += chars[b0 >> 2] + chars[((b0 & 3) << 4) | (b1 >> 4)];
+    result += i + 1 < bytes.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
+    result += i + 2 < bytes.length ? chars[b2 & 63] : "=";
+  }
+  return result;
+};
+
+const fromBase64 = (s: string): string => {
+  if (typeof atob === "function") return atob(s);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let result = "";
+  const clean = s.replace(/=+$/, "");
+  for (let i = 0; i < clean.length; i += 4) {
+    const b = [0, 1, 2, 3].map((j) => chars.indexOf(clean[i + j] || "A"));
+    result += String.fromCharCode((b[0] << 2) | (b[1] >> 4));
+    if (clean[i + 2]) result += String.fromCharCode(((b[1] & 15) << 4) | (b[2] >> 2));
+    if (clean[i + 3]) result += String.fromCharCode(((b[2] & 3) << 6) | b[3]);
+  }
+  return result;
+};
+
+/** Build a deep link URL to invite someone to a wedding (base64-encoded payload) */
 export function buildInviteUrl(name: string, password: string): string {
+  const payload = JSON.stringify({ n: name, p: password });
+  const token = toBase64(payload);
   return Linking.createURL("join", {
-    queryParams: {
-      name,
-      password,
-    },
+    queryParams: { t: token },
   });
+}
+
+/** Decode a base64 invite token into name + password. Returns null if malformed. */
+export function decodeInviteToken(
+  token: string | undefined
+): { name: string; password: string } | null {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(fromBase64(token));
+    if (payload.n && payload.p) {
+      return { name: payload.n, password: payload.p };
+    }
+  } catch {
+    // Malformed token
+  }
+  return null;
 }
 
 /** Parse invite params from a deep link URL. Returns null if not an invite link. */
@@ -82,15 +127,6 @@ export function parseInviteUrl(
   url: string
 ): { name: string; password: string } | null {
   const parsed = Linking.parse(url);
-  const name = parsed.queryParams?.name;
-  const password = parsed.queryParams?.password;
-  if (
-    typeof name === "string" &&
-    typeof password === "string" &&
-    name &&
-    password
-  ) {
-    return { name, password };
-  }
-  return null;
+  const token = parsed.queryParams?.t;
+  return decodeInviteToken(typeof token === "string" ? token : undefined);
 }

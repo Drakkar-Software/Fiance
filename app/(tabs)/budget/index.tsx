@@ -1,21 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import { VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS } from "@/db/types";
 import type { VendorStatus } from "@/db/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
 import { StatusBadge } from "@/components/StatusBadge";
+import { InputRow, ChipSelect } from "@/components/FormSection";
 
 export default function BudgetScreen() {
   const router = useRouter();
   const budget = useBudgetSummary();
   const vendors = useVendorsStore((s) => s.vendors);
+  const wedding = useWeddingStore((s) => s.wedding);
+  const updateWedding = useWeddingStore((s) => s.updateWedding);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const [budgetTarget, _setBudgetTarget] = useState(
+    wedding?.budgetTarget?.toString() || ""
+  );
+  const setBudgetTarget = useCallback((value: string) => {
+    _setBudgetTarget(value);
+    updateWedding({ budgetTarget: value ? parseFloat(value) : null });
+  }, []);
+
+  const [currency, _setCurrency] = useState(wedding?.currency || "EUR");
+  const setCurrency = useCallback((value: string) => {
+    _setCurrency(value);
+    updateWedding({ currency: value || "EUR" });
+  }, []);
 
   // Upcoming payments
   const upcomingPayments = vendors
@@ -74,9 +92,21 @@ export default function BudgetScreen() {
           )}
         </View>
 
-        <View className="flex-row justify-between mb-1.5">
-          <Text className="text-sm text-gray-400">Budget cible</Text>
-          <MoneyDisplay amount={budget.budgetTarget} size="sm" />
+        <InputRow
+          label="Budget cible"
+          value={budgetTarget}
+          onChangeText={setBudgetTarget}
+          placeholder="30000"
+          keyboardType="numeric"
+        />
+        <View className="mt-1 mb-3">
+          <Text className="text-xs text-gray-400 mb-2 font-medium">Devise</Text>
+          <ChipSelect
+            options={["EUR", "USD"] as const}
+            value={currency as "EUR" | "USD"}
+            onChange={setCurrency}
+            labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
+          />
         </View>
         <View className="flex-row justify-between mb-1.5">
           <Text className="text-sm text-gray-400">Total engagé</Text>
