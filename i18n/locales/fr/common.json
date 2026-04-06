@@ -46,5 +46,12 @@
     "nameRequired": "Donnez un nom à ce mariage",
     "joining": "Connexion...",
     "join": "Rejoindre"
+  },
+  "join": {
+    "newWedding": "Nouveau mariage",
+    "alreadyHaveWedding": "Vous avez déjà un mariage enregistré.",
+    "confirmJoin": "Souhaitez-vous en rejoindre un nouveau{{name}} ?",
+    "yesJoin": "Oui, rejoindre",
+    "noGoBack": "Non, revenir à l'accueil"
   }
 }

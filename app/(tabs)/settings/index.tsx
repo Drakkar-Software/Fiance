@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -35,6 +36,7 @@ import {
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const { t } = useTranslation("settings");
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
@@ -205,7 +207,8 @@ export default function SettingsScreen() {
     setShowCreateConfirm(false);
     const passphrase = generatePassphrase();
     await createWedding(t("myWedding"), passphrase);
-  }, [createWedding, t]);
+    router.replace("/(tabs)");
+  }, [createWedding, t, router]);
 
   // App lock
   const [lockEnabled, setLockEnabledState] = useState(false);
@@ -373,7 +376,10 @@ export default function SettingsScreen() {
             >
               <Pressable
                 onPress={() => {
-                  if (!isActive) switchWedding(w.id);
+                  if (!isActive) {
+                    switchWedding(w.id);
+                    router.replace("/(tabs)");
+                  }
                 }}
                 className="flex-row items-center flex-1 active:opacity-80"
               >

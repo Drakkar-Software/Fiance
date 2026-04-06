@@ -46,5 +46,12 @@
     "nameRequired": "Give this wedding a name",
     "joining": "Connecting...",
     "join": "Join"
+  },
+  "join": {
+    "newWedding": "New wedding",
+    "alreadyHaveWedding": "You already have a registered wedding.",
+    "confirmJoin": "Do you want to join a new one{{name}}?",
+    "yesJoin": "Yes, join",
+    "noGoBack": "No, go back home"
   }
 }

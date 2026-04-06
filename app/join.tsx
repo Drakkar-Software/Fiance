@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Heart, PlusCircle, ArrowLeft } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken } from "@/lib/identity";
@@ -22,8 +23,6 @@ function useJoinAndNavigate() {
       } else {
         await createWedding(label, password);
       }
-      // Navigation triggers _layout.tsx re-render → DatabaseProvider init →
-      // SyncInitializer auto-inits Starfish + pulls remote data
       router.replace("/");
     },
     [registry, createWedding, switchWedding, router],
@@ -31,22 +30,27 @@ function useJoinAndNavigate() {
 }
 
 export default function JoinScreen() {
-  const { t } = useLocalSearchParams<{ t?: string }>();
-
-  const invite = useMemo(() => decodeInviteToken(t), [t]);
-
-  const name = invite?.name;
-  const password = invite?.password;
+  const { t: token } = useLocalSearchParams<{ t?: string }>();
+  const invite = useMemo(() => decodeInviteToken(token), [token]);
 
   const registry = useWeddingRegistryStore((s) => s.registry);
-  const alreadyJoined = registry?.weddings.some((w) => w.seedPhrase === password);
-  const hasWeddings = registry != null && registry.weddings.length > 0;
   const [confirmed, setConfirmed] = useState(false);
   const joinAndNavigate = useJoinAndNavigate();
 
+  // No valid invite token → redirect home
+  if (!invite) {
+    return <Redirect href="/" />;
+  }
+
+  const name = invite.name;
+  const password = invite.password;
+
+  const alreadyJoined = registry?.weddings.some((w) => w.seedPhrase === password);
+  const hasWeddings = registry != null && registry.weddings.length > 0;
+
   // Already joined this wedding — switch to it and go home
   if (alreadyJoined) {
-    return <AlreadyJoinedRedirect password={password!} />;
+    return <AlreadyJoinedRedirect password={password} />;
   }
 
   if (hasWeddings && !confirmed) {
@@ -86,6 +90,7 @@ function ConfirmJoin({
   weddingName?: string;
   onConfirm: () => void;
 }) {
+  const { t } = useTranslation("common");
   const router = useRouter();
 
   return (
@@ -95,11 +100,11 @@ function ConfirmJoin({
           <Heart size={36} color="#EC4899" />
         </View>
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-          Nouveau mariage
+          {t("join.newWedding")}
         </Text>
         <Text className="text-base text-gray-400 mt-2 text-center">
-          Vous avez déjà un mariage enregistré.{"\n"}
-          Souhaitez-vous en rejoindre un nouveau{weddingName ? ` (${weddingName})` : ""} ?
+          {t("join.alreadyHaveWedding")}{"\n"}
+          {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}
         </Text>
       </View>
 
@@ -110,7 +115,7 @@ function ConfirmJoin({
         <View className="flex-row items-center">
           <PlusCircle size={20} color="#fff" />
           <Text className="text-white font-semibold text-base ml-2">
-            Oui, rejoindre
+            {t("join.yesJoin")}
           </Text>
         </View>
       </Pressable>
@@ -122,7 +127,7 @@ function ConfirmJoin({
         <View className="flex-row items-center">
           <ArrowLeft size={20} color="#EC4899" />
           <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
-            Non, revenir à l'accueil
+            {t("join.noGoBack")}
           </Text>
         </View>
       </Pressable>
