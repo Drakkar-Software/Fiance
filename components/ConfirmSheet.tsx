@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import React, { useRef, useEffect, useCallback } from "react";
+import { View, Text, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 
 interface ConfirmSheetProps {
   visible: boolean;
@@ -24,23 +25,37 @@ export function ConfirmSheet({
   onCancel,
 }: ConfirmSheetProps) {
   const { t } = useTranslation("common");
+  const ref = useRef<BottomSheetModal>(null);
   const confirm = confirmLabel ?? t("confirm");
   const cancel = cancelLabel ?? t("cancel");
+
+  useEffect(() => {
+    if (visible) {
+      ref.current?.present();
+    } else {
+      ref.current?.dismiss();
+    }
+  }, [visible]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
+    ),
+    []
+  );
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onCancel}
+    <BottomSheetModal
+      ref={ref}
+      enableDynamicSizing
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      onDismiss={onCancel}
+      backgroundStyle={{ backgroundColor: "transparent" }}
+      handleComponent={() => null}
     >
-      <Pressable
-        className="flex-1 bg-black/40 justify-end"
-        onPress={onCancel}
-      >
-        <Pressable
-          className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10"
-          onPress={(e) => e.stopPropagation()}
-        >
+      <BottomSheetView>
+        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-5" />
           <Text className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             {title}
@@ -68,8 +83,8 @@ export function ConfirmSheet({
               </Text>
             </Pressable>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }

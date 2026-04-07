@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   Pressable,
-  Modal,
   TextInput,
   ScrollView,
   useWindowDimensions,
@@ -11,6 +10,7 @@ import {
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 
 interface CompanionPickerModalProps {
   visible: boolean;
@@ -31,14 +31,17 @@ export function CompanionPickerModal({
 }: CompanionPickerModalProps) {
   const { t } = useTranslation("guests");
   const guests = useGuestsStore((s) => s.guests);
+  const ref = useRef<BottomSheetModal>(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(currentCompanionId);
 
-  // Reset selection when modal opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible) {
       setSelected(currentCompanionId);
       setSearch("");
+      ref.current?.present();
+    } else {
+      ref.current?.dismiss();
     }
   }, [visible, currentCompanionId]);
 
@@ -58,21 +61,25 @@ export function CompanionPickerModal({
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * 0.6;
 
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
+    ),
+    []
+  );
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+    <BottomSheetModal
+      ref={ref}
+      enableDynamicSizing
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      onDismiss={onClose}
+      backgroundStyle={{ backgroundColor: "transparent" }}
+      handleComponent={() => null}
     >
-      <Pressable
-        className="flex-1 bg-black/40 justify-end"
-        onPress={onClose}
-      >
-        <Pressable
-          className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8"
-          onPress={(e) => e.stopPropagation()}
-        >
+      <BottomSheetView>
+        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
 
           <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">
@@ -93,7 +100,7 @@ export function CompanionPickerModal({
           </View>
 
           {/* Guest list */}
-          <ScrollView style={{ maxHeight }} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{ maxHeight }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {filteredGuests.map((g) => (
               <Pressable
                 key={g.id}
@@ -145,8 +152,8 @@ export function CompanionPickerModal({
               </Text>
             </Pressable>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }

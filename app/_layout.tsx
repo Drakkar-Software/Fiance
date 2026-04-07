@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import * as Linking from "expo-linking";
 import * as Updates from "expo-updates";
 import NetInfo from "@react-native-community/netinfo";
@@ -210,9 +212,11 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-      <StatusBar style="auto" />
-      <AppContent />
-    </>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <StatusBar style="auto" />
+        <AppContent />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

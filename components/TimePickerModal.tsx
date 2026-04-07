@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { View, Text, Pressable, Modal, ScrollView } from "react-native";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 
 const HOURS = Array.from({ length: 24 }, (_, i) =>
   i.toString().padStart(2, "0")
@@ -26,6 +27,7 @@ export function TimePickerModal({
   onClose,
 }: TimePickerModalProps) {
   const { t } = useTranslation("common");
+  const sheetRef = useRef<BottomSheetModal>(null);
   const hourRef = useRef<ScrollView>(null);
   const minuteRef = useRef<ScrollView>(null);
 
@@ -33,14 +35,16 @@ export function TimePickerModal({
   const [selectedMinute, setSelectedMinute] = useState("00");
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      sheetRef.current?.dismiss();
+      return;
+    }
 
     // Parse and validate value — handle legacy free-text data gracefully
     const parts = value ? value.split(":") : [];
     const rawHH = parts[0] ?? "";
     const rawMM = parts[1] ?? "";
     const h = HOURS.includes(rawHH) ? rawHH : "12";
-    // Round non-5-minute values to nearest 5
     const parsedMin = parseInt(rawMM, 10);
     const m =
       MINUTES.includes(rawMM)
@@ -50,6 +54,8 @@ export function TimePickerModal({
           : "00";
     setSelectedHour(h);
     setSelectedMinute(m);
+
+    sheetRef.current?.present();
 
     // Auto-scroll to selection after layout
     const timer = setTimeout(() => {
@@ -64,7 +70,7 @@ export function TimePickerModal({
           animated: false,
         });
       }
-    }, 50);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, [visible, value]);
@@ -79,21 +85,25 @@ export function TimePickerModal({
     onClose();
   };
 
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
+    ),
+    []
+  );
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+    <BottomSheetModal
+      ref={sheetRef}
+      enableDynamicSizing
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      onDismiss={onClose}
+      backgroundStyle={{ backgroundColor: "transparent" }}
+      handleComponent={() => null}
     >
-      <Pressable
-        className="flex-1 bg-black/40 justify-end"
-        onPress={onClose}
-      >
-        <Pressable
-          className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8"
-          onPress={(e) => e.stopPropagation()}
-        >
+      <BottomSheetView>
+        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
 
           {/* Current selection */}
@@ -112,6 +122,7 @@ export function TimePickerModal({
                 ref={hourRef}
                 showsVerticalScrollIndicator={false}
                 className="flex-1"
+                nestedScrollEnabled
               >
                 {HOURS.map((h) => (
                   <Pressable
@@ -150,6 +161,7 @@ export function TimePickerModal({
                 ref={minuteRef}
                 showsVerticalScrollIndicator={false}
                 className="flex-1"
+                nestedScrollEnabled
               >
                 {MINUTES.map((m) => (
                   <Pressable
@@ -194,8 +206,8 @@ export function TimePickerModal({
               </Text>
             </Pressable>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { View, Text, Pressable } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -17,6 +17,7 @@ import {
   isToday,
 } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 
 interface DatePickerModalProps {
   visible: boolean;
@@ -35,16 +36,19 @@ export function DatePickerModal({
 }: DatePickerModalProps) {
   const { t } = useTranslation("common");
   const locale = getDateLocale();
+  const ref = useRef<BottomSheetModal>(null);
 
   const selectedDate = value ? parseISO(value) : null;
   const [displayMonth, setDisplayMonth] = useState(
     selectedDate ?? new Date()
   );
 
-  // Reset to the selected date's month (or today) each time the modal opens
   useEffect(() => {
     if (visible) {
       setDisplayMonth(selectedDate ?? new Date());
+      ref.current?.present();
+    } else {
+      ref.current?.dismiss();
     }
   }, [visible]);
 
@@ -88,21 +92,25 @@ export function DatePickerModal({
     onClose();
   };
 
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
+    ),
+    []
+  );
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+    <BottomSheetModal
+      ref={ref}
+      enableDynamicSizing
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      onDismiss={onClose}
+      backgroundStyle={{ backgroundColor: "transparent" }}
+      handleComponent={() => null}
     >
-      <Pressable
-        className="flex-1 bg-black/40 justify-end"
-        onPress={onClose}
-      >
-        <Pressable
-          className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8"
-          onPress={(e) => e.stopPropagation()}
-        >
+      <BottomSheetView>
+        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
 
           {/* Month navigation */}
@@ -195,8 +203,8 @@ export function DatePickerModal({
               </Text>
             </Pressable>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }
