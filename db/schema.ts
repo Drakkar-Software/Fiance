@@ -156,6 +156,7 @@ export const dayOfItems = sqliteTable("day_of_items", {
   location: text("location"),
   responsible: text("responsible"), // who handles this
   notes: text("notes"),
+  isPublic: integer("is_public", { mode: "boolean" }).default(false),
   sortOrder: integer("sort_order"),
   createdAt: text("created_at"),
   updatedAt: text("updated_at"),

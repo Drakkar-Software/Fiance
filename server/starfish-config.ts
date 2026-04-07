@@ -12,5 +12,14 @@ export const config: SyncConfig = {
       maxBodyBytes: 1_048_576,
       allowedMimeTypes: ["application/json"],
     },
+    {
+      name: "wedding-page",
+      storagePath: "wedding-page/{identity}",
+      readRoles: ["public"],
+      writeRoles: ["self"],
+      encryption: "none",
+      maxBodyBytes: 524_288,
+      allowedMimeTypes: ["application/json"],
+    },
   ],
 };

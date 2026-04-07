@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, Share } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
-  Clock, MapPin, User,
+  Clock, MapPin, User, Share2,
 } from "lucide-react-native";
 import { isBefore } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
@@ -27,6 +27,9 @@ import {
   generateDefaultCategories,
   generateTemplateTasks,
 } from "@/lib/planning";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { deriveAuthToken } from "@/lib/identity";
+import { buildWeddingPageUrl } from "@/lib/identity";
 
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
@@ -453,15 +456,40 @@ function DayOfView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
   const items = usePlanningStore((s) => s.dayOfItems);
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => (a.time || "").localeCompare(b.time || "")),
     [items]
   );
 
+  const hasPublicItems = useMemo(() => items.some((i) => i.isPublic), [items]);
+
+  const handleShareTimeline = useCallback(async () => {
+    if (!activeEntry?.seedPhrase) return;
+    try {
+      const authToken = await deriveAuthToken(activeEntry.seedPhrase);
+      const userId = authToken.slice(0, 16);
+      const url = buildWeddingPageUrl(userId);
+      await Share.share({ message: t("shareTimelineMessage", { url }) });
+    } catch {}
+  }, [activeEntry?.seedPhrase, t]);
+
   return (
     <View className="flex-1">
-      <SectionHeader subtitle={t("moment", { count: items.length })} />
+      <SectionHeader
+        subtitle={t("moment", { count: items.length })}
+        right={hasPublicItems ? (
+          <Pressable
+            onPress={handleShareTimeline}
+            className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
+          >
+            <Share2 size={14} color="#EC4899" />
+            <Text className="text-xs font-medium text-primary-500">{t("shareTimeline")}</Text>
+          </Pressable>
+        ) : undefined}
+      />
 
       {items.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">

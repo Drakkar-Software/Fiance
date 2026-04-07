@@ -89,6 +89,9 @@
   "churchPlaceholder": "Entrée de l'église",
   "venuePlaceholder": "Église Saint-Pierre",
   "responsiblePlaceholder": "Wedding planner, témoin...",
+  "publicOnTimeline": "Visible sur le planning partagé",
+  "shareTimeline": "Partager",
+  "shareTimelineMessage": "Consultez le programme de notre mariage : {{url}}",
   "categories": {
     "admin": "Administratif & légal",
     "venue": "Lieu & logistique",

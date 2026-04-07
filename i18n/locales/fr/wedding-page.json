@@ -1,0 +1,12 @@
+{
+  "weddingOf": "Mariage de",
+  "timeline": "Programme de la journée",
+  "faq": "Questions fréquentes",
+  "about": "Informations",
+  "venue": "Lieu",
+  "weddingDate": "Date",
+  "loading": "Chargement...",
+  "error": "Impossible de charger la page. Le lien est peut-être invalide.",
+  "noTimeline": "Le programme n'est pas encore disponible.",
+  "until": "jusqu'à {{time}}"
+}

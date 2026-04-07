@@ -89,6 +89,9 @@
   "churchPlaceholder": "Church entrance",
   "venuePlaceholder": "St. Peter's Church",
   "responsiblePlaceholder": "Wedding planner, best man...",
+  "publicOnTimeline": "Visible on shared timeline",
+  "shareTimeline": "Share",
+  "shareTimelineMessage": "View our wedding day schedule: {{url}}",
   "categories": {
     "admin": "Administrative & legal",
     "venue": "Venue & logistics",

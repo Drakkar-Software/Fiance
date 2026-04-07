@@ -11,6 +11,7 @@ import * as Updates from "expo-updates";
 import NetInfo from "@react-native-community/netinfo";
 import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
+import { initPublicPageSync, teardownPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
 import { parseInviteUrl, deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
@@ -20,12 +21,14 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import OnboardingScreen from "./onboarding";
 
 /** Rendered inside DatabaseProvider so getDatabase() is guaranteed ready */
 function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
     if (getStarfishStore()) teardownStarfish();
+    teardownPublicPageSync();
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
     const serverUrl = wedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
@@ -39,15 +42,38 @@ function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
       const encryptionKey = await deriveEncryptionKey(wedding.seedPhrase!, userId);
       if (cancelled) return;
       initStarfish({ serverUrl, authToken, userId, encryptionKey });
+      initPublicPageSync({ serverUrl, authToken, userId });
       // Pull remote data — critical for join flow so data appears immediately
       const sf = getStarfishStore();
       if (sf && !cancelled) {
         try { await sf.getState().pull(); } catch { /* sync will retry */ }
       }
+      // Push initial public page data
+      if (!cancelled) notifyPublicPageSync();
     })();
 
     return () => { cancelled = true; };
   }, [wedding.id]);
+
+  // Re-push public page when day-of items or wedding info change
+  useEffect(() => {
+    let prevDayOfItems = usePlanningStore.getState().dayOfItems;
+    let prevWedding = useWeddingStore.getState().wedding;
+
+    const unsubPlanning = usePlanningStore.subscribe((state) => {
+      if (state.dayOfItems !== prevDayOfItems) {
+        prevDayOfItems = state.dayOfItems;
+        notifyPublicPageSync();
+      }
+    });
+    const unsubWedding = useWeddingStore.subscribe((state) => {
+      if (state.wedding !== prevWedding) {
+        prevWedding = state.wedding;
+        notifyPublicPageSync();
+      }
+    });
+    return () => { unsubPlanning(); unsubWedding(); };
+  }, []);
 
   return null;
 }
@@ -129,6 +155,7 @@ function AppContent() {
       <NotificationInitializer />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="wedding/[id]" />
       </Stack>
     </DatabaseProvider>
   );

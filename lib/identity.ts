@@ -104,6 +104,11 @@ export function buildInviteUrl(name: string, password: string): string {
   });
 }
 
+/** Build a URL to the public wedding page (uses userId, no secret needed) */
+export function buildWeddingPageUrl(userId: string): string {
+  return Linking.createURL(`wedding/${userId}`);
+}
+
 /** Decode a URL-safe base64 invite token into name + password. Returns null if malformed. */
 export function decodeInviteToken(
   token: string | undefined

@@ -1,0 +1,12 @@
+{
+  "weddingOf": "Wedding of",
+  "timeline": "Day Schedule",
+  "faq": "Frequently Asked Questions",
+  "about": "Information",
+  "venue": "Venue",
+  "weddingDate": "Date",
+  "loading": "Loading...",
+  "error": "Could not load the page. The link may be invalid.",
+  "noTimeline": "The schedule is not available yet.",
+  "until": "until {{time}}"
+}

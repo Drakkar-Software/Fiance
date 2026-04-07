@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow, TimeRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, TimeRow, ToggleRow } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import type { DayOfItem } from "@/db/schema";
@@ -28,6 +28,7 @@ export default function DayOfItemScreen() {
   const [location, setLocation] = useState(existing?.location || "");
   const [responsible, setResponsible] = useState(existing?.responsible || "");
   const [notes, setNotes] = useState(existing?.notes || "");
+  const [isPublic, setIsPublic] = useState(existing?.isPublic ?? false);
   const [showDelete, setShowDelete] = useState(false);
 
   const canSave = title.trim().length > 0 && time.trim().length > 0;
@@ -51,6 +52,7 @@ export default function DayOfItemScreen() {
       location: location || null,
       responsible: responsible || null,
       notes: notes || null,
+      isPublic,
       updatedAt: now,
     };
 
@@ -91,6 +93,7 @@ export default function DayOfItemScreen() {
           <TimeRow label={t("endTimeLabel")} value={endTime} onChange={setEndTime} placeholder="13:30" />
           <InputRow label={t("locationLabel")} value={location} onChangeText={setLocation} placeholder={t("venuePlaceholder")} />
           <InputRow label={t("responsible")} value={responsible} onChangeText={setResponsible} placeholder={t("responsiblePlaceholder")} />
+          <ToggleRow label={t("publicOnTimeline")} value={isPublic} onToggle={() => setIsPublic(!isPublic)} />
         </FormCard>
 
         <SectionTitle>{t("notes")}</SectionTitle>
