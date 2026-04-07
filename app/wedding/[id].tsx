@@ -153,9 +153,9 @@ export default function WeddingPublicPage() {
             <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {t("faq")}
             </Text>
-            {faq.map((item) => (
+            {faq.map((item, index) => (
               <View
-                key={item.id}
+                key={index}
                 className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
               >
                 <View className="flex-row items-start gap-2">

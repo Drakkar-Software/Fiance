@@ -31,10 +31,8 @@ export interface PublicWeddingPage {
 }
 
 export interface FaqItem {
-  id: string;
   question: string;
   answer: string;
-  sortOrder: number;
 }
 
 let syncManager: SyncManager | null = null;

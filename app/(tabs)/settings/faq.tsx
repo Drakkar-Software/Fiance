@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,10 @@ import {
   TextInput,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, GripVertical } from "lucide-react-native";
+import { Plus, Trash2 } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { FaqItem } from "@/lib/public-page";
-import { SectionTitle, FormCard } from "@/components/FormSection";
-
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+import { SectionTitle } from "@/components/FormSection";
 
 export default function FaqScreen() {
   const { t } = useTranslation("settings");
@@ -38,19 +34,13 @@ export default function FaqScreen() {
   );
 
   const addItem = useCallback(() => {
-    const newItem: FaqItem = {
-      id: generateId(),
-      question: "",
-      answer: "",
-      sortOrder: faqItems.length,
-    };
-    saveFaq([...faqItems, newItem]);
+    saveFaq([...faqItems, { question: "", answer: "" }]);
   }, [faqItems, saveFaq]);
 
   const updateItem = useCallback(
-    (id: string, updates: Partial<FaqItem>) => {
-      const updated = faqItems.map((item) =>
-        item.id === id ? { ...item, ...updates } : item
+    (index: number, updates: Partial<FaqItem>) => {
+      const updated = faqItems.map((item, i) =>
+        i === index ? { ...item, ...updates } : item
       );
       saveFaq(updated);
     },
@@ -58,8 +48,8 @@ export default function FaqScreen() {
   );
 
   const removeItem = useCallback(
-    (id: string) => {
-      saveFaq(faqItems.filter((item) => item.id !== id));
+    (index: number) => {
+      saveFaq(faqItems.filter((_, i) => i !== index));
     },
     [faqItems, saveFaq]
   );
@@ -77,7 +67,7 @@ export default function FaqScreen() {
 
         {faqItems.map((item, index) => (
           <View
-            key={item.id}
+            key={index}
             className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center justify-between mb-2">
@@ -85,7 +75,7 @@ export default function FaqScreen() {
                 {t("faqItemLabel", { index: index + 1 })}
               </Text>
               <Pressable
-                onPress={() => removeItem(item.id)}
+                onPress={() => removeItem(index)}
                 className="w-8 h-8 items-center justify-center rounded-lg active:opacity-60"
               >
                 <Trash2 size={16} color="#EF4444" />
@@ -98,7 +88,7 @@ export default function FaqScreen() {
               <TextInput
                 className="text-base text-gray-900 dark:text-white"
                 value={item.question}
-                onChangeText={(text) => updateItem(item.id, { question: text })}
+                onChangeText={(text) => updateItem(index, { question: text })}
                 placeholder={t("faqQuestionPlaceholder")}
                 placeholderTextColor="#D0D0D8"
               />
@@ -110,7 +100,7 @@ export default function FaqScreen() {
               <TextInput
                 className="text-base text-gray-900 dark:text-white"
                 value={item.answer}
-                onChangeText={(text) => updateItem(item.id, { answer: text })}
+                onChangeText={(text) => updateItem(index, { answer: text })}
                 placeholder={t("faqAnswerPlaceholder")}
                 placeholderTextColor="#D0D0D8"
                 multiline
