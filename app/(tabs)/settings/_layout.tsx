@@ -13,6 +13,7 @@ export default function SettingsLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: t("settingsTitle") }} />
+      <Stack.Screen name="public-page" options={{ title: t("publicPageTitle") }} />
       <Stack.Screen name="faq" options={{ title: t("configureFaq") }} />
     </Stack>
   );

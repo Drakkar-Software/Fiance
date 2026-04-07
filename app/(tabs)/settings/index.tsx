@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload, HelpCircle, Globe } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload, Globe } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -23,11 +23,9 @@ import {
   getSyncStatus,
   onSyncStatusChange,
 } from "@/lib/starfish";
-import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, buildWeddingPageUrl, generatePassphrase } from "@/lib/identity";
-import { useWeddingStore } from "@/store/useWeddingStore";
+import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { recalculateDueDates } from "@/lib/planning";
 import { exportWedding, importWedding } from "@/lib/export-import";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -39,7 +37,6 @@ import {
   SectionTitle,
   FormCard,
   InputRow,
-  DateRow,
 } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { ToggleCard } from "@/components/ToggleCard";
@@ -50,10 +47,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation("settings");
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
-  const wedding = useWeddingStore((s) => s.wedding);
-  const updateWedding = useWeddingStore((s) => s.updateWedding);
   const tasks = usePlanningStore((s) => s.tasks);
-  const setTasks = usePlanningStore((s) => s.setTasks);
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
@@ -73,49 +67,6 @@ export default function SettingsScreen() {
       updateRegistryWedding(activeEntry.id, { label: value });
     }
   }, [activeEntry?.id]);
-
-  // Wedding fields — local state for smooth typing, save to store immediately
-  const [partner1, _setPartner1] = useState(wedding?.partner1Name || "");
-  const setPartner1 = useCallback((value: string) => {
-    _setPartner1(value);
-    updateWedding({ partner1Name: value || null });
-  }, []);
-
-  const [partner2, _setPartner2] = useState(wedding?.partner2Name || "");
-  const setPartner2 = useCallback((value: string) => {
-    _setPartner2(value);
-    updateWedding({ partner2Name: value || null });
-  }, []);
-
-  const [weddingDate, _setWeddingDate] = useState(wedding?.weddingDate || "");
-  const setWeddingDate = useCallback((value: string) => {
-    _setWeddingDate(value);
-    updateWedding({ weddingDate: value || null });
-  }, []);
-
-  const [venueName, _setVenueName] = useState(wedding?.venueName || "");
-  const setVenueName = useCallback((value: string) => {
-    _setVenueName(value);
-    updateWedding({ venueName: value || null });
-  }, []);
-
-  const [description, _setDescription] = useState(wedding?.description || "");
-  const setDescription = useCallback((value: string) => {
-    _setDescription(value);
-    updateWedding({ description: value || null });
-  }, []);
-
-  // Recalculate due dates when wedding date changes
-  useEffect(() => {
-    if (weddingDate && weddingDate !== wedding?.weddingDate) {
-      const updated = recalculateDueDates(tasks, weddingDate);
-      setTasks(updated);
-      if (useSettingsStore.getState().notificationsEnabled) {
-        rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents)
-          .catch((err) => console.warn("[notifications] Reschedule failed:", err));
-      }
-    }
-  }, [weddingDate]);
 
   // Sync state — reactive: listens for init/teardown events
   const [syncEnabled, setSyncEnabled] = useState(!!getStarfishStore());
@@ -200,21 +151,6 @@ export default function SettingsScreen() {
       // User cancelled share
     }
   }, [activeEntry]);
-
-  const handleSharePublicPage = useCallback(async () => {
-    const password = activeEntry?.seedPhrase;
-    if (!password) return;
-    const authToken = await deriveAuthToken(password);
-    const userId = authToken.slice(0, 16);
-    const url = buildWeddingPageUrl(userId);
-    try {
-      await Share.share({
-        message: t("sharePublicPageMsg", { url }),
-      });
-    } catch {
-      // User cancelled share
-    }
-  }, [activeEntry, t]);
 
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -319,34 +255,17 @@ export default function SettingsScreen() {
         <SectionTitle>{t("weddingInfo")}</SectionTitle>
         <FormCard>
           <InputRow label={t("weddingName")} value={weddingLabel} onChangeText={setWeddingLabel} placeholder={t("weddingNamePlaceholder")} />
-          <InputRow label={t("partner1")} value={partner1} onChangeText={setPartner1} placeholder={t("partnerPlaceholder")} />
-          <InputRow label={t("partner2")} value={partner2} onChangeText={setPartner2} placeholder={t("partnerPlaceholder")} />
-          <DateRow label={t("weddingDate")} value={weddingDate} onChange={setWeddingDate} />
-          <InputRow label={t("mainVenue")} value={venueName} onChangeText={setVenueName} placeholder={t("venuePlaceholder")} />
-          <InputRow label={t("description")} value={description} onChangeText={setDescription} placeholder={t("descriptionPlaceholder")} multiline />
         </FormCard>
         <IconCard
           icon={
-            <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
-              <HelpCircle size={20} color="#A855F7" />
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <Globe size={20} color="#EC4899" />
             </View>
           }
-          title={t("configureFaq")}
-          subtitle={t("configureFaqDesc")}
+          title={t("publicPageTitle")}
+          subtitle={t("publicPageDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/faq")}
-        />
-        <IconCard
-          icon={
-            <View className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center">
-              <Globe size={20} color="#10B981" />
-            </View>
-          }
-          title={t("sharePublicPage")}
-          subtitle={syncEnabled ? t("sharePublicPageDesc") : t("enableSyncToShare")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={syncEnabled ? handleSharePublicPage : undefined}
-          className={!syncEnabled ? "opacity-50" : ""}
+          onPress={() => router.push("/(tabs)/settings/public-page")}
         />
       </View>
 

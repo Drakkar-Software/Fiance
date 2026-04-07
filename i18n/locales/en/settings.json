@@ -70,6 +70,10 @@
   "settingsTitle": "Settings",
   "description": "Description",
   "descriptionPlaceholder": "Describe your wedding...",
+  "publicPageTitle": "Public page",
+  "publicPageDesc": "Info, schedule, and FAQ shared with your guests",
+  "publicPageInfo": "Wedding information",
+  "publicPageInfoDesc": "This information will be visible on your public page.",
   "configureFaq": "Frequently asked questions",
   "configureFaqDesc": "Set up FAQ for your guests",
   "sharePublicPage": "Share publicly",
@@ -82,5 +86,9 @@
   "faqAnswer": "Answer",
   "faqQuestionPlaceholder": "E.g., Is there parking available?",
   "faqAnswerPlaceholder": "E.g., Yes, free parking is available on site.",
-  "faqAdd": "Add a question"
+  "faqAdd": "Add a question",
+  "timelinePreview": "Schedule preview",
+  "timelinePreviewDesc": "Day-of moments marked as public. Tap to edit.",
+  "timelinePreviewEmpty": "No public moments yet. Edit a Day-of moment and enable \"Visible on shared timeline\".",
+  "timelineUntil": "until {{time}}"
 }

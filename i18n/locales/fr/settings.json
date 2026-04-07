@@ -70,6 +70,10 @@
   "settingsTitle": "Réglages",
   "description": "Description",
   "descriptionPlaceholder": "Décrivez votre mariage...",
+  "publicPageTitle": "Page publique",
+  "publicPageDesc": "Infos, programme et FAQ partagés avec vos invités",
+  "publicPageInfo": "Informations du mariage",
+  "publicPageInfoDesc": "Ces informations seront visibles sur votre page publique.",
   "configureFaq": "Questions fréquentes",
   "configureFaqDesc": "Configurer la FAQ pour vos invités",
   "sharePublicPage": "Partager publiquement",
@@ -82,5 +86,9 @@
   "faqAnswer": "Réponse",
   "faqQuestionPlaceholder": "Ex : Y a-t-il un parking ?",
   "faqAnswerPlaceholder": "Ex : Oui, un parking gratuit est disponible sur place.",
-  "faqAdd": "Ajouter une question"
+  "faqAdd": "Ajouter une question",
+  "timelinePreview": "Aperçu du programme",
+  "timelinePreviewDesc": "Les moments marqués comme publics dans le Jour J. Appuyez pour modifier.",
+  "timelinePreviewEmpty": "Aucun moment public. Modifiez un moment du Jour J et activez « Visible sur le planning partagé ».",
+  "timelineUntil": "jusqu'à {{time}}"
 }
