@@ -5,13 +5,11 @@ import {
   ScrollView,
   FlatList,
   Pressable,
-  TextInput,
   useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  Search,
   Heart,
   Sparkles,
   Link,
@@ -33,6 +31,7 @@ import type { IdeaCategory } from "@/db/types";
 import type { Idea } from "@/db/schema";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
+import { SearchBar } from "@/components/SearchBar";
 import { parseLinks } from "@/lib/links";
 
 // ─── Category metadata ──────────────────────────────────────────────────────
@@ -131,17 +130,12 @@ export default function IdeasScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
-      {/* Search bar */}
-      <View className="px-4 pt-4 pb-2">
-        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
-          <Search size={18} color="#C0C0C8" />
-          <TextInput
-            className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
-            placeholder={t("searchIdea")}
-            placeholderTextColor="#C0C0C8"
-            value={search}
-            onChangeText={setSearch}
-          />
+      <SearchBar
+        value={search}
+        onChangeText={setSearch}
+        placeholder={t("searchIdea")}
+        className="px-4 pt-4 pb-2"
+        right={
           <Pressable
             onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}
             className="ml-2 w-8 h-8 items-center justify-center"
@@ -152,8 +146,8 @@ export default function IdeasScreen() {
               fill={showFavoritesOnly ? "#EF4444" : "transparent"}
             />
           </Pressable>
-        </View>
-      </View>
+        }
+      />
 
       {/* Filter row: category + collection */}
       <View className="px-4 pb-3">

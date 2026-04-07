@@ -13,6 +13,9 @@ import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
+import { IconCard } from "@/components/IconCard";
+import { StatCard } from "@/components/StatCard";
+import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 
 export default function DashboardScreen() {
@@ -200,45 +203,35 @@ export default function DashboardScreen() {
 
         {/* PWA install banner — Chromium browsers */}
         {canInstall && (
-          <Pressable
+          <IconCard
+            icon={
+              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+                <Download size={20} color="#EC4899" />
+              </View>
+            }
+            title={t("installApp")}
+            subtitle={t("installAppDesc")}
+            right={<ChevronRight size={18} color="#C0C0C8" />}
             onPress={install}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
-          >
-            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Download size={20} color="#EC4899" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                {t("installApp")}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-0.5">
-                {t("installAppDesc")}
-              </Text>
-            </View>
-            <ChevronRight size={18} color="#C0C0C8" />
-          </Pressable>
+          />
         )}
 
         {/* PWA install banner — iOS Safari (no beforeinstallprompt support) */}
         {isIosSafari && (
-          <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800">
-            <View className="flex-row items-center">
+          <IconCard
+            icon={
               <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
                 <Download size={20} color="#EC4899" />
               </View>
-              <View className="ml-3 flex-1">
-                <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                  {t("installApp")}
-                </Text>
-                <Text className="text-xs text-gray-400 mt-1">
-                  {t("installIosSteps")}
-                </Text>
-              </View>
+            }
+            title={t("installApp")}
+            subtitle={t("installIosSteps")}
+            right={
               <Pressable onPress={dismissIosBanner} className="p-1">
                 <X size={18} color="#C0C0C8" />
               </Pressable>
-            </View>
-          </View>
+            }
+          />
         )}
 
         {/* Budget summary card */}
@@ -281,63 +274,48 @@ export default function DashboardScreen() {
 
         {/* Guests + Planning row */}
         <View className="flex-row gap-3 mb-3">
-          {/* Guests mini card */}
-          <Pressable
-            onPress={() => router.push("/(tabs)/guests")}
-            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
-          >
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center mr-2">
+          <StatCard
+            icon={
+              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center">
                 <Users size={16} color="#E8B4B8" />
               </View>
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
-                Invités
-              </Text>
-            </View>
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
-              {counts.accepted}
-              <Text className="text-lg text-gray-300 dark:text-gray-600 font-normal">
-                /{counts.total}
-              </Text>
-            </Text>
-            <Text className="text-xs text-gray-400 mt-1">confirmés</Text>
-            {counts.nb_no_table > 0 && (
-              <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
-                <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
-                  {counts.nb_no_table} sans table
-                </Text>
-              </View>
-            )}
-          </Pressable>
-
-          {/* Planning mini card */}
-          <Pressable
-            onPress={() => router.push("/(tabs)/planning")}
-            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
-          >
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2">
+            }
+            label="Invités"
+            value={counts.accepted}
+            total={counts.total}
+            footer="confirmés"
+            alert={
+              counts.nb_no_table > 0 ? (
+                <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
+                  <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
+                    {counts.nb_no_table} sans table
+                  </Text>
+                </View>
+              ) : undefined
+            }
+            onPress={() => router.push("/(tabs)/guests")}
+          />
+          <StatCard
+            icon={
+              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center">
                 <Calendar size={16} color="#C9956B" />
               </View>
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
-                Planning
-              </Text>
-            </View>
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
-              {completionRate}
-              <Text className="text-lg text-gray-300 dark:text-gray-600 font-normal">
-                %
-              </Text>
-            </Text>
-            <Text className="text-xs text-gray-400 mt-1">terminé</Text>
-            {overdueTasks.length > 0 && (
-              <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
-                <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
-                  {overdueTasks.length} en retard
-                </Text>
-              </View>
-            )}
-          </Pressable>
+            }
+            label="Planning"
+            value={completionRate}
+            unit="%"
+            footer="terminé"
+            alert={
+              overdueTasks.length > 0 ? (
+                <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
+                  <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
+                    {overdueTasks.length} en retard
+                  </Text>
+                </View>
+              ) : undefined
+            }
+            onPress={() => router.push("/(tabs)/planning")}
+          />
         </View>
 
         {/* Prestataires summary */}
@@ -378,23 +356,17 @@ export default function DashboardScreen() {
         </Pressable>
 
         {/* Inspirations */}
-        <Pressable
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
+              <Sparkles size={20} color="#A855F7" />
+            </View>
+          }
+          title="Mes inspirations"
+          subtitle={`${ideaCount} idée${ideaCount !== 1 ? "s" : ""} sauvegardée${ideaCount !== 1 ? "s" : ""}`}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/(tabs)/ideas")}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center"
-        >
-          <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
-            <Sparkles size={20} color="#A855F7" />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base font-semibold text-gray-900 dark:text-white">
-              Mes inspirations
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {ideaCount} idée{ideaCount !== 1 ? "s" : ""} sauvegardée{ideaCount !== 1 ? "s" : ""}
-            </Text>
-          </View>
-          <ChevronRight size={18} color="#C0C0C8" />
-        </Pressable>
+        />
 
         {/* Next appointments */}
         <Pressable
@@ -415,40 +387,42 @@ export default function DashboardScreen() {
           {next3Events.length > 0 ? (
             <View className="gap-3">
               {next3Events.map((event) => (
-                <View key={event.id} className="flex-row items-start">
-                  <View className="w-14 items-center mr-3">
-                    <Text className="text-lg font-bold text-primary-500">
-                      {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
-                    </Text>
-                    <Text className="text-xs text-gray-400 capitalize">
-                      {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
-                    </Text>
+                <TimelineItem
+                  key={event.id}
+                  left={
+                    <>
+                      <Text className="text-lg font-bold text-primary-500">
+                        {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
+                      </Text>
+                      <Text className="text-xs text-gray-400 capitalize">
+                        {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
+                      </Text>
+                    </>
+                  }
+                >
+                  <Text className="text-base font-medium text-gray-900 dark:text-white">
+                    {event.title}
+                  </Text>
+                  <View className="flex-row items-center gap-3 mt-1 flex-wrap">
+                    {event.time && (
+                      <View className="flex-row items-center gap-1">
+                        <Clock size={12} color="#9CA3AF" />
+                        <Text className="text-xs text-gray-400">
+                          {event.time}
+                          {event.endTime ? ` - ${event.endTime}` : ""}
+                        </Text>
+                      </View>
+                    )}
+                    {event.location && (
+                      <View className="flex-row items-center gap-1">
+                        <MapPin size={12} color="#9CA3AF" />
+                        <Text className="text-xs text-gray-400" numberOfLines={1}>
+                          {event.location}
+                        </Text>
+                      </View>
+                    )}
                   </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-medium text-gray-900 dark:text-white">
-                      {event.title}
-                    </Text>
-                    <View className="flex-row items-center gap-3 mt-1 flex-wrap">
-                      {event.time && (
-                        <View className="flex-row items-center gap-1">
-                          <Clock size={12} color="#9CA3AF" />
-                          <Text className="text-xs text-gray-400">
-                            {event.time}
-                            {event.endTime ? ` - ${event.endTime}` : ""}
-                          </Text>
-                        </View>
-                      )}
-                      {event.location && (
-                        <View className="flex-row items-center gap-1">
-                          <MapPin size={12} color="#9CA3AF" />
-                          <Text className="text-xs text-gray-400" numberOfLines={1}>
-                            {event.location}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                </View>
+                </TimelineItem>
               ))}
             </View>
           ) : (

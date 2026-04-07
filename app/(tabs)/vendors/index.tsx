@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Search, XCircle, GitCompare, Briefcase, Ellipsis } from "lucide-react-native";
+import { GitCompare, Briefcase, Ellipsis } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS, VENDOR_TYPE_ICONS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -11,6 +11,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterTabs } from "@/components/FilterTabs";
+import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 
 const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
@@ -49,24 +50,12 @@ export default function VendorsListScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
-      {/* Search */}
-      <View className="px-4 pt-4">
-        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
-          <Search size={18} color="#C0C0C8" />
-          <TextInput
-            className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
-            placeholder={t("searchVendor")}
-            placeholderTextColor="#C0C0C8"
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search.length > 0 && (
-            <Pressable onPress={() => setSearch("")}>
-              <XCircle size={18} color="#C0C0C8" />
-            </Pressable>
-          )}
-        </View>
-      </View>
+      <SearchBar
+        value={search}
+        onChangeText={setSearch}
+        placeholder={t("searchVendor")}
+        className="px-4 pt-4"
+      />
 
       {/* Type filter tabs */}
       <View className="mt-3">

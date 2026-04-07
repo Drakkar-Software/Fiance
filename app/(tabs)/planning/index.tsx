@@ -20,6 +20,9 @@ import { PriorityBadge } from "@/components/PriorityBadge";
 import { ProgressBar } from "@/components/ProgressBar";
 import { FAB } from "@/components/FAB";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { SectionHeader } from "@/components/SectionHeader";
+import { TimelineItem } from "@/components/TimelineItem";
 import {
   generateDefaultCategories,
   generateTemplateTasks,
@@ -47,30 +50,11 @@ export default function PlanningScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
-      {/* Segmented control */}
-      <View className="px-4 pt-3 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
-          {ASPECTS.map((a) => (
-            <Pressable
-              key={a}
-              onPress={() => setAspect(a)}
-              className={`flex-1 py-2 rounded-lg items-center ${
-                aspect === a ? "bg-white dark:bg-gray-700 shadow-sm" : ""
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  aspect === a
-                    ? "text-primary-500"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                {t(PLANNING_ASPECT_LABELS[a])}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
+      <SegmentedControl
+        segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
+        activeKey={aspect}
+        onSelect={(key) => setAspect(key as PlanningAspect)}
+      />
 
       {aspect === "preparation" && <PreparationView />}
       {aspect === "agenda" && <AgendaView />}
@@ -186,12 +170,9 @@ function PreparationView() {
 
   return (
     <View className="flex-1">
-      {/* Progress header */}
-      <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
-            {t("progress")}
-          </Text>
+      <SectionHeader
+        title={t("progress")}
+        right={
           <View className="flex-row items-center gap-2">
             <Pressable
               onPress={handleGenerateTemplate}
@@ -219,13 +200,14 @@ function PreparationView() {
               </Pressable>
             </View>
           </View>
-        </View>
+        }
+      >
         <ProgressBar
           value={completionRate}
           max={100}
           label={`${tasks.filter((task) => task.status === "DONE").length}/${tasks.length} ${t("tasks")}`}
         />
-      </View>
+      </SectionHeader>
 
       {/* Filter tabs */}
       <View className="mt-3">
@@ -361,11 +343,7 @@ function AgendaView() {
 
   return (
     <View className="flex-1">
-      <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <Text className="text-sm text-gray-400">
-          {events.length} {t("appointments")} · {upcoming} {t("upcoming")}
-        </Text>
-      </View>
+      <SectionHeader subtitle={`${events.length} ${t("appointments")} · ${upcoming} ${t("upcoming")}`} />
 
       {events.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
@@ -483,11 +461,7 @@ function DayOfView() {
 
   return (
     <View className="flex-1">
-      <View className="px-4 pt-3 pb-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <Text className="text-sm text-gray-400">
-          {t("moment", { count: items.length })}
-        </Text>
-      </View>
+      <SectionHeader subtitle={t("moment", { count: items.length })} />
 
       {items.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
@@ -510,28 +484,22 @@ function DayOfView() {
       ) : (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {sortedItems.map((item, idx) => (
-            <Pressable
+            <TimelineItem
               key={item.id}
+              left={
+                <Text className="text-sm font-bold text-primary-500 mt-3.5">
+                  {item.time}
+                </Text>
+              }
+              showConnector={idx < sortedItems.length - 1}
               onPress={() =>
                 router.push({
                   pathname: "/(tabs)/planning/day-of-item",
                   params: { id: item.id },
                 })
               }
-              className="flex-row active:opacity-80"
             >
-              {/* Timeline line */}
-              <View className="w-14 items-center mr-3">
-                <Text className="text-sm font-bold text-primary-500 mt-3.5">
-                  {item.time}
-                </Text>
-                {idx < sortedItems.length - 1 && (
-                  <View className="w-0.5 flex-1 bg-gray-200 dark:bg-gray-700 mt-2 mb-0" />
-                )}
-              </View>
-
-              {/* Card */}
-              <View className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+              <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
                 <Text className="text-base font-medium text-gray-900 dark:text-white">
                   {item.title}
                 </Text>
@@ -555,7 +523,7 @@ function DayOfView() {
                   )}
                 </View>
               </View>
-            </Pressable>
+            </TimelineItem>
           ))}
           <View className="h-24" />
         </ScrollView>

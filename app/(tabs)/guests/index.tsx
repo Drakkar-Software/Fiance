@@ -10,7 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  Search, XCircle, Users, AlertTriangle, LayoutGrid,
+  Users, AlertTriangle, LayoutGrid,
   Trash2, FolderOpen,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -27,6 +27,8 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { SearchBar } from "@/components/SearchBar";
 import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
@@ -37,34 +39,15 @@ export default function GuestsListScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
-      {/* Segmented control */}
-      <View className="px-4 pt-3 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
-          {(["guests", "groups", "tables"] as const).map((key) => (
-            <Pressable
-              key={key}
-              onPress={() => setAspect(key)}
-              className={`flex-1 py-2 rounded-lg items-center ${
-                aspect === key ? "bg-white dark:bg-gray-700 shadow-sm" : ""
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  aspect === key
-                    ? "text-primary-500"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                {key === "guests"
-                  ? t("common:tabs.guests")
-                  : key === "groups"
-                  ? t("groups")
-                  : t("tables")}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
+      <SegmentedControl
+        segments={[
+          { key: "guests", label: t("common:tabs.guests") },
+          { key: "groups", label: t("groups") },
+          { key: "tables", label: t("tables") },
+        ]}
+        activeKey={aspect}
+        onSelect={(key) => setAspect(key as InviteAspect)}
+      />
 
       {aspect === "guests" ? (
         <GuestsView />
@@ -202,24 +185,12 @@ function GuestsView() {
 
   return (
     <View className="flex-1">
-      {/* Search */}
-      <View className="px-4 pt-3">
-        <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl px-3.5 py-2.5 border border-gray-100 dark:border-gray-800">
-          <Search size={18} color="#C0C0C8" />
-          <TextInput
-            className="flex-1 ml-2.5 text-base text-gray-900 dark:text-white"
-            placeholder={t("searchGuest")}
-            placeholderTextColor="#C0C0C8"
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search.length > 0 && (
-            <Pressable onPress={() => setSearch("")}>
-              <XCircle size={18} color="#C0C0C8" />
-            </Pressable>
-          )}
-        </View>
-      </View>
+      <SearchBar
+        value={search}
+        onChangeText={setSearch}
+        placeholder={t("searchGuest")}
+        className="px-4 pt-3"
+      />
 
       {/* Filters — single row: RSVP (filled) + separator + Type (outline, toggle) */}
       <ScrollView
