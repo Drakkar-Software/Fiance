@@ -79,6 +79,29 @@ export default function WeddingPublicPage() {
     })();
   }, [id]);
 
+  const about = page?.about;
+  const timeline = page?.timeline ?? [];
+  const faq = page?.faq ?? [];
+
+  const coupleNames = [about?.partner1Name, about?.partner2Name].filter(Boolean).join(" & ");
+  const formattedDate = about?.weddingDate
+    ? safeFormat(new Date(about.weddingDate), "EEEE d MMMM yyyy", { locale: getDateLocale() })
+    : null;
+
+  const groupedTimeline = useMemo(() => {
+    const groups: Record<string, typeof timeline> = {};
+    timeline.forEach((item) => {
+      const dateStr = item.date || about?.weddingDate || "";
+      const key = dateStr
+        ? safeFormat(new Date(dateStr + "T00:00:00"), "EEEE d MMMM yyyy", { locale: getDateLocale() })
+        : "";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+    return groups;
+  }, [timeline, about?.weddingDate]);
+  const isMultiDay = Object.keys(groupedTimeline).length > 1;
+
   if (!id) return <Redirect href="/" />;
 
   if (loading) {
@@ -109,26 +132,6 @@ export default function WeddingPublicPage() {
       </View>
     );
   }
-
-  const { about, timeline, faq } = page;
-  const coupleNames = [about.partner1Name, about.partner2Name].filter(Boolean).join(" & ");
-  const formattedDate = about.weddingDate
-    ? safeFormat(new Date(about.weddingDate), "EEEE d MMMM yyyy", { locale: getDateLocale() })
-    : null;
-
-  const groupedTimeline = useMemo(() => {
-    const groups: Record<string, typeof timeline> = {};
-    timeline.forEach((item) => {
-      const dateStr = item.date || about.weddingDate || "";
-      const key = dateStr
-        ? safeFormat(new Date(dateStr + "T00:00:00"), "EEEE d MMMM yyyy", { locale: getDateLocale() })
-        : "";
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(item);
-    });
-    return groups;
-  }, [timeline, about.weddingDate]);
-  const isMultiDay = Object.keys(groupedTimeline).length > 1;
 
   return (
     <View className="flex-1 bg-accent-cream">
@@ -164,17 +167,17 @@ export default function WeddingPublicPage() {
             </View>
           )}
 
-          {about.venueName && (
+          {about?.venueName && (
             <View className="flex-row items-center gap-1.5 mt-2">
               <MapPin size={13} color="#9CA3AF" />
-              <Text className="text-sm text-gray-400">{about.venueName}</Text>
+              <Text className="text-sm text-gray-400">{about?.venueName}</Text>
             </View>
           )}
 
-          {about.description && (
+          {about?.description && (
             <View className="mt-5 bg-white/60 rounded-2xl px-5 py-4 max-w-md">
               <Text className="text-sm text-gray-600 text-center leading-5 italic">
-                {about.description}
+                {about?.description}
               </Text>
             </View>
           )}

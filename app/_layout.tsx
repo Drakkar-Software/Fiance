@@ -2,7 +2,7 @@ import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
 import { AppState, View, ActivityIndicator, Text } from "react-native";
-import { Stack, usePathname } from "expo-router";
+import { Stack, usePathname, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -108,6 +108,8 @@ function NotificationInitializer() {
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
+  const segments = useSegments();
+  const isPublicPage = segments[0] === "wedding";
   const [inviteParams, setInviteParams] = useState<{
     name: string;
     password: string;
@@ -138,6 +140,15 @@ function AppContent() {
       setInviteParams(null);
     }
   }, [registry?.weddings.length]);
+
+  // Public wedding page — render standalone without requiring a wedding
+  if (isPublicPage) {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="wedding/[id]" />
+      </Stack>
+    );
+  }
 
   if (!isLoaded) {
     return (
