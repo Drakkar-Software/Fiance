@@ -1,41 +1,11 @@
 import React from "react";
-import { Platform, View, ActivityIndicator, Text } from "react-native";
-import { Tabs, Redirect } from "expo-router";
+import { Platform } from "react-native";
+import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
 import { usePlanningStore } from "@/store/usePlanningStore";
-import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { DatabaseProvider } from "@/db/provider";
-import { SyncInitializer, NotificationInitializer } from "./_providers";
 
 export default function TabLayout() {
-  const registry = useWeddingRegistryStore((s) => s.registry);
-  const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
-  const activeWedding = registry?.weddings.find(
-    (w) => w.id === registry.activeWeddingId
-  ) ?? registry?.weddings[0] ?? null;
-
-  if (!isLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Loading WeddingOS...</Text>
-      </View>
-    );
-  }
-
-  if (!activeWedding) return <Redirect href="/onboarding" />;
-
-  return (
-    <DatabaseProvider dbFileName={activeWedding.dbFileName}>
-      <SyncInitializer wedding={activeWedding} />
-      <NotificationInitializer />
-      <TabContent />
-    </DatabaseProvider>
-  );
-}
-
-function TabContent() {
   const { t } = useTranslation("common");
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
