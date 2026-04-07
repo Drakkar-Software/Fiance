@@ -8,6 +8,8 @@ export const wedding = sqliteTable("wedding", {
   partner2Name: text("partner2_name"),
   weddingDate: text("wedding_date"),
   venueName: text("venue_name"),
+  description: text("description"),
+  faq: text("faq"), // JSON string of FaqItem[]
   budgetTarget: real("budget_target"),
   currency: text("currency").default("EUR"),
   createdAt: text("created_at"),

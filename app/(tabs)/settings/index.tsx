@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload, HelpCircle, Globe } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -23,7 +23,7 @@ import {
   getSyncStatus,
   onSyncStatusChange,
 } from "@/lib/starfish";
-import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
+import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, buildWeddingPageUrl, generatePassphrase } from "@/lib/identity";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -97,6 +97,12 @@ export default function SettingsScreen() {
   const setVenueName = useCallback((value: string) => {
     _setVenueName(value);
     updateWedding({ venueName: value || null });
+  }, []);
+
+  const [description, _setDescription] = useState(wedding?.description || "");
+  const setDescription = useCallback((value: string) => {
+    _setDescription(value);
+    updateWedding({ description: value || null });
   }, []);
 
   // Recalculate due dates when wedding date changes
@@ -194,6 +200,21 @@ export default function SettingsScreen() {
       // User cancelled share
     }
   }, [activeEntry]);
+
+  const handleSharePublicPage = useCallback(async () => {
+    const password = activeEntry?.seedPhrase;
+    if (!password) return;
+    const authToken = await deriveAuthToken(password);
+    const userId = authToken.slice(0, 16);
+    const url = buildWeddingPageUrl(userId);
+    try {
+      await Share.share({
+        message: t("sharePublicPageMsg", { url }),
+      });
+    } catch {
+      // User cancelled share
+    }
+  }, [activeEntry, t]);
 
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -302,7 +323,31 @@ export default function SettingsScreen() {
           <InputRow label={t("partner2")} value={partner2} onChangeText={setPartner2} placeholder={t("partnerPlaceholder")} />
           <DateRow label={t("weddingDate")} value={weddingDate} onChange={setWeddingDate} />
           <InputRow label={t("mainVenue")} value={venueName} onChangeText={setVenueName} placeholder={t("venuePlaceholder")} />
+          <InputRow label={t("description")} value={description} onChangeText={setDescription} placeholder={t("descriptionPlaceholder")} multiline />
         </FormCard>
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
+              <HelpCircle size={20} color="#A855F7" />
+            </View>
+          }
+          title={t("configureFaq")}
+          subtitle={t("configureFaqDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/(tabs)/settings/faq")}
+        />
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center">
+              <Globe size={20} color="#10B981" />
+            </View>
+          }
+          title={t("sharePublicPage")}
+          subtitle={syncEnabled ? t("sharePublicPageDesc") : t("enableSyncToShare")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={syncEnabled ? handleSharePublicPage : undefined}
+          className={!syncEnabled ? "opacity-50" : ""}
+        />
       </View>
 
       {/* Sauvegarde et partage */}

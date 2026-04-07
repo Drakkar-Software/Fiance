@@ -94,6 +94,11 @@ export default function WeddingPublicPage() {
               <Text className="text-sm text-gray-400">{about.venueName}</Text>
             </View>
           )}
+          {about.description && (
+            <Text className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4 leading-5 px-2">
+              {about.description}
+            </Text>
+          )}
         </View>
 
         {/* Timeline */}

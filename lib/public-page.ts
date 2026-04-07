@@ -24,6 +24,7 @@ export interface PublicWeddingPage {
     partner2Name?: string | null;
     weddingDate?: string | null;
     venueName?: string | null;
+    description?: string | null;
   };
   timeline: PublicDayOfItem[];
   faq: FaqItem[];
@@ -91,9 +92,10 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       partner2Name: wedding?.partner2Name,
       weddingDate: wedding?.weddingDate,
       venueName: wedding?.venueName,
+      description: wedding?.description,
     },
     timeline: publicItems,
-    faq: [], // FAQ items will be managed in a future iteration
+    faq: wedding?.faq ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })() : []
   };
 }
 

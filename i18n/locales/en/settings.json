@@ -66,5 +66,21 @@
   "notifications": "Notifications",
   "notificationsToggle": "Reminders",
   "notificationsOnDesc": "You'll receive reminders for tasks and appointments",
-  "notificationsOffDesc": "Disabled"
+  "notificationsOffDesc": "Disabled",
+  "settingsTitle": "Settings",
+  "description": "Description",
+  "descriptionPlaceholder": "Describe your wedding...",
+  "configureFaq": "Frequently asked questions",
+  "configureFaqDesc": "Set up FAQ for your guests",
+  "sharePublicPage": "Share publicly",
+  "sharePublicPageDesc": "Share the public wedding page",
+  "sharePublicPageMsg": "Check out our wedding details!\n{{url}}",
+  "faqTitle": "Frequently asked questions",
+  "faqSubtitle": "Add questions and answers for your guests. They will be visible on the public wedding page.",
+  "faqItemLabel": "Question {{index}}",
+  "faqQuestion": "Question",
+  "faqAnswer": "Answer",
+  "faqQuestionPlaceholder": "E.g., Is there parking available?",
+  "faqAnswerPlaceholder": "E.g., Yes, free parking is available on site.",
+  "faqAdd": "Add a question"
 }

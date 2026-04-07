@@ -66,5 +66,21 @@
   "notifications": "Notifications",
   "notificationsToggle": "Rappels",
   "notificationsOnDesc": "Vous recevrez des rappels pour les tâches et rendez-vous",
-  "notificationsOffDesc": "Désactivé"
+  "notificationsOffDesc": "Désactivé",
+  "settingsTitle": "Réglages",
+  "description": "Description",
+  "descriptionPlaceholder": "Décrivez votre mariage...",
+  "configureFaq": "Questions fréquentes",
+  "configureFaqDesc": "Configurer la FAQ pour vos invités",
+  "sharePublicPage": "Partager publiquement",
+  "sharePublicPageDesc": "Partager la page publique du mariage",
+  "sharePublicPageMsg": "Découvrez les informations de notre mariage !\n{{url}}",
+  "faqTitle": "Questions fréquentes",
+  "faqSubtitle": "Ajoutez des questions et réponses pour vos invités. Elles seront visibles sur la page publique du mariage.",
+  "faqItemLabel": "Question {{index}}",
+  "faqQuestion": "Question",
+  "faqAnswer": "Réponse",
+  "faqQuestionPlaceholder": "Ex : Y a-t-il un parking ?",
+  "faqAnswerPlaceholder": "Ex : Oui, un parking gratuit est disponible sur place.",
+  "faqAdd": "Ajouter une question"
 }

@@ -1,7 +1,9 @@
 import React from "react";
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsLayout() {
+  const { t } = useTranslation("settings");
   return (
     <Stack
       screenOptions={{
@@ -10,7 +12,8 @@ export default function SettingsLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Réglages" }} />
+      <Stack.Screen name="index" options={{ title: t("settingsTitle") }} />
+      <Stack.Screen name="faq" options={{ title: t("configureFaq") }} />
     </Stack>
   );
 }

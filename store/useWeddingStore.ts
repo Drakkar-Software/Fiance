@@ -22,6 +22,8 @@ export const useWeddingStore = create<WeddingState>((set) => ({
         partner2Name: null,
         weddingDate: null,
         venueName: null,
+        description: null,
+        faq: null,
         budgetTarget: null,
         currency: "EUR",
         createdAt: now,
