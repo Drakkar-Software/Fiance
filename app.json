@@ -50,7 +50,18 @@
       "expo-secure-store",
       "expo-local-authentication",
       "expo-updates",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "memorySize": 4096,
+            "extraGradleProperties": {
+              "org.gradle.jvmargs": "-Xmx4096m -XX:MaxMetaspaceSize=512m"
+            }
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {
