@@ -78,7 +78,8 @@ export default function WeddingPublicPage() {
   return (
     <View className="flex-1 bg-accent-cream">
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
+        <View className="w-full" style={{ maxWidth: 600 }}>
         {/* Hero */}
         <View className="items-center pt-14 pb-10 px-6">
           <Image
@@ -226,6 +227,7 @@ export default function WeddingPublicPage() {
             resizeMode="contain"
           />
           <Text className="text-xs text-gray-300 mt-1">WeddingOS</Text>
+        </View>
         </View>
       </ScrollView>
     </View>
