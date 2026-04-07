@@ -14,9 +14,11 @@ pnpm lint                 # ESLint
 pnpm db:generate          # Generate Drizzle migrations from schema.ts
 pnpm db:push              # Apply migrations to SQLite
 pnpm build:web            # Export for Cloudflare Pages (output: dist/)
+pnpm test                 # Run tests (Vitest)
+pnpm test:watch           # Run tests in watch mode
 ```
 
-No test framework is configured.
+Tests use Vitest. Test files live in `__tests__/`. Pure business logic is tested directly; modules that depend on React Native are tested by replicating the logic in isolation.
 
 ## Architecture
 
