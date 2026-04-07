@@ -70,6 +70,7 @@
   "newMoment": "Nouveau moment",
   "dayOf": "Jour J",
   "momentLabel": "Moment *",
+  "dateLabel": "Date",
   "timeLabel": "Heure *",
   "endTimeLabel": "Heure de fin",
   "locationLabel": "Lieu",

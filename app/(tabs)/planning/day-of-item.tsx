@@ -5,9 +5,10 @@ import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow, TimeRow, ToggleRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, DateRow, TimeRow, ToggleRow } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import type { DayOfItem } from "@/db/schema";
 
 export default function DayOfItemScreen() {
@@ -19,10 +20,12 @@ export default function DayOfItemScreen() {
   const updateItem = usePlanningStore((s) => s.updateDayOfItem);
   const removeItem = usePlanningStore((s) => s.removeDayOfItem);
 
+  const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
   const isNew = id === "new";
   const existing = items.find((i) => i.id === id);
 
   const [title, setTitle] = useState(existing?.title || "");
+  const [date, setDate] = useState(existing?.date || weddingDate || "");
   const [time, setTime] = useState(existing?.time || "");
   const [endTime, setEndTime] = useState(existing?.endTime || "");
   const [location, setLocation] = useState(existing?.location || "");
@@ -47,6 +50,7 @@ export default function DayOfItemScreen() {
     const maxOrder = items.reduce((max, i) => Math.max(max, i.sortOrder || 0), 0);
     const data: Partial<DayOfItem> = {
       title: title.trim(),
+      date: date || null,
       time: time.trim(),
       endTime: endTime || null,
       location: location || null,
@@ -89,6 +93,7 @@ export default function DayOfItemScreen() {
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("momentLabel")} value={title} onChangeText={setTitle} placeholder={t("churchPlaceholder")} />
+          <DateRow label={t("dateLabel")} value={date} onChange={setDate} />
           <TimeRow label={t("timeLabel")} value={time} onChange={setTime} placeholder="13:00" />
           <TimeRow label={t("endTimeLabel")} value={endTime} onChange={setEndTime} placeholder="13:30" />
           <InputRow label={t("locationLabel")} value={location} onChangeText={setLocation} placeholder={t("venuePlaceholder")} />

@@ -10,6 +10,7 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 export interface PublicDayOfItem {
   id: string;
   title: string;
+  date?: string | null;
   time: string;
   endTime?: string | null;
   location?: string | null;
@@ -70,12 +71,18 @@ export function buildPublicPageDocument(): PublicWeddingPage {
   const wedding = useWeddingStore.getState().wedding;
   const dayOfItems = usePlanningStore.getState().dayOfItems;
 
+  const weddingDate = wedding?.weddingDate || "";
   const publicItems = dayOfItems
     .filter((item) => item.isPublic)
-    .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
-    .map(({ id, title, time, endTime, location, sortOrder }) => ({
+    .sort((a, b) => {
+      const da = (a.date || weddingDate).localeCompare(b.date || weddingDate);
+      if (da !== 0) return da;
+      return (a.time || "").localeCompare(b.time || "");
+    })
+    .map(({ id, title, date, time, endTime, location, sortOrder }) => ({
       id,
       title,
+      date,
       time,
       endTime,
       location,

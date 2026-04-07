@@ -10,7 +10,9 @@ import {
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Globe, Clock, MapPin } from "lucide-react-native";
+import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { TimelineItem } from "@/components/TimelineItem";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -125,9 +127,27 @@ export default function PublicPageScreen() {
     () =>
       dayOfItems
         .filter((item) => item.isPublic)
-        .sort((a, b) => (a.time || "").localeCompare(b.time || "")),
-    [dayOfItems]
+        .sort((a, b) => {
+          const da = (a.date || weddingDate || "").localeCompare(b.date || weddingDate || "");
+          if (da !== 0) return da;
+          return (a.time || "").localeCompare(b.time || "");
+        }),
+    [dayOfItems, weddingDate]
   );
+
+  const groupedPreview = useMemo(() => {
+    const groups: Record<string, typeof publicDayOfItems> = {};
+    publicDayOfItems.forEach((item) => {
+      const dateStr = item.date || weddingDate || "";
+      const key = dateStr
+        ? safeFormat(new Date(dateStr + "T00:00:00"), "EEEE d MMMM yyyy", { locale: getDateLocale() })
+        : t("common:noDate");
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+    return groups;
+  }, [publicDayOfItems, weddingDate]);
+  const isMultiDay = Object.keys(groupedPreview).length > 1;
 
   // Share
   const handleShare = useCallback(async () => {
@@ -233,40 +253,19 @@ export default function PublicPageScreen() {
 
         {publicDayOfItems.length > 0 ? (
           <View className="mb-3">
-            {publicDayOfItems.map((item, idx) => (
-              <TimelineItem
-                key={item.id}
-                left={
-                  <Text className="text-sm font-bold text-primary-500 mt-3.5">
-                    {item.time}
-                  </Text>
-                }
-                showConnector={idx < publicDayOfItems.length - 1}
-                onPress={() =>
-                  router.push({
-                    pathname: "/(tabs)/planning/day-of-item",
-                    params: { id: item.id },
-                  })
-                }
-              >
-                <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
-                  <Text className="text-base font-medium text-gray-900 dark:text-white">
-                    {item.title}
-                  </Text>
-                  {item.endTime && (
-                    <Text className="text-xs text-gray-400 mt-0.5">
-                      {t("timelineUntil", { time: item.endTime })}
-                    </Text>
-                  )}
-                  {item.location && (
-                    <View className="flex-row items-center gap-1 mt-1.5">
-                      <MapPin size={12} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-400">{item.location}</Text>
-                    </View>
-                  )}
-                </View>
-              </TimelineItem>
-            ))}
+            {isMultiDay ? (
+              Object.entries(groupedPreview).map(([dateLabel, dateItems]) => (
+                <CollapsibleSection key={dateLabel} title={dateLabel} count={dateItems.length} defaultExpanded>
+                  {dateItems.map((item, idx) => (
+                    <PreviewTimelineCard key={item.id} item={item} idx={idx} total={dateItems.length} router={router} t={t} />
+                  ))}
+                </CollapsibleSection>
+              ))
+            ) : (
+              publicDayOfItems.map((item, idx) => (
+                <PreviewTimelineCard key={item.id} item={item} idx={idx} total={publicDayOfItems.length} router={router} t={t} />
+              ))
+            )}
           </View>
         ) : (
           <View className="bg-white dark:bg-gray-900 rounded-2xl p-5 mb-3 border border-gray-100 dark:border-gray-800 items-center">
@@ -295,5 +294,30 @@ export default function PublicPageScreen() {
 
       <View className="h-8" />
     </ScrollView>
+  );
+}
+
+function PreviewTimelineCard({ item, idx, total, router, t }: {
+  item: any; idx: number; total: number; router: any; t: (key: string, opts?: any) => string;
+}) {
+  return (
+    <TimelineItem
+      left={<Text className="text-sm font-bold text-primary-500 mt-3.5">{item.time}</Text>}
+      showConnector={idx < total - 1}
+      onPress={() => router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: item.id } })}
+    >
+      <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+        <Text className="text-base font-medium text-gray-900 dark:text-white">{item.title}</Text>
+        {item.endTime && (
+          <Text className="text-xs text-gray-400 mt-0.5">{t("timelineUntil", { time: item.endTime })}</Text>
+        )}
+        {item.location && (
+          <View className="flex-row items-center gap-1 mt-1.5">
+            <MapPin size={12} color="#9CA3AF" />
+            <Text className="text-xs text-gray-400">{item.location}</Text>
+          </View>
+        )}
+      </View>
+    </TimelineItem>
   );
 }

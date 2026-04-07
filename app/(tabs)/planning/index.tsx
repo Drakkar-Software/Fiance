@@ -456,13 +456,38 @@ function DayOfView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
   const items = usePlanningStore((s) => s.dayOfItems);
+  const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
-  const sortedItems = useMemo(
-    () => [...items].sort((a, b) => (a.time || "").localeCompare(b.time || "")),
-    [items]
+  const resolveDate = useCallback(
+    (item: { date?: string | null }) => item.date || weddingDate || "",
+    [weddingDate]
   );
+
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => {
+      const d = resolveDate(a).localeCompare(resolveDate(b));
+      if (d !== 0) return d;
+      return (a.time || "").localeCompare(b.time || "");
+    }),
+    [items, resolveDate]
+  );
+
+  const groupedByDate = useMemo(() => {
+    const groups: Record<string, typeof sortedItems> = {};
+    sortedItems.forEach((item) => {
+      const dateStr = resolveDate(item);
+      const key = dateStr
+        ? safeFormat(new Date(dateStr + "T00:00:00"), "EEEE d MMMM yyyy", { locale: getDateLocale() })
+        : t("common:noDate");
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+    return groups;
+  }, [sortedItems, resolveDate]);
+
+  const isMultiDay = Object.keys(groupedByDate).length > 1;
 
   const hasPublicItems = useMemo(() => items.some((i) => i.isPublic), [items]);
 
@@ -511,48 +536,35 @@ function DayOfView() {
         </View>
       ) : (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          {sortedItems.map((item, idx) => (
-            <TimelineItem
-              key={item.id}
-              left={
-                <Text className="text-sm font-bold text-primary-500 mt-3.5">
-                  {item.time}
-                </Text>
-              }
-              showConnector={idx < sortedItems.length - 1}
-              onPress={() =>
-                router.push({
-                  pathname: "/(tabs)/planning/day-of-item",
-                  params: { id: item.id },
-                })
-              }
-            >
-              <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
-                <Text className="text-base font-medium text-gray-900 dark:text-white">
-                  {item.title}
-                </Text>
-                {item.endTime && (
-                  <Text className="text-xs text-gray-400 mt-0.5">
-                    {t("until", { time: item.endTime })}
-                  </Text>
-                )}
-                <View className="flex-row items-center gap-3 mt-1.5 flex-wrap">
-                  {item.location && (
-                    <View className="flex-row items-center gap-1">
-                      <MapPin size={12} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-400">{item.location}</Text>
-                    </View>
-                  )}
-                  {item.responsible && (
-                    <View className="flex-row items-center gap-1">
-                      <User size={12} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-400">{item.responsible}</Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-            </TimelineItem>
-          ))}
+          {isMultiDay ? (
+            Object.entries(groupedByDate).map(([dateLabel, dateItems]) => (
+              <CollapsibleSection key={dateLabel} title={dateLabel} count={dateItems.length} defaultExpanded>
+                {dateItems.map((item, idx) => (
+                  <DayOfTimelineCard
+                    key={item.id}
+                    item={item}
+                    showConnector={idx < dateItems.length - 1}
+                    onPress={() =>
+                      router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: item.id } })
+                    }
+                    t={t}
+                  />
+                ))}
+              </CollapsibleSection>
+            ))
+          ) : (
+            sortedItems.map((item, idx) => (
+              <DayOfTimelineCard
+                key={item.id}
+                item={item}
+                showConnector={idx < sortedItems.length - 1}
+                onPress={() =>
+                  router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: item.id } })
+                }
+                t={t}
+              />
+            ))
+          )}
           <View className="h-24" />
         </ScrollView>
       )}
@@ -567,6 +579,55 @@ function DayOfView() {
 }
 
 // ─── Shared Components ───────────────────────────────────────────────────
+
+function DayOfTimelineCard({
+  item,
+  showConnector,
+  onPress,
+  t,
+}: {
+  item: any;
+  showConnector: boolean;
+  onPress: () => void;
+  t: (key: string, opts?: any) => string;
+}) {
+  return (
+    <TimelineItem
+      left={
+        <Text className="text-sm font-bold text-primary-500 mt-3.5">
+          {item.time}
+        </Text>
+      }
+      showConnector={showConnector}
+      onPress={onPress}
+    >
+      <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+        <Text className="text-base font-medium text-gray-900 dark:text-white">
+          {item.title}
+        </Text>
+        {item.endTime && (
+          <Text className="text-xs text-gray-400 mt-0.5">
+            {t("until", { time: item.endTime })}
+          </Text>
+        )}
+        <View className="flex-row items-center gap-3 mt-1.5 flex-wrap">
+          {item.location && (
+            <View className="flex-row items-center gap-1">
+              <MapPin size={12} color="#9CA3AF" />
+              <Text className="text-xs text-gray-400">{item.location}</Text>
+            </View>
+          )}
+          {item.responsible && (
+            <View className="flex-row items-center gap-1">
+              <User size={12} color="#9CA3AF" />
+              <Text className="text-xs text-gray-400">{item.responsible}</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TimelineItem>
+  );
+}
 
 function TaskCard({
   task,

@@ -153,6 +153,7 @@ export const agendaEvents = sqliteTable("agenda_events", {
 export const dayOfItems = sqliteTable("day_of_items", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
+  date: text("date"), // ISO "2026-03-15", nullable — defaults to weddingDate at runtime
   time: text("time").notNull(), // "13:00"
   endTime: text("end_time"), // "13:30"
   location: text("location"),

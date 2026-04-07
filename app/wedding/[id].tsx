@@ -1,11 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Image } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Clock, MapPin, HelpCircle, Calendar } from "lucide-react-native";
+import i18n from "@/i18n";
+import { Clock, MapPin, HelpCircle, Calendar, Globe } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { TimelineItem } from "@/components/TimelineItem";
+
+function setOgMeta(page: PublicWeddingPage) {
+  if (Platform.OS !== "web") return;
+  const names = [page.about.partner1Name, page.about.partner2Name].filter(Boolean).join(" & ");
+  const title = names ? `Mariage de ${names}` : "WeddingOS";
+  const desc = page.about.description || "Votre mariage, organisé simplement.";
+
+  document.title = title;
+  const tags: Record<string, string> = {
+    "og:title": title,
+    "og:description": desc,
+    "twitter:title": title,
+    "twitter:description": desc,
+  };
+  for (const [key, value] of Object.entries(tags)) {
+    const el =
+      document.querySelector(`meta[property="${key}"]`) ??
+      document.querySelector(`meta[name="${key}"]`);
+    if (el) el.setAttribute("content", value);
+  }
+}
+
+function LangSwitch() {
+  const currentLang = i18n.language;
+  const toggle = () => i18n.changeLanguage(currentLang === "fr" ? "en" : "fr");
+
+  return (
+    <Pressable
+      onPress={toggle}
+      className="flex-row items-center gap-1.5 self-end mr-5 mt-4 px-3 py-1.5 rounded-full bg-white/60"
+      style={{ position: "absolute", top: 8, right: 0, zIndex: 10 }}
+    >
+      <Globe size={13} color="#9CA3AF" />
+      <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+        {currentLang === "fr" ? "EN" : "FR"}
+      </Text>
+    </Pressable>
+  );
+}
 
 export default function WeddingPublicPage() {
   const { t } = useTranslation("wedding-page");
@@ -27,6 +67,7 @@ export default function WeddingPublicPage() {
         const data = await fetchPublicPage(serverUrl, id);
         if (data) {
           setPage(data);
+          setOgMeta(data);
         } else {
           setError(true);
         }
@@ -75,9 +116,24 @@ export default function WeddingPublicPage() {
     ? safeFormat(new Date(about.weddingDate), "EEEE d MMMM yyyy", { locale: getDateLocale() })
     : null;
 
+  const groupedTimeline = useMemo(() => {
+    const groups: Record<string, typeof timeline> = {};
+    timeline.forEach((item) => {
+      const dateStr = item.date || about.weddingDate || "";
+      const key = dateStr
+        ? safeFormat(new Date(dateStr + "T00:00:00"), "EEEE d MMMM yyyy", { locale: getDateLocale() })
+        : "";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+    return groups;
+  }, [timeline, about.weddingDate]);
+  const isMultiDay = Object.keys(groupedTimeline).length > 1;
+
   return (
     <View className="flex-1 bg-accent-cream">
       <Stack.Screen options={{ headerShown: false }} />
+      <LangSwitch />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
         <View className="w-full" style={{ maxWidth: 600 }}>
         {/* Hero */}
@@ -141,33 +197,44 @@ export default function WeddingPublicPage() {
               </Text>
             </View>
             <View className="px-4">
-              {timeline.map((item, idx) => (
-                <TimelineItem
-                  key={item.id}
-                  left={
-                    <Text className="text-sm font-bold text-accent-gold mt-3.5">
-                      {item.time}
-                    </Text>
-                  }
-                  showConnector={idx < timeline.length - 1}
-                >
-                  <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
-                    <Text className="text-base font-semibold text-gray-900">
-                      {item.title}
-                    </Text>
-                    {item.endTime && (
-                      <Text className="text-xs text-gray-400 mt-0.5">
-                        {t("until", { time: item.endTime })}
+              {Object.entries(groupedTimeline).map(([dateLabel, dateItems]) => (
+                <View key={dateLabel}>
+                  {isMultiDay && dateLabel ? (
+                    <View className="mt-3 mb-3 px-1">
+                      <Text className="text-sm font-semibold text-accent-gold uppercase tracking-wider capitalize">
+                        {dateLabel}
                       </Text>
-                    )}
-                    {item.location && (
-                      <View className="flex-row items-center gap-1.5 mt-2">
-                        <MapPin size={12} color="#C9956B" />
-                        <Text className="text-xs text-accent-gold font-medium">{item.location}</Text>
+                    </View>
+                  ) : null}
+                  {dateItems.map((item, idx) => (
+                    <TimelineItem
+                      key={item.id}
+                      left={
+                        <Text className="text-sm font-bold text-accent-gold mt-3.5">
+                          {item.time}
+                        </Text>
+                      }
+                      showConnector={idx < dateItems.length - 1}
+                    >
+                      <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
+                        <Text className="text-base font-semibold text-gray-900">
+                          {item.title}
+                        </Text>
+                        {item.endTime && (
+                          <Text className="text-xs text-gray-400 mt-0.5">
+                            {t("until", { time: item.endTime })}
+                          </Text>
+                        )}
+                        {item.location && (
+                          <View className="flex-row items-center gap-1.5 mt-2">
+                            <MapPin size={12} color="#C9956B" />
+                            <Text className="text-xs text-accent-gold font-medium">{item.location}</Text>
+                          </View>
+                        )}
                       </View>
-                    )}
-                  </View>
-                </TimelineItem>
+                    </TimelineItem>
+                  ))}
+                </View>
               ))}
             </View>
           </View>

@@ -71,7 +71,9 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
           require("./migrations/0003_no_table_needed.sql"),
           require("./migrations/0004_remove_dinner_add_groups.sql"),
           require("./migrations/0005_companion_id.sql"),
+          require("./migrations/0006_is_public_day_of.sql"),
           require("./migrations/0007_wedding_description_faq.sql"),
+          require("./migrations/0008_day_of_item_date.sql"),
         ];
         for (const migrationSQL of migrations) {
           if (typeof migrationSQL === "string") {
