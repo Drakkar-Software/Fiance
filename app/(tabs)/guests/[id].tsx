@@ -23,7 +23,6 @@ import type {
   Diet,
 } from "@/db/types";
 import { UserPlus, XCircle } from "lucide-react-native";
-import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
@@ -33,6 +32,10 @@ import {
   ToggleRow,
   ChipSelect,
 } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
+import { StatusSelector } from "@/components/StatusSelector";
 import type { Guest } from "@/db/schema";
 
 const INVITATION_TYPES: InvitationType[] = [
@@ -155,14 +158,7 @@ export default function GuestDetailScreen() {
             ? t("newGuest")
             : `${firstName} ${lastName}`.trim() || t("guest"),
           headerRight: () => (
-            <Pressable
-              onPress={canSave ? handleSave : undefined}
-              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                {t("common:save")}
-              </Text>
-            </Pressable>
+            <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
         }}
       />
@@ -179,47 +175,15 @@ export default function GuestDetailScreen() {
           {groups.length > 0 && (
             <>
               <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">{t("groupLabel")}</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-2">
-                  <Pressable
-                    onPress={() => setGroupId("")}
-                    className={`px-3.5 py-2 rounded-full border ${
-                      !groupId
-                        ? "bg-primary-500 border-primary-500"
-                        : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                    }`}
-                  >
-                    <Text
-                      className={`text-sm ${
-                        !groupId ? "text-white font-medium" : "text-gray-500"
-                      }`}
-                    >
-                      {t("none")}
-                    </Text>
-                  </Pressable>
-                  {groups.map((g) => (
-                    <Pressable
-                      key={g.id}
-                      onPress={() => setGroupId(g.id)}
-                      className={`px-3.5 py-2 rounded-full border ${
-                        groupId === g.id
-                          ? "bg-primary-500 border-primary-500"
-                          : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                      }`}
-                    >
-                      <Text
-                        className={`text-sm ${
-                          groupId === g.id
-                            ? "text-white font-medium"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {g.name}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </ScrollView>
+              <HorizontalChipSelect
+                options={[
+                  { key: "", label: t("none") },
+                  ...groups.map((g) => ({ key: g.id, label: g.name })),
+                ]}
+                activeKey={groupId}
+                onSelect={setGroupId}
+                className="mb-0"
+              />
             </>
           )}
 
@@ -293,83 +257,30 @@ export default function GuestDetailScreen() {
 
         {/* RSVP */}
         <SectionTitle>RSVP</SectionTitle>
-        <FormCard>
-          <View className="flex-row flex-wrap gap-2">
-            {RSVP_STATUSES.map((s) => (
-              <Pressable key={s} onPress={() => setRsvpStatus(s)}>
-                <StatusBadge
-                  label={t(RSVP_STATUS_LABELS[s])}
-                  color={
-                    rsvpStatus === s ? RSVP_STATUS_COLORS[s] : "#D1D5DB"
-                  }
-                  size="md"
-                />
-              </Pressable>
-            ))}
-          </View>
-        </FormCard>
+        <StatusSelector
+          options={RSVP_STATUSES.map((s) => ({
+            key: s,
+            label: t(RSVP_STATUS_LABELS[s]),
+            color: RSVP_STATUS_COLORS[s],
+          }))}
+          activeKey={rsvpStatus}
+          onSelect={(k) => setRsvpStatus(k as RsvpStatus)}
+        />
 
         {/* Table */}
         <SectionTitle>{t("table")}</SectionTitle>
-        <FormCard>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-2">
-              <Pressable
-                onPress={() => { setTableId(""); setNoTableNeeded(false); }}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !tableId && !noTableNeeded
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    !tableId && !noTableNeeded ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("unassigned")}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => { setTableId(""); setNoTableNeeded(true); }}
-                className={`px-3.5 py-2 rounded-full border ${
-                  noTableNeeded
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    noTableNeeded ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("common:noTableNeeded")}
-                </Text>
-              </Pressable>
-              {tables.map((t) => (
-                <Pressable
-                  key={t.id}
-                  onPress={() => { setTableId(t.id); setNoTableNeeded(false); }}
-                  className={`px-3.5 py-2 rounded-full border ${
-                    tableId === t.id
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      tableId === t.id
-                        ? "text-white font-medium"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {t.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </ScrollView>
-        </FormCard>
+        <HorizontalChipSelect
+          options={[
+            { key: "", label: t("unassigned") },
+            { key: "__no_table__", label: t("common:noTableNeeded") },
+            ...tables.map((tbl) => ({ key: tbl.id, label: tbl.name })),
+          ]}
+          activeKey={noTableNeeded ? "__no_table__" : tableId}
+          onSelect={(key) => {
+            if (key === "__no_table__") { setTableId(""); setNoTableNeeded(true); }
+            else { setTableId(key); setNoTableNeeded(false); }
+          }}
+        />
 
         {/* Diet */}
         <SectionTitle>{t("dietLabel")}</SectionTitle>
@@ -406,16 +317,8 @@ export default function GuestDetailScreen() {
           />
         </FormCard>
 
-        {/* Delete */}
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteGuest")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteGuest")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />

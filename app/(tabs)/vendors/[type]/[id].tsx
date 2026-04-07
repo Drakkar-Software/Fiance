@@ -20,9 +20,11 @@ import {
 import type { VendorType, VendorStatus } from "@/db/types";
 import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
 import type { CustomSection } from "@/lib/vendorTypeConfig";
-import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { StatusSelector } from "@/components/StatusSelector";
 import type { Vendor } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
@@ -141,36 +143,22 @@ export default function VendorDetailScreen() {
         options={{
           title: isNew ? t("new", { type: typeName }) : name || typeName,
           headerRight: () => (
-            <Pressable
-              onPress={canSave ? handleSave : undefined}
-              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                {t("common:save")}
-              </Text>
-            </Pressable>
+            <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Status selector */}
         <SectionTitle>{t("statusLabel")}</SectionTitle>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mb-5"
-          contentContainerStyle={{ gap: 8 }}
-        >
-          {STATUS_OPTIONS.map((s) => (
-            <Pressable key={s} onPress={() => setStatus(s)}>
-              <StatusBadge
-                label={t(VENDOR_STATUS_LABELS[s])}
-                color={status === s ? VENDOR_STATUS_COLORS[s] : "#D1D5DB"}
-                size="md"
-              />
-            </Pressable>
-          ))}
-        </ScrollView>
+        <StatusSelector
+          options={STATUS_OPTIONS.map((s) => ({
+            key: s,
+            label: t(VENDOR_STATUS_LABELS[s]),
+            color: VENDOR_STATUS_COLORS[s],
+          }))}
+          activeKey={status}
+          onSelect={(k) => setStatus(k as VendorStatus)}
+        />
 
         {/* Information section */}
         <SectionTitle>{t("information")}</SectionTitle>
@@ -265,16 +253,8 @@ export default function VendorDetailScreen() {
           />
         </FormCard>
 
-        {/* Delete button */}
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteVendor")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteVendor")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />

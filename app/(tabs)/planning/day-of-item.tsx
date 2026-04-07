@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, TextInput, Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow, TimeRow } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import type { DayOfItem } from "@/db/schema";
 
 export default function DayOfItemScreen() {
@@ -77,14 +79,7 @@ export default function DayOfItemScreen() {
         options={{
           title: isNew ? t("newMoment") : title || t("dayOf"),
           headerRight: () => (
-            <Pressable
-              onPress={canSave ? handleSave : undefined}
-              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                {t("common:save")}
-              </Text>
-            </Pressable>
+            <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
         }}
       />
@@ -112,14 +107,7 @@ export default function DayOfItemScreen() {
         </FormCard>
 
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteMoment")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteMoment")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />

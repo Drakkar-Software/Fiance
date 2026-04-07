@@ -32,6 +32,9 @@ import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { parseLinks, serializeLinks, isValidUrl } from "@/lib/links";
 import type { Idea } from "@/db/schema";
 
@@ -149,14 +152,7 @@ export default function IdeaDetailScreen() {
                   fill={isFavorite ? "#EF4444" : "transparent"}
                 />
               </Pressable>
-              <Pressable
-                onPress={handleSave}
-                style={{ backgroundColor: "#EC4899", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                  {t("common:save")}
-                </Text>
-              </Pressable>
+              <SaveHeaderButton label={t("common:save")} enabled={true} onPress={handleSave} />
             </View>
           ),
         }}
@@ -289,50 +285,14 @@ export default function IdeaDetailScreen() {
         {collections.length > 0 && (
           <>
             <SectionTitle>{t("collection")}</SectionTitle>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-5"
-              contentContainerStyle={{ gap: 8 }}
-            >
-              <Pressable
-                onPress={() => setCollectionId("")}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !collectionId
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    !collectionId ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("common:noneF")}
-                </Text>
-              </Pressable>
-              {collections.map((c) => (
-                <Pressable
-                  key={c.id}
-                  onPress={() => setCollectionId(c.id)}
-                  className={`px-3.5 py-2 rounded-full border ${
-                    collectionId === c.id
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      collectionId === c.id
-                        ? "text-white font-medium"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {c.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("common:noneF") },
+                ...collections.map((c) => ({ key: c.id, label: c.name })),
+              ]}
+              activeKey={collectionId}
+              onSelect={setCollectionId}
+            />
           </>
         )}
 
@@ -340,63 +300,19 @@ export default function IdeaDetailScreen() {
         {vendors.length > 0 && (
           <>
             <SectionTitle>{t("linkedVendor")}</SectionTitle>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-5"
-              contentContainerStyle={{ gap: 8 }}
-            >
-              <Pressable
-                onPress={() => setVendorId("")}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !vendorId
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    !vendorId ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("common:none")}
-                </Text>
-              </Pressable>
-              {vendors.map((v) => (
-                <Pressable
-                  key={v.id}
-                  onPress={() => setVendorId(v.id)}
-                  className={`px-3.5 py-2 rounded-full border ${
-                    vendorId === v.id
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      vendorId === v.id
-                        ? "text-white font-medium"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {v.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("common:none") },
+                ...vendors.map((v) => ({ key: v.id, label: v.name })),
+              ]}
+              activeKey={vendorId}
+              onSelect={setVendorId}
+            />
           </>
         )}
 
-        {/* Delete */}
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteIdea")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteIdea")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />

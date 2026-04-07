@@ -42,6 +42,8 @@ import {
   DateRow,
 } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { ToggleCard } from "@/components/ToggleCard";
+import { IconCard } from "@/components/IconCard";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -309,112 +311,76 @@ export default function SettingsScreen() {
         <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
           {!premium ? t("premiumSyncMsg") : syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
         </Text>
-        <Pressable
-          onPress={premium ? handleToggleSync : undefined}
-          className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 ${
-            premium ? "active:opacity-80" : "opacity-50"
-          }`}
-        >
-          <View
-            className="w-10 h-10 rounded-xl items-center justify-center"
-            style={{ backgroundColor: syncEnabled ? "#ECFDF5" : "#F3F4F6" }}
-          >
-            {syncEnabled ? (
-              <Cloud size={20} color="#10B981" />
-            ) : (
-              <CloudOff size={20} color="#9CA3AF" />
-            )}
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base font-medium text-gray-900 dark:text-white">
-              {!premium ? t("premiumFeature") : syncEnabled ? t("syncEnabled") : t("syncDisabled")}
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {!premium
-                ? t("premiumSyncMsg")
-                : syncEnabled
-                  ? syncStatusLabel
-                    ? lastSync
-                      ? `${syncStatusLabel} · ${t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })}`
-                      : syncStatusLabel
-                    : lastSync
-                      ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
-                      : t("syncAutomatic")
-                  : t("tapToEnable")}
-            </Text>
-          </View>
-          <View
-            className="w-12 h-7 rounded-full justify-center px-0.5"
-            style={{ backgroundColor: syncEnabled && premium ? "#EC4899" : "#D1D5DB" }}
-          >
+        <ToggleCard
+          icon={
             <View
-              className="w-6 h-6 rounded-full bg-white"
-              style={{ alignSelf: syncEnabled && premium ? "flex-end" : "flex-start" }}
-            />
-          </View>
-        </Pressable>
+              className="w-10 h-10 rounded-xl items-center justify-center"
+              style={{ backgroundColor: syncEnabled ? "#ECFDF5" : "#F3F4F6" }}
+            >
+              {syncEnabled ? (
+                <Cloud size={20} color="#10B981" />
+              ) : (
+                <CloudOff size={20} color="#9CA3AF" />
+              )}
+            </View>
+          }
+          title={!premium ? t("premiumFeature") : syncEnabled ? t("syncEnabled") : t("syncDisabled")}
+          subtitle={
+            !premium
+              ? t("premiumSyncMsg")
+              : syncEnabled
+                ? syncStatusLabel
+                  ? lastSync
+                    ? `${syncStatusLabel} · ${t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })}`
+                    : syncStatusLabel
+                  : lastSync
+                    ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
+                    : t("syncAutomatic")
+                : t("tapToEnable")
+          }
+          enabled={syncEnabled && premium}
+          onToggle={handleToggleSync}
+          disabled={!premium}
+        />
         {activeEntry?.seedPhrase && (
-          <Pressable
+          <IconCard
+            icon={
+              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+                <Share2 size={20} color={syncEnabled ? "#EC4899" : "#9CA3AF"} />
+              </View>
+            }
+            title={t("shareInviteLink")}
+            subtitle={syncEnabled ? t("sendLinkToJoin") : t("enableSyncToShare")}
+            right={<ChevronRight size={18} color="#C0C0C8" />}
             onPress={syncEnabled ? handleInvite : undefined}
-            className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 ${
-              syncEnabled ? "active:opacity-80" : "opacity-50"
-            }`}
-          >
-            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Share2 size={20} color={syncEnabled ? "#EC4899" : "#9CA3AF"} />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-medium text-gray-900 dark:text-white">
-                {t("shareInviteLink")}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-0.5">
-                {syncEnabled
-                  ? t("sendLinkToJoin")
-                  : t("enableSyncToShare")}
-              </Text>
-            </View>
-            <ChevronRight size={18} color="#C0C0C8" />
-          </Pressable>
+            className={!syncEnabled ? "opacity-50" : ""}
+          />
         )}
 
         {/* Export / Import */}
-        <Pressable
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900 items-center justify-center">
+              <Download size={20} color="#3B82F6" />
+            </View>
+          }
+          title={exporting ? t("exporting") : t("exportData")}
+          subtitle={t("exportDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={handleExport}
-          disabled={exporting}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
-        >
-          <View className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900 items-center justify-center">
-            <Download size={20} color="#3B82F6" />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base font-medium text-gray-900 dark:text-white">
-              {exporting ? t("exporting") : t("exportData")}
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {t("exportDesc")}
-            </Text>
-          </View>
-          <ChevronRight size={18} color="#C0C0C8" />
-        </Pressable>
+        />
 
-        <Pressable
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900 items-center justify-center">
+              <Upload size={20} color="#F59E0B" />
+            </View>
+          }
+          title={importing ? t("importing") : t("importData")}
+          subtitle={t("importDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => setShowImportConfirm(true)}
-          disabled={importing}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 flex-row items-center border border-gray-100 dark:border-gray-800 active:opacity-80"
-        >
-          <View className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900 items-center justify-center">
-            <Upload size={20} color="#F59E0B" />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base font-medium text-gray-900 dark:text-white">
-              {importing ? t("importing") : t("importData")}
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {t("importDesc")}
-            </Text>
-          </View>
-          <ChevronRight size={18} color="#C0C0C8" />
-        </Pressable>
+        />
       </View>
 
       {/* Mes mariages */}
@@ -491,62 +457,34 @@ export default function SettingsScreen() {
       {/* Security */}
       <View className="px-4 mt-4">
         <SectionTitle>{t("security")}</SectionTitle>
-        <Pressable
-          onPress={handleToggleLock}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
-        >
-          <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-            <Lock size={20} color={lockEnabled ? "#EC4899" : "#C0C0C8"} />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-base text-gray-900 dark:text-white font-medium">
-              {t("appLock")}
-            </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
-              {lockEnabled ? t("pinBioEnabled") : t("disabled")}
-            </Text>
-          </View>
-          <View
-            className="w-12 h-7 rounded-full justify-center px-0.5"
-            style={{ backgroundColor: lockEnabled ? "#EC4899" : "#D1D5DB" }}
-          >
-            <View
-              className="w-6 h-6 rounded-full bg-white"
-              style={{ alignSelf: lockEnabled ? "flex-end" : "flex-start" }}
-            />
-          </View>
-        </Pressable>
+        <ToggleCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+              <Lock size={20} color={lockEnabled ? "#EC4899" : "#C0C0C8"} />
+            </View>
+          }
+          title={t("appLock")}
+          subtitle={lockEnabled ? t("pinBioEnabled") : t("disabled")}
+          enabled={lockEnabled}
+          onToggle={handleToggleLock}
+        />
       </View>
 
       {/* Notifications */}
       {Platform.OS !== "web" && (
         <View className="px-4 mt-4">
           <SectionTitle>{t("notifications")}</SectionTitle>
-          <Pressable
-            onPress={handleToggleNotifications}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
-          >
-            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-              <Bell size={20} color={notificationsEnabled ? "#EC4899" : "#C0C0C8"} />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base text-gray-900 dark:text-white font-medium">
-                {t("notificationsToggle")}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-0.5">
-                {notificationsEnabled ? t("notificationsOnDesc") : t("notificationsOffDesc")}
-              </Text>
-            </View>
-            <View
-              className="w-12 h-7 rounded-full justify-center px-0.5"
-              style={{ backgroundColor: notificationsEnabled ? "#EC4899" : "#D1D5DB" }}
-            >
-              <View
-                className="w-6 h-6 rounded-full bg-white"
-                style={{ alignSelf: notificationsEnabled ? "flex-end" : "flex-start" }}
-              />
-            </View>
-          </Pressable>
+          <ToggleCard
+            icon={
+              <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+                <Bell size={20} color={notificationsEnabled ? "#EC4899" : "#C0C0C8"} />
+              </View>
+            }
+            title={t("notificationsToggle")}
+            subtitle={notificationsEnabled ? t("notificationsOnDesc") : t("notificationsOffDesc")}
+            enabled={notificationsEnabled}
+            onToggle={handleToggleNotifications}
+          />
         </View>
       )}
 

@@ -20,9 +20,12 @@ import {
   PRIORITY_COLORS,
 } from "@/db/types";
 import type { TaskStatus, Priority } from "@/db/types";
-import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
+import { StatusSelector } from "@/components/StatusSelector";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "DONE"];
@@ -121,36 +124,22 @@ export default function TaskDetailScreen() {
         options={{
           title: isNew ? t("newTask") : title || t("task"),
           headerRight: () => (
-            <Pressable
-              onPress={canSave ? handleSave : undefined}
-              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                {t("common:save")}
-              </Text>
-            </Pressable>
+            <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {/* Status */}
         <SectionTitle>{t("vendors:statusLabel")}</SectionTitle>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mb-5"
-          contentContainerStyle={{ gap: 8 }}
-        >
-          {STATUSES.map((s) => (
-            <Pressable key={s} onPress={() => setStatus(s)}>
-              <StatusBadge
-                label={t(TASK_STATUS_LABELS[s])}
-                color={status === s ? "#EC4899" : "#D1D5DB"}
-                size="md"
-              />
-            </Pressable>
-          ))}
-        </ScrollView>
+        <StatusSelector
+          options={STATUSES.map((s) => ({
+            key: s,
+            label: t(TASK_STATUS_LABELS[s]),
+            color: "#EC4899",
+          }))}
+          activeKey={status}
+          onSelect={(k) => setStatus(k as TaskStatus)}
+        />
 
         {/* Title & description */}
         <SectionTitle>{t("information")}</SectionTitle>
@@ -209,54 +198,14 @@ export default function TaskDetailScreen() {
         {categories.length > 0 && (
           <>
             <SectionTitle>{t("category")}</SectionTitle>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-5"
-              contentContainerStyle={{ gap: 8 }}
-            >
-              <Pressable
-                onPress={() => setCategoryId("")}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !categoryId
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    !categoryId ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("common:noneF")}
-                </Text>
-              </Pressable>
-              {categories.map((c) => (
-                <Pressable
-                  key={c.id}
-                  onPress={() => setCategoryId(c.id)}
-                  className="px-3.5 py-2 rounded-full border border-transparent"
-                  style={{
-                    backgroundColor:
-                      categoryId === c.id
-                        ? (c.color || "#EC4899") + "25"
-                        : "#F3F4F6",
-                  }}
-                >
-                  <Text
-                    className="text-sm font-medium"
-                    style={{
-                      color:
-                        categoryId === c.id
-                          ? c.color || "#EC4899"
-                          : "#6B7280",
-                    }}
-                  >
-                    {c.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("common:noneF") },
+                ...categories.map((c) => ({ key: c.id, label: c.name })),
+              ]}
+              activeKey={categoryId}
+              onSelect={setCategoryId}
+            />
           </>
         )}
 
@@ -285,50 +234,14 @@ export default function TaskDetailScreen() {
         {vendors.length > 0 && (
           <>
             <SectionTitle>{t("linkedVendor")}</SectionTitle>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-5"
-              contentContainerStyle={{ gap: 8 }}
-            >
-              <Pressable
-                onPress={() => setVendorId("")}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !vendorId
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    !vendorId ? "text-white font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {t("common:none")}
-                </Text>
-              </Pressable>
-              {vendors.map((v) => (
-                <Pressable
-                  key={v.id}
-                  onPress={() => setVendorId(v.id)}
-                  className={`px-3.5 py-2 rounded-full border ${
-                    vendorId === v.id
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      vendorId === v.id
-                        ? "text-white font-medium"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {v.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("common:none") },
+                ...vendors.map((v) => ({ key: v.id, label: v.name })),
+              ]}
+              activeKey={vendorId}
+              onSelect={setVendorId}
+            />
           </>
         )}
 
@@ -357,16 +270,8 @@ export default function TaskDetailScreen() {
           />
         </FormCard>
 
-        {/* Delete */}
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteTask")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteTask")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />

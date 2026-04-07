@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, TextInput, Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -7,6 +7,9 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow, DateRow, TimeRow } from "@/components/FormSection";
+import { DeleteButton } from "@/components/DeleteButton";
+import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import type { AgendaEvent } from "@/db/schema";
 
 export default function AgendaEventScreen() {
@@ -75,14 +78,7 @@ export default function AgendaEventScreen() {
         options={{
           title: isNew ? t("newAppointment") : title || t("appointment"),
           headerRight: () => (
-            <Pressable
-              onPress={canSave ? handleSave : undefined}
-              style={{ marginRight: 8, backgroundColor: canSave ? "#EC4899" : "#9CA3AF", borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6, opacity: canSave ? 1 : 0.4 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                {t("common:save")}
-              </Text>
-            </Pressable>
+            <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
         }}
       />
@@ -99,40 +95,14 @@ export default function AgendaEventScreen() {
         {vendors.length > 0 && (
           <>
             <SectionTitle>{t("linkedVendorSection")}</SectionTitle>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-5"
-              contentContainerStyle={{ gap: 8 }}
-            >
-              <Pressable
-                onPress={() => setVendorId("")}
-                className={`px-3.5 py-2 rounded-full border ${
-                  !vendorId
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <Text className={`text-sm ${!vendorId ? "text-white font-medium" : "text-gray-500"}`}>
-                  {t("common:none")}
-                </Text>
-              </Pressable>
-              {vendors.map((v) => (
-                <Pressable
-                  key={v.id}
-                  onPress={() => setVendorId(v.id)}
-                  className={`px-3.5 py-2 rounded-full border ${
-                    vendorId === v.id
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-                  }`}
-                >
-                  <Text className={`text-sm ${vendorId === v.id ? "text-white font-medium" : "text-gray-500"}`}>
-                    {v.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("common:none") },
+                ...vendors.map((v) => ({ key: v.id, label: v.name })),
+              ]}
+              activeKey={vendorId}
+              onSelect={setVendorId}
+            />
           </>
         )}
 
@@ -150,14 +120,7 @@ export default function AgendaEventScreen() {
         </FormCard>
 
         {!isNew && (
-          <Pressable
-            onPress={() => setShowDelete(true)}
-            className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-8 items-center border border-red-100 dark:border-red-900"
-          >
-            <Text className="text-red-500 font-semibold text-sm">
-              {t("deleteAppointment")}
-            </Text>
-          </Pressable>
+          <DeleteButton label={t("deleteAppointment")} onPress={() => setShowDelete(true)} />
         )}
 
         <View className="h-8" />
