@@ -2,7 +2,7 @@ import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
 import { AppState, View, ActivityIndicator, Text } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -26,7 +26,13 @@ import OnboardingScreen from "./onboarding";
 
 /** Rendered inside DatabaseProvider so getDatabase() is guaranteed ready */
 function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  const pathname = usePathname();
+  const isPublicPage = pathname.startsWith("/wedding/");
+
   useEffect(() => {
+    // Never initialize sync when viewing the public wedding page
+    if (isPublicPage) return;
+
     if (getStarfishStore()) teardownStarfish();
     teardownPublicPageSync();
 
@@ -53,10 +59,12 @@ function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
     })();
 
     return () => { cancelled = true; };
-  }, [wedding.id]);
+  }, [wedding.id, isPublicPage]);
 
   // Re-push public page when day-of items or wedding info change
   useEffect(() => {
+    if (isPublicPage) return;
+
     let prevDayOfItems = usePlanningStore.getState().dayOfItems;
     let prevWedding = useWeddingStore.getState().wedding;
 
@@ -73,7 +81,7 @@ function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
       }
     });
     return () => { unsubPlanning(); unsubWedding(); };
-  }, []);
+  }, [isPublicPage]);
 
   return null;
 }
