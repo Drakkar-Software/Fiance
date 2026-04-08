@@ -418,9 +418,11 @@ export default function WeddingPublicPage() {
                       <Text className="text-base font-semibold text-gray-900">
                         {selectedGuest.firstName} {selectedGuest.lastName}
                       </Text>
-                      <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
-                        <Text className="text-sm text-gray-400">{t("rsvpChange")}</Text>
-                      </Pressable>
+                      {!(token && selectedGuest.rsvpToken === token) && (
+                        <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
+                          <Text className="text-sm text-gray-400">{t("rsvpChange")}</Text>
+                        </Pressable>
+                      )}
                     </View>
 
                     <Text className="text-sm text-gray-500 mb-2">{t("rsvpAttendance")}</Text>

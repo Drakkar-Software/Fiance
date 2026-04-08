@@ -37,12 +37,6 @@ const CONFIGS: Partial<Record<VendorType, Partial<VendorTypeFormConfig>>> = {
         options: CATERER_SERVICES,
       },
       {
-        key: "menuSections",
-        label: "Nombre de plats au menu",
-        type: "counter",
-        placeholder: "4",
-      },
-      {
         key: "menuNotes",
         label: "Notes sur le menu",
         type: "text",
