@@ -161,7 +161,8 @@ describe("submitRsvp", () => {
     await submitRsvp(SERVER, USER_ID, submission);
     expect(mockPush).toHaveBeenCalledWith(
       `/push/rsvp-inbox/${USER_ID}`,
-      expect.objectContaining({ rsvpToken: "token-alice" })
+      expect.objectContaining({ rsvpToken: "token-alice" }),
+      null
     );
   });
 
@@ -193,7 +194,8 @@ describe("submitRsvp", () => {
         rsvpStatus: "ACCEPTED",
         diet: "VEGETARIAN",
         submittedAt: "2026-04-08T10:00:00.000Z",
-      })
+      }),
+      null
     );
   });
 });
