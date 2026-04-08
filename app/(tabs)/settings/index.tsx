@@ -203,7 +203,6 @@ export default function SettingsScreen() {
     >
       {/* Wedding info */}
       <View className="px-4 pt-4">
-        <SectionTitle>{t("weddingInfo")}</SectionTitle>
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
