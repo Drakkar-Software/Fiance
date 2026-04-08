@@ -6,7 +6,7 @@ import i18n from "@/i18n";
 import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
-import { exportToPdf, buildPublicTimelineHtml } from "@/lib/pdf-export";
+import { printPublicSchedule } from "@/lib/print-schedule";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
 import { TimelineItem } from "@/components/TimelineItem";
 
@@ -121,35 +121,12 @@ export default function WeddingPublicPage() {
   }, [timeline, about?.weddingDate]);
   const isMultiDay = Object.keys(groupedTimeline).length > 1;
 
-  const handlePrintSchedule = useCallback(async () => {
-    const dateHeaders: Record<string, string> = {};
-    timeline.forEach((item) => {
-      const rawDate = item.date || about?.weddingDate || "";
-      if (rawDate && !dateHeaders[rawDate]) {
-        dateHeaders[rawDate] = safeFormat(
-          new Date(rawDate + "T00:00:00"),
-          "EEEE d MMMM yyyy",
-          { locale: getDateLocale() },
-        );
-      }
-    });
-    const html = buildPublicTimelineHtml(
-      timeline,
-      {
-        partner1Name: about?.partner1Name,
-        partner2Name: about?.partner2Name,
-        weddingDate: about?.weddingDate,
-        venueName: about?.venueName,
-      },
-      {
-        scheduleOf: t("scheduleOf"),
-        until: (time: string) => t("until", { time }),
-        dateHeaders,
-      },
-    );
-    const safeName = coupleNames.replace(/\s+/g, "-") || "schedule";
-    await exportToPdf(html, `${safeName}-schedule.pdf`);
-  }, [timeline, about, coupleNames, t]);
+  const handlePrintSchedule = useCallback(() =>
+    printPublicSchedule(timeline, about ?? {}, {
+      scheduleOf: t("scheduleOf"),
+      until: (time: string) => t("until", { time }),
+    }),
+  [timeline, about, t]);
 
   if (!id) return <Redirect href="/" />;
 
