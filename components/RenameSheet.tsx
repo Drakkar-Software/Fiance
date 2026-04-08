@@ -1,11 +1,10 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, TextInput } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetView,
-  BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 
 interface RenameSheetProps {
@@ -63,8 +62,6 @@ export function RenameSheet({
       onDismiss={onCancel}
       backgroundStyle={{ backgroundColor: "transparent" }}
       handleComponent={() => null}
-      keyboardBehavior="interactive"
-      keyboardBlurBehavior="restore"
     >
       <BottomSheetView>
         <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10">
@@ -72,7 +69,7 @@ export function RenameSheet({
           <Text className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             {title}
           </Text>
-          <BottomSheetTextInput
+          <TextInput
             value={value}
             onChangeText={setValue}
             placeholder={placeholder}
@@ -90,6 +87,7 @@ export function RenameSheet({
               borderColor: "#E5E7EB",
             }}
           />
+
           <View className="gap-3">
             <Pressable
               onPress={handleConfirm}
