@@ -153,7 +153,7 @@ export async function submitRsvp(
 ): Promise<boolean> {
   try {
     const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
-    await client.push(`/push/rsvp-inbox/${userId}`, submission as unknown as Record<string, unknown>);
+    await client.push(`/push/rsvp-inbox/${userId}`, submission as unknown as Record<string, unknown>, null);
     return true;
   } catch {
     return false;
