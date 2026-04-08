@@ -32,9 +32,10 @@
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
     "db:push": "echo 'db:push skipped: expo-sqlite runs migrations at app startup'",
-    "build:web": "expo export --platform web && node scripts/inject-pwa.js",
+    "build:web": "node scripts/check-migrations.js && expo export --platform web && node scripts/inject-pwa.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "check:migrations": "node scripts/check-migrations.js",
     "deploy": "npm install && npx expo export --platform web && node scripts/inject-pwa.js && dotenv -- wrangler pages deploy dist --project-name wedding-os"
   },
   "dependencies": {

@@ -48,8 +48,7 @@ CREATE TABLE IF NOT EXISTS `vendor_payments` (
   FOREIGN KEY (`vendor_id`) REFERENCES `vendors`(`id`) ON UPDATE no action ON DELETE cascade
 );
 
--- New guest columns
-ALTER TABLE `guests` ADD COLUMN `group_id` text REFERENCES guest_groups(id);
+-- New guest columns (group_id already added in 0004_remove_dinner_add_groups)
 ALTER TABLE `guests` ADD COLUMN `gift_description` text;
 ALTER TABLE `guests` ADD COLUMN `thank_you_sent` integer DEFAULT false;
 ALTER TABLE `guests` ADD COLUMN `thank_you_sent_date` text;

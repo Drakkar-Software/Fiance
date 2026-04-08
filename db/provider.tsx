@@ -73,9 +73,62 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
 
         const drizzleDb = drizzle(sqliteDb, { schema });
 
-        // Run migrations
-        const migrations = [m0001, m0002, m0003, m0004, m0005, m0006, m0007, m0008, m0009];
-        for (const migrationSQL of migrations) {
+        // Run migrations with tracking (never re-apply already-applied migrations)
+        sqliteDb.execSync(
+          `CREATE TABLE IF NOT EXISTS __migrations (
+            name TEXT PRIMARY KEY NOT NULL,
+            applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+          )`,
+        );
+
+        const migrationEntries: [string, string][] = [
+          ["0001_initial", m0001],
+          ["0002_planning_aspects", m0002],
+          ["0003_no_table_needed", m0003],
+          ["0004_remove_dinner_add_groups", m0004],
+          ["0005_companion_id", m0005],
+          ["0006_is_public_day_of", m0006],
+          ["0007_wedding_description_faq", m0007],
+          ["0008_day_of_item_date", m0008],
+          ["0009_new_tables_and_columns", m0009],
+        ];
+
+        // Detect legacy DB (existing data but no migration tracking yet)
+        const trackedCount =
+          sqliteDb.getFirstSync<{ count: number }>(
+            "SELECT COUNT(*) as count FROM __migrations",
+          )?.count ?? 0;
+        if (trackedCount === 0) {
+          const weddingExists =
+            (sqliteDb.getFirstSync<{ count: number }>(
+              "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='wedding'",
+            )?.count ?? 0) > 0;
+          if (weddingExists) {
+            // Legacy DB: seed migration history based on observable schema state.
+            // Check 0009 signature (accommodations table added in that migration).
+            const m0009Applied =
+              (sqliteDb.getFirstSync<{ count: number }>(
+                "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='accommodations'",
+              )?.count ?? 0) > 0;
+            const alreadyApplied = m0009Applied
+              ? migrationEntries.map(([name]) => name)
+              : migrationEntries.slice(0, 8).map(([name]) => name);
+            for (const name of alreadyApplied) {
+              sqliteDb.execSync(
+                `INSERT OR IGNORE INTO __migrations (name) VALUES ('${name}')`,
+              );
+            }
+          }
+        }
+
+        const applied = new Set(
+          sqliteDb
+            .getAllSync<{ name: string }>("SELECT name FROM __migrations")
+            .map((r) => r.name),
+        );
+
+        for (const [name, migrationSQL] of migrationEntries) {
+          if (applied.has(name)) continue;
           const statements = migrationSQL
             .split(";")
             .map((s: string) => s.trim())
@@ -83,6 +136,9 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
           for (const stmt of statements) {
             sqliteDb.execSync(stmt + ";");
           }
+          sqliteDb.execSync(
+            `INSERT INTO __migrations (name) VALUES ('${name}')`,
+          );
         }
 
         dbInstance = drizzleDb;

@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Check migrations
+        run: node scripts/check-migrations.js
+
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
         with:
