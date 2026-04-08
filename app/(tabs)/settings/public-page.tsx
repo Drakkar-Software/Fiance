@@ -226,6 +226,47 @@ export default function PublicPageScreen() {
         </FormCard>
       </View>
 
+      {/* RSVP online */}
+      <View className="px-4">
+        <SectionTitle>{t("rsvpSection")}</SectionTitle>
+        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+          {activeEntry?.seedPhrase ? t("rsvpSectionDesc") : t("syncRequiredRsvp")}
+        </Text>
+        {activeEntry?.seedPhrase ? (
+          <View className="gap-2">
+            <Text className="text-xs text-gray-400 mb-1">
+              {t("rsvpCount", { count: guestCount })}
+            </Text>
+            <Pressable
+              onPress={publishingRoster ? undefined : handlePublishRoster}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+            >
+              <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+                <Send size={18} color="#EC4899" />
+              </View>
+              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
+                {publishingRoster ? "..." : t("publishRoster")}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={syncingRsvp ? undefined : handleSyncRsvp}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+            >
+              <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
+                <RefreshCw size={18} color="#10B981" />
+              </View>
+              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
+                {syncingRsvp ? "..." : t("syncRsvp")}
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
+            <Text className="text-sm text-gray-400">{t("syncRequiredRsvp")}</Text>
+          </View>
+        )}
+      </View>
+
       {/* FAQ */}
       <View className="px-4">
         <SectionTitle>{t("faqTitle")}</SectionTitle>
@@ -318,47 +359,6 @@ export default function PublicPageScreen() {
             <Text className="text-sm text-gray-400 text-center mt-2">
               {t("timelinePreviewEmpty")}
             </Text>
-          </View>
-        )}
-      </View>
-
-      {/* RSVP online */}
-      <View className="px-4">
-        <SectionTitle>{t("rsvpSection")}</SectionTitle>
-        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
-          {activeEntry?.seedPhrase ? t("rsvpSectionDesc") : t("syncRequiredRsvp")}
-        </Text>
-        {activeEntry?.seedPhrase ? (
-          <View className="gap-2">
-            <Text className="text-xs text-gray-400 mb-1">
-              {t("rsvpCount", { count: guestCount })}
-            </Text>
-            <Pressable
-              onPress={publishingRoster ? undefined : handlePublishRoster}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
-            >
-              <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
-                <Send size={18} color="#EC4899" />
-              </View>
-              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
-                {publishingRoster ? "..." : t("publishRoster")}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={syncingRsvp ? undefined : handleSyncRsvp}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
-            >
-              <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
-                <RefreshCw size={18} color="#10B981" />
-              </View>
-              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
-                {syncingRsvp ? "..." : t("syncRsvp")}
-              </Text>
-            </Pressable>
-          </View>
-        ) : (
-          <View className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
-            <Text className="text-sm text-gray-400">{t("syncRequiredRsvp")}</Text>
           </View>
         )}
       </View>
