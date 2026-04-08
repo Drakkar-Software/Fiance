@@ -396,7 +396,11 @@ export default function PublicPageScreen() {
               try {
                 const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
                 const userId = authToken.slice(0, 16);
-                await Linking.openURL(buildWeddingPageUrl(userId));
+                if (typeof window !== "undefined") {
+                  router.push(`/wedding/${userId}`);
+                } else {
+                  await Linking.openURL(buildWeddingPageUrl(userId));
+                }
               } catch {}
             }}
             className="bg-white dark:bg-gray-900 rounded-2xl py-3.5 flex-row items-center justify-center border border-gray-200 dark:border-gray-700 active:opacity-80"
