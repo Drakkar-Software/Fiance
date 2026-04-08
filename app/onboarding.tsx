@@ -11,7 +11,7 @@ import {
   Image,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { PlusCircle, Link, ArrowLeft } from "lucide-react-native";
+import { PlusCircle, Link, ArrowLeft, CheckCircle2 } from "lucide-react-native";
 import { generatePassphrase } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 
@@ -229,9 +229,11 @@ function JoinWeddingForm({
         <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {t("onboarding.joinTitle")}
         </Text>
-        <Text className="text-base text-gray-400 mb-8">
-          {t("onboarding.enterPassword")}
-        </Text>
+        {!initialPassword && (
+          <Text className="text-base text-gray-400 mb-8">
+            {t("onboarding.enterPassword")}
+          </Text>
+        )}
 
         <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
           {t("onboarding.weddingNameLabel")}
@@ -244,19 +246,30 @@ function JoinWeddingForm({
           onChangeText={setLabel}
         />
 
-        <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-          {t("onboarding.password")}
-        </Text>
-        <TextInput
-          className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
-          placeholder={t("onboarding.passwordPlaceholder")}
-          placeholderTextColor="#C0C0C8"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        {initialPassword ? (
+          <View className="flex-row items-center gap-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-100 dark:border-emerald-900 rounded-xl px-4 py-3.5 mb-8">
+            <CheckCircle2 size={18} color="#10B981" />
+            <Text className="text-sm font-medium text-emerald-700 dark:text-emerald-300 flex-1">
+              {t("onboarding.inviteReady")}
+            </Text>
+          </View>
+        ) : (
+          <>
+            <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
+              {t("onboarding.password")}
+            </Text>
+            <TextInput
+              className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
+              placeholder={t("onboarding.passwordPlaceholder")}
+              placeholderTextColor="#C0C0C8"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </>
+        )}
 
         <Pressable
           onPress={handleJoin}

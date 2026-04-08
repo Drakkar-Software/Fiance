@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
-import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Heart, PlusCircle, ArrowLeft } from "lucide-react-native";
+import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken } from "@/lib/identity";
 import OnboardingScreen from "./onboarding";
@@ -37,9 +37,9 @@ export default function JoinScreen() {
   const [confirmed, setConfirmed] = useState(false);
   const joinAndNavigate = useJoinAndNavigate();
 
-  // No valid invite token → redirect home
+  // No valid invite token → show error
   if (!invite) {
-    return <Redirect href="/" />;
+    return <InvalidInvite />;
   }
 
   const name = invite.name;
@@ -81,6 +81,35 @@ function AlreadyJoinedRedirect({ password }: { password: string }) {
   }, [registry, switchWedding, router, password]);
 
   return null;
+}
+
+function InvalidInvite() {
+  const { t } = useTranslation("common");
+  const router = useRouter();
+
+  return (
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
+      <View className="items-center mb-10">
+        <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900 items-center justify-center mb-5">
+          <AlertCircle size={36} color="#EF4444" />
+        </View>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+          {t("onboarding.inviteFailed")}
+        </Text>
+      </View>
+      <Pressable
+        onPress={() => router.replace("/")}
+        className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+      >
+        <View className="flex-row items-center">
+          <ArrowLeft size={20} color="#EC4899" />
+          <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
+            {t("join.noGoBack")}
+          </Text>
+        </View>
+      </Pressable>
+    </View>
+  );
 }
 
 function ConfirmJoin({

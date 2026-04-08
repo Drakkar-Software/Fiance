@@ -50,7 +50,9 @@
     "passwordRequired": "Password is required to join this wedding.",
     "nameRequired": "Give this wedding a name",
     "joining": "Connecting...",
-    "join": "Join"
+    "join": "Join",
+    "inviteReady": "Invitation valid — wedding ready to load",
+    "inviteFailed": "Failed to load wedding details"
   },
   "join": {
     "newWedding": "New wedding",

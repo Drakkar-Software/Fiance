@@ -50,7 +50,9 @@
     "passwordRequired": "Le mot de passe est requis pour rejoindre ce mariage.",
     "nameRequired": "Donnez un nom à ce mariage",
     "joining": "Connexion...",
-    "join": "Rejoindre"
+    "join": "Rejoindre",
+    "inviteReady": "Invitation valide — mariage prêt à charger",
+    "inviteFailed": "Impossible de charger les détails du mariage"
   },
   "join": {
     "newWedding": "Nouveau mariage",
