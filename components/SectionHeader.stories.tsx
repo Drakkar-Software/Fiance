@@ -21,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof SectionHeader>;
 
 export const TitleOnly: Story = {
-  args: { title: "Mes prestataires" },
+  args: { title: "My vendors" },
 };
 
 export const WithSubtitle: Story = {

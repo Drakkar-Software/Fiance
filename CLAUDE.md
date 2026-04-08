@@ -28,7 +28,7 @@ Tests use Vitest. Test files live in `__tests__/`. Pure business logic is tested
 
 ### Routing
 
-File-based routing via Expo Router. Screens live in `app/(tabs)/` — each subdirectory is a feature tab (invites, prestataires, planning, budget, idees, settings). The root `app/_layout.tsx` wraps everything in a wedding registry provider.
+File-based routing via Expo Router. Screens live in `app/(tabs)/` — each subdirectory is a feature tab (guests, vendors, planning, budget, ideas, settings). The root `app/_layout.tsx` wraps everything in a wedding registry provider.
 
 ### Data flow: Zustand → SQLite → Starfish
 

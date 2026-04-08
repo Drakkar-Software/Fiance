@@ -134,11 +134,11 @@ An AES-256-GCM encryption key is generated automatically and stored in the devic
 app/
   (tabs)/
     index.tsx              # Dashboard
-    invites/               # Guest list + table planner
+    guests/                # Guest list + table planner
     planning/              # Task management
-    prestataires/          # Vendor management
+    vendors/               # Vendor management
     budget/                # Budget tracker
-    idees/                 # Mood board
+    ideas/                 # Mood board
     settings/              # App settings + sync config
 components/                # 29 shared UI components (with Storybook stories)
 db/
