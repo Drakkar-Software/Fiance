@@ -1,2 +1,1 @@
-export default "ALTER TABLE `guests` ADD COLUMN `companion_id` text;
-";
+export default "ALTER TABLE `guests` ADD COLUMN `companion_id` text;\n";
