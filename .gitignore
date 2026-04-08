@@ -10,3 +10,5 @@ dist/
 web-build/
 .env
 .env.local
+debug-storybook.log
+storybook-static/
