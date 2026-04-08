@@ -31,7 +31,6 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push",
     "build:web": "expo export --platform web && node scripts/inject-pwa.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

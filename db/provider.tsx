@@ -74,6 +74,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
           require("./migrations/0006_is_public_day_of.sql"),
           require("./migrations/0007_wedding_description_faq.sql"),
           require("./migrations/0008_day_of_item_date.sql"),
+          require("./migrations/0009_new_tables_and_columns.sql"),
         ];
         for (const migrationSQL of migrations) {
           if (typeof migrationSQL === "string") {
