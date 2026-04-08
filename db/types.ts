@@ -231,19 +231,19 @@ export const BUDGET_CATEGORY_LABELS: Record<string, string> = {
 
 export const BUDGET_ALLOCATION_TEMPLATES: Record<string, Record<string, number>> = {
   intimate: {
-    venue: 0.30, catering: 0.30, photo_video: 0.12, music_entertainment: 0.05,
+    venue: 0.18, catering: 0.38, photo_video: 0.10, music_entertainment: 0.05,
     flowers_decor: 0.06, beauty: 0.04, transport: 0.02, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.03, cake: 0.02, other: 0.01,
+    stationery: 0.02, coordination: 0.05, cake: 0.02, other: 0.05,
   },
   classic: {
-    venue: 0.28, catering: 0.28, photo_video: 0.13, music_entertainment: 0.06,
-    flowers_decor: 0.06, beauty: 0.04, transport: 0.03, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.03, cake: 0.02, other: 0.02,
+    venue: 0.17, catering: 0.37, photo_video: 0.10, music_entertainment: 0.06,
+    flowers_decor: 0.07, beauty: 0.04, transport: 0.03, accommodation: 0.03,
+    stationery: 0.02, coordination: 0.06, cake: 0.02, other: 0.03,
   },
   luxe: {
-    venue: 0.25, catering: 0.25, photo_video: 0.15, music_entertainment: 0.07,
-    flowers_decor: 0.07, beauty: 0.05, transport: 0.03, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.04, cake: 0.02, other: 0.02,
+    venue: 0.15, catering: 0.35, photo_video: 0.10, music_entertainment: 0.07,
+    flowers_decor: 0.08, beauty: 0.05, transport: 0.03, accommodation: 0.03,
+    stationery: 0.02, coordination: 0.07, cake: 0.02, other: 0.03,
   },
 };
 

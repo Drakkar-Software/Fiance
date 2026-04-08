@@ -300,6 +300,8 @@ export default function BudgetScreen() {
             budget.budgetTarget > 0
               ? Math.round((cat.totalEngaged / budget.budgetTarget) * 100)
               : 0;
+          const hasTarget = cat.targetAmount != null && cat.targetAmount > 0;
+          const progressMax = hasTarget ? cat.targetAmount! : (budget.budgetTarget > 0 ? budget.budgetTarget : 1);
 
           return (
             <View key={cat.categoryName} className="mx-4 mb-2">
@@ -315,7 +317,10 @@ export default function BudgetScreen() {
                       {t(BUDGET_CATEGORY_LABELS[cat.categoryName])}
                     </Text>
                     <Text className="text-xs text-gray-400 mt-0.5">
-                      {t("vendor", { count: cat.vendors.length })} · {catPercent}% {t("ofBudget")}
+                      {t("vendor", { count: cat.vendors.length })}
+                      {hasTarget
+                        ? ` · ${formatMoney(cat.totalEngaged)} / ${formatMoney(cat.targetAmount!)}`
+                        : ` · ${catPercent}% ${t("ofBudget")}`}
                     </Text>
                   </View>
                   <View className="items-end mr-2">
@@ -325,6 +330,11 @@ export default function BudgetScreen() {
                     <Text className="text-xs text-emerald-500">
                       {t("confirmedAmount", { amount: formatMoney(cat.totalConfirmed) })}
                     </Text>
+                    {cat.overage > 0 && (
+                      <Text className="text-xs text-red-500 font-medium">
+                        +{formatMoney(cat.overage)}
+                      </Text>
+                    )}
                   </View>
                   {isExpanded ? (
                     <ChevronUp size={18} color="#C0C0C8" />
@@ -335,8 +345,9 @@ export default function BudgetScreen() {
                 <View className="mt-3">
                   <ProgressBar
                     value={cat.totalEngaged}
-                    max={budget.budgetTarget > 0 ? budget.budgetTarget : 1}
-                    showPercentage={false}
+                    max={progressMax}
+                    colorScheme={hasTarget ? "budget" : "default"}
+                    showPercentage={hasTarget}
                   />
                 </View>
               </Pressable>
