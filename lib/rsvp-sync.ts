@@ -91,13 +91,8 @@ export async function fetchRsvpRoster(
 ): Promise<RsvpRoster | null> {
   try {
     const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
-    const syncManager = new SyncManager({
-      client,
-      pullPath: `/pull/rsvp-roster/${userId}`,
-      pushPath: `/push/rsvp-roster/${userId}`,
-    });
-    const data = await syncManager.pull();
-    return (data as RsvpRoster) ?? null;
+    const result = await client.pull(`/pull/rsvp-roster/${userId}`);
+    return (result.data as RsvpRoster) ?? null;
   } catch {
     return null;
   }
@@ -113,12 +108,7 @@ export async function submitRsvp(
 ): Promise<boolean> {
   try {
     const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
-    const syncManager = new SyncManager({
-      client,
-      pullPath: `/pull/rsvp-inbox/${userId}`,
-      pushPath: `/push/rsvp-inbox/${userId}`,
-    });
-    await syncManager.push(submission);
+    await client.push(`/push/rsvp-inbox/${userId}`, submission as unknown as Record<string, unknown>);
     return true;
   } catch {
     return false;
