@@ -278,28 +278,7 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* RSVP */}
-        <View className="flex-row items-center justify-between">
-          <SectionTitle>RSVP</SectionTitle>
-          {activeEntry?.seedPhrase && (
-            <Pressable
-              onPress={async () => {
-                try {
-                  const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
-                  const userId = authToken.slice(0, 16);
-                  const baseUrl = buildWeddingPageUrl(userId);
-                  const guestName = `${firstName} ${lastName}`.trim();
-                  const rsvpToken = useGuestsStore.getState().guests.find((g) => g.id === guestId)?.rsvpToken;
-                  const url = rsvpToken ? `${baseUrl}?token=${rsvpToken}` : baseUrl;
-                  await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
-                } catch {}
-              }}
-              className="flex-row items-center gap-1 pb-2"
-            >
-              <Share2 size={14} color="#EC4899" />
-              <Text className="text-xs text-primary-500 font-medium">{t("rsvpLink")}</Text>
-            </Pressable>
-          )}
-        </View>
+        <SectionTitle>RSVP</SectionTitle>
         <StatusSelector
           options={RSVP_STATUSES.map((s) => ({
             key: s,
@@ -411,6 +390,26 @@ export default function GuestDetailScreen() {
             textAlignVertical="top"
           />
         </FormCard>
+
+        {!isNew && activeEntry?.seedPhrase && (
+          <Pressable
+            onPress={async () => {
+              try {
+                const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+                const userId = authToken.slice(0, 16);
+                const baseUrl = buildWeddingPageUrl(userId);
+                const guestName = `${firstName} ${lastName}`.trim();
+                const rsvpToken = useGuestsStore.getState().guests.find((g) => g.id === guestId)?.rsvpToken;
+                const url = rsvpToken ? `${baseUrl}?token=${rsvpToken}` : baseUrl;
+                await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
+              } catch {}
+            }}
+            className="flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 mb-3 active:opacity-70"
+          >
+            <Share2 size={16} color="#EC4899" />
+            <Text className="text-sm font-semibold text-primary-500">{t("rsvpLink")}</Text>
+          </Pressable>
+        )}
 
         {!isNew && (
           <DeleteButton label={t("deleteGuest")} onPress={() => setShowDelete(true)} />
