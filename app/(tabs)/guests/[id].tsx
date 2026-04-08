@@ -398,7 +398,6 @@ export default function GuestDetailScreen() {
                 const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
                 const userId = authToken.slice(0, 16);
                 const baseUrl = buildWeddingPageUrl(userId);
-                const guestName = `${firstName} ${lastName}`.trim();
                 const { guests, updateGuest } = useGuestsStore.getState();
                 let rsvpToken = guests.find((g) => g.id === guestId)?.rsvpToken;
                 if (!rsvpToken) {
@@ -406,8 +405,19 @@ export default function GuestDetailScreen() {
                   updateGuest(guestId, { rsvpToken });
                 }
                 const url = `${baseUrl}?token=${rsvpToken}`;
-                await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
-              } catch {}
+                try {
+                  await Share.share({ message: url, url });
+                } catch {
+                  if (typeof navigator !== "undefined" && navigator.clipboard) {
+                    await navigator.clipboard.writeText(url);
+                    Alert.alert(t("rsvpLink"), url);
+                  } else {
+                    Alert.alert(t("rsvpLink"), url);
+                  }
+                }
+              } catch (e: any) {
+                Alert.alert(t("common:error"), e.message);
+              }
             }}
             className="flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 mb-3 active:opacity-70"
           >
