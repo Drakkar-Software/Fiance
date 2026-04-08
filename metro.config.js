@@ -16,6 +16,8 @@ if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push(
 // Allow resolving packages that only export under "import" or "default" conditions (e.g. ESM-only subpaths)
 if (!config.resolver.unstable_conditionNames.includes('import')) config.resolver.unstable_conditionNames.push('import', 'default', 'require')
 if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
-config.transformer.babelTransformerPath = require.resolve('./metro-sql-transform.js')
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+// Apply NativeWind, then override transformer so our SQL handler runs outermost
+const finalConfig = withNativeWind(config, { input: "./global.css" });
+finalConfig.transformer.babelTransformerPath = require.resolve('./metro-sql-transform.js');
+module.exports = finalConfig;
