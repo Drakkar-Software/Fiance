@@ -1,13 +1,16 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import React, { useState, useCallback, useMemo } from "react";
+import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ChevronUp, ChevronDown } from "lucide-react-native";
+import { ChevronUp, ChevronDown, Target } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
-import { VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS, BUDGET_CATEGORY_LABELS } from "@/db/types";
+import {
+  VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS, BUDGET_CATEGORY_LABELS,
+  BUDGET_CATEGORIES, BUDGET_ALLOCATION_TEMPLATES, BUDGET_TEMPLATE_LABELS,
+} from "@/db/types";
 import type { VendorStatus } from "@/db/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
@@ -22,6 +25,30 @@ export default function BudgetScreen() {
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [showTargets, setShowTargets] = useState(false);
+
+  const categoryBudgetsRaw = useWeddingStore((s) => s.wedding?.categoryBudgets);
+  const categoryBudgets: Record<string, number> = useMemo(() => {
+    if (!categoryBudgetsRaw) return {};
+    try { return JSON.parse(categoryBudgetsRaw); } catch { return {}; }
+  }, [categoryBudgetsRaw]);
+
+  const setCategoryTarget = useCallback((cat: string, value: string) => {
+    const updated = { ...categoryBudgets };
+    if (value) updated[cat] = parseFloat(value) || 0;
+    else delete updated[cat];
+    updateWedding({ categoryBudgets: JSON.stringify(updated) });
+  }, [categoryBudgets, updateWedding]);
+
+  const applyTemplate = useCallback((templateKey: string) => {
+    const tpl = BUDGET_ALLOCATION_TEMPLATES[templateKey];
+    if (!tpl || !budget.budgetTarget) return;
+    const targets: Record<string, number> = {};
+    for (const [cat, ratio] of Object.entries(tpl)) {
+      targets[cat] = Math.round(budget.budgetTarget * ratio);
+    }
+    updateWedding({ categoryBudgets: JSON.stringify(targets) });
+  }, [budget.budgetTarget, updateWedding]);
 
   const [budgetTarget, _setBudgetTarget] = useState(
     wedding?.budgetTarget?.toString() || ""
@@ -177,6 +204,86 @@ export default function BudgetScreen() {
           showPercentage={false}
         />
       </View>
+
+      {/* Category targets */}
+      <Pressable
+        onPress={() => setShowTargets((v) => !v)}
+        className="mx-4 mt-3 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center justify-between"
+      >
+        <View className="flex-row items-center gap-2">
+          <Target size={17} color="#EC4899" />
+          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            {t("categoryTarget")}
+          </Text>
+        </View>
+        {showTargets ? <ChevronUp size={18} color="#C0C0C8" /> : <ChevronDown size={18} color="#C0C0C8" />}
+      </Pressable>
+
+      {showTargets && (
+        <View className="mx-4 mt-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
+          {/* Template picker */}
+          {budget.budgetTarget > 0 && (
+            <View className="mb-4">
+              <Text className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">
+                {t("useTemplate")}
+              </Text>
+              <View className="flex-row gap-2">
+                {Object.keys(BUDGET_ALLOCATION_TEMPLATES).map((key) => (
+                  <Pressable
+                    key={key}
+                    onPress={() => applyTemplate(key)}
+                    className="flex-1 py-2 rounded-xl border border-gray-200 dark:border-gray-700 items-center active:bg-primary-50 dark:active:bg-primary-900"
+                  >
+                    <Text className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                      {t(BUDGET_TEMPLATE_LABELS[key])}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Per-category targets */}
+          {Object.keys(BUDGET_CATEGORIES).map((cat, idx) => {
+            const catData = budget.categories.find((c) => c.categoryName === cat);
+            const target = categoryBudgets[cat];
+            const spent = catData?.totalEngaged ?? 0;
+            const isOver = target && spent > target;
+            return (
+              <View
+                key={cat}
+                className={`flex-row items-center py-2.5 ${idx < Object.keys(BUDGET_CATEGORIES).length - 1 ? "border-b border-gray-50 dark:border-gray-800" : ""}`}
+              >
+                <Text className="flex-1 text-sm text-gray-700 dark:text-gray-300">
+                  {t(BUDGET_CATEGORY_LABELS[cat])}
+                </Text>
+                {spent > 0 && (
+                  <Text className={`text-xs font-medium mr-2 ${isOver ? "text-red-500" : "text-gray-400"}`}>
+                    {formatMoney(spent)}
+                  </Text>
+                )}
+                <View className="w-24 bg-gray-50 dark:bg-gray-800 rounded-lg px-2 py-1">
+                  <TextInput
+                    className="text-sm text-gray-900 dark:text-white text-right"
+                    value={target ? target.toString() : ""}
+                    onChangeText={(v) => setCategoryTarget(cat, v)}
+                    placeholder="—"
+                    placeholderTextColor="#C0C0C8"
+                    keyboardType="numeric"
+                  />
+                </View>
+                {isOver && (
+                  <View className="ml-2 bg-red-50 dark:bg-red-900 px-1.5 py-0.5 rounded-md">
+                    <Text className="text-xs text-red-500 font-medium">
+                      +{formatMoney(spent - target!)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      )}
 
       {/* Categories breakdown */}
       <View className="px-4 mt-6 mb-3 flex-row items-center">

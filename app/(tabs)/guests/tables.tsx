@@ -16,6 +16,8 @@ import {
   X,
   UserPlus,
   UserMinus,
+  List,
+  Map,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
@@ -23,6 +25,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { DIET_LABELS } from "@/db/types";
+import { PlanView } from "@/components/SeatingPlanView";
 
 export default function TablesScreen() {
   const { t } = useTranslation("guests");
@@ -37,6 +40,7 @@ export default function TablesScreen() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   // Which table is in "assign mode" (showing unassigned guest picker)
   const [assigningTableId, setAssigningTableId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "plan">("list");
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
@@ -73,8 +77,41 @@ export default function TablesScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+      {/* View mode toggle */}
+      {tables.length > 0 && (
+        <View className="flex-row mx-4 mt-4 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+          <Pressable
+            onPress={() => setViewMode("list")}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 py-2 rounded-lg ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+          >
+            <List size={15} color={viewMode === "list" ? "#EC4899" : "#9CA3AF"} />
+            <Text className={`text-sm font-medium ${viewMode === "list" ? "text-primary-500" : "text-gray-400"}`}>
+              Liste
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setViewMode("plan")}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 py-2 rounded-lg ${viewMode === "plan" ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+          >
+            <Map size={15} color={viewMode === "plan" ? "#EC4899" : "#9CA3AF"} />
+            <Text className={`text-sm font-medium ${viewMode === "plan" ? "text-primary-500" : "text-gray-400"}`}>
+              Plan
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Plan view */}
+      {viewMode === "plan" && tables.length > 0 && (
+        <PlanView
+          tables={tables}
+          guests={guests}
+          updateTable={(id, updates) => useGuestsStore.getState().updateTable(id, updates)}
+        />
+      )}
+
       {/* Unassigned guests warning */}
-      {unassigned.length > 0 && (
+      {viewMode === "list" && unassigned.length > 0 && (
         <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">
           <View className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center mr-2">
             <AlertTriangle size={14} color="#F59E0B" />
@@ -85,7 +122,7 @@ export default function TablesScreen() {
         </View>
       )}
 
-      {tables.length === 0 && !showAdd ? (
+      {viewMode === "list" && (tables.length === 0 && !showAdd ? (
         <EmptyState
           icon={LayoutGrid}
           title={t("noTables")}
@@ -335,7 +372,7 @@ export default function TablesScreen() {
 
           <View className="h-24" />
         </ScrollView>
-      )}
+      ))}
 
       <FAB onPress={() => setShowAdd(true)} />
 
