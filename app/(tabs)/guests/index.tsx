@@ -179,11 +179,18 @@ function GuestsView() {
     { key: "NO_ACCOM", label: t("noAccommodation"), count: counts.no_accommodation_count },
   ];
 
+  const typeCounts = useMemo(() => ({
+    CEREMONY: guests.filter((g) => g.invitationType === "CEREMONY").length,
+    COCKTAIL: guests.filter((g) => g.invitationType === "COCKTAIL").length,
+    FULL: guests.filter((g) => g.invitationType === "FULL").length,
+    BOTH_DAYS: guests.filter((g) => g.invitationType === "BOTH_DAYS").length,
+  }), [guests]);
+
   const typeTabs = [
-    { key: "CEREMONY", label: t("invitationTypes.CEREMONY") },
-    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL") },
-    { key: "FULL", label: t("invitationTypes.FULL") },
-    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS") },
+    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: typeCounts.CEREMONY },
+    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: typeCounts.COCKTAIL },
+    { key: "FULL", label: t("invitationTypes.FULL"), count: typeCounts.FULL },
+    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: typeCounts.BOTH_DAYS },
   ];
 
   return (
@@ -245,7 +252,7 @@ function GuestsView() {
                     : "text-gray-600 dark:text-gray-400"
                 }`}
               >
-                {tab.label}
+                {tab.label} ({tab.count})
               </Text>
             </Pressable>
           );
