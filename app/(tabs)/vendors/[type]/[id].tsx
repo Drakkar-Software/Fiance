@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -306,8 +306,15 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
   const { t: tV } = useTranslation("vendors");
   const addPayment = useVendorsStore((s) => s.addPayment);
   const removePayment = useVendorsStore((s) => s.removePayment);
-  const payments = useVendorsStore((s) => s.vendorPayments.filter((p) => p.vendorId === vendorId));
-  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+  const allPayments = useVendorsStore((s) => s.vendorPayments);
+  const payments = useMemo(
+    () => allPayments.filter((p) => p.vendorId === vendorId),
+    [allPayments, vendorId]
+  );
+  const totalPaid = useMemo(
+    () => payments.reduce((sum, p) => sum + p.amount, 0),
+    [payments]
+  );
 
   const [showAdd, setShowAdd] = useState(false);
   const [amount, setAmount] = useState("");
