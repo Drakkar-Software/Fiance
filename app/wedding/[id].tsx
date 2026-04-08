@@ -3,7 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, 
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download } from "lucide-react-native";
+import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download, Camera } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { printPublicSchedule } from "@/lib/print-schedule";
@@ -585,6 +585,32 @@ export default function WeddingPublicPage() {
                 )}
               </View>
             )}
+          </View>
+        )}
+
+        {/* Event Photos — only shown for token holders */}
+        {token && (
+          <View className="mt-4 px-4 pb-6">
+            <View className="flex-row items-center gap-3 mb-6">
+              <View className="h-px flex-1 bg-accent-rose-light" />
+              <View className="w-1.5 h-1.5 rounded-full bg-accent-rose" />
+              <View className="h-px flex-1 bg-accent-rose-light" />
+            </View>
+            <View className="flex-row items-center gap-2 px-1 mb-4">
+              <Camera size={18} color="#C9956B" />
+              <Text className="text-lg font-bold text-gray-900">
+                {t("eventPhotos")}
+              </Text>
+            </View>
+            <View
+              className="bg-white rounded-2xl p-6 items-center shadow-sm"
+              style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+            >
+              <Camera size={40} color="#E8D5C0" />
+              <Text className="text-sm text-gray-400 text-center mt-3 leading-5">
+                {t("eventPhotosPlaceholder")}
+              </Text>
+            </View>
           </View>
         )}
 

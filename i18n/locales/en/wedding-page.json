@@ -35,6 +35,8 @@
   "plusOneAttendance": "Will they attend?",
   "plusOneDiet": "Their dietary requirements",
   "childrenLabel": "Number of children",
+  "eventPhotos": "Event Photos",
+  "eventPhotosPlaceholder": "Event photos will be downloadable from here when available.",
   "rsvpDiets": {
     "STANDARD": "Standard",
     "VEGETARIAN": "Vegetarian",

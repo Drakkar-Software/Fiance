@@ -10,6 +10,7 @@ export const wedding = sqliteTable("wedding", {
   venueName: text("venue_name"),
   description: text("description"),
   faq: text("faq"), // JSON string of FaqItem[]
+  eventPhotos: text("event_photos"), // JSON string of EventPhoto[]
   budgetTarget: real("budget_target"),
   categoryBudgets: text("category_budgets"), // JSON: Record<categoryKey, number>
   currency: text("currency").default("EUR"),

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye, HelpCircle, Calendar } from "lucide-react-native";
+import { Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { TimelineItem } from "@/components/TimelineItem";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -281,8 +281,19 @@ export default function PublicPageScreen() {
         />
       </View>
 
-      {/* FAQ + Gift registry */}
+      {/* Event photos + FAQ + Gift registry */}
       <View className="px-4 mt-2">
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900 items-center justify-center">
+              <Camera size={20} color="#10B981" />
+            </View>
+          }
+          title={t("eventPhotosTitle")}
+          subtitle={t("eventPhotosDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/(tabs)/settings/event-photos")}
+        />
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900 items-center justify-center">

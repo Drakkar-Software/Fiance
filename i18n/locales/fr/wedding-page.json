@@ -35,6 +35,8 @@
   "plusOneAttendance": "Sera-t-il/elle présent(e) ?",
   "plusOneDiet": "Son régime alimentaire",
   "childrenLabel": "Nombre d'enfants",
+  "eventPhotos": "Photos de l'événement",
+  "eventPhotosPlaceholder": "Les photos de l'événement seront téléchargeables ici lorsqu'elles seront disponibles.",
   "rsvpDiets": {
     "STANDARD": "Standard",
     "VEGETARIAN": "Végétarien",
