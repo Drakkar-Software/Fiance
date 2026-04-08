@@ -6,6 +6,7 @@
 import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
+import { useGiftsStore } from "@/store/useGiftsStore";
 
 export interface PublicDayOfItem {
   id: string;
@@ -15,6 +16,17 @@ export interface PublicDayOfItem {
   endTime?: string | null;
   location?: string | null;
   sortOrder?: number | null;
+}
+
+export interface PublicGift {
+  id: string;
+  title: string;
+  description?: string | null;
+  price?: number | null;
+  url?: string | null;
+  imageUrl?: string | null;
+  category?: string | null;
+  claimed?: boolean;
 }
 
 export interface PublicWeddingPage {
@@ -29,6 +41,7 @@ export interface PublicWeddingPage {
   };
   timeline: PublicDayOfItem[];
   faq: FaqItem[];
+  gifts?: PublicGift[];
 }
 
 export interface FaqItem {
@@ -89,6 +102,11 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       sortOrder,
     }));
 
+  const gifts = useGiftsStore.getState().gifts;
+  const publicGifts: PublicGift[] = gifts.map(({ id, title, description, price, url, imageUrl, category, claimed }) => ({
+    id, title, description, price, url, imageUrl, category, claimed: !!claimed,
+  }));
+
   return {
     version: 1,
     timestamp: new Date().toISOString(),
@@ -100,7 +118,8 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       description: wedding?.description,
     },
     timeline: publicItems,
-    faq: wedding?.faq ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })() : []
+    faq: wedding?.faq ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })() : [],
+    gifts: publicGifts.length > 0 ? publicGifts : undefined,
   };
 }
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, TextInput } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, TextInput, Linking } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2 } from "lucide-react-native";
+import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
@@ -37,8 +37,7 @@ function LangSwitch() {
   return (
     <Pressable
       onPress={toggle}
-      className="flex-row items-center gap-1.5 self-end mr-5 mt-4 px-3 py-1.5 rounded-full bg-white/60"
-      style={{ position: "absolute", top: 8, right: 0, zIndex: 10 }}
+      className="flex-row items-center gap-1.5 self-end px-3 py-1.5 rounded-full bg-white/60 mr-4 mt-3"
     >
       <Globe size={13} color="#9CA3AF" />
       <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide">
@@ -94,6 +93,7 @@ export default function WeddingPublicPage() {
   const about = page?.about;
   const timeline = page?.timeline ?? [];
   const faq = page?.faq ?? [];
+  const publicGifts = (page?.gifts ?? []).filter((g) => !g.claimed);
 
   const coupleNames = [about?.partner1Name, about?.partner2Name].filter(Boolean).join(" & ");
   const formattedDate = about?.weddingDate
@@ -148,11 +148,11 @@ export default function WeddingPublicPage() {
   return (
     <View className="flex-1 bg-accent-cream">
       <Stack.Screen options={{ headerShown: false }} />
-      <LangSwitch />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
         <View className="w-full" style={{ maxWidth: 600 }}>
+        <LangSwitch />
         {/* Hero */}
-        <View className="items-center pt-14 pb-10 px-6">
+        <View className="items-center pt-8 pb-10 px-6">
           <Image
             source={require("@/assets/icon.png")}
             style={{ width: 72, height: 72, borderRadius: 18 }}
@@ -292,6 +292,50 @@ export default function WeddingPublicPage() {
                   {item.answer}
                 </Text>
               </View>
+            ))}
+          </View>
+        )}
+
+        {/* Gift registry */}
+        {publicGifts.length > 0 && (
+          <View className="mt-4 px-4 pb-6">
+            <View className="flex-row items-center gap-3 mb-6">
+              <View className="h-px flex-1 bg-accent-rose-light" />
+              <View className="w-1.5 h-1.5 rounded-full bg-accent-rose" />
+              <View className="h-px flex-1 bg-accent-rose-light" />
+            </View>
+
+            <View className="flex-row items-center gap-2 px-1 mb-4">
+              <Gift size={18} color="#C9956B" />
+              <Text className="text-lg font-bold text-gray-900">
+                {t("giftRegistry")}
+              </Text>
+            </View>
+
+            {publicGifts.map((gift) => (
+              <Pressable
+                key={gift.id}
+                onPress={gift.url ? () => Linking.openURL(gift.url!) : undefined}
+                className="bg-white rounded-2xl p-4 mb-3 shadow-sm"
+                style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-gray-900">{gift.title}</Text>
+                    {gift.description && (
+                      <Text className="text-sm text-gray-500 mt-1 leading-5">{gift.description}</Text>
+                    )}
+                    {gift.price != null && (
+                      <Text className="text-sm font-medium text-accent-gold mt-1.5">{gift.price} €</Text>
+                    )}
+                  </View>
+                  {gift.url && (
+                    <View className="ml-3 mt-0.5">
+                      <ExternalLink size={16} color="#C9956B" />
+                    </View>
+                  )}
+                </View>
+              </Pressable>
             ))}
           </View>
         )}
