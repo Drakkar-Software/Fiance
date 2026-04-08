@@ -67,6 +67,11 @@ vi.mock("expo-crypto", () => ({
   randomUUID: vi.fn().mockReturnValue("generated-uuid"),
 }));
 
+vi.mock("@/lib/identity", () => ({
+  deriveAuthToken: vi.fn().mockResolvedValue("mock-auth-token"),
+  buildWeddingPageUrl: vi.fn().mockReturnValue("https://example.com/wedding/mock"),
+}));
+
 import {
   fetchRsvpRoster,
   submitRsvp,

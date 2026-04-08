@@ -28,7 +28,7 @@ describe("getVendorTypeConfig", () => {
     const config = getVendorTypeConfig("CATERER");
     const keys = config.customSections.map((s) => s.key);
     expect(keys).toContain("services");
-    expect(keys).toContain("menuSections");
+    expect(keys).toContain("menuNotes");
   });
 
   it("returns venue config with capacity section", () => {
