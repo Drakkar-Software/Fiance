@@ -37,9 +37,16 @@ vi.mock("@/store/usePlanningStore", () => ({
   },
 }));
 
+vi.mock("@/store/useGiftsStore", () => ({
+  useGiftsStore: {
+    getState: () => ({ gifts: [] }),
+  },
+}));
+
 vi.mock("@drakkar.software/starfish-client", () => ({
   StarfishClient: vi.fn(),
   SyncManager: vi.fn(),
+  createDedupFetch: vi.fn(),
 }));
 
 import { buildPublicPageDocument, type PublicWeddingPage } from "@/lib/public-page";
