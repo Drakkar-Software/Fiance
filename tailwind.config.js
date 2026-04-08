@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.stories.{ts,tsx}",
   ],
   darkMode: "class",
   presets: [require("nativewind/preset")],
