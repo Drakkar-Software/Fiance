@@ -546,38 +546,40 @@ export default function WeddingPublicPage() {
                     )}
 
                     {rsvpStatus && (
-                      <Pressable
-                        onPress={async () => {
-                          if (!rsvpStatus || submitting) return;
-                          setSubmitting(true);
-                          const serverUrl = process.env.EXPO_PUBLIC_SYNC_URL;
-                          if (!serverUrl) { setSubmitting(false); return; }
-                          const ok = await submitRsvp(serverUrl, id!, {
-                            rsvpToken: selectedGuest.rsvpToken,
-                            rsvpStatus,
-                            diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
-                            plusOneRsvpStatus: rsvpStatus === "ACCEPTED" && plusOneStatus ? plusOneStatus : undefined,
-                            plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
-                            childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
-                            submittedAt: new Date().toISOString(),
-                          });
-                          setSubmitting(false);
-                          if (ok) {
-                            setSubmitted(true);
-                            setSubmitError(false);
-                          } else {
-                            setSubmitError(true);
-                          }
-                        }}
-                        className="bg-primary-500 rounded-xl py-3 items-center active:bg-primary-600"
-                      >
-                        <Text className="text-white font-semibold text-base">
-                          {submitting ? "..." : t("rsvpSubmit")}
-                        </Text>
-                      </Pressable>
-                      {submitError && (
-                        <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
-                      )}
+                      <>
+                        <Pressable
+                          onPress={async () => {
+                            if (!rsvpStatus || submitting) return;
+                            setSubmitting(true);
+                            const serverUrl = process.env.EXPO_PUBLIC_SYNC_URL;
+                            if (!serverUrl) { setSubmitting(false); return; }
+                            const ok = await submitRsvp(serverUrl, id!, {
+                              rsvpToken: selectedGuest.rsvpToken,
+                              rsvpStatus,
+                              diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
+                              plusOneRsvpStatus: rsvpStatus === "ACCEPTED" && plusOneStatus ? plusOneStatus : undefined,
+                              plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
+                              childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
+                              submittedAt: new Date().toISOString(),
+                            });
+                            setSubmitting(false);
+                            if (ok) {
+                              setSubmitted(true);
+                              setSubmitError(false);
+                            } else {
+                              setSubmitError(true);
+                            }
+                          }}
+                          className="bg-primary-500 rounded-xl py-3 items-center active:bg-primary-600"
+                        >
+                          <Text className="text-white font-semibold text-base">
+                            {submitting ? "..." : t("rsvpSubmit")}
+                          </Text>
+                        </Pressable>
+                        {submitError && (
+                          <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
+                        )}
+                      </>
                     )}
                   </>
                 )}
