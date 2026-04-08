@@ -49,7 +49,7 @@
     {
       "name": "Invités",
       "short_name": "Invités",
-      "url": "/(tabs)/invites",
+      "url": "/(tabs)/guests",
       "description": "Gérer la liste des invités",
       "icons": [{ "src": "/assets/favicon.png", "sizes": "48x48" }]
     },

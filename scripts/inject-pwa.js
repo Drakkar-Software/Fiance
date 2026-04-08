@@ -56,7 +56,7 @@ const manifest = {
     {
       name: "Invités",
       short_name: "Invités",
-      url: "/(tabs)/invites",
+      url: "/(tabs)/guests",
       description: seo.shortcuts.guests,
       icons: [{ src: "/assets/favicon.png", sizes: "48x48" }],
     },
