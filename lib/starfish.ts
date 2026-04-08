@@ -150,8 +150,12 @@ export function notifySync(): void {
     if (estimatedEncryptedSize > 1_048_576) {
       console.error("[sync] Document exceeds 1MB server limit, push may fail");
     }
-    // restore() updates store data without marking dirty or triggering flush
-    store!.getState().restore(doc);
+    isRestoring = true; // prevent subscription from restoring our own push
+    try {
+      store!.getState().set(() => doc);
+    } finally {
+      isRestoring = false;
+    }
   }, PUSH_DEBOUNCE_MS);
 }
 
