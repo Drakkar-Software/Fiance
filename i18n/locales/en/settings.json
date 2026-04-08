@@ -134,5 +134,9 @@
   "syncRsvpNone": "No new responses",
   "rsvpCount": "{{count}} guest(s) in the list",
   "syncRequiredRsvp": "Enable sync to manage online RSVP",
-  "previewPage": "Preview page"
+  "previewPage": "Preview page",
+  "manageDayOf": "Manage schedule",
+  "manageDayOfDesc": "Edit public moments in Day-of planning",
+  "renameWedding": "Rename",
+  "renameWeddingTitle": "Rename wedding"
 }

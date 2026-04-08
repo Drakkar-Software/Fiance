@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -32,12 +32,9 @@ import {
   cancelAllNotifications,
   rescheduleAllNotifications,
 } from "@/lib/notifications";
-import {
-  SectionTitle,
-  FormCard,
-  InputRow,
-} from "@/components/FormSection";
+import { SectionTitle } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { RenameSheet } from "@/components/RenameSheet";
 import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
 
@@ -58,14 +55,9 @@ export default function SettingsScreen() {
     (w) => w.id === registry.activeWeddingId
   );
 
-  // Wedding label (stored in registry, not wedding store)
-  const [weddingLabel, _setWeddingLabel] = useState(activeEntry?.label || "");
-  const setWeddingLabel = useCallback((value: string) => {
-    _setWeddingLabel(value);
-    if (activeEntry?.id) {
-      updateRegistryWedding(activeEntry.id, { label: value });
-    }
-  }, [activeEntry?.id]);
+  // Rename wedding
+  const [renameWeddingId, setRenameWeddingId] = useState<string | null>(null);
+  const renameWeddingEntry = registry?.weddings.find((w) => w.id === renameWeddingId);
 
   // Sync state — reactive: listens for init/teardown events
   const [syncEnabled, setSyncEnabled] = useState(!!getStarfishStore());
@@ -212,9 +204,6 @@ export default function SettingsScreen() {
       {/* Wedding info */}
       <View className="px-4 pt-4">
         <SectionTitle>{t("weddingInfo")}</SectionTitle>
-        <FormCard>
-          <InputRow label={t("weddingName")} value={weddingLabel} onChangeText={setWeddingLabel} placeholder={t("weddingNamePlaceholder")} />
-        </FormCard>
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
@@ -342,8 +331,14 @@ export default function SettingsScreen() {
                 )}
               </Pressable>
               <Pressable
-                onPress={() => setDeleteWeddingId(w.id)}
+                onPress={() => setRenameWeddingId(w.id)}
                 className="ml-2 w-8 h-8 items-center justify-center rounded-lg"
+              >
+                <Pencil size={16} color="#9CA3AF" />
+              </Pressable>
+              <Pressable
+                onPress={() => setDeleteWeddingId(w.id)}
+                className="ml-1 w-8 h-8 items-center justify-center rounded-lg"
               >
                 <Trash2 size={16} color="#EF4444" />
               </Pressable>
@@ -492,6 +487,18 @@ export default function SettingsScreen() {
         setLockEnabled(false).then(() => setLockEnabledState(false));
       }}
       onCancel={() => setShowDisableLock(false)}
+    />
+
+    <RenameSheet
+      visible={!!renameWeddingId}
+      title={t("renameWeddingTitle")}
+      initialValue={renameWeddingEntry?.label ?? ""}
+      placeholder={t("weddingNamePlaceholder")}
+      onConfirm={(value) => {
+        if (renameWeddingId) updateRegistryWedding(renameWeddingId, { label: value });
+        setRenameWeddingId(null);
+      }}
+      onCancel={() => setRenameWeddingId(null)}
     />
     </>
   );

@@ -134,5 +134,9 @@
   "syncRsvpNone": "Aucune nouvelle réponse",
   "rsvpCount": "{{count}} invité(s) dans la liste",
   "syncRequiredRsvp": "Activez la synchronisation pour gérer les RSVP en ligne",
-  "previewPage": "Aperçu de la page"
+  "previewPage": "Aperçu de la page",
+  "manageDayOf": "Gérer le programme",
+  "manageDayOfDesc": "Modifier les moments publics dans le Jour J",
+  "renameWedding": "Renommer",
+  "renameWeddingTitle": "Renommer le mariage"
 }
