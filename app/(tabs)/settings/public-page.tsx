@@ -244,9 +244,14 @@ export default function PublicPageScreen() {
               <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
                 <Send size={18} color="#EC4899" />
               </View>
-              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
-                {publishingRoster ? "..." : t("publishRoster")}
-              </Text>
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  {publishingRoster ? "..." : t("publishRoster")}
+                </Text>
+                <Text className="text-xs text-gray-400 mt-0.5 leading-4">
+                  {t("publishRosterDesc")}
+                </Text>
+              </View>
             </Pressable>
             <Pressable
               onPress={syncingRsvp ? undefined : handleSyncRsvp}
@@ -255,9 +260,14 @@ export default function PublicPageScreen() {
               <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
                 <RefreshCw size={18} color="#10B981" />
               </View>
-              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
-                {syncingRsvp ? "..." : t("syncRsvp")}
-              </Text>
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  {syncingRsvp ? "..." : t("syncRsvp")}
+                </Text>
+                <Text className="text-xs text-gray-400 mt-0.5 leading-4">
+                  {t("syncRsvpDesc")}
+                </Text>
+              </View>
             </Pressable>
           </View>
         ) : (
