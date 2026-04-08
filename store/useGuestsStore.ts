@@ -23,6 +23,7 @@ export interface GuestCounts {
   sleeping_count: number;
   response_rate: number;
   no_table_count: number;
+  no_accommodation_count: number;
   thank_you_pending_count: number;
 }
 
@@ -69,7 +70,7 @@ export function computeCounts(guests: Guest[]): GuestCounts {
     ).length,
     full_count: accepted.filter((g) => g.invitationType === "FULL").length,
     both_days_count: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
-    children_count: accepted.filter((g) => g.isChild).length,
+    children_count: accepted.reduce((sum, g) => sum + (g.childrenCount ?? 0), 0),
     vegetarian_count: accepted.filter((g) =>
       ["VEGETARIAN", "VEGAN"].includes(g.diet || "")
     ).length,
@@ -79,6 +80,7 @@ export function computeCounts(guests: Guest[]): GuestCounts {
         ? Math.round(((acceptedCount + declinedCount) / total) * 100)
         : 0,
     no_table_count: accepted.filter((g) => !g.tableId && !g.noTableNeeded).length,
+    no_accommodation_count: accepted.filter((g) => !g.accommodationId).length,
     thank_you_pending_count: accepted.filter((g) => !g.thankYouSent).length,
   };
 }

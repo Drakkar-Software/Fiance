@@ -92,7 +92,6 @@ export default function GuestDetailScreen() {
   const [rsvpStatus, setRsvpStatus] = useState<RsvpStatus>(
     (existing?.rsvpStatus as RsvpStatus) || "PENDING"
   );
-  const [isSleeping, setIsSleeping] = useState(existing?.isSleeping || false);
   const [isChild, setIsChild] = useState(existing?.isChild || false);
   const [diet, setDiet] = useState<Diet>((existing?.diet as Diet) || "STANDARD");
   const [dietNotes, setDietNotes] = useState(existing?.dietNotes || "");
@@ -132,7 +131,6 @@ export default function GuestDetailScreen() {
         rsvpStatus !== "PENDING" && rsvpStatus !== existing?.rsvpStatus
           ? now
           : existing?.rsvpDate || null,
-      isSleeping,
       isChild,
       diet,
       dietNotes: dietNotes || null,
@@ -268,11 +266,6 @@ export default function GuestDetailScreen() {
 
           <View className="mt-3">
             <ToggleRow
-              label={t("sleepsOnSite")}
-              value={isSleeping}
-              onToggle={() => setIsSleeping(!isSleeping)}
-            />
-            <ToggleRow
               label={t("childLabel")}
               value={isChild}
               onToggle={() => setIsChild(!isChild)}
@@ -308,9 +301,9 @@ export default function GuestDetailScreen() {
         />
 
         {/* Accommodation */}
-        {accommodations.length > 0 && (
+        <SectionTitle>{t("accommodationSection")}</SectionTitle>
+        {accommodations.length > 0 ? (
           <>
-            <SectionTitle>{t("accommodationSection")}</SectionTitle>
             <HorizontalChipSelect
               options={[
                 { key: "", label: t("none") },
@@ -329,7 +322,7 @@ export default function GuestDetailScreen() {
               </FormCard>
             )}
           </>
-        )}
+        ) : null}
         <Pressable
           onPress={() => router.push("/(tabs)/guests/accommodations")}
           className="flex-row items-center mb-3 mt-1"

@@ -132,6 +132,8 @@ function GuestsView() {
         // RSVP / no-table filter
         if (rsvpFilter === "NO_TABLE") {
           if (g.rsvpStatus !== "ACCEPTED" || g.tableId || g.noTableNeeded) return false;
+        } else if (rsvpFilter === "NO_ACCOM") {
+          if (g.rsvpStatus !== "ACCEPTED" || g.accommodationId) return false;
         } else if (rsvpFilter !== "ALL" && g.rsvpStatus !== rsvpFilter) {
           return false;
         }
@@ -174,6 +176,7 @@ function GuestsView() {
     { key: "DECLINED", label: t("declined"), count: counts.declined },
     { key: "MAYBE", label: t("maybe"), count: counts.maybe },
     { key: "NO_TABLE", label: t("noTable"), count: counts.no_table_count },
+    { key: "NO_ACCOM", label: t("noAccommodation"), count: counts.no_accommodation_count },
   ];
 
   const typeTabs = [
