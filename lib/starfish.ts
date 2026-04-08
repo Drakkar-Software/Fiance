@@ -50,14 +50,15 @@ export interface StarfishConfig {
 }
 
 export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
+  const { fetch: resilientFetch } = createResilientFetch(
+    { maxRetries: 3, initialDelayMs: 500 },
+    { threshold: 5, cooldownMs: 30_000 },
+  );
+
   const client = new StarfishClient({
     baseUrl: config.serverUrl,
     auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
-    fetch: createResilientFetch({
-      maxRetries: 3,
-      initialDelayMs: 500,
-      circuitBreaker: { failureThreshold: 5, resetTimeoutMs: 30_000 },
-    }),
+    fetch: resilientFetch,
   });
 
   const syncManager = new SyncManager({
