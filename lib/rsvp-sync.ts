@@ -3,7 +3,7 @@
  * polls inbox for guest responses, and merges them into the store.
  */
 
-import { StarfishClient, SyncManager } from "@drakkar.software/starfish-client";
+import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import * as Crypto from "expo-crypto";
 
@@ -93,7 +93,7 @@ export async function fetchRsvpRoster(
   userId: string,
 ): Promise<RsvpRoster | null> {
   try {
-    const client = new StarfishClient({ baseUrl: serverUrl });
+    const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
     const syncManager = new SyncManager({
       client,
       pullPath: `/pull/rsvp-roster/${userId}`,
@@ -115,7 +115,7 @@ export async function submitRsvp(
   submission: RsvpSubmission,
 ): Promise<boolean> {
   try {
-    const client = new StarfishClient({ baseUrl: serverUrl });
+    const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
     const syncManager = new SyncManager({
       client,
       pullPath: `/pull/rsvp-inbox/${userId}`,

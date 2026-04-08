@@ -3,7 +3,7 @@
  * to an unauthenticated Starfish collection so guests can view the timeline.
  */
 
-import { StarfishClient, SyncManager } from "@drakkar.software/starfish-client";
+import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 
@@ -129,7 +129,7 @@ export async function fetchPublicPage(
   userId: string,
 ): Promise<PublicWeddingPage | null> {
   try {
-    const client = new StarfishClient({ baseUrl: serverUrl });
+    const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
     const result = await client.pull(`/pull/wedding-page/${userId}`);
     if (result.data) {
       return result.data as unknown as PublicWeddingPage;

@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import type { Context } from "hono";
 import {
   createSyncRouter,
   saveConfig,
+  createConsoleLogger,
+  createConsoleAuditLogger,
   type ObjectStore,
   type AuthResult,
 } from "@drakkar.software/starfish-server";
@@ -110,8 +111,6 @@ async function roleResolver(c: Context): Promise<AuthResult> {
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.use("/*", cors());
-
 let cachedRouter: Hono | null = null;
 
 function getSyncRouter(env: Env): Hono {
@@ -124,6 +123,10 @@ function getSyncRouter(env: Env): Hono {
     config,
     roleResolver,
     encryptionSecret: env.ENCRYPTION_SECRET,
+    cors: true,
+    securityHeaders: true,
+    logger: createConsoleLogger(),
+    auditLogger: createConsoleAuditLogger(),
   });
 
   saveConfig(store, config).catch(() => {});

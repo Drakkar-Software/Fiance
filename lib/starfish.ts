@@ -1,9 +1,15 @@
 /**
  * Starfish cloud sync integration for WeddingOS
  * Uses createStarfishStore() Zustand binding for reactive sync state
+ *
+ * v1.5.0: Uses built-in resilient fetch, union merge, structured logging,
+ *         cross-tab sync, and restore() method.
  */
 
-import { StarfishClient, SyncManager } from "@drakkar.software/starfish-client";
+import { Platform } from "react-native";
+import { StarfishClient, SyncManager, consoleSyncLogger, createUnionMerge } from "@drakkar.software/starfish-client";
+import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
+import { setupCrossTabSync } from "@drakkar.software/starfish-client/broadcast";
 import {
   createStarfishStore,
   type StarfishStore,
@@ -13,75 +19,11 @@ import { useStore } from "zustand";
 import { createBackupDocument, restoreFromBackup, saveToLocalStorage } from "./sync";
 import { getDatabase } from "@/db/provider";
 
-function isIdArray(val: unknown): val is { id: string }[] {
-  if (!Array.isArray(val)) return false;
-  return val.length === 0 || typeof val[0]?.id === "string";
-}
-
-/**
- * Merge two backup documents:
- * - Arrays of objects with `id`: ID-based union, per-item newest `updatedAt` wins
- * - Everything else: latest document timestamp wins
- * Note: items deleted on one side will be restored from the other until both sides sync.
- */
-function mergeBackups(
-  local: Record<string, unknown>,
-  remote: Record<string, unknown>,
-): Record<string, unknown> {
-  const localTs = (local.timestamp as string) || "";
-  const remoteTs = (remote.timestamp as string) || "";
-  const remoteNewer = remoteTs > localTs;
-  const merged: Record<string, unknown> = { ...local };
-
-  for (const key of Object.keys(remote)) {
-    const localVal = local[key];
-    const remoteVal = remote[key];
-
-    if (isIdArray(localVal) || isIdArray(remoteVal)) {
-      const localArr = (localVal as { id: string; updatedAt?: string }[] | undefined) ?? [];
-      const remoteArr = (remoteVal as { id: string; updatedAt?: string }[] | undefined) ?? [];
-      const byId = new Map(remoteArr.map((item) => [item.id, item]));
-      for (const item of localArr) {
-        const existing = byId.get(item.id);
-        if (!existing) {
-          byId.set(item.id, item);
-        } else {
-          // Pick the version with the newer updatedAt; fall back to local if no timestamps
-          const localTime = item.updatedAt ?? "";
-          const remoteTime = existing.updatedAt ?? "";
-          if (localTime >= remoteTime) {
-            byId.set(item.id, item);
-          }
-        }
-      }
-      merged[key] = Array.from(byId.values());
-    } else if (remoteNewer) {
-      merged[key] = remoteVal;
-    }
-  }
-
-  return merged;
-}
-
-/** Retry-capable fetch for transient network errors (DNS, connection reset, etc.) */
-function createRetryFetch(maxRetries = 3, initialDelayMs = 500): typeof globalThis.fetch {
-  return async (input, init) => {
-    let attempt = 0;
-    while (true) {
-      try {
-        return await globalThis.fetch(input, init);
-      } catch (err) {
-        // Only retry network-level errors; let SyncManager handle HTTP-level errors (409, 5xx)
-        if (attempt >= maxRetries) throw err;
-        const delay = Math.min(initialDelayMs * Math.pow(2, attempt), 10_000) + Math.random() * 100;
-        await new Promise((r) => setTimeout(r, delay));
-        attempt++;
-      }
-    }
-  };
-}
+// Re-export Starfish React hooks for components
+export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/zustand";
 
 let store: StoreApi<StarfishStore> | null = null;
+let crossTabCleanup: (() => void) | null = null;
 let isRestoring = false;
 let lastSyncTimestamp: string | null = null;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
@@ -111,7 +53,11 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
   const client = new StarfishClient({
     baseUrl: config.serverUrl,
     auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
-    fetch: createRetryFetch(3, 500),
+    fetch: createResilientFetch({
+      maxRetries: 3,
+      initialDelayMs: 500,
+      circuitBreaker: { failureThreshold: 5, resetTimeoutMs: 30_000 },
+    }),
   });
 
   const syncManager = new SyncManager({
@@ -120,12 +66,13 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     pushPath: `/push/wedding/${config.userId}`,
     encryptionSecret: config.encryptionKey,
     encryptionSalt: config.userId,
-    onConflict: (local: unknown, remote: unknown) =>
-      mergeBackups(
-        local as Record<string, unknown>,
-        remote as Record<string, unknown>,
-      ),
+    onConflict: createUnionMerge({
+      timestampField: "updatedAt",
+      documentTimestampField: "timestamp",
+    }),
     maxRetries: 3,
+    loggerName: "wedding-sync",
+    logger: consoleSyncLogger,
   });
 
   store = createStarfishStore({
@@ -137,9 +84,14 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
 
   notifySyncStatus(true);
 
+  // Cross-tab sync for web — keeps multiple browser tabs in sync
+  if (Platform.OS === "web") {
+    crossTabCleanup = setupCrossTabSync(store, "wedding-sync");
+  }
+
   // Only restore from explicit remote pulls (user-initiated or join flow).
   // The subscription watches for pull results; local pushes never trigger it
-  // because notifySync uses a debounced push that sets isRestoring first.
+  // because notifySync uses restore() which doesn't mark dirty.
   store.subscribe((state, prevState) => {
     if (
       state.data &&
@@ -197,12 +149,8 @@ export function notifySync(): void {
     if (estimatedEncryptedSize > 1_048_576) {
       console.error("[sync] Document exceeds 1MB server limit, push may fail");
     }
-    isRestoring = true; // prevent subscription from restoring our own push
-    try {
-      store.getState().set(() => doc);
-    } finally {
-      isRestoring = false;
-    }
+    // restore() updates store data without marking dirty or triggering flush
+    store!.getState().restore(doc);
   }, PUSH_DEBOUNCE_MS);
 }
 
@@ -226,6 +174,10 @@ export function teardownStarfish(): void {
   if (pushTimer) {
     clearTimeout(pushTimer);
     pushTimer = null;
+  }
+  if (crossTabCleanup) {
+    crossTabCleanup();
+    crossTabCleanup = null;
   }
   store = null;
   lastSyncTimestamp = null;

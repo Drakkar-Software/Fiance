@@ -38,6 +38,7 @@ export const config: SyncConfig = {
       encryption: "none",
       maxBodyBytes: 65_536,
       allowedMimeTypes: ["application/json"],
+      ttlMs: 30 * 24 * 60 * 60 * 1000, // 30 days
     },
     {
       name: "gift-claims",
@@ -47,6 +48,7 @@ export const config: SyncConfig = {
       encryption: "none",
       maxBodyBytes: 16_384,
       allowedMimeTypes: ["application/json"],
+      ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
     },
   ],
 };
