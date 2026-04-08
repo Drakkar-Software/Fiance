@@ -1,87 +1,186 @@
-# WeddingOS
+<p align="center">
+  <img src="assets/icon.png" alt="WeddingOS" width="120" height="120" style="border-radius: 24px;" />
+</p>
 
-Privacy-first, offline-first wedding planning app built with React Native and Expo.
+<h1 align="center">WeddingOS</h1>
+
+<p align="center">
+  Privacy-first, offline-first wedding planning app.<br/>
+  One codebase for iOS, Android, and Web.
+</p>
+
+<p align="center">
+  <img alt="Expo SDK" src="https://img.shields.io/badge/Expo_SDK-55-000020?logo=expo" />
+  <img alt="React Native" src="https://img.shields.io/badge/React_Native-0.83-61DAFB?logo=react" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" />
+  <img alt="License" src="https://img.shields.io/badge/License-Private-gray" />
+</p>
+
+---
 
 ## Features
 
-- **Guest Management** — Track RSVPs, dietary requirements, plus-ones, and table assignments
-- **Budget Tracker** — Monitor spending by vendor category with visual breakdowns
-- **Planning** — Task management with relative deadlines (months before wedding), priorities, and categories
-- **Vendors** — Compare vendors by type, track quotes, deposits, and booking status
-- **Mood Board** — Collect inspiration images, tag them, and organize into collections
+- **Guest Management** — Track RSVPs, dietary requirements, plus-ones, companions, and table assignments
+- **Budget Tracker** — Monitor spending by vendor category with visual breakdowns and per-person pricing
+- **Planning** — Task management with relative deadlines, priorities, categories, and preparation/agenda/day-of views
+- **Vendor Directory** — Compare vendors by type (20+ categories), track quotes, deposits, contracts, and booking status
+- **Mood Board** — Collect inspiration images, tag them by category, and organize into collections
 - **Table Planner** — Create tables, assign guests, and track capacity
 - **Cloud Sync** — Optional encrypted sync via Starfish (AES-256-GCM, zero-knowledge server)
+- **Multi-wedding** — Manage multiple weddings from a single app with the wedding registry
+- **App Lock** — PIN code and biometric authentication to protect your data
+- **PWA Support** — Install as a Progressive Web App on any device
+- **Bilingual** — Full French and English localization
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Expo SDK 52 + Expo Router v4 |
+| Framework | Expo SDK 55 + Expo Router |
 | UI | React Native + NativeWind v4 (Tailwind CSS) |
 | State | Zustand v5 |
 | Database | expo-sqlite + Drizzle ORM |
-| Sync | Starfish client (encrypted push/pull) |
+| Sync | Starfish client (AES-256-GCM encrypted push/pull) |
 | Charts | Victory Native + Skia |
+| Forms | React Hook Form + Zod |
+| i18n | i18next (FR / EN) |
 | Security | expo-secure-store, expo-local-authentication, expo-crypto |
+| Testing | Vitest |
+| Component Dev | Storybook v10 + MCP |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
+- [pnpm](https://pnpm.io/installation)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 
 ### Install
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Run
 
 ```bash
-# Development server
-npm start
-
-# Android
-npm run android
-
-# iOS
-npm run ios
-
-# Web
-npm run web
+pnpm start           # Expo dev server
+pnpm run android     # Android emulator
+pnpm run ios         # iOS simulator
+pnpm run web         # Browser
 ```
 
 ### Database
 
 ```bash
-# Generate migrations
-npm run db:generate
-
-# Apply migrations
-npm run db:push
+pnpm db:generate     # Generate Drizzle migrations from schema.ts
+pnpm db:push         # Apply migrations to SQLite
 ```
 
-## Storybook
+## Build & Deploy
+
+### Web (Cloudflare Pages)
+
+```bash
+pnpm build:web       # Export + PWA injection (output: dist/)
+```
+
+A GitHub Actions workflow at `.github/workflows/deploy-web.yml` deploys to Cloudflare Pages on push to `main`/`master`.
+
+### Android APK (EAS Build)
+
+```bash
+# Local build (requires Android SDK)
+npx eas-cli build --platform android --profile preview --local
+
+# Cloud build (requires Expo account)
+npx eas-cli build --platform android --profile preview
+```
+
+A GitHub Actions workflow at `.github/workflows/build-apk.yml` automatically builds the APK on push to `main`/`master` and on pull requests.
+
+Required repository secret:
+- `EXPO_TOKEN` — [Expo access token](https://expo.dev/accounts/[account]/settings/access-tokens)
+
+## Cloud Sync (Starfish)
+
+Sync is optional. All data stays on-device by default.
+
+To enable sync, go to **Settings > Synchronisation** and provide:
+1. Starfish server URL
+2. Authentication token
+
+An AES-256-GCM encryption key is generated automatically and stored in the device keychain. The server only stores opaque encrypted blobs — it never sees your data.
+
+## Architecture
+
+### Data Flow: Zustand → SQLite → Starfish
+
+```
+┌─────────────┐     write-through     ┌──────────────┐     encrypted sync     ┌──────────────┐
+│   Zustand    │ ──────────────────▶  │    SQLite     │ ─────────────────────▶ │   Starfish   │
+│   Stores     │ ◀──────────────────  │  (Drizzle)   │ ◀───────────────────── │   Server     │
+└─────────────┘     hydrate on boot   └──────────────┘                        └──────────────┘
+```
+
+1. **Zustand stores** (`store/`) — Runtime state for guests, vendors, planning, budget, and ideas
+2. **SQLite via Drizzle** (`db/schema.ts`) — 12 tables, all IDs are UUIDs
+3. **Starfish sync** (optional) — AES-256-GCM encrypted backups to a remote server
+
+### Project Structure
+
+```
+app/
+  (tabs)/
+    index.tsx              # Dashboard
+    invites/               # Guest list + table planner
+    planning/              # Task management
+    prestataires/          # Vendor management
+    budget/                # Budget tracker
+    idees/                 # Mood board
+    settings/              # App settings + sync config
+components/                # 29 shared UI components (with Storybook stories)
+db/
+  schema.ts                # Drizzle ORM schema (12 tables)
+  types.ts                 # Enums, labels, colors, icons
+  provider.tsx             # DB initialization + store hydration
+lib/
+  persistence.ts           # Store ↔ SQLite write-through
+  starfish.ts              # Starfish sync client
+  sync.ts                  # Backup document creation/restore
+  crypto.ts                # AES-256-GCM encryption
+  budget.ts                # Budget calculation logic
+  planning.ts              # Template task generation
+  identity.ts              # Device identity management
+store/                     # Zustand stores (5 domain + registry)
+i18n/                      # i18next config + FR/EN locale files
+.storybook/                # Storybook configuration
+__tests__/                 # Vitest test files
+```
+
+## Development
+
+### Testing
+
+```bash
+pnpm test            # Run all tests (Vitest)
+pnpm test:watch      # Watch mode
+pnpm lint            # ESLint
+```
+
+### Storybook
 
 The project includes a web-based [Storybook](https://storybook.js.org/) (v10) for browsing and testing UI components in isolation. It uses `@storybook/react-vite` with `react-native-web-lite` to render components in the browser.
 
-### Run Storybook
-
 ```bash
-pnpm storybook
+pnpm storybook           # Start at http://localhost:6006
+pnpm build-storybook     # Build static site
 ```
 
-Opens at [http://localhost:6006](http://localhost:6006). All 22 shared components in `components/` have co-located story files (`*.stories.tsx`).
+All 22 shared components in `components/` have co-located story files (`*.stories.tsx`).
 
-### Build static Storybook
-
-```bash
-pnpm build-storybook
-```
-
-### MCP Integration
+#### MCP Integration
 
 The Storybook includes `@storybook/addon-mcp`, which exposes an MCP server for AI tools. When Storybook is running, connect Claude Code:
 
@@ -89,7 +188,7 @@ The Storybook includes `@storybook/addon-mcp`, which exposes an MCP server for A
 claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope project
 ```
 
-### Writing Stories
+#### Writing Stories
 
 Stories are co-located next to their components using CSF3 format:
 
@@ -98,8 +197,6 @@ components/
   StatusBadge.tsx
   StatusBadge.stories.tsx
 ```
-
-Template:
 
 ```tsx
 import type { Meta, StoryObj } from "storybook/react";
@@ -117,67 +214,6 @@ type Story = StoryObj<typeof MyComponent>;
 export const Default: Story = {
   args: { /* props */ },
 };
-```
-
-## Build APK
-
-The project uses [EAS Build](https://docs.expo.dev/build/introduction/) for producing Android APKs.
-
-### Local build (requires Android SDK)
-
-```bash
-npx eas-cli build --platform android --profile preview --local
-```
-
-### Cloud build (requires Expo account)
-
-```bash
-npx eas-cli build --platform android --profile preview
-```
-
-The `preview` profile produces a standalone `.apk` file suitable for direct installation.
-
-### CI
-
-A GitHub Actions workflow at `.github/workflows/build-apk.yml` automatically builds the APK on every push to `main` or `master`, and on pull requests. The artifact is uploaded and available for download from the workflow run.
-
-Required repository secret:
-- `EXPO_TOKEN` — Expo access token ([create one here](https://expo.dev/accounts/[account]/settings/access-tokens))
-
-## Cloud Sync (Starfish)
-
-Sync is optional. All data stays on-device by default.
-
-To enable sync, go to **Settings > Synchronisation** and provide:
-1. Starfish server URL
-2. Authentication token
-
-An AES-256-GCM encryption key is generated automatically and stored in the device keychain. The server only stores opaque encrypted blobs — it never sees your data.
-
-## Project Structure
-
-```
-app/
-  (tabs)/
-    index.tsx          # Dashboard
-    invites/           # Guest list + table planner
-    planning/          # Task management
-    prestataires/      # Vendor management
-    budget/            # Budget tracker
-    idees/             # Mood board
-    settings/          # App settings + sync config
-components/            # Shared UI components
-db/
-  schema.ts            # Drizzle ORM schema (9 tables)
-  types.ts             # Enums, labels, colors
-  provider.tsx         # DB initialization + store hydration
-lib/
-  starfish.ts          # Starfish sync client
-  sync.ts              # Backup document creation/restore
-  persistence.ts       # Store ↔ SQLite write-through
-  planning.ts          # Template task generation
-  crypto.ts            # Local encryption utilities
-store/                 # Zustand stores (5 domain stores)
 ```
 
 ## License
