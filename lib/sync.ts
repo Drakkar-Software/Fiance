@@ -11,7 +11,6 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
-import { useMenuStore } from "@/store/useMenuStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
@@ -33,7 +32,6 @@ export interface BackupData {
   dayOfItems: unknown[];
   ideas: unknown[];
   ideaCollections: unknown[];
-  menuOptions: unknown[];
   vendorPayments: unknown[];
   accommodations: unknown[];
   gifts: unknown[];
@@ -70,7 +68,6 @@ export function createBackupDocument(): Record<string, unknown> {
     dayOfItems: usePlanningStore.getState().dayOfItems,
     ideas: useIdeasStore.getState().ideas,
     ideaCollections: useIdeasStore.getState().collections,
-    menuOptions: useMenuStore.getState().options,
     vendorPayments: useVendorsStore.getState().vendorPayments,
     accommodations: useAccommodationsStore.getState().accommodations,
     gifts: useGiftsStore.getState().gifts,
@@ -103,7 +100,7 @@ export function restoreFromBackup(
     s === "DINNER" ? "FULL" : s === "NEXT_DAY" ? "BOTH_DAYS" : s;
 
   // v3 → v4: added companionId field on guests (nullable, no migration needed)
-  // v4 → v5: added menuOptions, vendorPayments, accommodations, gifts tables + new guest columns
+  // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
 
   if (db) {
     // Native: write to SQLite (source of truth) then re-hydrate stores from it
@@ -130,7 +127,6 @@ export function restoreFromBackup(
       dayOfItems: dayOfItems as any[],
       ideas: ideas as any[],
       ideaCollections: (backup.ideaCollections || []) as any[],
-      menuOptions: (backup.menuOptions || []) as any[],
       vendorPayments: (backup.vendorPayments || []) as any[],
       accommodations: (backup.accommodations || []) as any[],
       gifts: (backup.gifts || []) as any[],
@@ -166,7 +162,6 @@ export function restoreFromBackup(
     usePlanningStore.getState().setDayOfItems(dayOfItems as any[]);
     useIdeasStore.getState().setCollections((backup.ideaCollections || []) as any[]);
     useIdeasStore.getState().setIdeas(ideas as any[]);
-    useMenuStore.getState().setOptions((backup.menuOptions || []) as any[]);
     useAccommodationsStore.getState().setAccommodations((backup.accommodations || []) as any[]);
     useGiftsStore.getState().setGifts((backup.gifts || []) as any[]);
     saveToLocalStorage();

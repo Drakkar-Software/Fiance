@@ -7,14 +7,14 @@ import { describe, it, expect, vi } from "vitest";
 // Mock the db/types import
 vi.mock("@/db/types", () => ({
   PRICING_KEY_GUEST_SOURCE: {
-    cocktail: "nb_cocktail",
-    dinner: "nb_full",
-    drinks: "nb_full",
-    "next-day": "nb_both_days",
-    tableware: "nb_full",
-    linen: "nb_full",
-    vegetarian: "nb_vegetarian",
-    child: "nb_children",
+    cocktail: "cocktail_count",
+    dinner: "full_count",
+    drinks: "full_count",
+    "next-day": "both_days_count",
+    tableware: "full_count",
+    linen: "full_count",
+    vegetarian: "vegetarian_count",
+    child: "children_count",
     service: "manual",
   },
 }));
@@ -32,12 +32,12 @@ const baseCounts: GuestCounts = {
   accepted: 80,
   declined: 10,
   pending: 10,
-  nb_cocktail: 70,
-  nb_full: 60,
-  nb_both_days: 40,
-  nb_children: 5,
-  nb_vegetarian: 8,
-  nb_sleeping: 30,
+  cocktail_count: 70,
+  full_count: 60,
+  both_days_count: 40,
+  children_count: 5,
+  vegetarian_count: 8,
+  sleeping_count: 30,
 };
 
 describe("getGuestCountForSource", () => {
@@ -70,7 +70,7 @@ describe("getGuestCountForSource", () => {
   });
 
   it("falls back to total when accepted is 0", () => {
-    const noAccepted = { ...baseCounts, accepted: 0, nb_cocktail: 0 };
+    const noAccepted = { ...baseCounts, accepted: 0, cocktail_count: 0 };
     expect(getGuestCountForSource("COCKTAIL", noAccepted)).toBe(100);
   });
 

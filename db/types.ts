@@ -256,14 +256,14 @@ export const BUDGET_TEMPLATE_LABELS: Record<string, string> = {
 // ─── Pricing key to guest counter mapping ───────────────────────────────────
 
 export const PRICING_KEY_GUEST_SOURCE: Record<PricingKey, string> = {
-  cocktail: "nb_cocktail",
-  dinner: "nb_dinner",
-  drinks: "nb_dinner",
-  "next-day": "nb_both_days",
-  tableware: "nb_dinner",
-  linen: "nb_dinner",
-  vegetarian: "nb_vegetarian",
-  child: "nb_children",
+  cocktail: "cocktail_count",
+  dinner: "dinner_count",
+  drinks: "dinner_count",
+  "next-day": "both_days_count",
+  tableware: "dinner_count",
+  linen: "dinner_count",
+  vegetarian: "vegetarian_count",
+  child: "children_count",
   service: "manual",
 };
 

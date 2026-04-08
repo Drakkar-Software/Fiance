@@ -173,7 +173,7 @@ function GuestsView() {
     { key: "PENDING", label: t("pending"), count: counts.pending },
     { key: "DECLINED", label: t("declined"), count: counts.declined },
     { key: "MAYBE", label: t("maybe"), count: counts.maybe },
-    { key: "NO_TABLE", label: t("noTable"), count: counts.nb_no_table },
+    { key: "NO_TABLE", label: t("noTable"), count: counts.no_table_count },
   ];
 
   const typeTabs = [

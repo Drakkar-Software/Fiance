@@ -13,19 +13,19 @@ export function getGuestCountForSource(
 
   switch (source) {
     case "COCKTAIL":
-      return counts.nb_cocktail || fallback;
+      return counts.cocktail_count || fallback;
     case "FULL":
-      return counts.nb_full || fallback;
+      return counts.full_count || fallback;
     case "BOTH_DAYS":
-      return counts.nb_both_days || fallback;
+      return counts.both_days_count || fallback;
     case "CHILD":
-      return counts.nb_children || fallback;
+      return counts.children_count || fallback;
     case "VEGETARIAN":
-      return counts.nb_vegetarian || fallback;
+      return counts.vegetarian_count || fallback;
     case "TOTAL":
       return counts.accepted || counts.total;
     case "SLEEPING":
-      return counts.nb_sleeping || fallback;
+      return counts.sleeping_count || fallback;
     default:
       return 0;
   }

@@ -47,9 +47,6 @@ export const guests = sqliteTable("guests", {
   giftDescription: text("gift_description"),
   thankYouSent: integer("thank_you_sent", { mode: "boolean" }).default(false),
   thankYouSentDate: text("thank_you_sent_date"),
-  mealStarterId: text("meal_starter_id"),
-  mealMainId: text("meal_main_id"),
-  mealDessertId: text("meal_dessert_id"),
   accommodationId: text("accommodation_id"),
   roomNumber: text("room_number"),
   rsvpToken: text("rsvp_token"),
@@ -113,17 +110,6 @@ export const quotePricing = sqliteTable("quote_pricing", {
   guestCountOverride: integer("guest_count_override"),
   staffFee: real("staff_fee"),
   travelFee: real("travel_fee"),
-});
-
-// ─── Menu Options (meal choices) ────────────────────────────────────────────
-
-export const menuOptions = sqliteTable("menu_options", {
-  id: text("id").primaryKey(),
-  course: text("course").notNull(), // "starter" | "main" | "dessert"
-  label: text("label").notNull(),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
 });
 
 // ─── Vendor Payments ───────────────────────────────────────────────────────
@@ -298,8 +284,6 @@ export type Idea = typeof ideas.$inferSelect;
 export type IdeaInsert = typeof ideas.$inferInsert;
 export type IdeaCollection = typeof ideaCollections.$inferSelect;
 export type IdeaCollectionInsert = typeof ideaCollections.$inferInsert;
-export type MenuOption = typeof menuOptions.$inferSelect;
-export type MenuOptionInsert = typeof menuOptions.$inferInsert;
 export type VendorPayment = typeof vendorPayments.$inferSelect;
 export type VendorPaymentInsert = typeof vendorPayments.$inferInsert;
 export type Accommodation = typeof accommodations.$inferSelect;

@@ -285,10 +285,10 @@ export default function DashboardScreen() {
             total={counts.total}
             footer="confirmés"
             alert={
-              counts.nb_no_table > 0 ? (
+              counts.no_table_count > 0 ? (
                 <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
                   <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
-                    {counts.nb_no_table} sans table
+                    {counts.no_table_count} sans table
                   </Text>
                 </View>
               ) : undefined

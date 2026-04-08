@@ -14,16 +14,16 @@ export interface GuestCounts {
   declined: number;
   pending: number;
   maybe: number;
-  nb_cocktail: number;
-  nb_dinner: number;
-  nb_full: number;
-  nb_both_days: number;
-  nb_children: number;
-  nb_vegetarian: number;
-  nb_sleeping: number;
+  cocktail_count: number;
+  dinner_count: number;
+  full_count: number;
+  both_days_count: number;
+  children_count: number;
+  vegetarian_count: number;
+  sleeping_count: number;
   response_rate: number;
-  nb_no_table: number;
-  nb_thank_you_pending: number;
+  no_table_count: number;
+  thank_you_pending_count: number;
 }
 
 interface GuestsState {
@@ -61,25 +61,25 @@ export function computeCounts(guests: Guest[]): GuestCounts {
     declined: declinedCount,
     pending: guests.filter((g) => g.rsvpStatus === "PENDING").length,
     maybe: guests.filter((g) => g.rsvpStatus === "MAYBE").length,
-    nb_cocktail: accepted.filter((g) =>
+    cocktail_count: accepted.filter((g) =>
       ["COCKTAIL", "FULL", "BOTH_DAYS"].includes(g.invitationType)
     ).length,
-    nb_dinner: accepted.filter((g) =>
+    dinner_count: accepted.filter((g) =>
       ["FULL", "BOTH_DAYS"].includes(g.invitationType)
     ).length,
-    nb_full: accepted.filter((g) => g.invitationType === "FULL").length,
-    nb_both_days: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
-    nb_children: accepted.filter((g) => g.isChild).length,
-    nb_vegetarian: accepted.filter((g) =>
+    full_count: accepted.filter((g) => g.invitationType === "FULL").length,
+    both_days_count: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
+    children_count: accepted.filter((g) => g.isChild).length,
+    vegetarian_count: accepted.filter((g) =>
       ["VEGETARIAN", "VEGAN"].includes(g.diet || "")
     ).length,
-    nb_sleeping: accepted.filter((g) => g.isSleeping).length,
+    sleeping_count: accepted.filter((g) => g.isSleeping).length,
     response_rate:
       total > 0
         ? Math.round(((acceptedCount + declinedCount) / total) * 100)
         : 0,
-    nb_no_table: accepted.filter((g) => !g.tableId && !g.noTableNeeded).length,
-    nb_thank_you_pending: accepted.filter((g) => !g.thankYouSent).length,
+    no_table_count: accepted.filter((g) => !g.tableId && !g.noTableNeeded).length,
+    thank_you_pending_count: accepted.filter((g) => !g.thankYouSent).length,
   };
 }
 

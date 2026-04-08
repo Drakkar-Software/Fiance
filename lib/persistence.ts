@@ -12,7 +12,6 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
-import { useMenuStore } from "@/store/useMenuStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 
@@ -33,7 +32,6 @@ export function clearAllStores(): void {
   usePlanningStore.getState().setDayOfItems([]);
   useIdeasStore.getState().setCollections([]);
   useIdeasStore.getState().setIdeas([]);
-  useMenuStore.getState().setOptions([]);
   useAccommodationsStore.getState().setAccommodations([]);
   useGiftsStore.getState().setGifts([]);
 }
@@ -70,7 +68,6 @@ export function loadFromLocalStorage(): boolean {
     if (dayOfItems) usePlanningStore.getState().setDayOfItems(dayOfItems);
     if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
     if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
-    if (data.menuOptions) useMenuStore.getState().setOptions(data.menuOptions);
     if (data.vendorPayments) useVendorsStore.getState().setVendorPayments(data.vendorPayments);
     if (data.accommodations) useAccommodationsStore.getState().setAccommodations(data.accommodations);
     if (data.gifts) useGiftsStore.getState().setGifts(data.gifts);
@@ -141,10 +138,6 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   // Ideas
   const ideaRows = db.select().from(schema.ideas).all();
   useIdeasStore.getState().setIdeas(ideaRows);
-
-  // Menu options
-  const menuRows = db.select().from(schema.menuOptions).all();
-  useMenuStore.getState().setOptions(menuRows);
 
   // Vendor payments
   const paymentRows = db.select().from(schema.vendorPayments).all();
@@ -352,22 +345,6 @@ export function deleteIdeaCollectionDb(db: DrizzleDB, id: string) {
   db.delete(schema.ideaCollections).where(eq(schema.ideaCollections.id, id)).run();
 }
 
-// Menu Options
-export function persistMenuOption(db: DrizzleDB, option: schema.MenuOption) {
-  db.insert(schema.menuOptions).values(option).onConflictDoUpdate({
-    target: schema.menuOptions.id,
-    set: option,
-  }).run();
-}
-
-export function updateMenuOptionDb(db: DrizzleDB, id: string, updates: Partial<schema.MenuOption>) {
-  db.update(schema.menuOptions).set(updates).where(eq(schema.menuOptions.id, id)).run();
-}
-
-export function deleteMenuOptionDb(db: DrizzleDB, id: string) {
-  db.delete(schema.menuOptions).where(eq(schema.menuOptions.id, id)).run();
-}
-
 // Vendor Payments
 export function persistVendorPayment(db: DrizzleDB, payment: schema.VendorPayment) {
   db.insert(schema.vendorPayments).values(payment).onConflictDoUpdate({
@@ -433,7 +410,6 @@ export function restoreAllTables(db: DrizzleDB, data: {
   dayOfItems: any[];
   ideas: any[];
   ideaCollections: any[];
-  menuOptions?: any[];
   vendorPayments?: any[];
   accommodations?: any[];
   gifts?: any[];
@@ -453,7 +429,6 @@ export function restoreAllTables(db: DrizzleDB, data: {
   db.delete(schema.tables).run();
   db.delete(schema.guestGroups).run();
   db.delete(schema.accommodations).run();
-  db.delete(schema.menuOptions).run();
 
   // Re-insert (order matters for FK constraints)
   if (data.wedding) {
@@ -462,7 +437,6 @@ export function restoreAllTables(db: DrizzleDB, data: {
   for (const row of data.guestGroups) db.insert(schema.guestGroups).values(row).run();
   for (const row of data.tables) db.insert(schema.tables).values(row).run();
   for (const row of data.accommodations ?? []) db.insert(schema.accommodations).values(row).run();
-  for (const row of data.menuOptions ?? []) db.insert(schema.menuOptions).values(row).run();
   for (const row of data.guests) db.insert(schema.guests).values(row).run();
   for (const row of data.vendors) db.insert(schema.vendors).values(row).run();
   for (const row of data.quotePricings) db.insert(schema.quotePricing).values(row).run();
