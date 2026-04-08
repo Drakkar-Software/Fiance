@@ -51,7 +51,7 @@
     "nameRequired": "Give this wedding a name",
     "joining": "Connecting...",
     "join": "Join",
-    "inviteReady": "Invitation valid — wedding ready to load",
+    "inviteReady": "Invitation valid",
     "inviteFailed": "Failed to load wedding details"
   },
   "join": {

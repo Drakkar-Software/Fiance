@@ -51,7 +51,7 @@
     "nameRequired": "Donnez un nom à ce mariage",
     "joining": "Connexion...",
     "join": "Rejoindre",
-    "inviteReady": "Invitation valide — mariage prêt à charger",
+    "inviteReady": "Invitation valide",
     "inviteFailed": "Impossible de charger les détails du mariage"
   },
   "join": {

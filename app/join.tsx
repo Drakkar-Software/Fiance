@@ -1,11 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken } from "@/lib/identity";
-import OnboardingScreen from "./onboarding";
 
 function useJoinAndNavigate() {
   const router = useRouter();
@@ -57,13 +56,7 @@ export default function JoinScreen() {
     return <ConfirmJoin weddingName={name} onConfirm={() => setConfirmed(true)} />;
   }
 
-  return (
-    <OnboardingScreen
-      inviteName={name}
-      invitePassword={password}
-      onJoinOverride={joinAndNavigate}
-    />
-  );
+  return <AutoJoin name={name} password={password} onJoin={joinAndNavigate} />;
 }
 
 function AlreadyJoinedRedirect({ password }: { password: string }) {
@@ -81,6 +74,25 @@ function AlreadyJoinedRedirect({ password }: { password: string }) {
   }, [registry, switchWedding, router, password]);
 
   return null;
+}
+
+function AutoJoin({
+  name,
+  password,
+  onJoin,
+}: {
+  name: string;
+  password: string;
+  onJoin: (label: string, password: string) => Promise<void>;
+}) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { onJoin(name, password); }, []);
+
+  return (
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950 items-center justify-center">
+      <ActivityIndicator size="large" color="#EC4899" />
+    </View>
+  );
 }
 
 function InvalidInvite() {
