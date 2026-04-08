@@ -42,13 +42,15 @@ export default function BudgetScreen() {
 
   const applyTemplate = useCallback((templateKey: string) => {
     const tpl = BUDGET_ALLOCATION_TEMPLATES[templateKey];
-    if (!tpl || !budget.budgetTarget) return;
+    if (!tpl) return;
+    const total = tpl.budget;
     const targets: Record<string, number> = {};
-    for (const [cat, ratio] of Object.entries(tpl)) {
-      targets[cat] = Math.round(budget.budgetTarget * ratio);
+    for (const [cat, ratio] of Object.entries(tpl.ratios)) {
+      targets[cat] = Math.round(total * ratio);
     }
-    updateWedding({ categoryBudgets: JSON.stringify(targets) });
-  }, [budget.budgetTarget, updateWedding]);
+    _setBudgetTarget(total.toString());
+    updateWedding({ budgetTarget: total, categoryBudgets: JSON.stringify(targets) });
+  }, [updateWedding]);
 
   const [budgetTarget, _setBudgetTarget] = useState(
     wedding?.budgetTarget?.toString() || ""

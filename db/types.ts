@@ -229,21 +229,37 @@ export const BUDGET_CATEGORY_LABELS: Record<string, string> = {
 
 // ─── Budget allocation templates ────────────────────────────────────────────
 
-export const BUDGET_ALLOCATION_TEMPLATES: Record<string, Record<string, number>> = {
+export interface BudgetTemplate {
+  /** Suggested total budget in euros */
+  budget: number;
+  /** Allocation ratios per category (must sum to 1.0) */
+  ratios: Record<string, number>;
+}
+
+export const BUDGET_ALLOCATION_TEMPLATES: Record<string, BudgetTemplate> = {
   intimate: {
-    venue: 0.18, catering: 0.38, photo_video: 0.10, music_entertainment: 0.05,
-    flowers_decor: 0.06, beauty: 0.04, transport: 0.02, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.05, cake: 0.02, other: 0.05,
+    budget: 10_000,
+    ratios: {
+      venue: 0.20, catering: 0.40, photo_video: 0.12, music_entertainment: 0.04,
+      flowers_decor: 0.05, beauty: 0.04, transport: 0.02, accommodation: 0.02,
+      stationery: 0.02, coordination: 0.03, cake: 0.02, other: 0.04,
+    },
   },
   classic: {
-    venue: 0.17, catering: 0.37, photo_video: 0.10, music_entertainment: 0.06,
-    flowers_decor: 0.07, beauty: 0.04, transport: 0.03, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.06, cake: 0.02, other: 0.03,
+    budget: 20_000,
+    ratios: {
+      venue: 0.20, catering: 0.37, photo_video: 0.10, music_entertainment: 0.06,
+      flowers_decor: 0.07, beauty: 0.04, transport: 0.03, accommodation: 0.02,
+      stationery: 0.02, coordination: 0.04, cake: 0.02, other: 0.03,
+    },
   },
   luxe: {
-    venue: 0.15, catering: 0.35, photo_video: 0.10, music_entertainment: 0.07,
-    flowers_decor: 0.08, beauty: 0.05, transport: 0.03, accommodation: 0.03,
-    stationery: 0.02, coordination: 0.07, cake: 0.02, other: 0.03,
+    budget: 45_000,
+    ratios: {
+      venue: 0.20, catering: 0.32, photo_video: 0.10, music_entertainment: 0.08,
+      flowers_decor: 0.10, beauty: 0.04, transport: 0.03, accommodation: 0.03,
+      stationery: 0.02, coordination: 0.04, cake: 0.02, other: 0.02,
+    },
   },
 };
 
