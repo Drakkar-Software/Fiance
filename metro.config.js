@@ -13,5 +13,7 @@ config.resolver.nodeModulesPaths = [
 ]
 
 if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push('wasm')
+if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
+config.transformer.babelTransformerPath = require.resolve('./metro-sql-transform.js')
 
 module.exports = withNativeWind(config, { input: "./global.css" });

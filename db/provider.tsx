@@ -4,15 +4,15 @@ import { drizzle, type ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { View, Text, ActivityIndicator, Platform } from "react-native";
 import * as schema from "./schema";
 import { hydrateAllStores, clearAllStores, loadFromLocalStorage } from "@/lib/persistence";
-import m0001 from "./migrations/0001_initial";
-import m0002 from "./migrations/0002_planning_aspects";
-import m0003 from "./migrations/0003_no_table_needed";
-import m0004 from "./migrations/0004_remove_dinner_add_groups";
-import m0005 from "./migrations/0005_companion_id";
-import m0006 from "./migrations/0006_is_public_day_of";
-import m0007 from "./migrations/0007_wedding_description_faq";
-import m0008 from "./migrations/0008_day_of_item_date";
-import m0009 from "./migrations/0009_new_tables_and_columns";
+import m0001 from "./migrations/0001_initial.sql";
+import m0002 from "./migrations/0002_planning_aspects.sql";
+import m0003 from "./migrations/0003_no_table_needed.sql";
+import m0004 from "./migrations/0004_remove_dinner_add_groups.sql";
+import m0005 from "./migrations/0005_companion_id.sql";
+import m0006 from "./migrations/0006_is_public_day_of.sql";
+import m0007 from "./migrations/0007_wedding_description_faq.sql";
+import m0008 from "./migrations/0008_day_of_item_date.sql";
+import m0009 from "./migrations/0009_new_tables_and_columns.sql";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
