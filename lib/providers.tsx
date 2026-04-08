@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { usePathname } from "expo-router";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
-import { initPublicPageSync, teardownPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
+import { initPublicPageSync, teardownPublicPageSync, pullPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
 import { deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
@@ -33,7 +33,10 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       if (sf && !cancelled) {
         try { await sf.getState().pull(); } catch { /* sync will retry */ }
       }
-      if (!cancelled) notifyPublicPageSync();
+      if (!cancelled) {
+        await pullPublicPageSync();
+        notifyPublicPageSync();
+      }
     })();
 
     return () => { cancelled = true; };

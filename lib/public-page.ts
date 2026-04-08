@@ -71,6 +71,16 @@ export function initPublicPageSync(config: {
   });
 }
 
+/** Pull the current public page to seed the baseHash for subsequent pushes */
+export async function pullPublicPageSync(): Promise<void> {
+  if (!syncManager) return;
+  try {
+    await syncManager.pull();
+  } catch {
+    // First pull may 404 if nothing has been pushed yet — that's fine
+  }
+}
+
 export function teardownPublicPageSync(): void {
   if (pushTimer) {
     clearTimeout(pushTimer);
