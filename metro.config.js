@@ -13,6 +13,8 @@ config.resolver.nodeModulesPaths = [
 ]
 
 if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push('wasm')
+// Allow resolving packages that only export under "import" or "default" conditions (e.g. ESM-only subpaths)
+if (!config.resolver.unstable_conditionNames.includes('import')) config.resolver.unstable_conditionNames.push('import', 'default', 'require')
 if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
 config.transformer.babelTransformerPath = require.resolve('./metro-sql-transform.js')
 
