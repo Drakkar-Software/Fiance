@@ -376,7 +376,10 @@ export default function WeddingPublicPage() {
               <View className="h-px flex-1 bg-accent-rose-light" />
             </View>
 
-            <Text className="text-lg font-bold text-gray-900 mb-1">{t("rsvp")}</Text>
+            <View className="flex-row items-center gap-2 px-1 mb-4">
+              <Calendar size={18} color="#C9956B" />
+              <Text className="text-lg font-bold text-gray-900">{t("rsvp")}</Text>
+            </View>
 
             {submitted ? (
               <View className="bg-white rounded-2xl p-6 items-center shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
