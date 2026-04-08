@@ -399,8 +399,13 @@ export default function GuestDetailScreen() {
                 const userId = authToken.slice(0, 16);
                 const baseUrl = buildWeddingPageUrl(userId);
                 const guestName = `${firstName} ${lastName}`.trim();
-                const rsvpToken = useGuestsStore.getState().guests.find((g) => g.id === guestId)?.rsvpToken;
-                const url = rsvpToken ? `${baseUrl}?token=${rsvpToken}` : baseUrl;
+                const { guests, updateGuest } = useGuestsStore.getState();
+                let rsvpToken = guests.find((g) => g.id === guestId)?.rsvpToken;
+                if (!rsvpToken) {
+                  rsvpToken = Crypto.randomUUID();
+                  updateGuest(guestId, { rsvpToken });
+                }
+                const url = `${baseUrl}?token=${rsvpToken}`;
                 await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
               } catch {}
             }}

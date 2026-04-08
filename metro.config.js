@@ -13,6 +13,5 @@ config.resolver.nodeModulesPaths = [
 ]
 
 if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push('wasm')
-if (!config.resolver.assetExts.includes('sql')) config.resolver.assetExts.push('sql')
 
 module.exports = withNativeWind(config, { input: "./global.css" });

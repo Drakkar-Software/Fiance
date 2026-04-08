@@ -4,6 +4,15 @@ import { drizzle, type ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { View, Text, ActivityIndicator, Platform } from "react-native";
 import * as schema from "./schema";
 import { hydrateAllStores, clearAllStores, loadFromLocalStorage } from "@/lib/persistence";
+import m0001 from "./migrations/0001_initial";
+import m0002 from "./migrations/0002_planning_aspects";
+import m0003 from "./migrations/0003_no_table_needed";
+import m0004 from "./migrations/0004_remove_dinner_add_groups";
+import m0005 from "./migrations/0005_companion_id";
+import m0006 from "./migrations/0006_is_public_day_of";
+import m0007 from "./migrations/0007_wedding_description_faq";
+import m0008 from "./migrations/0008_day_of_item_date";
+import m0009 from "./migrations/0009_new_tables_and_columns";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
@@ -65,26 +74,14 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
         const drizzleDb = drizzle(sqliteDb, { schema });
 
         // Run migrations
-        const migrations = [
-          require("./migrations/0001_initial.sql"),
-          require("./migrations/0002_planning_aspects.sql"),
-          require("./migrations/0003_no_table_needed.sql"),
-          require("./migrations/0004_remove_dinner_add_groups.sql"),
-          require("./migrations/0005_companion_id.sql"),
-          require("./migrations/0006_is_public_day_of.sql"),
-          require("./migrations/0007_wedding_description_faq.sql"),
-          require("./migrations/0008_day_of_item_date.sql"),
-          require("./migrations/0009_new_tables_and_columns.sql"),
-        ];
+        const migrations = [m0001, m0002, m0003, m0004, m0005, m0006, m0007, m0008, m0009];
         for (const migrationSQL of migrations) {
-          if (typeof migrationSQL === "string") {
-            const statements = migrationSQL
-              .split(";")
-              .map((s: string) => s.trim())
-              .filter(Boolean);
-            for (const stmt of statements) {
-              sqliteDb.execSync(stmt + ";");
-            }
+          const statements = migrationSQL
+            .split(";")
+            .map((s: string) => s.trim())
+            .filter(Boolean);
+          for (const stmt of statements) {
+            sqliteDb.execSync(stmt + ";");
           }
         }
 
