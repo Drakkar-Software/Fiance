@@ -49,7 +49,7 @@ function LangSwitch() {
 
 export default function WeddingPublicPage() {
   const { t } = useTranslation(["wedding-page", "seo"]);
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, token } = useLocalSearchParams<{ id: string; token?: string }>();
   const [page, setPage] = useState<PublicWeddingPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -81,14 +81,20 @@ export default function WeddingPublicPage() {
         } else {
           setError(true);
         }
-        if (rosterData?.guests) setRoster(rosterData.guests);
+        if (rosterData?.guests) {
+          setRoster(rosterData.guests);
+          if (token) {
+            const match = rosterData.guests.find((g) => g.rsvpToken === token);
+            if (match) setSelectedGuest(match);
+          }
+        }
       } catch {
         setError(true);
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, token]);
 
   const about = page?.about;
   const timeline = page?.timeline ?? [];

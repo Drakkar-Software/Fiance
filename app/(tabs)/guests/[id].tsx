@@ -286,8 +286,10 @@ export default function GuestDetailScreen() {
                 try {
                   const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
                   const userId = authToken.slice(0, 16);
-                  const url = buildWeddingPageUrl(userId);
+                  const baseUrl = buildWeddingPageUrl(userId);
                   const guestName = `${firstName} ${lastName}`.trim();
+                  const rsvpToken = useGuestsStore.getState().guests.find((g) => g.id === guestId)?.rsvpToken;
+                  const url = rsvpToken ? `${baseUrl}?token=${rsvpToken}` : baseUrl;
                   await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
                 } catch {}
               }}
