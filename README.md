@@ -63,6 +63,62 @@ npm run db:generate
 npm run db:push
 ```
 
+## Storybook
+
+The project includes a web-based [Storybook](https://storybook.js.org/) (v10) for browsing and testing UI components in isolation. It uses `@storybook/react-vite` with `react-native-web-lite` to render components in the browser.
+
+### Run Storybook
+
+```bash
+pnpm storybook
+```
+
+Opens at [http://localhost:6006](http://localhost:6006). All 22 shared components in `components/` have co-located story files (`*.stories.tsx`).
+
+### Build static Storybook
+
+```bash
+pnpm build-storybook
+```
+
+### MCP Integration
+
+The Storybook includes `@storybook/addon-mcp`, which exposes an MCP server for AI tools. When Storybook is running, connect Claude Code:
+
+```bash
+claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope project
+```
+
+### Writing Stories
+
+Stories are co-located next to their components using CSF3 format:
+
+```
+components/
+  StatusBadge.tsx
+  StatusBadge.stories.tsx
+```
+
+Template:
+
+```tsx
+import type { Meta, StoryObj } from "storybook/react";
+import { MyComponent } from "./MyComponent";
+
+const meta: Meta<typeof MyComponent> = {
+  title: "Components/MyComponent",
+  component: MyComponent,
+  tags: ["autodocs"],
+};
+export default meta;
+
+type Story = StoryObj<typeof MyComponent>;
+
+export const Default: Story = {
+  args: { /* props */ },
+};
+```
+
 ## Build APK
 
 The project uses [EAS Build](https://docs.expo.dev/build/introduction/) for producing Android APKs.
