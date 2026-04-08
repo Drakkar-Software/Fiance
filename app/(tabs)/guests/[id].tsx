@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   Alert,
   Share,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -110,6 +111,25 @@ export default function GuestDetailScreen() {
   const [showCompanionPicker, setShowCompanionPicker] = useState(false);
   const [showCompanionConfirm, setShowCompanionConfirm] = useState(false);
   const [pendingCompanionId, setPendingCompanionId] = useState("");
+  const rsvpUrlRef = useRef<string | null>(null);
+
+  // Pre-build the RSVP URL so the share handler stays synchronous (required for
+  // clipboard/share APIs that need an unbroken user-gesture context on web).
+  useEffect(() => {
+    if (!activeEntry?.seedPhrase || isNew) return;
+    (async () => {
+      const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+      const userId = authToken.slice(0, 16);
+      const baseUrl = buildWeddingPageUrl(userId);
+      const { guests: allGuests, updateGuest: ug } = useGuestsStore.getState();
+      let token = allGuests.find((g) => g.id === id)?.rsvpToken;
+      if (!token) {
+        token = Crypto.randomUUID();
+        ug(id!, { rsvpToken: token });
+      }
+      rsvpUrlRef.current = `${baseUrl}?token=${token}`;
+    })();
+  }, [id, activeEntry?.seedPhrase, isNew]);
 
   const canSave = firstName.trim().length > 0 && lastName.trim().length > 0;
 
@@ -395,29 +415,25 @@ export default function GuestDetailScreen() {
         {!isNew && activeEntry?.seedPhrase && (
           <Pressable
             onPress={async () => {
-              try {
-                const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
-                const userId = authToken.slice(0, 16);
-                const baseUrl = buildWeddingPageUrl(userId);
-                const { guests, updateGuest } = useGuestsStore.getState();
-                let rsvpToken = guests.find((g) => g.id === guestId)?.rsvpToken;
-                if (!rsvpToken) {
-                  rsvpToken = Crypto.randomUUID();
-                  updateGuest(guestId, { rsvpToken });
+              const url = rsvpUrlRef.current;
+              if (!url) return;
+              if (Platform.OS === "web") {
+                try {
+                  if (navigator.share) {
+                    await navigator.share({ url });
+                  } else {
+                    await navigator.clipboard.writeText(url);
+                    toast.success(t("linkCopied"));
+                  }
+                } catch {
+                  // share dismissed or clipboard blocked — silently ignore
                 }
-                const url = `${baseUrl}?token=${rsvpToken}`;
+              } else {
                 try {
                   await Share.share({ message: url, url });
                 } catch {
-                  if (typeof navigator !== "undefined" && navigator.clipboard) {
-                    await navigator.clipboard.writeText(url);
-                    toast.success(t("linkCopied"));
-                  } else {
-                    Alert.alert(t("rsvpLink"), url);
-                  }
+                  // share dismissed
                 }
-              } catch (e: any) {
-                Alert.alert(t("common:error"), e.message);
               }
             }}
             className="flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 mb-3 active:opacity-70"
