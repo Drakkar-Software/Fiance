@@ -64,6 +64,7 @@ export default function WeddingPublicPage() {
   const [childrenCount, setChildrenCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -379,8 +380,13 @@ export default function WeddingPublicPage() {
 
             {submitted ? (
               <View className="bg-white rounded-2xl p-6 items-center shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
-                <CheckCircle2 size={40} color="#10B981" />
-                <Text className="text-base font-semibold text-gray-900 mt-3 text-center">{t("rsvpSuccess")}</Text>
+                <View className="w-16 h-16 rounded-full bg-green-50 items-center justify-center mb-3">
+                  <CheckCircle2 size={40} color="#10B981" />
+                </View>
+                <Text className="text-lg font-bold text-gray-900 text-center">{t("rsvpSuccess")}</Text>
+                <Text className="text-sm text-gray-400 mt-1 text-center">
+                  {selectedGuest?.firstName} {selectedGuest?.lastName}
+                </Text>
               </View>
             ) : (
               <View className="bg-white rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
@@ -556,7 +562,12 @@ export default function WeddingPublicPage() {
                             submittedAt: new Date().toISOString(),
                           });
                           setSubmitting(false);
-                          if (ok) setSubmitted(true);
+                          if (ok) {
+                            setSubmitted(true);
+                            setSubmitError(false);
+                          } else {
+                            setSubmitError(true);
+                          }
                         }}
                         className="bg-primary-500 rounded-xl py-3 items-center active:bg-primary-600"
                       >
@@ -564,6 +575,9 @@ export default function WeddingPublicPage() {
                           {submitting ? "..." : t("rsvpSubmit")}
                         </Text>
                       </Pressable>
+                      {submitError && (
+                        <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
+                      )}
                     )}
                   </>
                 )}
