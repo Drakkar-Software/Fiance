@@ -9,6 +9,8 @@
   "error": "Could not load the page. The link may be invalid.",
   "noTimeline": "The schedule is not available yet.",
   "until": "until {{time}}",
+  "printSchedule": "Print",
+  "scheduleOf": "Schedule of",
   "rsvp": "Confirm attendance",
   "rsvpSearch": "Search your name...",
   "rsvpChange": "Change",

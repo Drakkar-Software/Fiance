@@ -110,6 +110,170 @@ export function buildBudgetHtml(
   </body></html>`;
 }
 
+// ─── Public timeline HTML (for guests) ──────────────────────────────────────
+
+const PUBLIC_STYLES = `
+  @page { margin: 18mm 15mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #1F2937;
+    margin: 0;
+    padding: 24px 28px;
+    background: #FFF9F5;
+    font-size: 13px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .header {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #F3E8E0;
+    margin-bottom: 24px;
+  }
+  .subtitle {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #C9956B;
+    margin-bottom: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .couple {
+    font-size: 26px;
+    font-weight: bold;
+    color: #1F2937;
+    margin-bottom: 6px;
+  }
+  .meta {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .date-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: #C9956B;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 22px 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #F3E8E0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .item {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+    gap: 12px;
+  }
+  .time-col {
+    width: 72px;
+    flex-shrink: 0;
+    padding-top: 12px;
+    text-align: right;
+  }
+  .time {
+    font-size: 15px;
+    font-weight: bold;
+    color: #C9956B;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .end-time {
+    font-size: 10px;
+    color: #B0B0B8;
+    margin-top: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .details {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #F3E8E0;
+    box-shadow: 0 1px 4px rgba(232,180,184,0.12);
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1F2937;
+  }
+  .location {
+    font-size: 11px;
+    color: #C9956B;
+    margin-top: 5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    color: #D0D0D8;
+    font-size: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+`;
+
+export function buildPublicTimelineHtml(
+  items: { title: string; date?: string | null; time: string; endTime?: string | null; location?: string | null }[],
+  about: { partner1Name?: string | null; partner2Name?: string | null; weddingDate?: string | null; venueName?: string | null },
+  labels: { scheduleOf: string; until: (time: string) => string; dateHeaders: Record<string, string> },
+): string {
+  // Group by raw date key, preserving insertion order (items are already sorted)
+  const groups: Record<string, typeof items> = {};
+  for (const item of items) {
+    const key = item.date || about.weddingDate || "";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  }
+  const isMultiDay = Object.keys(groups).length > 1;
+
+  const coupleNames = [about.partner1Name, about.partner2Name].filter(Boolean).join(" & ");
+  const metaParts = [about.venueName].filter(Boolean);
+
+  let body = "";
+
+  for (const [dateKey, dateItems] of Object.entries(groups)) {
+    if (isMultiDay) {
+      const label = labels.dateHeaders[dateKey] ?? dateKey;
+      body += `<div class="date-header">${escapeHtml(label)}</div>`;
+    }
+    for (const item of dateItems) {
+      const endTimeHtml = item.endTime
+        ? `<div class="end-time">${escapeHtml(labels.until(item.endTime))}</div>`
+        : "";
+      const locationHtml = item.location
+        ? `<div class="location">📍 ${escapeHtml(item.location)}</div>`
+        : "";
+      body += `
+        <div class="item">
+          <div class="time-col">
+            <div class="time">${escapeHtml(item.time)}</div>
+            ${endTimeHtml}
+          </div>
+          <div class="details">
+            <div class="title">${escapeHtml(item.title)}</div>
+            ${locationHtml}
+          </div>
+        </div>`;
+    }
+  }
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>${PUBLIC_STYLES}</style></head>
+<body>
+  <div class="header">
+    <div class="subtitle">${escapeHtml(labels.scheduleOf)}</div>
+    <div class="couple">${escapeHtml(coupleNames || "—")}</div>
+    ${metaParts.length ? `<div class="meta">${metaParts.map(escapeHtml).join(" · ")}</div>` : ""}
+  </div>
+  ${body}
+  <div class="footer">WeddingOS</div>
+</body>
+</html>`;
+}
+
 // ─── Day-of timeline HTML ────────────────────────────────────────────────────
 
 export function buildTimelineHtml(

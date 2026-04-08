@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, TextInput, Linking } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink } from "lucide-react-native";
+import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
+import { exportToPdf, buildPublicTimelineHtml } from "@/lib/pdf-export";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
 import { TimelineItem } from "@/components/TimelineItem";
 
@@ -120,6 +121,36 @@ export default function WeddingPublicPage() {
   }, [timeline, about?.weddingDate]);
   const isMultiDay = Object.keys(groupedTimeline).length > 1;
 
+  const handlePrintSchedule = useCallback(async () => {
+    const dateHeaders: Record<string, string> = {};
+    timeline.forEach((item) => {
+      const rawDate = item.date || about?.weddingDate || "";
+      if (rawDate && !dateHeaders[rawDate]) {
+        dateHeaders[rawDate] = safeFormat(
+          new Date(rawDate + "T00:00:00"),
+          "EEEE d MMMM yyyy",
+          { locale: getDateLocale() },
+        );
+      }
+    });
+    const html = buildPublicTimelineHtml(
+      timeline,
+      {
+        partner1Name: about?.partner1Name,
+        partner2Name: about?.partner2Name,
+        weddingDate: about?.weddingDate,
+        venueName: about?.venueName,
+      },
+      {
+        scheduleOf: t("scheduleOf"),
+        until: (time: string) => t("until", { time }),
+        dateHeaders,
+      },
+    );
+    const safeName = coupleNames.replace(/\s+/g, "-") || "schedule";
+    await exportToPdf(html, `${safeName}-schedule.pdf`);
+  }, [timeline, about, coupleNames, t]);
+
   if (!id) return <Redirect href="/" />;
 
   if (loading) {
@@ -213,9 +244,18 @@ export default function WeddingPublicPage() {
           <View className="mt-2 pb-4">
             <View className="flex-row items-center gap-2 px-5 mb-4">
               <Clock size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900">
+              <Text className="text-lg font-bold text-gray-900 flex-1">
                 {t("timeline")}
               </Text>
+              <Pressable
+                onPress={handlePrintSchedule}
+                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/60 active:opacity-70"
+              >
+                <Download size={13} color="#C9956B" />
+                <Text className="text-xs font-medium text-accent-gold">
+                  {t("printSchedule")}
+                </Text>
+              </Pressable>
             </View>
             <View className="px-4">
               {Object.entries(groupedTimeline).map(([dateLabel, dateItems]) => (

@@ -9,6 +9,8 @@
   "error": "Impossible de charger la page. Le lien est peut-être invalide.",
   "noTimeline": "Le programme n'est pas encore disponible.",
   "until": "jusqu'à {{time}}",
+  "printSchedule": "Imprimer",
+  "scheduleOf": "Programme de",
   "rsvp": "Confirmer ma présence",
   "rsvpSearch": "Rechercher votre nom...",
   "rsvpChange": "Changer",
