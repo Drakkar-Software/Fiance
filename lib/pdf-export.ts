@@ -67,7 +67,7 @@ export function buildGuestListHtml(
       <td>${g.diet ?? "—"}</td>
       <td>${g.tableId ? escapeHtml(tableMap.get(g.tableId) ?? "") : "—"}</td>
       <td>${g.groupId ? escapeHtml(groupMap.get(g.groupId) ?? "") : "—"}</td>
-      <td>${g.hasPlusOne ? (g.plusOneName ? escapeHtml(g.plusOneName) : "+1 TBD") : "—"}</td>
+      <td>${g.companionId ? "✓" : "—"}</td>
     </tr>`,
     )
     .join("");
@@ -75,7 +75,7 @@ export function buildGuestListHtml(
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${BASE_STYLES}</style></head><body>
     <h1>Liste des invités</h1>
     <p>${guests.length} invités</p>
-    <table><thead><tr><th>Nom</th><th>RSVP</th><th>Régime</th><th>Table</th><th>Groupe</th><th>+1</th></tr></thead><tbody>${rows}</tbody></table>
+    <table><thead><tr><th>Nom</th><th>RSVP</th><th>Régime</th><th>Table</th><th>Groupe</th><th>Accompagnant</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="footer">Exporté depuis WeddingOS</div>
   </body></html>`;
 }

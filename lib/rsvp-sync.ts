@@ -26,9 +26,6 @@ export interface RsvpSubmission {
   rsvpStatus: string;
   diet?: string;
   dietNotes?: string;
-  plusOneName?: string;
-  plusOneConfirmed?: boolean;
-  plusOneDiet?: string;
   mealStarterId?: string;
   mealMainId?: string;
   mealDessertId?: string;
@@ -150,9 +147,6 @@ export function applyRsvpSubmissions(submissions: RsvpSubmission[]): number {
 
     if (sub.diet) updates.diet = sub.diet;
     if (sub.dietNotes) updates.dietNotes = sub.dietNotes;
-    if (sub.plusOneName != null) updates.plusOneName = sub.plusOneName;
-    if (sub.plusOneConfirmed != null) updates.plusOneConfirmed = sub.plusOneConfirmed;
-    if (sub.plusOneDiet) updates.plusOneDiet = sub.plusOneDiet;
     if (sub.mealStarterId) updates.mealStarterId = sub.mealStarterId;
     if (sub.mealMainId) updates.mealMainId = sub.mealMainId;
     if (sub.mealDessertId) updates.mealDessertId = sub.mealDessertId;

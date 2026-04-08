@@ -23,8 +23,6 @@ export interface GuestCounts {
   nb_sleeping: number;
   response_rate: number;
   nb_no_table: number;
-  nb_plus_ones: number;
-  nb_plus_ones_confirmed: number;
   nb_thank_you_pending: number;
 }
 
@@ -81,8 +79,6 @@ export function computeCounts(guests: Guest[]): GuestCounts {
         ? Math.round(((acceptedCount + declinedCount) / total) * 100)
         : 0,
     nb_no_table: accepted.filter((g) => !g.tableId && !g.noTableNeeded).length,
-    nb_plus_ones: guests.filter((g) => g.hasPlusOne).length,
-    nb_plus_ones_confirmed: guests.filter((g) => g.hasPlusOne && g.plusOneConfirmed).length,
     nb_thank_you_pending: accepted.filter((g) => !g.thankYouSent).length,
   };
 }
