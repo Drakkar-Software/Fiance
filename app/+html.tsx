@@ -1,7 +1,10 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 import type { PropsWithChildren } from "react";
+import seo from "@/i18n/locales/fr/seo.json";
 
 export default function Root({ children }: PropsWithChildren) {
+  const featureList = Object.values(seo.featureList);
+
   return (
     <html lang="fr">
       <head>
@@ -14,17 +17,9 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="theme-color" content="#EC4899" />
 
         {/* Primary SEO meta tags */}
-        <title>
-          WeddingOS — Organisez votre mariage simplement | Budget, Invités, Prestataires
-        </title>
-        <meta
-          name="description"
-          content="Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne. Données 100% privées."
-        />
-        <meta
-          name="keywords"
-          content="organisation mariage, planifier mariage, budget mariage, liste invités mariage, plan de table mariage, prestataires mariage, wedding planner, application mariage, checklist mariage, planning mariage, RSVP mariage, mood board mariage, organisateur mariage, rétro planning mariage, jour J, app mariage gratuite, préparatifs mariage, gestion mariage, décoration mariage, traiteur mariage"
-        />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        <meta name="keywords" content={seo.keywords} />
         <meta name="author" content="WeddingOS" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://wedding-os.pages.dev/" />
@@ -43,38 +38,20 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:site_name" content="WeddingOS" />
         <meta property="og:locale" content="fr_FR" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta
-          property="og:title"
-          content="WeddingOS — Organisez votre mariage simplement"
-        />
-        <meta
-          property="og:description"
-          content="Application gratuite et privée pour organiser votre mariage : budget, invités, plan de table, prestataires, planning et mood board. 100% hors ligne."
-        />
+        <meta property="og:title" content={seo.ogTitle} />
+        <meta property="og:description" content={seo.ogDescription} />
         <meta property="og:image" content="/assets/icon-512.png" />
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
-        <meta
-          property="og:image:alt"
-          content="WeddingOS — Application d'organisation de mariage"
-        />
+        <meta property="og:image:alt" content={seo.ogImageAlt} />
         <meta property="og:url" content="https://wedding-os.pages.dev/" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="WeddingOS — Organisez votre mariage simplement"
-        />
-        <meta
-          name="twitter:description"
-          content="Application gratuite et privée pour organiser votre mariage : budget, invités, plan de table, prestataires, planning et mood board."
-        />
+        <meta name="twitter:title" content={seo.ogTitle} />
+        <meta name="twitter:description" content={seo.shortDescription} />
         <meta name="twitter:image" content="/assets/icon-512.png" />
-        <meta
-          name="twitter:image:alt"
-          content="WeddingOS — Application d'organisation de mariage"
-        />
+        <meta name="twitter:image:alt" content={seo.ogImageAlt} />
 
         {/* App linking */}
         <meta name="application-name" content="WeddingOS" />
@@ -91,8 +68,7 @@ export default function Root({ children }: PropsWithChildren) {
               name: "WeddingOS",
               applicationCategory: "LifestyleApplication",
               operatingSystem: "iOS, Android, Web",
-              description:
-                "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne.",
+              description: seo.description,
               offers: {
                 "@type": "Offer",
                 price: "0",
@@ -103,20 +79,7 @@ export default function Root({ children }: PropsWithChildren) {
                 ratingValue: "5",
                 ratingCount: "1",
               },
-              featureList: [
-                "Gestion du budget mariage",
-                "Liste d'invités et RSVP",
-                "Plan de table interactif",
-                "Gestion des prestataires",
-                "Comparateur de traiteurs",
-                "Planning et checklist",
-                "Mood board d'inspiration",
-                "Programme du jour J",
-                "Page web de mariage partageable",
-                "Synchronisation chiffrée",
-                "Mode hors ligne",
-                "Multi-mariage",
-              ],
+              featureList,
               inLanguage: ["fr", "en"],
               screenshot: "/assets/icon-512.png",
             }),

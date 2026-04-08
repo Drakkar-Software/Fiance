@@ -8,11 +8,11 @@ import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { TimelineItem } from "@/components/TimelineItem";
 
-function setOgMeta(page: PublicWeddingPage) {
+function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
   if (Platform.OS !== "web") return;
   const names = [page.about.partner1Name, page.about.partner2Name].filter(Boolean).join(" & ");
-  const title = names ? `Mariage de ${names}` : "WeddingOS";
-  const desc = page.about.description || "Votre mariage, organisé simplement.";
+  const title = names ? t("seo:weddingOf", { names }) : "WeddingOS";
+  const desc = page.about.description || t("seo:defaultDescription");
 
   document.title = title;
   const tags: Record<string, string> = {
@@ -48,7 +48,7 @@ function LangSwitch() {
 }
 
 export default function WeddingPublicPage() {
-  const { t } = useTranslation("wedding-page");
+  const { t } = useTranslation(["wedding-page", "seo"]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const [page, setPage] = useState<PublicWeddingPage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +67,7 @@ export default function WeddingPublicPage() {
         const data = await fetchPublicPage(serverUrl, id);
         if (data) {
           setPage(data);
-          setOgMeta(data);
+          setOgMeta(data, t);
         } else {
           setError(true);
         }

@@ -1,0 +1,32 @@
+{
+  "title": "WeddingOS — Organisez votre mariage simplement | Budget, Invités, Prestataires",
+  "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne. Données 100% privées.",
+  "shortDescription": "Application gratuite et privée pour organiser votre mariage : budget, invités, prestataires, planning et mood board.",
+  "keywords": "organisation mariage, planifier mariage, budget mariage, liste invités mariage, plan de table mariage, prestataires mariage, wedding planner, application mariage, checklist mariage, planning mariage, RSVP mariage, mood board mariage, organisateur mariage, rétro planning mariage, jour J, app mariage gratuite, préparatifs mariage, gestion mariage, décoration mariage, traiteur mariage",
+  "ogTitle": "WeddingOS — Organisez votre mariage simplement",
+  "ogDescription": "Application gratuite et privée pour organiser votre mariage : budget, invités, plan de table, prestataires, planning et mood board. 100% hors ligne.",
+  "ogImageAlt": "WeddingOS — Application d'organisation de mariage",
+  "manifestName": "WeddingOS — Organisez votre mariage",
+  "manifestDescription": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne.",
+  "weddingOf": "Mariage de {{names}}",
+  "defaultDescription": "Votre mariage, organisé simplement.",
+  "featureList": {
+    "budget": "Gestion du budget mariage",
+    "guests": "Liste d'invités et RSVP",
+    "tables": "Plan de table interactif",
+    "vendors": "Gestion des prestataires",
+    "catererComparison": "Comparateur de traiteurs",
+    "planning": "Planning et checklist",
+    "moodBoard": "Mood board d'inspiration",
+    "dayOf": "Programme du jour J",
+    "publicPage": "Page web de mariage partageable",
+    "sync": "Synchronisation chiffrée",
+    "offline": "Mode hors ligne",
+    "multiWedding": "Multi-mariage"
+  },
+  "shortcuts": {
+    "budget": "Gérer le budget du mariage",
+    "guests": "Gérer la liste des invités",
+    "planning": "Voir le planning du mariage"
+  }
+}
