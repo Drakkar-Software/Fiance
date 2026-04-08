@@ -34,9 +34,15 @@ File-based routing via Expo Router. Screens live in `app/(tabs)/` — each subdi
 
 Three-layer persistence:
 
-1. **Zustand stores** (`store/`) — runtime state, 5 domain stores (`useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`) plus `useWeddingRegistryStore` for multi-wedding support.
-2. **SQLite via Drizzle** (`db/schema.ts`) — 12 tables, all IDs are UUIDs (except singleton `wedding` table with id=1). `lib/persistence.ts` handles hydration on boot and write-through on every mutation.
+1. **Zustand stores** (`store/`) — runtime state; domain stores include `useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`, `useAccommodationsStore`, `useGiftsStore`, plus `useWeddingRegistryStore` for multi-wedding support.
+2. **SQLite via Drizzle** (`db/schema.ts`) — 15 tables, all IDs are UUIDs (except singleton `wedding` table with id=1). `lib/persistence.ts` handles hydration on boot and write-through on every mutation.
 3. **Starfish sync** (optional) — `lib/starfish.ts` and `lib/sync.ts` push AES-256-GCM encrypted backups to a remote server. Triggered via `notifySync()` after store mutations.
+
+### Starfish sync — encryption contract
+
+The `wedding` collection uses **client-side AES-256-GCM encryption**. The server stores an opaque `{ "_encrypted": "<base64>" }` blob and never sees plaintext. All server collections are configured with `encryption: "none"` (server pass-through; encryption is handled entirely on the client by `SyncManager`).
+
+**Critical**: `notifySync()` must call `store.set(() => doc)` — this marks `dirty=true`, triggers `flush()`, which calls `syncManager.push()` and encrypts the payload. **Never use `store.restore(doc)` for pushing**: `restore()` only updates local Zustand state without marking dirty, so `flush()` never runs and nothing reaches the server. The `isRestoring` guard (`isRestoring = true` around `set()`) prevents the store subscription from redundantly calling `restoreFromBackup` on our own outgoing data.
 
 ### Adding a new store
 
@@ -48,7 +54,9 @@ Create file under `app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab 
 
 ### Database changes
 
-Edit `db/schema.ts`, then run `pnpm db:generate` and `pnpm db:push`. Types are inferred via Drizzle's `$inferSelect`/`$inferInsert`. Enums, labels, and color mappings live in `db/types.ts`.
+Edit `db/schema.ts`, then run `pnpm db:generate`. If a new migration file is generated, add it to the migrations list in `db/provider.tsx`. Types are inferred via Drizzle's `$inferSelect`/`$inferInsert`. Enums, labels, and color mappings live in `db/types.ts`.
+
+`pnpm db:push` is a no-op (expo-sqlite runs migrations at app startup from `db/provider.tsx`, not via drizzle-kit push). New migrations must be added manually to the `migrations` array in `db/provider.tsx`.
 
 ### Styling
 
