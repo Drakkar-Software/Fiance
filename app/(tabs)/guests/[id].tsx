@@ -281,13 +281,6 @@ export default function GuestDetailScreen() {
             onChange={setInvitationType}
             labels={Object.fromEntries(INVITATION_TYPES.map((it) => [it, t(INVITATION_TYPE_LABELS[it])])) as Record<InvitationType, string>}
           />
-          <View className="mt-3">
-            <ToggleRow
-              label={t("sleepsOnSite")}
-              value={isSleeping}
-              onToggle={() => setIsSleeping(!isSleeping)}
-            />
-          </View>
         </FormCard>
 
         {/* RSVP */}
