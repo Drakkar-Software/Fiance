@@ -314,20 +314,13 @@ export default function GuestDetailScreen() {
         ) : (
           <Pressable
             onPress={() => router.push("/(tabs)/guests/accommodations")}
-            className="mb-3 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-4 items-center gap-2 active:opacity-70"
+            className="flex-row items-center gap-1.5 mb-4 active:opacity-60"
           >
-            <View className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
-              <BedDouble size={20} color="#9CA3AF" />
-            </View>
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              {t("noAccommodations")}
+            <BedDouble size={14} color="#9CA3AF" />
+            <Text className="text-xs text-gray-400 dark:text-gray-500">
+              {t("noAccommodations")} —{" "}
+              <Text className="text-primary-500 font-medium">{t("newAccommodation")}</Text>
             </Text>
-            <Text className="text-xs text-center text-gray-400 dark:text-gray-500">
-              {t("createAccommodationsDesc")}
-            </Text>
-            <View className="mt-1 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900">
-              <Text className="text-xs font-semibold text-primary-500">{t("newAccommodation")}</Text>
-            </View>
           </Pressable>
         )}
 
