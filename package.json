@@ -31,6 +31,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
+    "db:push": "echo 'db:push skipped: expo-sqlite runs migrations at app startup'",
     "build:web": "expo export --platform web && node scripts/inject-pwa.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
