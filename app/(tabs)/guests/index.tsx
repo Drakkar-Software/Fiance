@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Users, AlertTriangle, LayoutGrid,
-  Trash2, FolderOpen,
+  Trash2, FolderOpen, Map,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -506,6 +506,7 @@ function GroupsView() {
 
 function TablesView() {
   const { t } = useTranslation("guests");
+  const router = useRouter();
   const tables = useGuestsStore((s) => s.tables);
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
@@ -566,6 +567,17 @@ function TablesView() {
           className="flex-1 px-4 pt-4"
           showsVerticalScrollIndicator={false}
         >
+          {/* Plan view link */}
+          {tables.length > 0 && (
+            <Pressable
+              onPress={() => router.push("/(tabs)/guests/tables")}
+              className="flex-row items-center justify-center gap-2 mb-4 py-2.5 rounded-xl bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900 active:opacity-70"
+            >
+              <Map size={16} color="#EC4899" />
+              <Text className="text-sm font-semibold text-primary-500">{t("openPlanView")}</Text>
+            </Pressable>
+          )}
+
           {/* Add table form */}
           {showAdd && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">

@@ -114,5 +114,6 @@
   "accommodationNameRequired": "Name is required",
   "guestsScreen": "Guests",
   "guestDetailScreen": "Guest",
-  "tablesPlanScreen": "Seating plan"
+  "tablesPlanScreen": "Seating plan",
+  "openPlanView": "View plan"
 }
