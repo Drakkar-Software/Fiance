@@ -18,7 +18,6 @@ import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useGuestRsvpUrl } from "@/lib/rsvp-sync";
 import {
-  INVITATION_TYPE_LABELS,
   RSVP_STATUS_LABELS,
   RSVP_STATUS_COLORS,
   DIET_LABELS,
@@ -28,7 +27,7 @@ import type {
   RsvpStatus,
   Diet,
 } from "@/db/types";
-import { UserPlus, XCircle, Share2, ExternalLink } from "lucide-react-native";
+import { UserPlus, XCircle, Share2, BedDouble } from "lucide-react-native";
 import { toast } from "@/lib/toast/sonner";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
@@ -45,12 +44,6 @@ import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
 import type { Guest } from "@/db/schema";
 
-const INVITATION_TYPES: InvitationType[] = [
-  "CEREMONY",
-  "COCKTAIL",
-  "FULL",
-  "BOTH_DAYS",
-];
 const RSVP_STATUSES: RsvpStatus[] = ["PENDING", "ACCEPTED", "DECLINED", "MAYBE"];
 const DIETS: Diet[] = [
   "STANDARD",
@@ -269,20 +262,6 @@ export default function GuestDetailScreen() {
           </View>
         </FormCard>
 
-        {/* Invitation */}
-        <SectionTitle>{t("invitation")}</SectionTitle>
-        <FormCard>
-          <Text className="text-xs text-gray-400 mb-2 font-medium">
-            {t("invitationType")}
-          </Text>
-          <ChipSelect
-            options={INVITATION_TYPES}
-            value={invitationType}
-            onChange={setInvitationType}
-            labels={Object.fromEntries(INVITATION_TYPES.map((it) => [it, t(INVITATION_TYPE_LABELS[it])])) as Record<InvitationType, string>}
-          />
-        </FormCard>
-
         {/* RSVP */}
         <SectionTitle>RSVP</SectionTitle>
         <StatusSelector
@@ -332,16 +311,25 @@ export default function GuestDetailScreen() {
               </FormCard>
             )}
           </>
-        ) : null}
-        <Pressable
-          onPress={() => router.push("/(tabs)/guests/accommodations")}
-          className="flex-row items-center mb-3 mt-1"
-        >
-          <ExternalLink size={13} color="#EC4899" />
-          <Text className="text-xs text-primary-500 font-medium ml-1">
-            {t("accommodations")}
-          </Text>
-        </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => router.push("/(tabs)/guests/accommodations")}
+            className="mb-3 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-4 items-center gap-2 active:opacity-70"
+          >
+            <View className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
+              <BedDouble size={20} color="#9CA3AF" />
+            </View>
+            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {t("noAccommodations")}
+            </Text>
+            <Text className="text-xs text-center text-gray-400 dark:text-gray-500">
+              {t("createAccommodationsDesc")}
+            </Text>
+            <View className="mt-1 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900">
+              <Text className="text-xs font-semibold text-primary-500">{t("newAccommodation")}</Text>
+            </View>
+          </Pressable>
+        )}
 
         {/* Diet */}
         <SectionTitle>{t("dietLabel")}</SectionTitle>
