@@ -31,6 +31,10 @@
   "giftClaimSuccess": "Gift claimed!",
   "accommodations": "Accommodation",
   "perNight": "/ night",
+  "plusOneLabel": "Companion: {{name}}",
+  "plusOneAttendance": "Will they attend?",
+  "plusOneDiet": "Their dietary requirements",
+  "childrenLabel": "Number of children",
   "rsvpDiets": {
     "STANDARD": "Standard",
     "VEGETARIAN": "Vegetarian",

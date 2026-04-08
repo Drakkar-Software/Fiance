@@ -53,6 +53,7 @@ export interface RsvpRosterEntry {
   lastName: string;
   rsvpToken: string;
   invitationType: string;
+  companionId?: string | null;
 }
 
 export interface RsvpRoster {
@@ -66,6 +67,9 @@ export interface RsvpSubmission {
   rsvpStatus: string;
   diet?: string;
   dietNotes?: string;
+  plusOneRsvpStatus?: string;
+  plusOneDiet?: string;
+  childrenCount?: number;
   submittedAt: string;
 }
 
@@ -89,6 +93,7 @@ export function buildRsvpRoster(): RsvpRoster {
       lastName: g.lastName,
       rsvpToken: token,
       invitationType: g.invitationType,
+      companionId: g.companionId ?? null,
     };
   });
 
@@ -200,9 +205,20 @@ export function applyRsvpSubmissions(submissions: RsvpSubmission[]): number {
 
     if (sub.diet) updates.diet = sub.diet;
     if (sub.dietNotes) updates.dietNotes = sub.dietNotes;
+    if (sub.childrenCount != null) updates.childrenCount = sub.childrenCount;
 
     updateGuest(guest.id, updates);
     applied++;
+
+    // Apply +1 companion RSVP if provided
+    if (sub.plusOneRsvpStatus && guest.companionId) {
+      const companionUpdates: Record<string, unknown> = {
+        rsvpStatus: sub.plusOneRsvpStatus,
+        rsvpDate: sub.submittedAt,
+      };
+      if (sub.plusOneDiet) companionUpdates.diet = sub.plusOneDiet;
+      updateGuest(guest.companionId, companionUpdates);
+    }
   }
 
   return applied;

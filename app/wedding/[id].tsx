@@ -59,6 +59,9 @@ export default function WeddingPublicPage() {
   const [selectedGuest, setSelectedGuest] = useState<RsvpRosterEntry | null>(null);
   const [rsvpStatus, setRsvpStatus] = useState<"ACCEPTED" | "DECLINED" | "MAYBE" | null>(null);
   const [rsvpDiet, setRsvpDiet] = useState("STANDARD");
+  const [plusOneStatus, setPlusOneStatus] = useState<"ACCEPTED" | "DECLINED" | null>(null);
+  const [plusOneDiet, setPlusOneDiet] = useState("STANDARD");
+  const [childrenCount, setChildrenCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -461,6 +464,78 @@ export default function WeddingPublicPage() {
                             </Pressable>
                           ))}
                         </View>
+
+                        {/* +1 companion */}
+                        {(() => {
+                          const companion = selectedGuest.companionId
+                            ? roster?.find((g) => g.id === selectedGuest.companionId)
+                            : null;
+                          if (!companion) return null;
+                          return (
+                            <>
+                              <View className="h-px bg-gray-100 mb-4" />
+                              <Text className="text-sm font-semibold text-gray-900 mb-1">
+                                {t("plusOneLabel", { name: `${companion.firstName} ${companion.lastName}` })}
+                              </Text>
+                              <Text className="text-sm text-gray-500 mb-2">{t("plusOneAttendance")}</Text>
+                              <View className="flex-row gap-2 mb-4">
+                                {(["ACCEPTED", "DECLINED"] as const).map((s) => {
+                                  const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo") };
+                                  const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444" };
+                                  return (
+                                    <Pressable
+                                      key={s}
+                                      onPress={() => setPlusOneStatus(s)}
+                                      className={`flex-1 py-2.5 rounded-xl items-center border ${plusOneStatus === s ? "border-transparent" : "border-gray-200"}`}
+                                      style={plusOneStatus === s ? { backgroundColor: colors[s] } : undefined}
+                                    >
+                                      <Text className={`text-sm font-semibold ${plusOneStatus === s ? "text-white" : "text-gray-500"}`}>
+                                        {labels[s]}
+                                      </Text>
+                                    </Pressable>
+                                  );
+                                })}
+                              </View>
+                              {plusOneStatus === "ACCEPTED" && (
+                                <>
+                                  <Text className="text-sm text-gray-500 mb-2">{t("plusOneDiet")}</Text>
+                                  <View className="flex-row flex-wrap gap-2 mb-4">
+                                    {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
+                                      <Pressable
+                                        key={key}
+                                        onPress={() => setPlusOneDiet(key)}
+                                        className={`px-3 py-1.5 rounded-full border ${plusOneDiet === key ? "bg-primary-500 border-primary-500" : "border-gray-200 bg-white"}`}
+                                      >
+                                        <Text className={`text-sm ${plusOneDiet === key ? "text-white font-medium" : "text-gray-500"}`}>
+                                          {label}
+                                        </Text>
+                                      </Pressable>
+                                    ))}
+                                  </View>
+                                </>
+                              )}
+                            </>
+                          );
+                        })()}
+
+                        {/* Children count */}
+                        <View className="h-px bg-gray-100 mb-4" />
+                        <Text className="text-sm text-gray-500 mb-2">{t("childrenLabel")}</Text>
+                        <View className="flex-row items-center gap-3 mb-4">
+                          <Pressable
+                            onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                            className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                          >
+                            <Text className="text-lg text-gray-500">−</Text>
+                          </Pressable>
+                          <Text className="text-base font-semibold text-gray-900 w-6 text-center">{childrenCount}</Text>
+                          <Pressable
+                            onPress={() => setChildrenCount(childrenCount + 1)}
+                            className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                          >
+                            <Text className="text-lg text-gray-500">+</Text>
+                          </Pressable>
+                        </View>
                       </>
                     )}
 
@@ -475,6 +550,9 @@ export default function WeddingPublicPage() {
                             rsvpToken: selectedGuest.rsvpToken,
                             rsvpStatus,
                             diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
+                            plusOneRsvpStatus: rsvpStatus === "ACCEPTED" && plusOneStatus ? plusOneStatus : undefined,
+                            plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
+                            childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
                             submittedAt: new Date().toISOString(),
                           });
                           setSubmitting(false);

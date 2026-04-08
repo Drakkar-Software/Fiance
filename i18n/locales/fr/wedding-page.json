@@ -31,6 +31,10 @@
   "giftClaimSuccess": "Cadeau réservé !",
   "accommodations": "Hébergement",
   "perNight": "/ nuit",
+  "plusOneLabel": "Accompagnant : {{name}}",
+  "plusOneAttendance": "Sera-t-il/elle présent(e) ?",
+  "plusOneDiet": "Son régime alimentaire",
+  "childrenLabel": "Nombre d'enfants",
   "rsvpDiets": {
     "STANDARD": "Standard",
     "VEGETARIAN": "Végétarien",
