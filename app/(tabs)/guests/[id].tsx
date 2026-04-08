@@ -27,7 +27,8 @@ import type {
   RsvpStatus,
   Diet,
 } from "@/db/types";
-import { UserPlus, XCircle, Share2, ExternalLink, CheckCircle2 } from "lucide-react-native";
+import { UserPlus, XCircle, Share2, ExternalLink } from "lucide-react-native";
+import { toast } from "@/lib/toast/sonner";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
@@ -106,7 +107,6 @@ export default function GuestDetailScreen() {
   const [accommodationId, setAccommodationId] = useState(existing?.accommodationId || "");
   const [roomNumber, setRoomNumber] = useState(existing?.roomNumber || "");
   const [showDelete, setShowDelete] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [showCompanionPicker, setShowCompanionPicker] = useState(false);
   const [showCompanionConfirm, setShowCompanionConfirm] = useState(false);
   const [pendingCompanionId, setPendingCompanionId] = useState("");
@@ -411,8 +411,7 @@ export default function GuestDetailScreen() {
                 } catch {
                   if (typeof navigator !== "undefined" && navigator.clipboard) {
                     await navigator.clipboard.writeText(url);
-                    setLinkCopied(true);
-                    setTimeout(() => setLinkCopied(false), 2500);
+                    toast.success(t("linkCopied"));
                   } else {
                     Alert.alert(t("rsvpLink"), url);
                   }
@@ -428,14 +427,6 @@ export default function GuestDetailScreen() {
           </Pressable>
         )}
 
-        {linkCopied && (
-          <View className="flex-row items-center justify-center gap-1.5 py-2 mb-2">
-            <CheckCircle2 size={14} color="#10B981" />
-            <Text className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-              {t("linkCopied")}
-            </Text>
-          </View>
-        )}
 
         {!isNew && (
           <DeleteButton label={t("deleteGuest")} onPress={() => setShowDelete(true)} />

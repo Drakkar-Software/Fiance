@@ -17,6 +17,7 @@ import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
+import { Toaster } from "@/lib/toast/sonner";
 import OnboardingScreen from "./onboarding";
 
 function AppContent() {
@@ -176,6 +177,7 @@ export default function RootLayout() {
       <BottomSheetModalProvider>
         <StatusBar style="auto" />
         <AppContent />
+        <Toaster />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
