@@ -32,5 +32,11 @@
   "noUpcomingTask": "No tasks to do",
   "installApp": "Install the app",
   "installAppDesc": "Access WeddingOS from your home screen",
-  "installIosSteps": "Tap the Share button then \"Add to Home Screen\""
+  "installIosSteps": "Tap the Share button then \"Add to Home Screen\"",
+  "charts": "Statistics",
+  "rsvpChart": "RSVP responses",
+  "dietChart": "Dietary requirements",
+  "inviteTypeChart": "Invitation types",
+  "thankYouPending_one": "{{count}} thank-you to send",
+  "thankYouPending_other": "{{count}} thank-yous to send"
 }

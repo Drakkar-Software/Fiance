@@ -32,5 +32,11 @@
   "noUpcomingTask": "Aucune tâche à faire",
   "installApp": "Installer l'application",
   "installAppDesc": "Accédez à WeddingOS depuis votre écran d'accueil",
-  "installIosSteps": "Appuyez sur le bouton Partager puis « Sur l'écran d'accueil »"
+  "installIosSteps": "Appuyez sur le bouton Partager puis « Sur l'écran d'accueil »",
+  "charts": "Statistiques",
+  "rsvpChart": "Réponses RSVP",
+  "dietChart": "Régimes alimentaires",
+  "inviteTypeChart": "Types d'invitation",
+  "thankYouPending_one": "{{count}} remerciement à envoyer",
+  "thankYouPending_other": "{{count}} remerciements à envoyer"
 }

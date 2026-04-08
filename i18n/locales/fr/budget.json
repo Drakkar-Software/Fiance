@@ -37,5 +37,28 @@
   "depositPayment": "Acompte",
   "balancePayment": "Solde",
   "currency": "Devise",
-  "remainingToPay": "Reste à payer"
+  "remainingToPay": "Reste à payer",
+  "categoryTarget": "Objectif",
+  "overBudget": "Dépassement",
+  "useTemplate": "Utiliser un modèle",
+  "templates": {
+    "intimate": "Mariage intime",
+    "classic": "Mariage classique",
+    "luxe": "Mariage prestige"
+  },
+  "applyTemplate": "Appliquer",
+  "payments": "Paiements",
+  "addPayment": "Ajouter un paiement",
+  "paymentAmount": "Montant",
+  "paymentDate": "Date",
+  "paymentMethod": "Moyen de paiement",
+  "paymentLabel": "Libellé",
+  "paymentMethods": {
+    "cash": "Espèces",
+    "check": "Chèque",
+    "transfer": "Virement",
+    "card": "Carte",
+    "other": "Autre"
+  },
+  "totalPaid": "Total payé"
 }

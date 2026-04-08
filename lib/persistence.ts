@@ -12,6 +12,9 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
+import { useMenuStore } from "@/store/useMenuStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useGiftsStore } from "@/store/useGiftsStore";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
@@ -30,6 +33,9 @@ export function clearAllStores(): void {
   usePlanningStore.getState().setDayOfItems([]);
   useIdeasStore.getState().setCollections([]);
   useIdeasStore.getState().setIdeas([]);
+  useMenuStore.getState().setOptions([]);
+  useAccommodationsStore.getState().setAccommodations([]);
+  useGiftsStore.getState().setGifts([]);
 }
 
 // ─── Web: localStorage persistence (SQLite unavailable) ─────────────────────
@@ -64,6 +70,10 @@ export function loadFromLocalStorage(): boolean {
     if (dayOfItems) usePlanningStore.getState().setDayOfItems(dayOfItems);
     if (data.ideaCollections) useIdeasStore.getState().setCollections(data.ideaCollections);
     if (data.ideas) useIdeasStore.getState().setIdeas(data.ideas);
+    if (data.menuOptions) useMenuStore.getState().setOptions(data.menuOptions);
+    if (data.vendorPayments) useVendorsStore.getState().setVendorPayments(data.vendorPayments);
+    if (data.accommodations) useAccommodationsStore.getState().setAccommodations(data.accommodations);
+    if (data.gifts) useGiftsStore.getState().setGifts(data.gifts);
     return true;
   } catch (err) {
     console.error("[persistence] Failed to load from localStorage:", err);
@@ -131,6 +141,22 @@ export async function hydrateAllStores(db: DrizzleDB): Promise<void> {
   // Ideas
   const ideaRows = db.select().from(schema.ideas).all();
   useIdeasStore.getState().setIdeas(ideaRows);
+
+  // Menu options
+  const menuRows = db.select().from(schema.menuOptions).all();
+  useMenuStore.getState().setOptions(menuRows);
+
+  // Vendor payments
+  const paymentRows = db.select().from(schema.vendorPayments).all();
+  useVendorsStore.getState().setVendorPayments(paymentRows);
+
+  // Accommodations
+  const accommodationRows = db.select().from(schema.accommodations).all();
+  useAccommodationsStore.getState().setAccommodations(accommodationRows);
+
+  // Gifts
+  const giftRows = db.select().from(schema.gifts).all();
+  useGiftsStore.getState().setGifts(giftRows);
 }
 
 // ─── Write-through helpers ──────────────────────────────────────────────────
@@ -326,6 +352,72 @@ export function deleteIdeaCollectionDb(db: DrizzleDB, id: string) {
   db.delete(schema.ideaCollections).where(eq(schema.ideaCollections.id, id)).run();
 }
 
+// Menu Options
+export function persistMenuOption(db: DrizzleDB, option: schema.MenuOption) {
+  db.insert(schema.menuOptions).values(option).onConflictDoUpdate({
+    target: schema.menuOptions.id,
+    set: option,
+  }).run();
+}
+
+export function updateMenuOptionDb(db: DrizzleDB, id: string, updates: Partial<schema.MenuOption>) {
+  db.update(schema.menuOptions).set(updates).where(eq(schema.menuOptions.id, id)).run();
+}
+
+export function deleteMenuOptionDb(db: DrizzleDB, id: string) {
+  db.delete(schema.menuOptions).where(eq(schema.menuOptions.id, id)).run();
+}
+
+// Vendor Payments
+export function persistVendorPayment(db: DrizzleDB, payment: schema.VendorPayment) {
+  db.insert(schema.vendorPayments).values(payment).onConflictDoUpdate({
+    target: schema.vendorPayments.id,
+    set: payment,
+  }).run();
+}
+
+export function updateVendorPaymentDb(db: DrizzleDB, id: string, updates: Partial<schema.VendorPayment>) {
+  db.update(schema.vendorPayments).set(updates).where(eq(schema.vendorPayments.id, id)).run();
+}
+
+export function deleteVendorPaymentDb(db: DrizzleDB, id: string) {
+  db.delete(schema.vendorPayments).where(eq(schema.vendorPayments.id, id)).run();
+}
+
+// Accommodations
+export function persistAccommodation(db: DrizzleDB, accommodation: schema.Accommodation) {
+  db.insert(schema.accommodations).values(accommodation).onConflictDoUpdate({
+    target: schema.accommodations.id,
+    set: accommodation,
+  }).run();
+}
+
+export function updateAccommodationDb(db: DrizzleDB, id: string, updates: Partial<schema.Accommodation>) {
+  db.update(schema.accommodations).set(updates).where(eq(schema.accommodations.id, id)).run();
+}
+
+export function deleteAccommodationDb(db: DrizzleDB, id: string) {
+  // Unassign guests first
+  db.update(schema.guests).set({ accommodationId: null, roomNumber: null }).where(eq(schema.guests.accommodationId, id)).run();
+  db.delete(schema.accommodations).where(eq(schema.accommodations.id, id)).run();
+}
+
+// Gifts
+export function persistGift(db: DrizzleDB, gift: schema.Gift) {
+  db.insert(schema.gifts).values(gift).onConflictDoUpdate({
+    target: schema.gifts.id,
+    set: gift,
+  }).run();
+}
+
+export function updateGiftDb(db: DrizzleDB, id: string, updates: Partial<schema.Gift>) {
+  db.update(schema.gifts).set(updates).where(eq(schema.gifts.id, id)).run();
+}
+
+export function deleteGiftDb(db: DrizzleDB, id: string) {
+  db.delete(schema.gifts).where(eq(schema.gifts.id, id)).run();
+}
+
 // ─── Bulk restore (for sync pull) ───────────────────────────────────────────
 
 export function restoreAllTables(db: DrizzleDB, data: {
@@ -341,19 +433,27 @@ export function restoreAllTables(db: DrizzleDB, data: {
   dayOfItems: any[];
   ideas: any[];
   ideaCollections: any[];
+  menuOptions?: any[];
+  vendorPayments?: any[];
+  accommodations?: any[];
+  gifts?: any[];
 }) {
   // Clear all tables (order matters for FK constraints)
+  db.delete(schema.gifts).run();
   db.delete(schema.ideas).run();
   db.delete(schema.ideaCollections).run();
   db.delete(schema.dayOfItems).run();
   db.delete(schema.agendaEvents).run();
   db.delete(schema.tasks).run();
   db.delete(schema.taskCategories).run();
+  db.delete(schema.vendorPayments).run();
   db.delete(schema.quotePricing).run();
   db.delete(schema.vendors).run();
   db.delete(schema.guests).run();
   db.delete(schema.tables).run();
   db.delete(schema.guestGroups).run();
+  db.delete(schema.accommodations).run();
+  db.delete(schema.menuOptions).run();
 
   // Re-insert (order matters for FK constraints)
   if (data.wedding) {
@@ -361,13 +461,17 @@ export function restoreAllTables(db: DrizzleDB, data: {
   }
   for (const row of data.guestGroups) db.insert(schema.guestGroups).values(row).run();
   for (const row of data.tables) db.insert(schema.tables).values(row).run();
+  for (const row of data.accommodations ?? []) db.insert(schema.accommodations).values(row).run();
+  for (const row of data.menuOptions ?? []) db.insert(schema.menuOptions).values(row).run();
   for (const row of data.guests) db.insert(schema.guests).values(row).run();
   for (const row of data.vendors) db.insert(schema.vendors).values(row).run();
   for (const row of data.quotePricings) db.insert(schema.quotePricing).values(row).run();
+  for (const row of data.vendorPayments ?? []) db.insert(schema.vendorPayments).values(row).run();
   for (const row of data.taskCategories) db.insert(schema.taskCategories).values(row).run();
   for (const row of data.tasks) db.insert(schema.tasks).values(row).run();
   for (const row of data.agendaEvents) db.insert(schema.agendaEvents).values(row).run();
   for (const row of data.dayOfItems) db.insert(schema.dayOfItems).values(row).run();
   for (const row of data.ideaCollections) db.insert(schema.ideaCollections).values(row).run();
   for (const row of data.ideas) db.insert(schema.ideas).values(row).run();
+  for (const row of data.gifts ?? []) db.insert(schema.gifts).values(row).run();
 }

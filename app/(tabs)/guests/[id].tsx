@@ -11,6 +11,7 @@ import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import {
   INVITATION_TYPE_LABELS,
   RSVP_STATUS_LABELS,
@@ -67,6 +68,9 @@ export default function GuestDetailScreen() {
   const linkCompanion = useGuestsStore((s) => s.linkCompanion);
   const unlinkCompanion = useGuestsStore((s) => s.unlinkCompanion);
 
+  const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
+  const isPostWedding = weddingDate ? new Date(weddingDate) < new Date() : false;
+
   const isNew = id === "new";
   const existing = guests.find((g) => g.id === id);
 
@@ -88,6 +92,12 @@ export default function GuestDetailScreen() {
   const [address, setAddress] = useState(existing?.address || "");
   const [tableId, setTableId] = useState(existing?.tableId || "");
   const [noTableNeeded, setNoTableNeeded] = useState(existing?.noTableNeeded || false);
+  const [hasPlusOne, setHasPlusOne] = useState(existing?.hasPlusOne || false);
+  const [plusOneName, setPlusOneName] = useState(existing?.plusOneName || "");
+  const [plusOneConfirmed, setPlusOneConfirmed] = useState(existing?.plusOneConfirmed || false);
+  const [plusOneDiet, setPlusOneDiet] = useState<Diet>((existing?.plusOneDiet as Diet) || "STANDARD");
+  const [giftDescription, setGiftDescription] = useState(existing?.giftDescription || "");
+  const [thankYouSent, setThankYouSent] = useState(existing?.thankYouSent || false);
   const [notes, setNotes] = useState(existing?.notes || "");
   const [companionId, setCompanionId] = useState(existing?.companionId || "");
   const [showDelete, setShowDelete] = useState(false);
@@ -123,6 +133,15 @@ export default function GuestDetailScreen() {
       address: address || null,
       tableId: tableId || null,
       noTableNeeded,
+      hasPlusOne,
+      plusOneName: hasPlusOne ? plusOneName || null : null,
+      plusOneConfirmed: hasPlusOne ? plusOneConfirmed : false,
+      plusOneDiet: hasPlusOne ? plusOneDiet : null,
+      giftDescription: giftDescription || null,
+      thankYouSent,
+      thankYouSentDate: thankYouSent && !existing?.thankYouSent
+        ? now
+        : existing?.thankYouSentDate || null,
       notes: notes || null,
       updatedAt: now,
     };
@@ -302,6 +321,65 @@ export default function GuestDetailScreen() {
             />
           )}
         </FormCard>
+
+        {/* Plus-one */}
+        <SectionTitle>{t("plusOneSection")}</SectionTitle>
+        <FormCard>
+          <ToggleRow
+            label={t("hasPlusOne")}
+            value={hasPlusOne}
+            onToggle={() => {
+              setHasPlusOne(!hasPlusOne);
+              if (hasPlusOne) {
+                setPlusOneName("");
+                setPlusOneConfirmed(false);
+                setPlusOneDiet("STANDARD");
+              }
+            }}
+          />
+          {hasPlusOne && (
+            <>
+              <InputRow
+                label={t("plusOneName")}
+                value={plusOneName}
+                onChangeText={setPlusOneName}
+              />
+              <ToggleRow
+                label={t("plusOneConfirmed")}
+                value={plusOneConfirmed}
+                onToggle={() => setPlusOneConfirmed(!plusOneConfirmed)}
+              />
+              <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">
+                {t("plusOneDiet")}
+              </Text>
+              <ChipSelect
+                options={DIETS}
+                value={plusOneDiet}
+                onChange={setPlusOneDiet}
+                labels={Object.fromEntries(DIETS.map((d) => [d, t(DIET_LABELS[d])])) as Record<Diet, string>}
+              />
+            </>
+          )}
+        </FormCard>
+
+        {/* Post-wedding: thank-you tracking */}
+        {isPostWedding && (
+          <>
+            <SectionTitle>{t("postWedding")}</SectionTitle>
+            <FormCard>
+              <InputRow
+                label={t("giftDescription")}
+                value={giftDescription}
+                onChangeText={setGiftDescription}
+              />
+              <ToggleRow
+                label={t("thankYouSent")}
+                value={thankYouSent}
+                onToggle={() => setThankYouSent(!thankYouSent)}
+              />
+            </FormCard>
+          </>
+        )}
 
         {/* Notes */}
         <SectionTitle>{t("notes")}</SectionTitle>

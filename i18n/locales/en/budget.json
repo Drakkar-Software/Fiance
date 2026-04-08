@@ -37,5 +37,28 @@
   "depositPayment": "Deposit",
   "balancePayment": "Balance",
   "currency": "Currency",
-  "remainingToPay": "Remaining to pay"
+  "remainingToPay": "Remaining to pay",
+  "categoryTarget": "Target",
+  "overBudget": "Over budget",
+  "useTemplate": "Use a template",
+  "templates": {
+    "intimate": "Intimate wedding",
+    "classic": "Classic wedding",
+    "luxe": "Luxury wedding"
+  },
+  "applyTemplate": "Apply",
+  "payments": "Payments",
+  "addPayment": "Add a payment",
+  "paymentAmount": "Amount",
+  "paymentDate": "Date",
+  "paymentMethod": "Payment method",
+  "paymentLabel": "Label",
+  "paymentMethods": {
+    "cash": "Cash",
+    "check": "Check",
+    "transfer": "Transfer",
+    "card": "Card",
+    "other": "Other"
+  },
+  "totalPaid": "Total paid"
 }

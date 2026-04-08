@@ -11,6 +11,7 @@ export const wedding = sqliteTable("wedding", {
   description: text("description"),
   faq: text("faq"), // JSON string of FaqItem[]
   budgetTarget: real("budget_target"),
+  categoryBudgets: text("category_budgets"), // JSON: Record<categoryKey, number>
   currency: text("currency").default("EUR"),
   createdAt: text("created_at"),
   updatedAt: text("updated_at"),
@@ -43,6 +44,19 @@ export const guests = sqliteTable("guests", {
   tableId: text("table_id").references(() => tables.id),
   companionId: text("companion_id"),
   noTableNeeded: integer("no_table_needed", { mode: "boolean" }).default(false),
+  hasPlusOne: integer("has_plus_one", { mode: "boolean" }).default(false),
+  plusOneName: text("plus_one_name"),
+  plusOneConfirmed: integer("plus_one_confirmed", { mode: "boolean" }).default(false),
+  plusOneDiet: text("plus_one_diet"),
+  giftDescription: text("gift_description"),
+  thankYouSent: integer("thank_you_sent", { mode: "boolean" }).default(false),
+  thankYouSentDate: text("thank_you_sent_date"),
+  mealStarterId: text("meal_starter_id"),
+  mealMainId: text("meal_main_id"),
+  mealDessertId: text("meal_dessert_id"),
+  accommodationId: text("accommodation_id"),
+  roomNumber: text("room_number"),
+  rsvpToken: text("rsvp_token"),
   email: text("email"),
   phone: text("phone"),
   address: text("address"),
@@ -58,6 +72,9 @@ export const tables = sqliteTable("tables", {
   name: text("name").notNull(),
   capacity: integer("capacity"),
   notes: text("notes"),
+  positionX: real("position_x").default(0),
+  positionY: real("position_y").default(0),
+  shape: text("shape").default("round"), // "round" | "rectangular"
 });
 
 // ─── Vendors ────────────────────────────────────────────────────────────────
@@ -100,6 +117,69 @@ export const quotePricing = sqliteTable("quote_pricing", {
   guestCountOverride: integer("guest_count_override"),
   staffFee: real("staff_fee"),
   travelFee: real("travel_fee"),
+});
+
+// ─── Menu Options (meal choices) ────────────────────────────────────────────
+
+export const menuOptions = sqliteTable("menu_options", {
+  id: text("id").primaryKey(),
+  course: text("course").notNull(), // "starter" | "main" | "dessert"
+  label: text("label").notNull(),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Vendor Payments ───────────────────────────────────────────────────────
+
+export const vendorPayments = sqliteTable("vendor_payments", {
+  id: text("id").primaryKey(),
+  vendorId: text("vendor_id")
+    .notNull()
+    .references(() => vendors.id, { onDelete: "cascade" }),
+  amount: real("amount").notNull(),
+  paidDate: text("paid_date").notNull(),
+  dueDate: text("due_date"),
+  method: text("method"), // "cash" | "check" | "transfer" | "card" | "other"
+  label: text("label"),
+  notes: text("notes"),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Accommodations ────────────────────────────────────────────────────────
+
+export const accommodations = sqliteTable("accommodations", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  address: text("address"),
+  phone: text("phone"),
+  website: text("website"),
+  checkInDate: text("check_in_date"),
+  checkOutDate: text("check_out_date"),
+  roomCount: integer("room_count"),
+  pricePerNight: real("price_per_night"),
+  notes: text("notes"),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ─── Gifts (registry) ─────────────────────────────────────────────────────
+
+export const gifts = sqliteTable("gifts", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  price: real("price"),
+  url: text("url"),
+  imageUrl: text("image_url"),
+  category: text("category"), // "maison" | "voyage" | "experience" | "autre"
+  claimed: integer("claimed", { mode: "boolean" }).default(false),
+  claimedByName: text("claimed_by_name"),
+  claimedAt: text("claimed_at"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
 });
 
 // ─── Task Categories ────────────────────────────────────────────────────────
@@ -222,3 +302,11 @@ export type Idea = typeof ideas.$inferSelect;
 export type IdeaInsert = typeof ideas.$inferInsert;
 export type IdeaCollection = typeof ideaCollections.$inferSelect;
 export type IdeaCollectionInsert = typeof ideaCollections.$inferInsert;
+export type MenuOption = typeof menuOptions.$inferSelect;
+export type MenuOptionInsert = typeof menuOptions.$inferInsert;
+export type VendorPayment = typeof vendorPayments.$inferSelect;
+export type VendorPaymentInsert = typeof vendorPayments.$inferInsert;
+export type Accommodation = typeof accommodations.$inferSelect;
+export type AccommodationInsert = typeof accommodations.$inferInsert;
+export type Gift = typeof gifts.$inferSelect;
+export type GiftInsert = typeof gifts.$inferInsert;

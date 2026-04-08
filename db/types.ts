@@ -227,6 +227,32 @@ export const BUDGET_CATEGORY_LABELS: Record<string, string> = {
   other: "budget:categories.other",
 };
 
+// ─── Budget allocation templates ────────────────────────────────────────────
+
+export const BUDGET_ALLOCATION_TEMPLATES: Record<string, Record<string, number>> = {
+  intimate: {
+    venue: 0.30, catering: 0.30, photo_video: 0.12, music_entertainment: 0.05,
+    flowers_decor: 0.06, beauty: 0.04, transport: 0.02, accommodation: 0.03,
+    stationery: 0.02, coordination: 0.03, cake: 0.02, other: 0.01,
+  },
+  classic: {
+    venue: 0.28, catering: 0.28, photo_video: 0.13, music_entertainment: 0.06,
+    flowers_decor: 0.06, beauty: 0.04, transport: 0.03, accommodation: 0.03,
+    stationery: 0.02, coordination: 0.03, cake: 0.02, other: 0.02,
+  },
+  luxe: {
+    venue: 0.25, catering: 0.25, photo_video: 0.15, music_entertainment: 0.07,
+    flowers_decor: 0.07, beauty: 0.05, transport: 0.03, accommodation: 0.03,
+    stationery: 0.02, coordination: 0.04, cake: 0.02, other: 0.02,
+  },
+};
+
+export const BUDGET_TEMPLATE_LABELS: Record<string, string> = {
+  intimate: "budget:templates.intimate",
+  classic: "budget:templates.classic",
+  luxe: "budget:templates.luxe",
+};
+
 // ─── Pricing key to guest counter mapping ───────────────────────────────────
 
 export const PRICING_KEY_GUEST_SOURCE: Record<PricingKey, string> = {

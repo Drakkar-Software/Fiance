@@ -90,5 +90,25 @@
   "timelinePreview": "Schedule preview",
   "timelinePreviewDesc": "Day-of moments marked as public. Tap to edit.",
   "timelinePreviewEmpty": "No public moments yet. Edit a Day-of moment and enable \"Visible on shared timeline\".",
-  "timelineUntil": "until {{time}}"
+  "timelineUntil": "until {{time}}",
+  "giftRegistry": "Gift registry",
+  "giftRegistryDesc": "Manage your gift list, visible on the public page",
+  "addGift": "Add a gift",
+  "giftTitle": "Title",
+  "giftDescription": "Description",
+  "giftPrice": "Price",
+  "giftUrl": "Link",
+  "giftCategory": "Category",
+  "giftCategories": {
+    "maison": "Home",
+    "voyage": "Travel",
+    "experience": "Experience",
+    "autre": "Other"
+  },
+  "giftClaimed": "Claimed",
+  "giftClaimedBy": "Claimed by {{name}}",
+  "giftUnclaimed": "Available",
+  "noGifts": "No gifts",
+  "noGiftsDesc": "Add gifts to your registry",
+  "deleteGift": "Delete this gift?"
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { useWeddingStore } from "./useWeddingStore";
 import { useVendorsStore } from "./useVendorsStore";
 import { useGuestsStore, computeCounts, type GuestCounts } from "./useGuestsStore";
-import type { Vendor, QuotePricing } from "@/db/schema";
+import type { Vendor, QuotePricing, VendorPayment } from "@/db/schema";
 import type { VendorType, PppSource } from "@/db/types";
 import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE } from "@/db/types";
 
@@ -112,6 +112,8 @@ export interface BudgetCategoryItem {
   }>;
   totalEngaged: number;
   totalConfirmed: number;
+  targetAmount: number | null;
+  overage: number;
 }
 
 export interface BudgetSummary {
@@ -130,13 +132,16 @@ export function computeBudgetSummary(
   budgetTarget: number,
   vendors: Vendor[],
   quotePricings: QuotePricing[],
-  counts: GuestCounts
+  counts: GuestCounts,
+  categoryBudgets?: Record<string, number> | null,
+  vendorPayments?: VendorPayment[],
 ): BudgetSummary {
   const isEstimate = counts.accepted === 0 && counts.total > 0;
   let totalEngaged = 0;
   let totalConfirmed = 0;
   let depositsTotal = 0;
   let depositsPaid = 0;
+  const payments = vendorPayments ?? [];
 
   const categories: BudgetCategoryItem[] = Object.entries(BUDGET_CATEGORIES).map(
     ([name, types]) => {
@@ -158,7 +163,13 @@ export function computeBudgetSummary(
             if (isBooked) totalConfirmed += calculatedTotal;
           }
 
-          if (vendor.depositAmount) {
+          // Use vendorPayments if available, else fall back to legacy deposit fields
+          const vendorPmts = payments.filter((p) => p.vendorId === vendor.id);
+          if (vendorPmts.length > 0) {
+            const paid = vendorPmts.reduce((sum, p) => sum + p.amount, 0);
+            depositsPaid += paid;
+            depositsTotal += paid;
+          } else if (vendor.depositAmount) {
             depositsTotal += vendor.depositAmount;
             if (vendor.depositPaid) depositsPaid += vendor.depositAmount;
           }
@@ -166,19 +177,24 @@ export function computeBudgetSummary(
           return { vendor, calculatedTotal, isBooked };
         });
 
+      const catEngaged = categoryVendors.reduce(
+        (sum, v) =>
+          sum + (v.vendor.status !== "CANCELLED" ? v.calculatedTotal : 0),
+        0
+      );
+      const target = categoryBudgets?.[name] ?? null;
+
       return {
         categoryName: name,
         vendorTypes: types,
         vendors: categoryVendors,
-        totalEngaged: categoryVendors.reduce(
-          (sum, v) =>
-            sum + (v.vendor.status !== "CANCELLED" ? v.calculatedTotal : 0),
-          0
-        ),
+        totalEngaged: catEngaged,
         totalConfirmed: categoryVendors.reduce(
           (sum, v) => sum + (v.isBooked ? v.calculatedTotal : 0),
           0
         ),
+        targetAmount: target,
+        overage: target != null ? Math.max(0, catEngaged - target) : 0,
       };
     }
   );
@@ -201,13 +217,22 @@ export function useBudgetSummary(): BudgetSummary {
   const budgetTarget = useWeddingStore(
     (s) => s.wedding?.budgetTarget ?? 0
   );
+  const categoryBudgetsRaw = useWeddingStore(
+    (s) => s.wedding?.categoryBudgets
+  );
   const vendors = useVendorsStore((s) => s.vendors);
   const quotePricings = useVendorsStore((s) => s.quotePricings);
+  const vendorPayments = useVendorsStore((s) => s.vendorPayments);
   const guests = useGuestsStore((s) => s.guests);
   const counts = React.useMemo(() => computeCounts(guests), [guests]);
+  const categoryBudgets = React.useMemo(() => {
+    if (!categoryBudgetsRaw) return null;
+    try { return JSON.parse(categoryBudgetsRaw) as Record<string, number>; }
+    catch { return null; }
+  }, [categoryBudgetsRaw]);
 
   return React.useMemo(
-    () => computeBudgetSummary(budgetTarget, vendors, quotePricings, counts),
-    [budgetTarget, vendors, quotePricings, counts]
+    () => computeBudgetSummary(budgetTarget, vendors, quotePricings, counts, categoryBudgets, vendorPayments),
+    [budgetTarget, vendors, quotePricings, counts, categoryBudgets, vendorPayments]
   );
 }

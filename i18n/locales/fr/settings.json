@@ -90,5 +90,25 @@
   "timelinePreview": "Aperçu du programme",
   "timelinePreviewDesc": "Les moments marqués comme publics dans le Jour J. Appuyez pour modifier.",
   "timelinePreviewEmpty": "Aucun moment public. Modifiez un moment du Jour J et activez « Visible sur le planning partagé ».",
-  "timelineUntil": "jusqu'à {{time}}"
+  "timelineUntil": "jusqu'à {{time}}",
+  "giftRegistry": "Liste de cadeaux",
+  "giftRegistryDesc": "Gérez votre liste de cadeaux, visible sur la page publique",
+  "addGift": "Ajouter un cadeau",
+  "giftTitle": "Titre",
+  "giftDescription": "Description",
+  "giftPrice": "Prix",
+  "giftUrl": "Lien",
+  "giftCategory": "Catégorie",
+  "giftCategories": {
+    "maison": "Maison",
+    "voyage": "Voyage",
+    "experience": "Expérience",
+    "autre": "Autre"
+  },
+  "giftClaimed": "Réservé",
+  "giftClaimedBy": "Réservé par {{name}}",
+  "giftUnclaimed": "Disponible",
+  "noGifts": "Aucun cadeau",
+  "noGiftsDesc": "Ajoutez des cadeaux à votre liste",
+  "deleteGift": "Supprimer ce cadeau ?"
 }
