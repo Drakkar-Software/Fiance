@@ -17,7 +17,9 @@ if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push(
 if (!config.resolver.unstable_conditionNames.includes('import')) config.resolver.unstable_conditionNames.push('import', 'default', 'require')
 if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
 
-// Apply NativeWind, then override transformer so our SQL handler runs outermost
+// Apply NativeWind, then inject our SQL transformer at the top-level transformerPath
+// so it intercepts .sql files before the css-interop/babel chain sees them.
 const finalConfig = withNativeWind(config, { input: "./global.css" });
-finalConfig.transformer.babelTransformerPath = require.resolve('./metro-sql-transform.js');
+finalConfig.transformer.sql_originalTransformerPath = finalConfig.transformerPath;
+finalConfig.transformerPath = require.resolve('./metro-sql-transform.js');
 module.exports = finalConfig;
