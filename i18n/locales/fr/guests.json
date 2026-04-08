@@ -111,6 +111,7 @@
   "exportPdf": "Exporter en PDF",
   "guestList": "Liste des invités",
   "rsvpLink": "Lien RSVP",
+  "linkCopied": "Lien copié !",
   "accommodationNameRequired": "Le nom est obligatoire",
   "guestsScreen": "Invités",
   "guestDetailScreen": "Invité",
