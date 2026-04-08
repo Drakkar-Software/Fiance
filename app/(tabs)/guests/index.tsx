@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Users, AlertTriangle, LayoutGrid,
-  Trash2, FolderOpen, Map,
+  Trash2, FolderOpen, Map as MapIcon,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -573,7 +573,7 @@ function TablesView() {
               onPress={() => router.push("/(tabs)/guests/tables")}
               className="flex-row items-center justify-center gap-2 mb-4 py-2.5 rounded-xl bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900 active:opacity-70"
             >
-              <Map size={16} color="#EC4899" />
+              <MapIcon size={16} color="#EC4899" />
               <Text className="text-sm font-semibold text-primary-500">{t("openPlanView")}</Text>
             </Pressable>
           )}
