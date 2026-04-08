@@ -3,9 +3,49 @@
  * polls inbox for guest responses, and merges them into the store.
  */
 
+import { useEffect, useRef } from "react";
 import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import * as Crypto from "expo-crypto";
+import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
+import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
+
+/**
+ * Pre-build a guest's personal RSVP URL from the wedding seed phrase.
+ * Generates and persists an rsvpToken for the guest if they don't have one.
+ * Returns null until the async derivation completes.
+ *
+ * Must be called at render time (not inside an event handler) so that the
+ * result is available synchronously when the user taps the share button —
+ * clipboard/share APIs require an unbroken user-gesture context on web.
+ */
+export function useGuestRsvpUrl(
+  guestId: string | undefined,
+  activeEntry: WeddingRegistryEntry | undefined,
+): string | null {
+  const urlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!guestId || !activeEntry?.seedPhrase) return;
+    let cancelled = false;
+    (async () => {
+      const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+      if (cancelled) return;
+      const userId = authToken.slice(0, 16);
+      const baseUrl = buildWeddingPageUrl(userId);
+      const { guests, updateGuest } = useGuestsStore.getState();
+      let token = guests.find((g) => g.id === guestId)?.rsvpToken;
+      if (!token) {
+        token = Crypto.randomUUID();
+        updateGuest(guestId, { rsvpToken: token });
+      }
+      if (!cancelled) urlRef.current = `${baseUrl}?token=${token}`;
+    })();
+    return () => { cancelled = true; };
+  }, [guestId, activeEntry?.seedPhrase]);
+
+  return urlRef.current;
+}
 
 export interface RsvpRosterEntry {
   id: string;

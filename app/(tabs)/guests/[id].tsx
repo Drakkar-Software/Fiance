@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
+import { useGuestRsvpUrl } from "@/lib/rsvp-sync";
 import {
   INVITATION_TYPE_LABELS,
   RSVP_STATUS_LABELS,
@@ -111,25 +111,7 @@ export default function GuestDetailScreen() {
   const [showCompanionPicker, setShowCompanionPicker] = useState(false);
   const [showCompanionConfirm, setShowCompanionConfirm] = useState(false);
   const [pendingCompanionId, setPendingCompanionId] = useState("");
-  const rsvpUrlRef = useRef<string | null>(null);
-
-  // Pre-build the RSVP URL so the share handler stays synchronous (required for
-  // clipboard/share APIs that need an unbroken user-gesture context on web).
-  useEffect(() => {
-    if (!activeEntry?.seedPhrase || isNew) return;
-    (async () => {
-      const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
-      const userId = authToken.slice(0, 16);
-      const baseUrl = buildWeddingPageUrl(userId);
-      const { guests: allGuests, updateGuest: ug } = useGuestsStore.getState();
-      let token = allGuests.find((g) => g.id === id)?.rsvpToken;
-      if (!token) {
-        token = Crypto.randomUUID();
-        ug(id!, { rsvpToken: token });
-      }
-      rsvpUrlRef.current = `${baseUrl}?token=${token}`;
-    })();
-  }, [id, activeEntry?.seedPhrase, isNew]);
+  const rsvpUrl = useGuestRsvpUrl(isNew ? undefined : id, activeEntry);
 
   const canSave = firstName.trim().length > 0 && lastName.trim().length > 0;
 
@@ -415,7 +397,7 @@ export default function GuestDetailScreen() {
         {!isNew && activeEntry?.seedPhrase && (
           <Pressable
             onPress={async () => {
-              const url = rsvpUrlRef.current;
+              const url = rsvpUrl;
               if (!url) return;
               if (Platform.OS === "web") {
                 try {
