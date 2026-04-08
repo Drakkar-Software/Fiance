@@ -1,13 +1,15 @@
 import React from "react";
+import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 
 export default function PlanningLayout() {
+  const isDark = useColorScheme() === "dark";
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#FFFFFF" },
-        headerTintColor: "#111827",
-        headerTitleStyle: { fontWeight: "600" },
+        headerStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" },
+        headerTintColor: isDark ? "#F9FAFB" : "#111827",
+        headerTitleStyle: { fontWeight: "600", color: isDark ? "#F9FAFB" : "#111827" },
       }}
     >
       <Stack.Screen name="index" options={{ title: "Planning" }} />

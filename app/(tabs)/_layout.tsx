@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, useColorScheme } from "react-native";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
@@ -7,6 +7,7 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
+  const isDark = useColorScheme() === "dark";
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
     () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),
@@ -19,7 +20,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#EC4899",
         tabBarInactiveTintColor: "#B0B0B8",
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: isDark ? "#111827" : "#FFFFFF",
           borderTopWidth: 0,
           elevation: 0,
           shadowColor: "#000",
@@ -35,15 +36,16 @@ export default function TabLayout() {
           marginTop: -2,
         },
         headerStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: isDark ? "#111827" : "#FFFFFF",
           elevation: 0,
           shadowOpacity: 0,
           borderBottomWidth: 0,
         },
-        headerTintColor: "#1F2937",
+        headerTintColor: isDark ? "#F9FAFB" : "#1F2937",
         headerTitleStyle: {
           fontWeight: "600",
           fontSize: 17,
+          color: isDark ? "#F9FAFB" : "#1F2937",
         },
       }}
     >
