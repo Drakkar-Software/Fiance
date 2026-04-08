@@ -234,9 +234,9 @@ export default function BudgetScreen() {
                   <Pressable
                     key={key}
                     onPress={() => applyTemplate(key)}
-                    className="flex-1 py-2 rounded-xl border border-gray-200 dark:border-gray-700 items-center active:bg-primary-50 dark:active:bg-primary-900"
+                    className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
                   >
-                    <Text className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                    <Text className="text-xs font-medium text-gray-600 dark:text-gray-300 text-center">
                       {t(BUDGET_TEMPLATE_LABELS[key])}
                     </Text>
                   </Pressable>
