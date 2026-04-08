@@ -1,7 +1,9 @@
 import React from "react";
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function InvitesLayout() {
+  const { t } = useTranslation("guests");
   return (
     <Stack
       screenOptions={{
@@ -10,9 +12,10 @@ export default function InvitesLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Invités" }} />
-      <Stack.Screen name="[id]" options={{ title: "Invité" }} />
-      <Stack.Screen name="tables" options={{ title: "Plan de tables" }} />
+      <Stack.Screen name="index" options={{ title: t("guestsScreen") }} />
+      <Stack.Screen name="[id]" options={{ title: t("guestDetailScreen") }} />
+      <Stack.Screen name="tables" options={{ title: t("tablesPlanScreen") }} />
+      <Stack.Screen name="accommodations" options={{ title: t("accommodations") }} />
     </Stack>
   );
 }

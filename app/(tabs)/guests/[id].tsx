@@ -6,12 +6,16 @@ import {
   TextInput,
   Pressable,
   Alert,
+  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
 import {
   INVITATION_TYPE_LABELS,
   RSVP_STATUS_LABELS,
@@ -23,7 +27,7 @@ import type {
   RsvpStatus,
   Diet,
 } from "@/db/types";
-import { UserPlus, XCircle } from "lucide-react-native";
+import { UserPlus, XCircle, Share2, ExternalLink } from "lucide-react-native";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
@@ -70,6 +74,9 @@ export default function GuestDetailScreen() {
 
   const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
   const isPostWedding = weddingDate ? new Date(weddingDate) < new Date() : false;
+  const accommodations = useAccommodationsStore((s) => s.accommodations);
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
   const isNew = id === "new";
   const existing = guests.find((g) => g.id === id);
@@ -96,6 +103,8 @@ export default function GuestDetailScreen() {
   const [thankYouSent, setThankYouSent] = useState(existing?.thankYouSent || false);
   const [notes, setNotes] = useState(existing?.notes || "");
   const [companionId, setCompanionId] = useState(existing?.companionId || "");
+  const [accommodationId, setAccommodationId] = useState(existing?.accommodationId || "");
+  const [roomNumber, setRoomNumber] = useState(existing?.roomNumber || "");
   const [showDelete, setShowDelete] = useState(false);
   const [showCompanionPicker, setShowCompanionPicker] = useState(false);
   const [showCompanionConfirm, setShowCompanionConfirm] = useState(false);
@@ -134,6 +143,8 @@ export default function GuestDetailScreen() {
       thankYouSentDate: thankYouSent && !existing?.thankYouSent
         ? now
         : existing?.thankYouSentDate || null,
+      accommodationId: accommodationId || null,
+      roomNumber: roomNumber || null,
       notes: notes || null,
       updatedAt: now,
     };
@@ -267,7 +278,26 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* RSVP */}
-        <SectionTitle>RSVP</SectionTitle>
+        <View className="flex-row items-center justify-between">
+          <SectionTitle>RSVP</SectionTitle>
+          {activeEntry?.seedPhrase && (
+            <Pressable
+              onPress={async () => {
+                try {
+                  const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+                  const userId = authToken.slice(0, 16);
+                  const url = buildWeddingPageUrl(userId);
+                  const guestName = `${firstName} ${lastName}`.trim();
+                  await Share.share({ message: `${t("rsvpLink")} — ${guestName}:\n${url}` });
+                } catch {}
+              }}
+              className="flex-row items-center gap-1 pb-2"
+            >
+              <Share2 size={14} color="#EC4899" />
+              <Text className="text-xs text-primary-500 font-medium">{t("rsvpLink")}</Text>
+            </Pressable>
+          )}
+        </View>
         <StatusSelector
           options={RSVP_STATUSES.map((s) => ({
             key: s,
@@ -292,6 +322,39 @@ export default function GuestDetailScreen() {
             else { setTableId(key); setNoTableNeeded(false); }
           }}
         />
+
+        {/* Accommodation */}
+        {accommodations.length > 0 && (
+          <>
+            <SectionTitle>{t("accommodationSection")}</SectionTitle>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("none") },
+                ...accommodations.map((a) => ({ key: a.id, label: a.name })),
+              ]}
+              activeKey={accommodationId}
+              onSelect={setAccommodationId}
+            />
+            {accommodationId && (
+              <FormCard>
+                <InputRow
+                  label={t("roomNumber")}
+                  value={roomNumber}
+                  onChangeText={setRoomNumber}
+                />
+              </FormCard>
+            )}
+          </>
+        )}
+        <Pressable
+          onPress={() => router.push("/(tabs)/guests/accommodations")}
+          className="flex-row items-center mb-3 mt-1"
+        >
+          <ExternalLink size={13} color="#EC4899" />
+          <Text className="text-xs text-primary-500 font-medium ml-1">
+            {t("accommodations")}
+          </Text>
+        </Pressable>
 
         {/* Diet */}
         <SectionTitle>{t("dietLabel")}</SectionTitle>

@@ -120,5 +120,10 @@
   "clothingType": "Clothing type",
   "fittingDate": "Fitting date",
   "alterations": "Alterations included",
-  "details": "{{type}} details"
+  "details": "{{type}} details",
+  "tabInfo": "Info",
+  "tabPricing": "Pricing",
+  "tabPayments": "Payments",
+  "noPayments": "No payments recorded",
+  "deletePayment": "Delete this payment?"
 }

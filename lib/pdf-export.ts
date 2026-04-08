@@ -4,7 +4,7 @@
  */
 
 import { Platform } from "react-native";
-import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding } from "@/db/schema";
+import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding, VendorPayment } from "@/db/schema";
 import type { BudgetSummary } from "@/store/useBudgetStore";
 
 function escapeHtml(str: string): string {
@@ -169,6 +169,74 @@ export function buildVendorContactsHtml(vendors: Vendor[]): string {
     <table><thead><tr><th>Type</th><th>Nom</th><th>Contact</th><th>Tél.</th><th>Email</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="footer">Exporté depuis WeddingOS</div>
   </body></html>`;
+}
+
+// ─── Budget CSV ──────────────────────────────────────────────────────────────
+
+export function buildBudgetCsv(summary: BudgetSummary, _currency: string): string {
+  const fmt = (n: number | null | undefined) => (n != null ? n.toFixed(2) : "");
+  const header = ["Catégorie", "Prestataire", "Total calculé", "Confirmé", "Acompte versé", "Objectif catégorie", "Dépassement"].join(";");
+  const rows = summary.categories.flatMap((c) =>
+    c.vendors.length > 0
+      ? c.vendors.map((v) =>
+          [
+            c.categoryName,
+            v.vendor.name,
+            fmt(v.calculatedTotal),
+            v.isBooked ? fmt(v.calculatedTotal) : "0.00",
+            v.vendor.depositPaid ? "Oui" : "Non",
+            fmt(c.targetAmount),
+            c.overage > 0 ? fmt(c.overage) : "0.00",
+          ].join(";")
+        )
+      : []
+  );
+  return [header, ...rows].join("\n");
+}
+
+// ─── Payments CSV ─────────────────────────────────────────────────────────────
+
+export function buildPaymentsCsv(
+  payments: VendorPayment[],
+  vendors: Vendor[],
+): string {
+  const vendorMap = new Map(vendors.map((v) => [v.id, v.name]));
+  const sorted = [...payments].sort((a, b) =>
+    (a.paidDate ?? "").localeCompare(b.paidDate ?? "")
+  );
+  const header = ["Prestataire", "Montant", "Date", "Méthode", "Libellé"].join(";");
+  const rows = sorted.map((p) =>
+    [
+      vendorMap.get(p.vendorId) ?? "",
+      p.amount.toFixed(2),
+      p.paidDate ?? "",
+      p.method ?? "",
+      p.label ?? "",
+    ].join(";")
+  );
+  return [header, ...rows].join("\n");
+}
+
+// ─── CSV export helper ────────────────────────────────────────────────────────
+
+export async function exportToCsv(csv: string, filename: string): Promise<void> {
+  if (Platform.OS === "web") {
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } else {
+    const { writeAsStringAsync, documentDirectory } = await import("expo-file-system");
+    const { shareAsync } = await import("expo-sharing");
+    const uri = `${documentDirectory}${filename}`;
+    await writeAsStringAsync(uri, csv, { encoding: "utf8" });
+    await shareAsync(uri, { mimeType: "text/csv", UTI: "public.comma-separated-values-text" });
+  }
 }
 
 // ─── Export helper ───────────────────────────────────────────────────────────

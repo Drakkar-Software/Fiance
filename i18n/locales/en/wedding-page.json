@@ -27,5 +27,13 @@
   "giftClaimConfirm": "Confirm claim",
   "giftClaimSuccess": "Gift claimed!",
   "accommodations": "Accommodation",
-  "perNight": "/ night"
+  "perNight": "/ night",
+  "rsvpDiets": {
+    "STANDARD": "Standard",
+    "VEGETARIAN": "Vegetarian",
+    "VEGAN": "Vegan",
+    "HALAL": "Halal",
+    "KOSHER": "Kosher",
+    "ALLERGY": "Allergy"
+  }
 }

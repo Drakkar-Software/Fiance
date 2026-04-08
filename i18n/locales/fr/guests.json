@@ -109,5 +109,10 @@
   "deleteAccommodation": "Supprimer cet hébergement ?",
   "deleteAccommodationMsg": "Les invités assignés seront désassignés.",
   "exportPdf": "Exporter en PDF",
-  "guestList": "Liste des invités"
+  "guestList": "Liste des invités",
+  "rsvpLink": "Lien RSVP",
+  "accommodationNameRequired": "Le nom est obligatoire",
+  "guestsScreen": "Invités",
+  "guestDetailScreen": "Invité",
+  "tablesPlanScreen": "Plan de tables"
 }

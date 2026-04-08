@@ -27,5 +27,13 @@
   "giftClaimConfirm": "Confirmer la réservation",
   "giftClaimSuccess": "Cadeau réservé !",
   "accommodations": "Hébergement",
-  "perNight": "/ nuit"
+  "perNight": "/ nuit",
+  "rsvpDiets": {
+    "STANDARD": "Standard",
+    "VEGETARIAN": "Végétarien",
+    "VEGAN": "Végan",
+    "HALAL": "Halal",
+    "KOSHER": "Casher",
+    "ALLERGY": "Allergie"
+  }
 }

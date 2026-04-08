@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, TextInput } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { Clock, MapPin, HelpCircle, Calendar, Globe } from "lucide-react-native";
+import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2 } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
+import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
 import { TimelineItem } from "@/components/TimelineItem";
 
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
@@ -53,6 +54,13 @@ export default function WeddingPublicPage() {
   const [page, setPage] = useState<PublicWeddingPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [roster, setRoster] = useState<RsvpRosterEntry[] | null>(null);
+  const [rsvpSearch, setRsvpSearch] = useState("");
+  const [selectedGuest, setSelectedGuest] = useState<RsvpRosterEntry | null>(null);
+  const [rsvpStatus, setRsvpStatus] = useState<"ACCEPTED" | "DECLINED" | "MAYBE" | null>(null);
+  const [rsvpDiet, setRsvpDiet] = useState("STANDARD");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -64,13 +72,17 @@ export default function WeddingPublicPage() {
     }
     (async () => {
       try {
-        const data = await fetchPublicPage(serverUrl, id);
+        const [data, rosterData] = await Promise.all([
+          fetchPublicPage(serverUrl, id),
+          fetchRsvpRoster(serverUrl, id),
+        ]);
         if (data) {
           setPage(data);
           setOgMeta(data, t);
         } else {
           setError(true);
         }
+        if (rosterData?.guests) setRoster(rosterData.guests);
       } catch {
         setError(true);
       } finally {
@@ -281,6 +293,135 @@ export default function WeddingPublicPage() {
                 </Text>
               </View>
             ))}
+          </View>
+        )}
+
+        {/* RSVP */}
+        {roster && roster.length > 0 && (
+          <View className="mt-4 px-4 pb-6">
+            <View className="flex-row items-center gap-3 mb-6">
+              <View className="h-px flex-1 bg-accent-rose-light" />
+              <View className="w-1.5 h-1.5 rounded-full bg-accent-rose" />
+              <View className="h-px flex-1 bg-accent-rose-light" />
+            </View>
+
+            <Text className="text-lg font-bold text-gray-900 mb-1">{t("rsvp")}</Text>
+
+            {submitted ? (
+              <View className="bg-white rounded-2xl p-6 items-center shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
+                <CheckCircle2 size={40} color="#10B981" />
+                <Text className="text-base font-semibold text-gray-900 mt-3 text-center">{t("rsvpSuccess")}</Text>
+              </View>
+            ) : (
+              <View className="bg-white rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
+                {!selectedGuest ? (
+                  <>
+                    <Text className="text-sm text-gray-500 mb-2">{t("rsvpSearch")}</Text>
+                    <TextInput
+                      className="border border-gray-200 rounded-xl px-3 py-2.5 text-base text-gray-900 mb-3"
+                      placeholder={t("rsvpSearch")}
+                      value={rsvpSearch}
+                      onChangeText={setRsvpSearch}
+                      placeholderTextColor="#D0D0D8"
+                    />
+                    {rsvpSearch.length > 1 && (
+                      <View>
+                        {roster
+                          .filter((g) =>
+                            `${g.firstName} ${g.lastName}`.toLowerCase().includes(rsvpSearch.toLowerCase())
+                          )
+                          .slice(0, 6)
+                          .map((g) => (
+                            <Pressable
+                              key={g.id}
+                              onPress={() => setSelectedGuest(g)}
+                              className="py-2.5 border-b border-gray-50 active:opacity-60"
+                            >
+                              <Text className="text-base text-gray-900">
+                                {g.firstName} {g.lastName}
+                              </Text>
+                            </Pressable>
+                          ))}
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <View className="flex-row items-center justify-between mb-4">
+                      <Text className="text-base font-semibold text-gray-900">
+                        {selectedGuest.firstName} {selectedGuest.lastName}
+                      </Text>
+                      <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
+                        <Text className="text-sm text-gray-400">{t("rsvpSearch")}</Text>
+                      </Pressable>
+                    </View>
+
+                    <Text className="text-sm text-gray-500 mb-2">{t("rsvpAttendance")}</Text>
+                    <View className="flex-row gap-2 mb-4">
+                      {(["ACCEPTED", "DECLINED", "MAYBE"] as const).map((s) => {
+                        const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo"), MAYBE: t("rsvpMaybe") };
+                        const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444", MAYBE: "#3B82F6" };
+                        return (
+                          <Pressable
+                            key={s}
+                            onPress={() => setRsvpStatus(s)}
+                            className={`flex-1 py-2.5 rounded-xl items-center border ${rsvpStatus === s ? "border-transparent" : "border-gray-200"}`}
+                            style={rsvpStatus === s ? { backgroundColor: colors[s] } : undefined}
+                          >
+                            <Text className={`text-sm font-semibold ${rsvpStatus === s ? "text-white" : "text-gray-500"}`}>
+                              {labels[s]}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+
+                    {rsvpStatus === "ACCEPTED" && (
+                      <>
+                        <Text className="text-sm text-gray-500 mb-2">{t("rsvpDiet")}</Text>
+                        <View className="flex-row flex-wrap gap-2 mb-4">
+                          {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
+                            <Pressable
+                              key={key}
+                              onPress={() => setRsvpDiet(key)}
+                              className={`px-3 py-1.5 rounded-full border ${rsvpDiet === key ? "bg-primary-500 border-primary-500" : "border-gray-200 bg-white"}`}
+                            >
+                              <Text className={`text-sm ${rsvpDiet === key ? "text-white font-medium" : "text-gray-500"}`}>
+                                {label}
+                              </Text>
+                            </Pressable>
+                          ))}
+                        </View>
+                      </>
+                    )}
+
+                    {rsvpStatus && (
+                      <Pressable
+                        onPress={async () => {
+                          if (!rsvpStatus || submitting) return;
+                          setSubmitting(true);
+                          const serverUrl = process.env.EXPO_PUBLIC_SYNC_URL;
+                          if (!serverUrl) { setSubmitting(false); return; }
+                          const ok = await submitRsvp(serverUrl, id!, {
+                            rsvpToken: selectedGuest.rsvpToken,
+                            rsvpStatus,
+                            diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
+                            submittedAt: new Date().toISOString(),
+                          });
+                          setSubmitting(false);
+                          if (ok) setSubmitted(true);
+                        }}
+                        className="bg-primary-500 rounded-xl py-3 items-center active:bg-primary-600"
+                      >
+                        <Text className="text-white font-semibold text-base">
+                          {submitting ? "..." : t("rsvpSubmit")}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </>
+                )}
+              </View>
+            )}
           </View>
         )}
 

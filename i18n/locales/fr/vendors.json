@@ -120,5 +120,10 @@
   "clothingType": "Type de tenue",
   "fittingDate": "Date de l'essayage",
   "alterations": "Retouches incluses",
-  "details": "Détails {{type}}"
+  "details": "Détails {{type}}",
+  "tabInfo": "Infos",
+  "tabPricing": "Tarif",
+  "tabPayments": "Paiements",
+  "noPayments": "Aucun paiement enregistré",
+  "deletePayment": "Supprimer ce paiement ?"
 }

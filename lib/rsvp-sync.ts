@@ -126,6 +126,32 @@ export async function submitRsvp(
 }
 
 /**
+ * Fetch RSVP inbox submissions (organizer only, requires auth).
+ */
+export async function fetchRsvpInbox(config: {
+  serverUrl: string;
+  authToken: string;
+  userId: string;
+}): Promise<RsvpSubmission[]> {
+  try {
+    const client = new StarfishClient({
+      baseUrl: config.serverUrl,
+      auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
+    });
+    const syncManager = new SyncManager({
+      client,
+      pullPath: `/pull/rsvp-inbox/${config.userId}`,
+      pushPath: `/push/rsvp-inbox/${config.userId}`,
+    });
+    const data = await syncManager.pull();
+    if (!data) return [];
+    return Array.isArray(data) ? data : [data as RsvpSubmission];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Apply RSVP submissions to the guest store.
  */
 export function applyRsvpSubmissions(submissions: RsvpSubmission[]): number {

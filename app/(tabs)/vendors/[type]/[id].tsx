@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { ChevronUp, ChevronDown, CheckSquare, Square } from "lucide-react-native";
+import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -21,11 +21,11 @@ import type { VendorType, VendorStatus } from "@/db/types";
 import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
 import type { CustomSection } from "@/lib/vendorTypeConfig";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow, ChipSelect } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { StatusSelector } from "@/components/StatusSelector";
-import type { Vendor } from "@/db/schema";
+import type { Vendor, VendorPayment } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
   "PROSPECT",
@@ -63,6 +63,7 @@ export default function VendorDetailScreen() {
 
   const [notes, setNotes] = useState(existingVendor?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
+  const [activeTab, setActiveTab] = useState<"infos" | "tarif" | "paiements">("infos");
 
   // Date fields (exist in schema but were not surfaced before)
   const [quoteDate, setQuoteDate] = useState(existingVendor?.quoteDate || "");
@@ -147,114 +148,138 @@ export default function VendorDetailScreen() {
           ),
         }}
       />
-      <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
-        {/* Status selector */}
-        <SectionTitle>{t("statusLabel")}</SectionTitle>
-        <StatusSelector
-          options={STATUS_OPTIONS.map((s) => ({
-            key: s,
-            label: t(VENDOR_STATUS_LABELS[s]),
-            color: VENDOR_STATUS_COLORS[s],
-          }))}
-          activeKey={status}
-          onSelect={(k) => setStatus(k as VendorStatus)}
-        />
 
-        {/* Information section */}
-        <SectionTitle>{t("information")}</SectionTitle>
-        <FormCard>
-          <InputRow label={t("companyName")} value={name} onChangeText={setName} />
-          <InputRow label={t("contact")} value={contactName} onChangeText={setContactName} />
-          <InputRow label={t("phoneLabel")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-          <InputRow label={t("emailLabel")} value={email} onChangeText={setEmail} keyboardType="email-address" />
-          <InputRow label={t("website")} value={website} onChangeText={setWebsite} />
-        </FormCard>
+      {/* Tab bar */}
+      <View className="flex-row mx-4 mt-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+        {(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as const).map((tab) => {
+          const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments" } as const;
+          return (
+            <Pressable
+              key={tab}
+              onPress={() => setActiveTab(tab)}
+              className={`flex-1 py-2 rounded-lg items-center ${activeTab === tab ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+            >
+              <Text className={`text-sm font-medium ${activeTab === tab ? "text-primary-500" : "text-gray-400"}`}>
+                {t(tabKeys[tab])}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
-        {/* Pricing section */}
-        <SectionTitle>{t("pricing")}</SectionTitle>
-        <FormCard>
-          <InputRow
-            label={typeConfig.basePriceLabel || t("totalPrice")}
-            value={basePrice}
-            onChangeText={setBasePrice}
-            keyboardType="numeric"
-          />
-          {typeConfig.showPricePerPerson === "visible" && (
-            <InputRow
-              label={typeConfig.pricePerPersonLabel || t("pricePerPerson")}
-              value={pricePerPerson}
-              onChangeText={setPricePerPerson}
-              keyboardType="numeric"
-            />
-          )}
-          <InputRow
-            label={t("deposit")}
-            value={depositAmount}
-            onChangeText={setDepositAmount}
-            keyboardType="numeric"
-          />
-          <ToggleRow
-            label={t("depositPaid")}
-            value={depositPaid}
-            onToggle={() => setDepositPaid(!depositPaid)}
-          />
-        </FormCard>
-
-        {/* Dates section (collapsible) */}
-        <Pressable
-          onPress={() => setShowDates(!showDates)}
-          className="flex-row items-center justify-between mb-2 mt-1"
-        >
-          <SectionTitle>{t("dates")}</SectionTitle>
-          {showDates ? (
-            <ChevronUp size={16} color="#9CA3AF" />
-          ) : (
-            <ChevronDown size={16} color="#9CA3AF" />
-          )}
-        </Pressable>
-        {showDates && (
-          <FormCard>
-            <DateRow label={t("quoteDate")} value={quoteDate} onChange={setQuoteDate} />
-            <DateRow label={t("validityDate")} value={validityDate} onChange={setValidityDate} />
-            <DateRow label={t("depositDueDate")} value={depositDueDate} onChange={setDepositDueDate} />
-            <DateRow label={t("balanceDueDate")} value={balanceDueDate} onChange={setBalanceDueDate} />
-          </FormCard>
-        )}
-
-        {/* Type-specific custom sections */}
-        {typeConfig.customSections.length > 0 && (
+      <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false}>
+        {activeTab === "infos" && (
           <>
-            <SectionTitle>{t("details", { type: typeName.toLowerCase() })}</SectionTitle>
+            <SectionTitle>{t("statusLabel")}</SectionTitle>
+            <StatusSelector
+              options={STATUS_OPTIONS.map((s) => ({
+                key: s,
+                label: t(VENDOR_STATUS_LABELS[s]),
+                color: VENDOR_STATUS_COLORS[s],
+              }))}
+              activeKey={status}
+              onSelect={(k) => setStatus(k as VendorStatus)}
+            />
+
+            <SectionTitle>{t("information")}</SectionTitle>
             <FormCard>
-              {typeConfig.customSections.map((section) => (
-                <CustomFieldRenderer
-                  key={section.key}
-                  section={section}
-                  value={customFieldsData[section.key]}
-                  onChange={(val) => updateCustomField(section.key, val)}
-                />
-              ))}
+              <InputRow label={t("companyName")} value={name} onChangeText={setName} />
+              <InputRow label={t("contact")} value={contactName} onChangeText={setContactName} />
+              <InputRow label={t("phoneLabel")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+              <InputRow label={t("emailLabel")} value={email} onChangeText={setEmail} keyboardType="email-address" />
+              <InputRow label={t("website")} value={website} onChangeText={setWebsite} />
             </FormCard>
+
+            {typeConfig.customSections.length > 0 && (
+              <>
+                <SectionTitle>{t("details", { type: typeName.toLowerCase() })}</SectionTitle>
+                <FormCard>
+                  {typeConfig.customSections.map((section) => (
+                    <CustomFieldRenderer
+                      key={section.key}
+                      section={section}
+                      value={customFieldsData[section.key]}
+                      onChange={(val) => updateCustomField(section.key, val)}
+                    />
+                  ))}
+                </FormCard>
+              </>
+            )}
+
+            <SectionTitle>{t("notesLabel")}</SectionTitle>
+            <FormCard>
+              <TextInput
+                className="text-base text-gray-900 dark:text-white min-h-[80px]"
+                placeholder={t("notesPlaceholder")}
+                placeholderTextColor="#D0D0D8"
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                textAlignVertical="top"
+              />
+            </FormCard>
+
+            {!isNew && (
+              <DeleteButton label={t("deleteVendor")} onPress={() => setShowDelete(true)} />
+            )}
           </>
         )}
 
+        {activeTab === "tarif" && (
+          <>
+            <SectionTitle>{t("pricing")}</SectionTitle>
+            <FormCard>
+              <InputRow
+                label={typeConfig.basePriceLabel || t("totalPrice")}
+                value={basePrice}
+                onChangeText={setBasePrice}
+                keyboardType="numeric"
+              />
+              {typeConfig.showPricePerPerson === "visible" && (
+                <InputRow
+                  label={typeConfig.pricePerPersonLabel || t("pricePerPerson")}
+                  value={pricePerPerson}
+                  onChangeText={setPricePerPerson}
+                  keyboardType="numeric"
+                />
+              )}
+              <InputRow
+                label={t("deposit")}
+                value={depositAmount}
+                onChangeText={setDepositAmount}
+                keyboardType="numeric"
+              />
+              <ToggleRow
+                label={t("depositPaid")}
+                value={depositPaid}
+                onToggle={() => setDepositPaid(!depositPaid)}
+              />
+            </FormCard>
 
-        {/* Notes */}
-        <SectionTitle>{t("notesLabel")}</SectionTitle>
-        <FormCard>
-          <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[100px]"
-            placeholder={t("notesPlaceholder")}
-            placeholderTextColor="#D0D0D8"
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-            textAlignVertical="top"
-          />
-        </FormCard>
+            <Pressable
+              onPress={() => setShowDates(!showDates)}
+              className="flex-row items-center justify-between mb-2 mt-1"
+            >
+              <SectionTitle>{t("dates")}</SectionTitle>
+              {showDates ? (
+                <ChevronUp size={16} color="#9CA3AF" />
+              ) : (
+                <ChevronDown size={16} color="#9CA3AF" />
+              )}
+            </Pressable>
+            {showDates && (
+              <FormCard>
+                <DateRow label={t("quoteDate")} value={quoteDate} onChange={setQuoteDate} />
+                <DateRow label={t("validityDate")} value={validityDate} onChange={setValidityDate} />
+                <DateRow label={t("depositDueDate")} value={depositDueDate} onChange={setDepositDueDate} />
+                <DateRow label={t("balanceDueDate")} value={balanceDueDate} onChange={setBalanceDueDate} />
+              </FormCard>
+            )}
+          </>
+        )}
 
-        {!isNew && (
-          <DeleteButton label={t("deleteVendor")} onPress={() => setShowDelete(true)} />
+        {activeTab === "paiements" && !isNew && (
+          <PaymentsTab vendorId={id!} />
         )}
 
         <View className="h-8" />
@@ -268,6 +293,145 @@ export default function VendorDetailScreen() {
         destructive
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
+      />
+    </View>
+  );
+}
+
+const PAYMENT_METHODS = ["cash", "check", "transfer", "card", "other"] as const;
+type PaymentMethod = typeof PAYMENT_METHODS[number];
+
+function PaymentsTab({ vendorId }: { vendorId: string }) {
+  const { t } = useTranslation("budget");
+  const { t: tV } = useTranslation("vendors");
+  const addPayment = useVendorsStore((s) => s.addPayment);
+  const removePayment = useVendorsStore((s) => s.removePayment);
+  const payments = useVendorsStore((s) => s.vendorPayments.filter((p) => p.vendorId === vendorId));
+  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+
+  const [showAdd, setShowAdd] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [paidDate, setPaidDate] = useState("");
+  const [method, setMethod] = useState<PaymentMethod>("transfer");
+  const [label, setLabel] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleAdd = () => {
+    if (!amount.trim()) return;
+    const now = new Date().toISOString();
+    addPayment({
+      id: Crypto.randomUUID(),
+      vendorId,
+      amount: parseFloat(amount),
+      paidDate: paidDate || now.split("T")[0],
+      dueDate: null,
+      method,
+      label: label || null,
+      notes: null,
+      createdAt: now,
+      updatedAt: now,
+    } as VendorPayment);
+    setAmount("");
+    setPaidDate("");
+    setMethod("transfer");
+    setLabel("");
+    setShowAdd(false);
+  };
+
+  return (
+    <View>
+      {/* Total */}
+      <View className="bg-primary-50 dark:bg-primary-950 rounded-2xl p-4 mb-3 flex-row items-center justify-between border border-primary-100 dark:border-primary-900">
+        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">{t("totalPaid")}</Text>
+        <Text className="text-xl font-bold text-primary-500">{totalPaid.toFixed(2)} €</Text>
+      </View>
+
+      {/* Payments list */}
+      {payments.map((p) => (
+        <View
+          key={p.id}
+          className="bg-white dark:bg-gray-900 rounded-xl p-3.5 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center"
+        >
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              {p.amount.toFixed(2)} €
+            </Text>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {p.paidDate}
+              {p.method ? ` · ${t(`paymentMethods.${p.method}`)}` : ""}
+            </Text>
+            {p.label && (
+              <Text className="text-xs text-gray-500 mt-0.5">{p.label}</Text>
+            )}
+          </View>
+          <Pressable
+            onPress={() => setDeleteId(p.id)}
+            className="w-8 h-8 items-center justify-center"
+          >
+            <Trash2 size={16} color="#EF4444" />
+          </Pressable>
+        </View>
+      ))}
+
+      {payments.length === 0 && !showAdd && (
+        <Text className="text-sm text-gray-400 mb-3">{tV("noPayments")}</Text>
+      )}
+
+      {/* Add form */}
+      {showAdd ? (
+        <FormCard>
+          <InputRow
+            label={t("paymentAmount")}
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
+          <DateRow label={t("paymentDate")} value={paidDate} onChange={setPaidDate} />
+          <Text className="text-xs text-gray-400 mb-2 mt-3 font-medium">{t("paymentMethod")}</Text>
+          <ChipSelect
+            options={PAYMENT_METHODS as unknown as string[]}
+            value={method}
+            onChange={(v) => setMethod(v as PaymentMethod)}
+            labels={Object.fromEntries(
+              PAYMENT_METHODS.map((m) => [m, t(`paymentMethods.${m}`)])
+            ) as Record<string, string>}
+          />
+          <InputRow label={t("paymentLabel")} value={label} onChangeText={setLabel} />
+          <View className="flex-row gap-2 mt-3">
+            <Pressable
+              onPress={handleAdd}
+              className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
+            >
+              <Text className="text-white font-semibold text-sm">{t("addPayment")}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setShowAdd(false)}
+              className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+            >
+              <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+            </Pressable>
+          </View>
+        </FormCard>
+      ) : (
+        <Pressable
+          onPress={() => setShowAdd(true)}
+          className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 items-center border border-dashed border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
+        >
+          <Text className="text-sm font-semibold text-primary-500">+ {t("addPayment")}</Text>
+        </Pressable>
+      )}
+
+      <ConfirmSheet
+        visible={!!deleteId}
+        title={tV("deletePayment")}
+        message={tV("irreversible")}
+        confirmLabel={t("common:delete")}
+        destructive
+        onConfirm={() => {
+          if (deleteId) removePayment(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
       />
     </View>
   );

@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Upload, Globe, Gift } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -26,7 +26,6 @@ import {
 import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { exportWedding, importWedding } from "@/lib/export-import";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   requestPermissions,
@@ -152,46 +151,6 @@ export default function SettingsScreen() {
     }
   }, [activeEntry]);
 
-  const [exporting, setExporting] = useState(false);
-  const [importing, setImporting] = useState(false);
-
-  const handleExport = useCallback(async () => {
-    setExporting(true);
-    try {
-      await exportWedding(activeEntry?.label || "wedding");
-    } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
-    } finally {
-      setExporting(false);
-    }
-  }, [activeEntry?.label, t]);
-
-  const [showImportConfirm, setShowImportConfirm] = useState(false);
-
-  const doImport = useCallback(async () => {
-    setShowImportConfirm(false);
-    setImporting(true);
-    try {
-      const result = await importWedding();
-      if (result === true) {
-        Alert.alert(t("importSuccess"), t("importSuccessMsg"));
-        if (useSettingsStore.getState().notificationsEnabled) {
-          const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
-          rescheduleAllNotifications(newTasks, newEvents)
-            .catch((err) => console.warn("[notifications] Reschedule failed:", err));
-        }
-      } else if (result === "invalid_json") {
-        Alert.alert(t("common:error"), t("invalidJson"));
-      } else if (result === "invalid_backup") {
-        Alert.alert(t("common:error"), t("invalidBackup"));
-      }
-    } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
-    } finally {
-      setImporting(false);
-    }
-  }, [t]);
-
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
 
   const doCreateWedding = useCallback(async () => {
@@ -267,17 +226,6 @@ export default function SettingsScreen() {
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/(tabs)/settings/public-page")}
         />
-        <IconCard
-          icon={
-            <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center">
-              <Gift size={20} color="#EC4899" />
-            </View>
-          }
-          title={t("giftRegistry")}
-          subtitle={t("giftRegistryDesc")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/gifts")}
-        />
       </View>
 
       {/* Sauvegarde et partage */}
@@ -339,22 +287,10 @@ export default function SettingsScreen() {
               <Download size={20} color="#3B82F6" />
             </View>
           }
-          title={exporting ? t("exporting") : t("exportData")}
-          subtitle={t("exportDesc")}
+          title={t("exportImportTitle")}
+          subtitle={t("exportImportDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={handleExport}
-        />
-
-        <IconCard
-          icon={
-            <View className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900 items-center justify-center">
-              <Upload size={20} color="#F59E0B" />
-            </View>
-          }
-          title={importing ? t("importing") : t("importData")}
-          subtitle={t("importDesc")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => setShowImportConfirm(true)}
+          onPress={() => router.push("/(tabs)/settings/export-import")}
         />
       </View>
 
@@ -543,16 +479,6 @@ export default function SettingsScreen() {
       message={t("newWeddingConfirm", { count: registry?.weddings.length ?? 0 })}
       onConfirm={doCreateWedding}
       onCancel={() => setShowCreateConfirm(false)}
-    />
-
-    <ConfirmSheet
-      visible={showImportConfirm}
-      title={t("importConfirmTitle")}
-      message={t("importConfirmMsg")}
-      confirmLabel={t("import")}
-      destructive
-      onConfirm={doImport}
-      onCancel={() => setShowImportConfirm(false)}
     />
 
     <ConfirmSheet

@@ -6,21 +6,25 @@ import {
   Pressable,
   TextInput,
   Share,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Globe, Clock, MapPin } from "lucide-react-native";
+import { Plus, Trash2, Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { TimelineItem } from "@/components/TimelineItem";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
 import { recalculateDueDates } from "@/lib/planning";
 import { rescheduleAllNotifications } from "@/lib/notifications";
+import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
 import type { FaqItem } from "@/lib/public-page";
+import { IconCard } from "@/components/IconCard";
 import {
   SectionTitle,
   FormCard,
@@ -148,6 +152,46 @@ export default function PublicPageScreen() {
     return groups;
   }, [publicDayOfItems, weddingDate]);
   const isMultiDay = Object.keys(groupedPreview).length > 1;
+
+  // RSVP
+  const guestCount = useGuestsStore((s) => s.guests.length);
+  const [publishingRoster, setPublishingRoster] = useState(false);
+  const [syncingRsvp, setSyncingRsvp] = useState(false);
+
+  const handlePublishRoster = useCallback(async () => {
+    const password = activeEntry?.seedPhrase;
+    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    if (!password || !serverUrl) return;
+    setPublishingRoster(true);
+    try {
+      const authToken = await deriveAuthToken(password);
+      const userId = authToken.slice(0, 16);
+      await pushRsvpRoster({ serverUrl, authToken, userId });
+      Alert.alert(t("publishRosterSuccess"));
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setPublishingRoster(false);
+    }
+  }, [activeEntry, t]);
+
+  const handleSyncRsvp = useCallback(async () => {
+    const password = activeEntry?.seedPhrase;
+    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    if (!password || !serverUrl) return;
+    setSyncingRsvp(true);
+    try {
+      const authToken = await deriveAuthToken(password);
+      const userId = authToken.slice(0, 16);
+      const submissions = await fetchRsvpInbox({ serverUrl, authToken, userId });
+      const count = applyRsvpSubmissions(submissions);
+      Alert.alert(count > 0 ? t("syncRsvpSuccess", { count }) : t("syncRsvpNone"));
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setSyncingRsvp(false);
+    }
+  }, [activeEntry, t]);
 
   // Share
   const handleShare = useCallback(async () => {
@@ -277,9 +321,80 @@ export default function PublicPageScreen() {
         )}
       </View>
 
-      {/* Share */}
+      {/* RSVP online */}
+      <View className="px-4">
+        <SectionTitle>{t("rsvpSection")}</SectionTitle>
+        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+          {activeEntry?.seedPhrase ? t("rsvpSectionDesc") : t("syncRequiredRsvp")}
+        </Text>
+        {activeEntry?.seedPhrase ? (
+          <View className="gap-2">
+            <Text className="text-xs text-gray-400 mb-1">
+              {t("rsvpCount", { count: guestCount })}
+            </Text>
+            <Pressable
+              onPress={publishingRoster ? undefined : handlePublishRoster}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+            >
+              <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+                <Send size={18} color="#EC4899" />
+              </View>
+              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
+                {publishingRoster ? "..." : t("publishRoster")}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={syncingRsvp ? undefined : handleSyncRsvp}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+            >
+              <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
+                <RefreshCw size={18} color="#10B981" />
+              </View>
+              <Text className="text-base font-medium text-gray-900 dark:text-white flex-1">
+                {syncingRsvp ? "..." : t("syncRsvp")}
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
+            <Text className="text-sm text-gray-400">{t("syncRequiredRsvp")}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Gift registry */}
+      <View className="px-4 mt-2">
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center">
+              <Gift size={20} color="#EC4899" />
+            </View>
+          }
+          title={t("giftRegistry")}
+          subtitle={t("giftRegistryDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/(tabs)/settings/gifts")}
+        />
+      </View>
+
+      {/* Preview + Share */}
       {activeEntry?.seedPhrase && (
-        <View className="px-4 mt-2">
+        <View className="px-4 mt-2 gap-2">
+          <Pressable
+            onPress={async () => {
+              try {
+                const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+                const userId = authToken.slice(0, 16);
+                router.push(`/wedding/${userId}` as any);
+              } catch {}
+            }}
+            className="bg-white dark:bg-gray-900 rounded-2xl py-3.5 flex-row items-center justify-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+          >
+            <Eye size={18} color="#6B7280" />
+            <Text className="text-gray-600 dark:text-gray-300 font-medium text-base ml-2">
+              {t("previewPage")}
+            </Text>
+          </Pressable>
           <Pressable
             onPress={handleShare}
             className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"

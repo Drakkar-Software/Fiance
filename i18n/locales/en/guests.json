@@ -109,5 +109,10 @@
   "deleteAccommodation": "Delete this accommodation?",
   "deleteAccommodationMsg": "Assigned guests will be unassigned.",
   "exportPdf": "Export as PDF",
-  "guestList": "Guest list"
+  "guestList": "Guest list",
+  "rsvpLink": "RSVP link",
+  "accommodationNameRequired": "Name is required",
+  "guestsScreen": "Guests",
+  "guestDetailScreen": "Guest",
+  "tablesPlanScreen": "Seating plan"
 }
