@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, Share, X, Clock, Circle } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, Send, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
@@ -11,6 +11,9 @@ import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
+import { deriveAuthToken } from "@/lib/identity";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { IconCard } from "@/components/IconCard";
@@ -98,6 +101,54 @@ export default function DashboardScreen() {
     criticalUnstarted.length > 0;
 
   const { canInstall, install, isIosSafari, dismissIosBanner } = usePwaInstall();
+
+  // RSVP sync
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
+  const syncEnabled = !!activeEntry?.seedPhrase;
+  const [publishing, setPublishing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const getRsvpConfig = useCallback(async () => {
+    const password = activeEntry?.seedPhrase;
+    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    if (!password || !serverUrl) return null;
+    const authToken = await deriveAuthToken(password);
+    return { serverUrl, authToken, userId: authToken.slice(0, 16) };
+  }, [activeEntry?.seedPhrase, activeEntry?.serverUrl]);
+
+  const handlePublish = useCallback(async () => {
+    setPublishing(true);
+    try {
+      const config = await getRsvpConfig();
+      if (!config) return;
+      await pushRsvpRoster(config);
+      Alert.alert(t("publishSuccess"));
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setPublishing(false);
+    }
+  }, [getRsvpConfig, t]);
+
+  const handleSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const config = await getRsvpConfig();
+      if (!config) return;
+      const submissions = await fetchRsvpInbox(config);
+      const count = applyRsvpSubmissions(submissions);
+      if (count > 0) {
+        Alert.alert(t("syncSuccess", { count }));
+      } else {
+        Alert.alert(t("syncNone"));
+      }
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setSyncing(false);
+    }
+  }, [getRsvpConfig, t]);
 
   return (
     <ScrollView
@@ -280,15 +331,15 @@ export default function DashboardScreen() {
                 <Users size={16} color="#E8B4B8" />
               </View>
             }
-            label="Invités"
+            label={t("guests")}
             value={counts.accepted}
             total={counts.total}
-            footer="confirmés"
+            footer={t("confirmed")}
             alert={
               counts.no_table_count > 0 ? (
                 <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
                   <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
-                    {counts.no_table_count} sans table
+                    {t("noTable", { count: counts.no_table_count })}
                   </Text>
                 </View>
               ) : undefined
@@ -301,21 +352,94 @@ export default function DashboardScreen() {
                 <Calendar size={16} color="#C9956B" />
               </View>
             }
-            label="Planning"
+            label={t("planning")}
             value={completionRate}
             unit="%"
-            footer="terminé"
+            footer={t("completed")}
             alert={
               overdueTasks.length > 0 ? (
                 <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
                   <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
-                    {overdueTasks.length} en retard
+                    {t("overdue", { count: overdueTasks.length })}
                   </Text>
                 </View>
               ) : undefined
             }
             onPress={() => router.push("/(tabs)/planning")}
           />
+        </View>
+
+        {/* RSVP Online section */}
+        <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800">
+          <View className="flex-row items-center mb-2">
+            <View className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900 items-center justify-center mr-2.5">
+              <Send size={16} color="#3B82F6" />
+            </View>
+            <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              {t("rsvpOnline")}
+            </Text>
+          </View>
+          <Text className="text-xs text-gray-400 leading-4 mb-3">
+            {t("rsvpOnlineDesc")}
+          </Text>
+
+          {/* Stats row */}
+          {counts.total > 0 && (
+            <View className="flex-row gap-2 mb-3">
+              {counts.pending > 0 && (
+                <View className="bg-amber-50 dark:bg-amber-950 px-2.5 py-1 rounded-lg">
+                  <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
+                    {t("rsvpPending", { count: counts.pending })}
+                  </Text>
+                </View>
+              )}
+              <View className="bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg">
+                <Text className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  {t("rsvpResponseRate", { rate: counts.response_rate })}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {/* Actions */}
+          {syncEnabled ? (
+            <View className="flex-row gap-2">
+              <Pressable
+                onPress={handlePublish}
+                disabled={publishing}
+                className="flex-1 flex-row items-center justify-center gap-1.5 bg-blue-500 py-2.5 rounded-xl active:bg-blue-600"
+              >
+                {publishing ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <>
+                    <Send size={14} color="#fff" />
+                    <Text className="text-sm font-semibold text-white">{t("publishRoster")}</Text>
+                  </>
+                )}
+              </Pressable>
+              <Pressable
+                onPress={handleSync}
+                disabled={syncing}
+                className="flex-1 flex-row items-center justify-center gap-1.5 bg-emerald-500 py-2.5 rounded-xl active:bg-emerald-600"
+              >
+                {syncing ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <>
+                    <RefreshCw size={14} color="#fff" />
+                    <Text className="text-sm font-semibold text-white">{t("syncResponses")}</Text>
+                  </>
+                )}
+              </Pressable>
+            </View>
+          ) : (
+            <View className="bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-xl">
+              <Text className="text-xs text-gray-400 text-center">
+                {t("syncRequired")}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Prestataires summary */}

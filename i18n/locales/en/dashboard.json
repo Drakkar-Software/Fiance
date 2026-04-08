@@ -38,5 +38,17 @@
   "dietChart": "Dietary requirements",
   "inviteTypeChart": "Invitation types",
   "thankYouPending_one": "{{count}} thank-you to send",
-  "thankYouPending_other": "{{count}} thank-yous to send"
+  "thankYouPending_other": "{{count}} thank-yous to send",
+  "rsvpOnline": "Online RSVP",
+  "rsvpOnlineDesc": "Publish the list so your guests can confirm their attendance from their phone. Then sync to retrieve their responses.",
+  "rsvpPending_one": "{{count}} awaiting response",
+  "rsvpPending_other": "{{count}} awaiting response",
+  "rsvpResponseRate": "{{rate}}% response rate",
+  "publishRoster": "Publish",
+  "syncResponses": "Sync",
+  "publishSuccess": "Guest list published successfully!",
+  "syncSuccess_one": "{{count}} response retrieved",
+  "syncSuccess_other": "{{count}} responses retrieved",
+  "syncNone": "No new responses",
+  "syncRequired": "Enable sync in settings to use online RSVP"
 }

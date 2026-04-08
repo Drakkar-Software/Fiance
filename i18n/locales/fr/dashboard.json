@@ -38,5 +38,17 @@
   "dietChart": "Régimes alimentaires",
   "inviteTypeChart": "Types d'invitation",
   "thankYouPending_one": "{{count}} remerciement à envoyer",
-  "thankYouPending_other": "{{count}} remerciements à envoyer"
+  "thankYouPending_other": "{{count}} remerciements à envoyer",
+  "rsvpOnline": "RSVP en ligne",
+  "rsvpOnlineDesc": "Publiez la liste pour que vos invités puissent confirmer leur présence depuis leur téléphone. Synchronisez ensuite pour récupérer leurs réponses.",
+  "rsvpPending_one": "{{count}} en attente de réponse",
+  "rsvpPending_other": "{{count}} en attente de réponse",
+  "rsvpResponseRate": "{{rate}}% de réponses",
+  "publishRoster": "Publier",
+  "syncResponses": "Synchroniser",
+  "publishSuccess": "Liste publiée avec succès !",
+  "syncSuccess_one": "{{count}} réponse récupérée",
+  "syncSuccess_other": "{{count}} réponses récupérées",
+  "syncNone": "Aucune nouvelle réponse",
+  "syncRequired": "Activez la synchronisation dans les paramètres pour utiliser le RSVP en ligne"
 }
