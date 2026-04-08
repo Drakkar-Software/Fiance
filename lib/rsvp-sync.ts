@@ -145,6 +145,7 @@ export async function fetchRsvpRoster(
 
 /**
  * Submit an RSVP response (from the public page, no auth).
+ * Uses SyncManager.update() which handles pull→merge→push with conflict retry.
  */
 export async function submitRsvp(
   serverUrl: string,
@@ -153,7 +154,20 @@ export async function submitRsvp(
 ): Promise<boolean> {
   try {
     const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
-    await client.push(`/push/rsvp-inbox/${userId}`, submission as unknown as Record<string, unknown>, null);
+    const syncManager = new SyncManager({
+      client,
+      pullPath: `/pull/rsvp-inbox/${userId}`,
+      pushPath: `/push/rsvp-inbox/${userId}`,
+    });
+    await syncManager.update((current) => {
+      const submissions = Array.isArray(current.submissions)
+        ? [...current.submissions] as RsvpSubmission[]
+        : [];
+      const idx = submissions.findIndex((s) => s.rsvpToken === submission.rsvpToken);
+      if (idx >= 0) submissions[idx] = submission;
+      else submissions.push(submission);
+      return { submissions };
+    });
     return true;
   } catch {
     return false;
@@ -173,14 +187,10 @@ export async function fetchRsvpInbox(config: {
       baseUrl: config.serverUrl,
       auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
     });
-    const syncManager = new SyncManager({
-      client,
-      pullPath: `/pull/rsvp-inbox/${config.userId}`,
-      pushPath: `/push/rsvp-inbox/${config.userId}`,
-    });
-    const data = await syncManager.pull();
-    if (!data) return [];
-    return Array.isArray(data) ? data : [data as RsvpSubmission];
+    const result = await client.pull(`/pull/rsvp-inbox/${config.userId}`);
+    const doc = result.data as { submissions?: unknown[] } | null;
+    if (!doc || !Array.isArray(doc.submissions)) return [];
+    return doc.submissions as RsvpSubmission[];
   } catch {
     return [];
   }

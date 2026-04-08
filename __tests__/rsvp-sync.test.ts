@@ -10,11 +10,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // vi.mock is hoisted above variable declarations, so mocks must be defined
 // with vi.hoisted() to be available inside the mock factory.
 
-const { mockPull, mockPush, mockSyncManagerPull, mockSyncManagerPush } = vi.hoisted(() => ({
+const { mockPull, mockPush, mockSyncManagerPull, mockSyncManagerPush, mockSyncManagerUpdate } = vi.hoisted(() => ({
   mockPull: vi.fn(),
   mockPush: vi.fn(),
   mockSyncManagerPull: vi.fn(),
   mockSyncManagerPush: vi.fn(),
+  mockSyncManagerUpdate: vi.fn(),
 }));
 
 vi.mock("@drakkar.software/starfish-client", () => ({
@@ -26,6 +27,7 @@ vi.mock("@drakkar.software/starfish-client", () => ({
   SyncManager: vi.fn(function () {
     this.pull = mockSyncManagerPull;
     this.push = mockSyncManagerPush;
+    this.update = mockSyncManagerUpdate;
   }),
   createDedupFetch: vi.fn().mockReturnValue(undefined),
 }));
@@ -152,51 +154,41 @@ describe("submitRsvp", () => {
   };
 
   beforeEach(() => {
-    mockPush.mockReset();
-    mockSyncManagerPush.mockReset();
+    mockSyncManagerUpdate.mockReset();
   });
 
-  it("uses client.push() with the correct path", async () => {
-    mockPush.mockResolvedValue(undefined);
-    await submitRsvp(SERVER, USER_ID, submission);
-    expect(mockPush).toHaveBeenCalledWith(
-      `/push/rsvp-inbox/${USER_ID}`,
-      expect.objectContaining({ rsvpToken: "token-alice" }),
-      null
-    );
-  });
-
-  it("does NOT use SyncManager.push() (regression: would fail on fresh instance)", async () => {
-    mockPush.mockResolvedValue(undefined);
-    await submitRsvp(SERVER, USER_ID, submission);
-    expect(mockSyncManagerPush).not.toHaveBeenCalled();
-  });
-
-  it("returns true on success", async () => {
-    mockPush.mockResolvedValue(undefined);
+  it("uses SyncManager.update() to submit", async () => {
+    mockSyncManagerUpdate.mockResolvedValue({ hash: "h2", timestamp: 2 });
     const result = await submitRsvp(SERVER, USER_ID, submission);
     expect(result).toBe(true);
+    expect(mockSyncManagerUpdate).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  it("returns false on network error", async () => {
-    mockPush.mockRejectedValue(new Error("Network error"));
+  it("update modifier merges submission into existing array", async () => {
+    mockSyncManagerUpdate.mockImplementation(async (modifier: (c: Record<string, unknown>) => Record<string, unknown>) => {
+      const result = modifier({ submissions: [{ rsvpToken: "token-bob", rsvpStatus: "DECLINED", submittedAt: "old" }] });
+      expect(result.submissions).toHaveLength(2);
+      expect((result.submissions as any[])[0].rsvpToken).toBe("token-bob");
+      expect((result.submissions as any[])[1].rsvpToken).toBe("token-alice");
+      return { hash: "h", timestamp: 1 };
+    });
+    await submitRsvp(SERVER, USER_ID, submission);
+  });
+
+  it("update modifier replaces existing submission for same token", async () => {
+    mockSyncManagerUpdate.mockImplementation(async (modifier: (c: Record<string, unknown>) => Record<string, unknown>) => {
+      const result = modifier({ submissions: [{ rsvpToken: "token-alice", rsvpStatus: "MAYBE", submittedAt: "old" }] });
+      expect(result.submissions).toHaveLength(1);
+      expect((result.submissions as any[])[0].rsvpStatus).toBe("ACCEPTED");
+      return { hash: "h", timestamp: 1 };
+    });
+    await submitRsvp(SERVER, USER_ID, submission);
+  });
+
+  it("returns false on error", async () => {
+    mockSyncManagerUpdate.mockRejectedValue(new Error("Network error"));
     const result = await submitRsvp(SERVER, USER_ID, submission);
     expect(result).toBe(false);
-  });
-
-  it("sends all submission fields to the server", async () => {
-    mockPush.mockResolvedValue(undefined);
-    await submitRsvp(SERVER, USER_ID, submission);
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        rsvpToken: "token-alice",
-        rsvpStatus: "ACCEPTED",
-        diet: "VEGETARIAN",
-        submittedAt: "2026-04-08T10:00:00.000Z",
-      }),
-      null
-    );
   });
 });
 
