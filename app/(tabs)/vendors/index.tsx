@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { GitCompare, Briefcase, Ellipsis } from "lucide-react-native";
+import { Briefcase, Ellipsis } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS, VENDOR_TYPE_ICONS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -61,20 +61,6 @@ export default function VendorsListScreen() {
       <View className="mt-3">
         <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
       </View>
-
-      {/* Compare button for caterers */}
-      {activeType === "CATERER" &&
-        vendors.filter((v) => v.type === "CATERER").length >= 2 && (
-          <Pressable
-            onPress={() => router.push("/(tabs)/vendors/compare")}
-            className="mx-4 mb-3 bg-accent-blush dark:bg-primary-900 rounded-xl p-3 flex-row items-center justify-center border border-primary-200 dark:border-primary-800"
-          >
-            <GitCompare size={18} color="#EC4899" />
-            <Text className="text-primary-600 dark:text-primary-300 font-semibold text-sm ml-2">
-              {t("compareCaterers")}
-            </Text>
-          </Pressable>
-        )}
 
       {/* Vendor list */}
       {filteredVendors.length === 0 ? (

@@ -3,7 +3,7 @@
  * polls inbox for guest responses, and merges them into the store.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import * as Crypto from "expo-crypto";
@@ -23,7 +23,7 @@ export function useGuestRsvpUrl(
   guestId: string | undefined,
   activeEntry: WeddingRegistryEntry | undefined,
 ): string | null {
-  const urlRef = useRef<string | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!guestId || !activeEntry?.seedPhrase) return;
@@ -39,12 +39,12 @@ export function useGuestRsvpUrl(
         token = Crypto.randomUUID();
         updateGuest(guestId, { rsvpToken: token });
       }
-      if (!cancelled) urlRef.current = `${baseUrl}?token=${token}`;
+      if (!cancelled) setUrl(`${baseUrl}?token=${token}`);
     })();
     return () => { cancelled = true; };
   }, [guestId, activeEntry?.seedPhrase]);
 
-  return urlRef.current;
+  return url;
 }
 
 export interface RsvpRosterEntry {
