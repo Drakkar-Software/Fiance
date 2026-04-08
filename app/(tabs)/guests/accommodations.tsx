@@ -132,7 +132,7 @@ export default function AccommodationsScreen() {
                   className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
                 >
                   <Text className="text-white font-semibold text-sm">
-                    {t("createTable")}
+                    {t("common:create")}
                   </Text>
                 </Pressable>
                 <Pressable

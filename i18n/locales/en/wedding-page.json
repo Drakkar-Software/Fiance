@@ -11,6 +11,7 @@
   "until": "until {{time}}",
   "rsvp": "Confirm attendance",
   "rsvpSearch": "Search your name...",
+  "rsvpChange": "Change",
   "rsvpAttendance": "Will you attend?",
   "rsvpYes": "Yes",
   "rsvpNo": "No",

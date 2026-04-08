@@ -352,7 +352,7 @@ export default function WeddingPublicPage() {
                         {selectedGuest.firstName} {selectedGuest.lastName}
                       </Text>
                       <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
-                        <Text className="text-sm text-gray-400">{t("rsvpSearch")}</Text>
+                        <Text className="text-sm text-gray-400">{t("rsvpChange")}</Text>
                       </Pressable>
                     </View>
 

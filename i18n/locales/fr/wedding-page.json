@@ -11,6 +11,7 @@
   "until": "jusqu'à {{time}}",
   "rsvp": "Confirmer ma présence",
   "rsvpSearch": "Rechercher votre nom...",
+  "rsvpChange": "Changer",
   "rsvpAttendance": "Serez-vous présent(e) ?",
   "rsvpYes": "Oui",
   "rsvpNo": "Non",
