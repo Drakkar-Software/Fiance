@@ -144,31 +144,8 @@ export default function ExportImportScreen() {
         className="flex-1 bg-gray-50 dark:bg-gray-950"
         showsVerticalScrollIndicator={false}
       >
-        {/* JSON Backup */}
-        <View className="px-4 pt-4">
-          <SectionTitle>{t("backupSection")}</SectionTitle>
-          <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
-            {t("backupSectionDesc")}
-          </Text>
-          <FormCard>
-            <ExportRow
-              icon={<Download size={18} color="#3B82F6" />}
-              label={exporting ? t("exporting") : t("exportData")}
-              sublabel={t("exportDesc")}
-              onPress={handleExportJson}
-            />
-            <ExportRow
-              icon={<Upload size={18} color="#F59E0B" />}
-              label={importing ? t("importing") : t("importData")}
-              sublabel={t("importDesc")}
-              onPress={() => setShowImportConfirm(true)}
-              last
-            />
-          </FormCard>
-        </View>
-
         {/* PDF exports */}
-        <View className="px-4">
+        <View className="px-4 pt-4">
           <SectionTitle>{t("pdfSection")}</SectionTitle>
           <FormCard>
             <ExportRow
@@ -208,6 +185,29 @@ export default function ExportImportScreen() {
               icon={<Table2 size={18} color="#10B981" />}
               label={t("exportPaymentsCsv")}
               onPress={() => handleExportCsv("payments")}
+              last
+            />
+          </FormCard>
+        </View>
+
+        {/* JSON Backup */}
+        <View className="px-4">
+          <SectionTitle>{t("backupSection")}</SectionTitle>
+          <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+            {t("backupSectionDesc")}
+          </Text>
+          <FormCard>
+            <ExportRow
+              icon={<Download size={18} color="#3B82F6" />}
+              label={exporting ? t("exporting") : t("exportData")}
+              sublabel={t("exportDesc")}
+              onPress={handleExportJson}
+            />
+            <ExportRow
+              icon={<Upload size={18} color="#F59E0B" />}
+              label={importing ? t("importing") : t("importData")}
+              sublabel={t("importDesc")}
+              onPress={() => setShowImportConfirm(true)}
               last
             />
           </FormCard>
