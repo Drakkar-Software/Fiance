@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /wedding/
+
+Disallow: /_expo/
+Disallow: /assets/
+
+Sitemap: https://wedding-os.pages.dev/sitemap.xml

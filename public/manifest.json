@@ -1,14 +1,19 @@
 {
   "id": "/",
-  "name": "WeddingOS",
-  "short_name": "WOS",
-  "description": "Organisez votre mariage en toute simplicité",
+  "name": "WeddingOS — Organisez votre mariage",
+  "short_name": "WeddingOS",
+  "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#EC4899",
   "background_color": "#ffffff",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["lifestyle", "productivity", "utilities"],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/assets/favicon.png",
@@ -31,6 +36,29 @@
       "src": "/assets/icon.png",
       "sizes": "1024x1024",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Budget",
+      "short_name": "Budget",
+      "url": "/(tabs)/budget",
+      "description": "Gérer le budget du mariage",
+      "icons": [{ "src": "/assets/favicon.png", "sizes": "48x48" }]
+    },
+    {
+      "name": "Invités",
+      "short_name": "Invités",
+      "url": "/(tabs)/invites",
+      "description": "Gérer la liste des invités",
+      "icons": [{ "src": "/assets/favicon.png", "sizes": "48x48" }]
+    },
+    {
+      "name": "Planning",
+      "short_name": "Planning",
+      "url": "/(tabs)/planning",
+      "description": "Voir le planning du mariage",
+      "icons": [{ "src": "/assets/favicon.png", "sizes": "48x48" }]
     }
   ]
 }
