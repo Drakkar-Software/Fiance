@@ -346,8 +346,8 @@ export default function WeddingPublicPage() {
           </View>
         )}
 
-        {/* RSVP */}
-        {roster && roster.length > 0 && (
+        {/* RSVP — only shown when guest is pre-selected via token */}
+        {roster && roster.length > 0 && selectedGuest && (
           <View className="mt-4 px-4 pb-6">
             <View className="flex-row items-center gap-3 mb-6">
               <View className="h-px flex-1 bg-accent-rose-light" />
