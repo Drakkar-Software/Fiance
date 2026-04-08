@@ -13,6 +13,7 @@ import m0006 from "./migrations/0006_is_public_day_of.sql";
 import m0007 from "./migrations/0007_wedding_description_faq.sql";
 import m0008 from "./migrations/0008_day_of_item_date.sql";
 import m0009 from "./migrations/0009_new_tables_and_columns.sql";
+import m0010 from "./migrations/0010_children_count.sql";
 
 type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
@@ -91,6 +92,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
           ["0007_wedding_description_faq", m0007],
           ["0008_day_of_item_date", m0008],
           ["0009_new_tables_and_columns", m0009],
+          ["0010_children_count", m0010],
         ];
 
         // Detect legacy DB (existing data but no migration tracking yet)

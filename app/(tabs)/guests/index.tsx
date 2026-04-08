@@ -94,7 +94,7 @@ function GuestCard({ guest }: { guest: Guest }) {
           </Text>
           <Text className="text-sm text-gray-400 mt-0.5">
             {t(INVITATION_TYPE_LABELS[guest.invitationType as InvitationType])}
-            {guest.isChild ? " · " + t("child") : ""}
+            {(guest.childrenCount ?? 0) > 0 ? ` · ${guest.childrenCount} ${t("child")}` : ""}
             {guest.diet && guest.diet !== "STANDARD"
               ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
               : ""}

@@ -37,7 +37,7 @@ export const guests = sqliteTable("guests", {
   rsvpStatus: text("rsvp_status").default("PENDING"), // PENDING | ACCEPTED | DECLINED | MAYBE
   rsvpDate: text("rsvp_date"),
   isSleeping: integer("is_sleeping", { mode: "boolean" }).default(false),
-  isChild: integer("is_child", { mode: "boolean" }).default(false),
+  childrenCount: integer("children_count").default(0),
   diet: text("diet").default("STANDARD"), // STANDARD | VEGETARIAN | VEGAN | HALAL | KOSHER | ALLERGY
   dietNotes: text("diet_notes"),
   groupId: text("group_id").references(() => guestGroups.id),

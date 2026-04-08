@@ -58,6 +58,7 @@
   "invitation": "Invitation",
   "invitationType": "Type d'invitation",
   "childLabel": "Enfant (< 12 ans)",
+  "childrenLabel": "Enfants accompagnants",
   "table": "Table",
   "unassigned": "Non assigné",
   "dietLabel": "Régime alimentaire",

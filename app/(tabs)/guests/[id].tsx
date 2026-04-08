@@ -92,7 +92,7 @@ export default function GuestDetailScreen() {
   const [rsvpStatus, setRsvpStatus] = useState<RsvpStatus>(
     (existing?.rsvpStatus as RsvpStatus) || "PENDING"
   );
-  const [isChild, setIsChild] = useState(existing?.isChild || false);
+  const [childrenCount, setChildrenCount] = useState(existing?.childrenCount ?? 0);
   const [diet, setDiet] = useState<Diet>((existing?.diet as Diet) || "STANDARD");
   const [dietNotes, setDietNotes] = useState(existing?.dietNotes || "");
   const [email, setEmail] = useState(existing?.email || "");
@@ -131,7 +131,7 @@ export default function GuestDetailScreen() {
         rsvpStatus !== "PENDING" && rsvpStatus !== existing?.rsvpStatus
           ? now
           : existing?.rsvpDate || null,
-      isChild,
+      childrenCount,
       diet,
       dietNotes: dietNotes || null,
       email: email || null,
@@ -249,6 +249,24 @@ export default function GuestDetailScreen() {
               </>
             )}
           </Pressable>
+          <View className="flex-row items-center justify-between py-3 border-b border-gray-50 dark:border-gray-800">
+            <Text className="text-base text-gray-700 dark:text-gray-300">{t("childrenLabel")}</Text>
+            <View className="flex-row items-center gap-3">
+              <Pressable
+                onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+              >
+                <Text className="text-lg text-gray-500">−</Text>
+              </Pressable>
+              <Text className="text-base font-semibold text-gray-900 dark:text-white w-6 text-center">{childrenCount}</Text>
+              <Pressable
+                onPress={() => setChildrenCount(childrenCount + 1)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+              >
+                <Text className="text-lg text-gray-500">+</Text>
+              </Pressable>
+            </View>
+          </View>
         </FormCard>
 
         {/* Invitation */}
@@ -263,12 +281,11 @@ export default function GuestDetailScreen() {
             onChange={setInvitationType}
             labels={Object.fromEntries(INVITATION_TYPES.map((it) => [it, t(INVITATION_TYPE_LABELS[it])])) as Record<InvitationType, string>}
           />
-
           <View className="mt-3">
             <ToggleRow
-              label={t("childLabel")}
-              value={isChild}
-              onToggle={() => setIsChild(!isChild)}
+              label={t("sleepsOnSite")}
+              value={isSleeping}
+              onToggle={() => setIsSleeping(!isSleeping)}
             />
           </View>
         </FormCard>
@@ -335,7 +352,7 @@ export default function GuestDetailScreen() {
 
         {/* Diet */}
         <SectionTitle>{t("dietLabel")}</SectionTitle>
-        <FormCard>
+        <View className="mb-5">
           <ChipSelect
             options={DIETS}
             value={diet}
@@ -344,7 +361,7 @@ export default function GuestDetailScreen() {
           />
           {(diet === "ALLERGY" || diet === "VEGETARIAN" || diet === "VEGAN") && (
             <TextInput
-              className="text-base text-gray-900 dark:text-white border-t border-gray-50 dark:border-gray-800 pt-3 mt-3"
+              className="text-base text-gray-900 dark:text-white pt-3 mt-3"
               placeholder={t("dietDetails")}
               placeholderTextColor="#D0D0D8"
               value={dietNotes}
@@ -352,7 +369,7 @@ export default function GuestDetailScreen() {
               multiline
             />
           )}
-        </FormCard>
+        </View>
 
         {/* Post-wedding: thank-you tracking */}
         {isPostWedding && (
