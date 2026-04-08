@@ -77,6 +77,7 @@ function PreparationView() {
   const setCategories = usePlanningStore((s) => s.setCategories);
   const updateTask = usePlanningStore((s) => s.updateTask);
   const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
+  const vendors = useVendorsStore((s) => s.vendors);
 
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [filter, setFilter] = useState<FilterKey>("ALL");
@@ -258,6 +259,7 @@ function PreparationView() {
                   task={task}
                   categoryName={categories.find((c) => c.id === task.categoryId)?.name}
                   categoryColor={categories.find((c) => c.id === task.categoryId)?.color}
+                  vendorName={task.vendorId ? vendors.find((v) => v.id === task.vendorId)?.name : undefined}
                   onPress={() =>
                     router.push({ pathname: "/(tabs)/planning/[id]", params: { id: task.id } })
                   }
@@ -633,12 +635,14 @@ function TaskCard({
   task,
   categoryName,
   categoryColor,
+  vendorName,
   onPress,
   onToggleDone,
 }: {
   task: any;
   categoryName?: string;
   categoryColor?: string | null;
+  vendorName?: string;
   onPress: () => void;
   onToggleDone: () => void;
 }) {
@@ -694,6 +698,11 @@ function TaskCard({
               <PriorityBadge priority={task.priority as Priority} />
             )}
             {task.dueDate && <DeadlineChip date={task.dueDate} />}
+            {vendorName && (
+              <View className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900">
+                <Text className="text-xs text-primary-500 font-medium">{vendorName}</Text>
+              </View>
+            )}
             {task.assignee && (
               <View className="flex-row items-center gap-1">
                 <User size={11} color="#9CA3AF" />
