@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, BedDouble } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
@@ -213,6 +213,17 @@ export default function SettingsScreen() {
           subtitle={t("publicPageDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/(tabs)/settings/public-page")}
+        />
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <BedDouble size={20} color="#EC4899" />
+            </View>
+          }
+          title={t("accommodationsTitle")}
+          subtitle={t("accommodationsDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/(tabs)/guests/accommodations")}
         />
       </View>
 
