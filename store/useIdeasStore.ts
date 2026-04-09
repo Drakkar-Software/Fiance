@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import type { Idea, IdeaCollection } from "@/db/schema";
 import type { IdeaCategory } from "@/db/types";
-import { getDatabase } from "@/db/provider";
-import {
-  persistIdea, updateIdeaDb, deleteIdeaDb,
-  persistIdeaCollection, updateIdeaCollectionDb, deleteIdeaCollectionDb,
-} from "@/lib/persistence";
+import { getStorage } from "@/lib/kv-storage";
+import { persistIdeas, persistIdeaCollections } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
 interface IdeasState {
@@ -34,8 +31,8 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
   setCollections: (collections) => set({ collections }),
   addIdea: (idea) => {
     set((state) => ({ ideas: [...state.ideas, idea] }));
-    const db = getDatabase();
-    if (db) persistIdea(db, idea);
+    const storage = getStorage();
+    if (storage) persistIdeas(storage);
     notifySync();
   },
   updateIdea: (id, updates) => {
@@ -45,20 +42,20 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
         i.id === id ? { ...i, ...updatedFields } : i
       ),
     }));
-    const db = getDatabase();
-    if (db) updateIdeaDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistIdeas(storage);
     notifySync();
   },
   removeIdea: (id) => {
     set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteIdeaDb(db, id);
+    const storage = getStorage();
+    if (storage) persistIdeas(storage);
     notifySync();
   },
   addCollection: (collection) => {
     set((state) => ({ collections: [...state.collections, collection] }));
-    const db = getDatabase();
-    if (db) persistIdeaCollection(db, collection);
+    const storage = getStorage();
+    if (storage) persistIdeaCollections(storage);
     notifySync();
   },
   updateCollection: (id, updates) => {
@@ -68,8 +65,8 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
         c.id === id ? { ...c, ...updatedFields } : c
       ),
     }));
-    const db = getDatabase();
-    if (db) updateIdeaCollectionDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistIdeaCollections(storage);
     notifySync();
   },
   removeCollection: (id) => {
@@ -79,8 +76,11 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
         i.collectionId === id ? { ...i, collectionId: null } : i
       ),
     }));
-    const db = getDatabase();
-    if (db) deleteIdeaCollectionDb(db, id);
+    const storage = getStorage();
+    if (storage) {
+      persistIdeaCollections(storage);
+      persistIdeas(storage);
+    }
     notifySync();
   },
   getIdeasByCollection: (collectionId) =>

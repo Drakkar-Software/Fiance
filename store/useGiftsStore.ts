@@ -1,11 +1,7 @@
 import { create } from "zustand";
 import type { Gift } from "@/db/schema";
-import { getDatabase } from "@/db/provider";
-import {
-  persistGift,
-  updateGiftDb,
-  deleteGiftDb,
-} from "@/lib/persistence";
+import { getStorage } from "@/lib/kv-storage";
+import { persistGifts } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
 interface GiftsState {
@@ -24,8 +20,8 @@ export const useGiftsStore = create<GiftsState>((set, get) => ({
   setGifts: (gifts) => set({ gifts }),
   addGift: (gift) => {
     set((state) => ({ gifts: [...state.gifts, gift] }));
-    const db = getDatabase();
-    if (db) persistGift(db, gift);
+    const storage = getStorage();
+    if (storage) persistGifts(storage);
     notifySync();
   },
   updateGift: (id, updates) => {
@@ -36,24 +32,27 @@ export const useGiftsStore = create<GiftsState>((set, get) => ({
           : g
       ),
     }));
-    const db = getDatabase();
-    if (db) updateGiftDb(db, id, { ...updates, updatedAt: new Date().toISOString() });
+    const storage = getStorage();
+    if (storage) persistGifts(storage);
     notifySync();
   },
   removeGift: (id) => {
     set((state) => ({ gifts: state.gifts.filter((g) => g.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteGiftDb(db, id);
+    const storage = getStorage();
+    if (storage) persistGifts(storage);
     notifySync();
   },
   markClaimed: (id, claimedByName) => {
     const now = new Date().toISOString();
-    const updates = { claimed: true, claimedByName, claimedAt: now, updatedAt: now };
     set((state) => ({
-      gifts: state.gifts.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+      gifts: state.gifts.map((g) =>
+        g.id === id
+          ? { ...g, claimed: true, claimedByName, claimedAt: now, updatedAt: now }
+          : g
+      ),
     }));
-    const db = getDatabase();
-    if (db) updateGiftDb(db, id, updates);
+    const storage = getStorage();
+    if (storage) persistGifts(storage);
     notifySync();
   },
   getUnclaimed: () => get().gifts.filter((g) => !g.claimed),

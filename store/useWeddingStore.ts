@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Wedding } from "@/db/schema";
-import { getDatabase } from "@/db/provider";
+import { getStorage } from "@/lib/kv-storage";
 import { persistWedding } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
@@ -32,10 +32,8 @@ export const useWeddingStore = create<WeddingState>((set) => ({
       };
       return { wedding: { ...base, ...updates, updatedAt: now } };
     });
-    // Write-through to SQLite (after state is committed)
-    const db = getDatabase();
-    if (db) persistWedding(db, { ...updates, updatedAt: now });
-    // Notify Starfish sync (reads committed state)
+    const storage = getStorage();
+    if (storage) persistWedding(storage);
     notifySync();
   },
 }));

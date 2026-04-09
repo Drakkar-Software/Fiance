@@ -1,12 +1,10 @@
 import { create } from "zustand";
 import type { Task, TaskCategory, AgendaEvent, DayOfItem } from "@/db/schema";
 import { addMonths, isBefore, differenceInDays } from "date-fns";
-import { getDatabase } from "@/db/provider";
+import { getStorage } from "@/lib/kv-storage";
 import {
-  persistTask, updateTaskDb, deleteTaskDb,
-  persistTaskCategory, updateTaskCategoryDb, deleteTaskCategoryDb,
-  persistAgendaEvent, updateAgendaEventDb, deleteAgendaEventDb,
-  persistDayOfItem, updateDayOfItemDb, deleteDayOfItemDb,
+  persistTasks, persistTaskCategories,
+  persistAgendaEvents, persistDayOfItems,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 import { onTaskMutation, onAgendaMutation } from "@/lib/notifications";
@@ -53,8 +51,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   setCategories: (categories) => set({ categories }),
   addTask: (task) => {
     set((state) => ({ tasks: [...state.tasks, task] }));
-    const db = getDatabase();
-    if (db) persistTask(db, task);
+    const storage = getStorage();
+    if (storage) persistTasks(storage);
     notifySync();
     if (useSettingsStore.getState().notificationsEnabled) onTaskMutation(task, "add");
   },
@@ -65,8 +63,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
         t.id === id ? { ...t, ...updatedFields } : t
       ),
     }));
-    const db = getDatabase();
-    if (db) updateTaskDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistTasks(storage);
     notifySync();
     const updated = get().tasks.find((t) => t.id === id);
     if (updated && useSettingsStore.getState().notificationsEnabled) onTaskMutation(updated, "update");
@@ -74,15 +72,15 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   removeTask: (id) => {
     const task = get().tasks.find((t) => t.id === id);
     set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteTaskDb(db, id);
+    const storage = getStorage();
+    if (storage) persistTasks(storage);
     notifySync();
     if (task && useSettingsStore.getState().notificationsEnabled) onTaskMutation(task, "remove");
   },
   addCategory: (category) => {
     set((state) => ({ categories: [...state.categories, category] }));
-    const db = getDatabase();
-    if (db) persistTaskCategory(db, category);
+    const storage = getStorage();
+    if (storage) persistTaskCategories(storage);
     notifySync();
   },
   updateCategory: (id, updates) => {
@@ -91,16 +89,16 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
         c.id === id ? { ...c, ...updates } : c
       ),
     }));
-    const db = getDatabase();
-    if (db) updateTaskCategoryDb(db, id, updates);
+    const storage = getStorage();
+    if (storage) persistTaskCategories(storage);
     notifySync();
   },
   removeCategory: (id) => {
     set((state) => ({
       categories: state.categories.filter((c) => c.id !== id),
     }));
-    const db = getDatabase();
-    if (db) deleteTaskCategoryDb(db, id);
+    const storage = getStorage();
+    if (storage) persistTaskCategories(storage);
     notifySync();
   },
   getOverdueTasks: () => {
@@ -143,8 +141,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   setAgendaEvents: (agendaEvents) => set({ agendaEvents }),
   addAgendaEvent: (event) => {
     set((state) => ({ agendaEvents: [...state.agendaEvents, event] }));
-    const db = getDatabase();
-    if (db) persistAgendaEvent(db, event);
+    const storage = getStorage();
+    if (storage) persistAgendaEvents(storage);
     notifySync();
     if (useSettingsStore.getState().notificationsEnabled) onAgendaMutation(event, "add");
   },
@@ -155,8 +153,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
         e.id === id ? { ...e, ...updatedFields } : e
       ),
     }));
-    const db = getDatabase();
-    if (db) updateAgendaEventDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistAgendaEvents(storage);
     notifySync();
     const updated = get().agendaEvents.find((e) => e.id === id);
     if (updated && useSettingsStore.getState().notificationsEnabled) onAgendaMutation(updated, "update");
@@ -164,8 +162,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   removeAgendaEvent: (id) => {
     const event = get().agendaEvents.find((e) => e.id === id);
     set((state) => ({ agendaEvents: state.agendaEvents.filter((e) => e.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteAgendaEventDb(db, id);
+    const storage = getStorage();
+    if (storage) persistAgendaEvents(storage);
     notifySync();
     if (event && useSettingsStore.getState().notificationsEnabled) onAgendaMutation(event, "remove");
   },
@@ -175,8 +173,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   setDayOfItems: (dayOfItems) => set({ dayOfItems }),
   addDayOfItem: (item) => {
     set((state) => ({ dayOfItems: [...state.dayOfItems, item] }));
-    const db = getDatabase();
-    if (db) persistDayOfItem(db, item);
+    const storage = getStorage();
+    if (storage) persistDayOfItems(storage);
     notifySync();
   },
   updateDayOfItem: (id, updates) => {
@@ -186,14 +184,14 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
         i.id === id ? { ...i, ...updatedFields } : i
       ),
     }));
-    const db = getDatabase();
-    if (db) updateDayOfItemDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistDayOfItems(storage);
     notifySync();
   },
   removeDayOfItem: (id) => {
     set((state) => ({ dayOfItems: state.dayOfItems.filter((i) => i.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteDayOfItemDb(db, id);
+    const storage = getStorage();
+    if (storage) persistDayOfItems(storage);
     notifySync();
   },
 }));

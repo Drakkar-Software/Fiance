@@ -1,11 +1,7 @@
 import { create } from "zustand";
 import type { Guest, Table, GuestGroup } from "@/db/schema";
-import { getDatabase } from "@/db/provider";
-import {
-  persistGuest, updateGuestDb, deleteGuestDb,
-  persistTable, updateTableDb, deleteTableDb,
-  persistGuestGroup, updateGuestGroupDb, deleteGuestGroupDb,
-} from "@/lib/persistence";
+import { getStorage } from "@/lib/kv-storage";
+import { persistGuests, persistTables, persistGroups } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
 export interface GuestCounts {
@@ -94,8 +90,8 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   setGroups: (groups) => set({ groups }),
   addGuest: (guest) => {
     set((state) => ({ guests: [...state.guests, guest] }));
-    const db = getDatabase();
-    if (db) persistGuest(db, guest);
+    const storage = getStorage();
+    if (storage) persistGuests(storage);
     notifySync();
   },
   updateGuest: (id, updates) => {
@@ -106,17 +102,16 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
           : g
       ),
     }));
-    const db = getDatabase();
-    if (db) updateGuestDb(db, id, { ...updates, updatedAt: new Date().toISOString() });
+    const storage = getStorage();
+    if (storage) persistGuests(storage);
     notifySync();
   },
   removeGuest: (id) => {
     const now = new Date().toISOString();
-    // Clear all companion links pointing to or from the deleted guest
     const allGuests = get().guests;
     const guest = allGuests.find((g) => g.id === id);
     const pointingToDeleted = allGuests.filter(
-      (g) => g.id !== id && (g.companionId === id)
+      (g) => g.id !== id && g.companionId === id
     );
     const toUnlink = guest?.companionId
       ? [...pointingToDeleted.filter((g) => g.id !== guest.companionId), { id: guest.companionId }]
@@ -128,21 +123,14 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
           ids.has(g.id) ? { ...g, companionId: null, updatedAt: now } : g
         ),
       }));
-      const db = getDatabase();
-      if (db) {
-        for (const u of toUnlink) {
-          updateGuestDb(db, u.id, { companionId: null, updatedAt: now });
-        }
-      }
     }
     set((state) => ({ guests: state.guests.filter((g) => g.id !== id) }));
-    const db = getDatabase();
-    if (db) deleteGuestDb(db, id);
+    const storage = getStorage();
+    if (storage) persistGuests(storage);
     notifySync();
   },
   linkCompanion: (guestId, companionId) => {
     const now = new Date().toISOString();
-    // Capture old companions inside set() for consistency, but also outside for DB writes
     let oldCompanionOfGuestId: string | null = null;
     let oldCompanionOfTargetId: string | null = null;
     set((state) => {
@@ -160,13 +148,8 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
         }),
       };
     });
-    const db = getDatabase();
-    if (db) {
-      updateGuestDb(db, guestId, { companionId, updatedAt: now });
-      updateGuestDb(db, companionId, { companionId: guestId, updatedAt: now });
-      if (oldCompanionOfGuestId) updateGuestDb(db, oldCompanionOfGuestId, { companionId: null, updatedAt: now });
-      if (oldCompanionOfTargetId) updateGuestDb(db, oldCompanionOfTargetId, { companionId: null, updatedAt: now });
-    }
+    const storage = getStorage();
+    if (storage) persistGuests(storage);
     notifySync();
   },
   unlinkCompanion: (guestId) => {
@@ -180,25 +163,22 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
         return g;
       }),
     }));
-    const db = getDatabase();
-    if (db) {
-      updateGuestDb(db, guestId, { companionId: null, updatedAt: now });
-      updateGuestDb(db, cId, { companionId: null, updatedAt: now });
-    }
+    const storage = getStorage();
+    if (storage) persistGuests(storage);
     notifySync();
   },
   addTable: (table) => {
     set((state) => ({ tables: [...state.tables, table] }));
-    const db = getDatabase();
-    if (db) persistTable(db, table);
+    const storage = getStorage();
+    if (storage) persistTables(storage);
     notifySync();
   },
   updateTable: (id, updates) => {
     set((state) => ({
       tables: state.tables.map((t) => (t.id === id ? { ...t, ...updates } : t)),
     }));
-    const db = getDatabase();
-    if (db) updateTableDb(db, id, updates);
+    const storage = getStorage();
+    if (storage) persistTables(storage);
     notifySync();
   },
   removeTable: (id) => {
@@ -208,14 +188,17 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
         g.tableId === id ? { ...g, tableId: null } : g
       ),
     }));
-    const db = getDatabase();
-    if (db) deleteTableDb(db, id);
+    const storage = getStorage();
+    if (storage) {
+      persistTables(storage);
+      persistGuests(storage);
+    }
     notifySync();
   },
   addGroup: (group) => {
     set((state) => ({ groups: [...state.groups, group] }));
-    const db = getDatabase();
-    if (db) persistGuestGroup(db, group);
+    const storage = getStorage();
+    if (storage) persistGroups(storage);
     notifySync();
   },
   updateGroup: (id, updates) => {
@@ -225,8 +208,8 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
         g.id === id ? { ...g, ...updates, updatedAt: now } : g
       ),
     }));
-    const db = getDatabase();
-    if (db) updateGuestGroupDb(db, id, { ...updates, updatedAt: now });
+    const storage = getStorage();
+    if (storage) persistGroups(storage);
     notifySync();
   },
   removeGroup: (id) => {
@@ -236,8 +219,11 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
         g.groupId === id ? { ...g, groupId: null } : g
       ),
     }));
-    const db = getDatabase();
-    if (db) deleteGuestGroupDb(db, id);
+    const storage = getStorage();
+    if (storage) {
+      persistGroups(storage);
+      persistGuests(storage);
+    }
     notifySync();
   },
   getCounts: () => computeCounts(get().guests),

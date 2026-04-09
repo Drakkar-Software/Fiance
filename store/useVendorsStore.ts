@@ -1,11 +1,9 @@
 import { create } from "zustand";
 import type { Vendor, QuotePricing, VendorPayment } from "@/db/schema";
 import type { VendorType, VendorStatus } from "@/db/types";
-import { getDatabase } from "@/db/provider";
+import { getStorage } from "@/lib/kv-storage";
 import {
-  persistVendor, updateVendorDb, deleteVendorDb,
-  persistQuotePricing, updateQuotePricingDb, deleteQuotePricingDb,
-  persistVendorPayment, updateVendorPaymentDb, deleteVendorPaymentDb,
+  persistVendors, persistQuotePricings, persistVendorPayments,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 
@@ -42,8 +40,8 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
   setVendorPayments: (payments) => set({ vendorPayments: payments }),
   addVendor: (vendor) => {
     set((state) => ({ vendors: [...state.vendors, vendor] }));
-    const db = getDatabase();
-    if (db) persistVendor(db, vendor);
+    const storage = getStorage();
+    if (storage) persistVendors(storage);
     notifySync();
   },
   updateVendor: (id, updates) => {
@@ -53,8 +51,8 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
         v.id === id ? { ...v, ...updatedFields } : v
       ),
     }));
-    const db = getDatabase();
-    if (db) updateVendorDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistVendors(storage);
     notifySync();
   },
   removeVendor: (id) => {
@@ -63,14 +61,18 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
       quotePricings: state.quotePricings.filter((p) => p.vendorId !== id),
       vendorPayments: state.vendorPayments.filter((p) => p.vendorId !== id),
     }));
-    const db = getDatabase();
-    if (db) deleteVendorDb(db, id);
+    const storage = getStorage();
+    if (storage) {
+      persistVendors(storage);
+      persistQuotePricings(storage);
+      persistVendorPayments(storage);
+    }
     notifySync();
   },
   addQuotePricing: (pricing) => {
     set((state) => ({ quotePricings: [...state.quotePricings, pricing] }));
-    const db = getDatabase();
-    if (db) persistQuotePricing(db, pricing);
+    const storage = getStorage();
+    if (storage) persistQuotePricings(storage);
     notifySync();
   },
   updateQuotePricing: (id, updates) => {
@@ -79,22 +81,22 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
         p.id === id ? { ...p, ...updates } : p
       ),
     }));
-    const db = getDatabase();
-    if (db) updateQuotePricingDb(db, id, updates);
+    const storage = getStorage();
+    if (storage) persistQuotePricings(storage);
     notifySync();
   },
   removeQuotePricing: (id) => {
     set((state) => ({
       quotePricings: state.quotePricings.filter((p) => p.id !== id),
     }));
-    const db = getDatabase();
-    if (db) deleteQuotePricingDb(db, id);
+    const storage = getStorage();
+    if (storage) persistQuotePricings(storage);
     notifySync();
   },
   addPayment: (payment) => {
     set((state) => ({ vendorPayments: [...state.vendorPayments, payment] }));
-    const db = getDatabase();
-    if (db) persistVendorPayment(db, payment);
+    const storage = getStorage();
+    if (storage) persistVendorPayments(storage);
     notifySync();
   },
   updatePayment: (id, updates) => {
@@ -104,16 +106,16 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
         p.id === id ? { ...p, ...updatedFields } : p
       ),
     }));
-    const db = getDatabase();
-    if (db) updateVendorPaymentDb(db, id, updatedFields);
+    const storage = getStorage();
+    if (storage) persistVendorPayments(storage);
     notifySync();
   },
   removePayment: (id) => {
     set((state) => ({
       vendorPayments: state.vendorPayments.filter((p) => p.id !== id),
     }));
-    const db = getDatabase();
-    if (db) deleteVendorPaymentDb(db, id);
+    const storage = getStorage();
+    if (storage) persistVendorPayments(storage);
     notifySync();
   },
   getVendorsByType: (type) => get().vendors.filter((v) => v.type === type),

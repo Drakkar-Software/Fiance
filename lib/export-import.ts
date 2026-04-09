@@ -14,7 +14,7 @@ import { shareAsync } from "expo-sharing";
 import { getDocumentAsync } from "expo-document-picker";
 import { createBackupDocument, restoreFromBackup } from "./sync";
 import { notifySync } from "./starfish";
-import { getDatabase } from "@/db/provider";
+import { getStorage } from "@/lib/kv-storage";
 
 export type ImportError = "invalid_json" | "invalid_backup";
 
@@ -84,7 +84,7 @@ export async function importWedding(): Promise<true | null | ImportError> {
     return "invalid_backup";
   }
 
-  restoreFromBackup(data, getDatabase());
+  restoreFromBackup(data, getStorage());
   notifySync();
   return true;
 }

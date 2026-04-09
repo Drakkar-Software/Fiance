@@ -3,7 +3,6 @@
  * Each wedding gets its own SQLite database file.
  */
 
-import { Platform } from "react-native";
 import * as Crypto from "expo-crypto";
 import { deleteDatabaseAsync } from "expo-sqlite";
 import { secureGet, secureSet } from "./secure-store";
@@ -77,9 +76,7 @@ export async function deleteWeddingEntry(id: string): Promise<void> {
   }
   await saveRegistry(registry);
 
-  if (Platform.OS === "web") {
-    if (wasActive) localStorage.removeItem("wedding_data");
-  } else if (entry) {
+  if (entry) {
     await deleteDatabaseAsync(entry.dbFileName);
   }
 }

@@ -1,293 +1,247 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+// ─── Plain TypeScript entity types ─────────────────────────────────────────
+// These replaced Drizzle table definitions when migrating to expo-sqlite/kv-store.
+// All types match the shapes previously inferred via Drizzle's $inferSelect.
 
-// ─── Wedding (singleton) ────────────────────────────────────────────────────
+export interface Wedding {
+  id: number;
+  partner1Name: string | null;
+  partner2Name: string | null;
+  weddingDate: string | null;
+  venueName: string | null;
+  description: string | null;
+  faq: string | null; // JSON string of FaqItem[]
+  eventPhotos: string | null; // JSON string of EventPhoto[]
+  budgetTarget: number | null;
+  categoryBudgets: string | null; // JSON: Record<categoryKey, number>
+  currency: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const wedding = sqliteTable("wedding", {
-  id: integer("id").primaryKey(),
-  partner1Name: text("partner1_name"),
-  partner2Name: text("partner2_name"),
-  weddingDate: text("wedding_date"),
-  venueName: text("venue_name"),
-  description: text("description"),
-  faq: text("faq"), // JSON string of FaqItem[]
-  eventPhotos: text("event_photos"), // JSON string of EventPhoto[]
-  budgetTarget: real("budget_target"),
-  categoryBudgets: text("category_budgets"), // JSON: Record<categoryKey, number>
-  currency: text("currency").default("EUR"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+export interface GuestGroup {
+  id: string;
+  name: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-// ─── Guest Groups ──────────────────────────────────────────────────────────
+export interface Guest {
+  id: string;
+  firstName: string;
+  lastName: string;
+  side: string | null;
+  invitationType: string;
+  rsvpStatus: string | null;
+  rsvpDate: string | null;
+  isSleeping: boolean | null;
+  childrenCount: number | null;
+  diet: string | null;
+  dietNotes: string | null;
+  groupId: string | null;
+  tableId: string | null;
+  companionId: string | null;
+  noTableNeeded: boolean | null;
+  giftDescription: string | null;
+  thankYouSent: boolean | null;
+  thankYouSentDate: string | null;
+  accommodationId: string | null;
+  roomNumber: string | null;
+  rsvpToken: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const guestGroups = sqliteTable("guest_groups", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+export interface Table {
+  id: string;
+  name: string;
+  capacity: number | null;
+  notes: string | null;
+  positionX: number | null;
+  positionY: number | null;
+  shape: string | null;
+}
 
-// ─── Guests ─────────────────────────────────────────────────────────────────
+export interface Vendor {
+  id: string;
+  type: string;
+  name: string;
+  contactName: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  status: string | null;
+  quoteDate: string | null;
+  eventDate: string | null;
+  basePrice: number | null;
+  pricePerPerson: number | null;
+  pppSource: string | null;
+  depositAmount: number | null;
+  depositPaid: boolean | null;
+  depositDueDate: string | null;
+  balanceDueDate: string | null;
+  validityDate: string | null;
+  customFields: string | null;
+  notes: string | null;
+  rating: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const guests = sqliteTable("guests", {
-  id: text("id").primaryKey(),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
-  side: text("side"), // legacy, replaced by groupId
-  invitationType: text("invitation_type").notNull(), // CEREMONY | COCKTAIL | FULL | BOTH_DAYS
-  rsvpStatus: text("rsvp_status").default("PENDING"), // PENDING | ACCEPTED | DECLINED | MAYBE
-  rsvpDate: text("rsvp_date"),
-  isSleeping: integer("is_sleeping", { mode: "boolean" }).default(false),
-  childrenCount: integer("children_count").default(0),
-  diet: text("diet").default("STANDARD"), // STANDARD | VEGETARIAN | VEGAN | HALAL | KOSHER | ALLERGY
-  dietNotes: text("diet_notes"),
-  groupId: text("group_id").references(() => guestGroups.id),
-  tableId: text("table_id").references(() => tables.id),
-  companionId: text("companion_id"),
-  noTableNeeded: integer("no_table_needed", { mode: "boolean" }).default(false),
-  giftDescription: text("gift_description"),
-  thankYouSent: integer("thank_you_sent", { mode: "boolean" }).default(false),
-  thankYouSentDate: text("thank_you_sent_date"),
-  accommodationId: text("accommodation_id"),
-  roomNumber: text("room_number"),
-  rsvpToken: text("rsvp_token"),
-  email: text("email"),
-  phone: text("phone"),
-  address: text("address"),
-  notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+export interface QuotePricing {
+  id: string;
+  vendorId: string;
+  pricingKey: string;
+  pricePerPerson: number | null;
+  guestCountOverride: number | null;
+  staffFee: number | null;
+  travelFee: number | null;
+}
 
-// ─── Tables ─────────────────────────────────────────────────────────────────
+export interface VendorPayment {
+  id: string;
+  vendorId: string;
+  amount: number;
+  paidDate: string;
+  dueDate: string | null;
+  method: string | null;
+  label: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const tables = sqliteTable("tables", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  capacity: integer("capacity"),
-  notes: text("notes"),
-  positionX: real("position_x").default(0),
-  positionY: real("position_y").default(0),
-  shape: text("shape").default("round"), // "round" | "rectangular"
-});
+export interface Accommodation {
+  id: string;
+  name: string;
+  address: string | null;
+  phone: string | null;
+  website: string | null;
+  checkInDate: string | null;
+  checkOutDate: string | null;
+  roomCount: number | null;
+  pricePerNight: number | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-// ─── Vendors ────────────────────────────────────────────────────────────────
+export interface Gift {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number | null;
+  url: string | null;
+  imageUrl: string | null;
+  category: string | null;
+  claimed: boolean | null;
+  claimedByName: string | null;
+  claimedAt: string | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const vendors = sqliteTable("vendors", {
-  id: text("id").primaryKey(),
-  type: text("type").notNull(),
-  name: text("name").notNull(),
-  contactName: text("contact_name"),
-  phone: text("phone"),
-  email: text("email"),
-  website: text("website"),
-  status: text("status").default("PROSPECT"), // PROSPECT | QUOTE_RECEIVED | NEGOTIATING | BOOKED | CANCELLED
-  quoteDate: text("quote_date"),
-  eventDate: text("event_date"),
-  basePrice: real("base_price"),
-  pricePerPerson: real("price_per_person"),
-  pppSource: text("ppp_source"), // invitation_type key for dynamic calc
-  depositAmount: real("deposit_amount"),
-  depositPaid: integer("deposit_paid", { mode: "boolean" }).default(false),
-  depositDueDate: text("deposit_due_date"),
-  balanceDueDate: text("balance_due_date"),
-  validityDate: text("validity_date"),
-  customFields: text("custom_fields"), // JSON string
-  notes: text("notes"),
-  rating: integer("rating").default(0),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+export interface TaskCategory {
+  id: string;
+  name: string;
+  icon: string | null;
+  color: string | null;
+  sortOrder: number | null;
+}
 
-// ─── Quote Pricing (caterers) ───────────────────────────────────────────────
+export interface Task {
+  id: string;
+  categoryId: string | null;
+  title: string;
+  description: string | null;
+  status: string | null;
+  priority: string | null;
+  dueDate: string | null;
+  monthsBefore: number | null;
+  isSystem: boolean | null;
+  vendorId: string | null;
+  assignee: string | null;
+  reminderDaysBefore: number | null;
+  completedAt: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const quotePricing = sqliteTable("quote_pricing", {
-  id: text("id").primaryKey(),
-  vendorId: text("vendor_id")
-    .notNull()
-    .references(() => vendors.id, { onDelete: "cascade" }),
-  pricingKey: text("pricing_key").notNull(), // cocktail | dinner | drinks | next-day | tableware | linen | vegetarian | child | service
-  pricePerPerson: real("price_per_person"),
-  guestCountOverride: integer("guest_count_override"),
-  staffFee: real("staff_fee"),
-  travelFee: real("travel_fee"),
-});
+export interface AgendaEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string | null;
+  endTime: string | null;
+  location: string | null;
+  vendorId: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-// ─── Vendor Payments ───────────────────────────────────────────────────────
+export interface DayOfItem {
+  id: string;
+  title: string;
+  date: string | null;
+  time: string;
+  endTime: string | null;
+  location: string | null;
+  responsible: string | null;
+  notes: string | null;
+  isPublic: boolean | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const vendorPayments = sqliteTable("vendor_payments", {
-  id: text("id").primaryKey(),
-  vendorId: text("vendor_id")
-    .notNull()
-    .references(() => vendors.id, { onDelete: "cascade" }),
-  amount: real("amount").notNull(),
-  paidDate: text("paid_date").notNull(),
-  dueDate: text("due_date"),
-  method: text("method"), // "cash" | "check" | "transfer" | "card" | "other"
-  label: text("label"),
-  notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+export interface IdeaCollection {
+  id: string;
+  name: string;
+  description: string | null;
+  coverIdeaId: string | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-// ─── Accommodations ────────────────────────────────────────────────────────
+export interface Idea {
+  id: string;
+  collectionId: string | null;
+  title: string | null;
+  notes: string | null;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  sourceUrl: string | null;
+  tags: string | null; // JSON array string
+  category: string | null;
+  vendorId: string | null;
+  isFavorite: boolean | null;
+  colorPalette: string | null; // JSON array of hex strings
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
-export const accommodations = sqliteTable("accommodations", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  address: text("address"),
-  phone: text("phone"),
-  website: text("website"),
-  checkInDate: text("check_in_date"),
-  checkOutDate: text("check_out_date"),
-  roomCount: integer("room_count"),
-  pricePerNight: real("price_per_night"),
-  notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
+// ─── Insert type aliases ─────────────────────────────────────────────────────
+// With KV storage, there's no schema enforcement — Insert types equal Select types.
 
-// ─── Gifts (registry) ─────────────────────────────────────────────────────
-
-export const gifts = sqliteTable("gifts", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-  price: real("price"),
-  url: text("url"),
-  imageUrl: text("image_url"),
-  category: text("category"), // "maison" | "voyage" | "experience" | "autre"
-  claimed: integer("claimed", { mode: "boolean" }).default(false),
-  claimedByName: text("claimed_by_name"),
-  claimedAt: text("claimed_at"),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Task Categories ────────────────────────────────────────────────────────
-
-export const taskCategories = sqliteTable("task_categories", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  icon: text("icon"),
-  color: text("color"),
-  sortOrder: integer("sort_order"),
-});
-
-// ─── Tasks ──────────────────────────────────────────────────────────────────
-
-export const tasks = sqliteTable("tasks", {
-  id: text("id").primaryKey(),
-  categoryId: text("category_id").references(() => taskCategories.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  status: text("status").default("TODO"), // TODO | DONE
-  priority: text("priority").default("MEDIUM"), // LOW | MEDIUM | HIGH | CRITICAL
-  dueDate: text("due_date"),
-  monthsBefore: integer("months_before"),
-  isSystem: integer("is_system", { mode: "boolean" }).default(false),
-  vendorId: text("vendor_id").references(() => vendors.id),
-  assignee: text("assignee"),
-  reminderDaysBefore: integer("reminder_days_before"),
-  completedAt: text("completed_at"),
-  notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Agenda Events (meetings & rendez-vous) ────────────────────────────
-
-export const agendaEvents = sqliteTable("agenda_events", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  date: text("date").notNull(), // ISO date "2026-03-15"
-  time: text("time"), // "14:00"
-  endTime: text("end_time"), // "15:30"
-  location: text("location"),
-  vendorId: text("vendor_id").references(() => vendors.id),
-  notes: text("notes"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Day-Of Items (wedding day timeline) ────────────────────────────────
-
-export const dayOfItems = sqliteTable("day_of_items", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  date: text("date"), // ISO "2026-03-15", nullable — defaults to weddingDate at runtime
-  time: text("time").notNull(), // "13:00"
-  endTime: text("end_time"), // "13:30"
-  location: text("location"),
-  responsible: text("responsible"), // who handles this
-  notes: text("notes"),
-  isPublic: integer("is_public", { mode: "boolean" }).default(false),
-  sortOrder: integer("sort_order"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Idea Collections ───────────────────────────────────────────────────────
-
-export const ideaCollections = sqliteTable("idea_collections", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-  coverIdeaId: text("cover_idea_id"),
-  sortOrder: integer("sort_order"),
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Ideas ──────────────────────────────────────────────────────────────────
-
-export const ideas = sqliteTable("ideas", {
-  id: text("id").primaryKey(),
-  collectionId: text("collection_id").references(() => ideaCollections.id),
-  title: text("title"),
-  notes: text("notes"),
-  imageUri: text("image_uri"),
-  imageThumbnailUri: text("image_thumbnail_uri"),
-  sourceUrl: text("source_url"),
-  tags: text("tags"), // JSON array string
-  category: text("category"), // TABLE_DECOR | VENUE_DECOR | CEREMONY_DECOR | BOUQUET | ATTIRE | CAKE | PHOTO_STYLE | VENUE | OTHER
-  vendorId: text("vendor_id").references(() => vendors.id),
-  isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
-  colorPalette: text("color_palette"), // JSON array of hex strings
-  createdAt: text("created_at"),
-  updatedAt: text("updated_at"),
-});
-
-// ─── Type exports ───────────────────────────────────────────────────────────
-
-export type Wedding = typeof wedding.$inferSelect;
-export type WeddingInsert = typeof wedding.$inferInsert;
-export type Guest = typeof guests.$inferSelect;
-export type GuestInsert = typeof guests.$inferInsert;
-export type GuestGroup = typeof guestGroups.$inferSelect;
-export type GuestGroupInsert = typeof guestGroups.$inferInsert;
-export type Table = typeof tables.$inferSelect;
-export type TableInsert = typeof tables.$inferInsert;
-export type Vendor = typeof vendors.$inferSelect;
-export type VendorInsert = typeof vendors.$inferInsert;
-export type QuotePricing = typeof quotePricing.$inferSelect;
-export type QuotePricingInsert = typeof quotePricing.$inferInsert;
-export type Task = typeof tasks.$inferSelect;
-export type TaskInsert = typeof tasks.$inferInsert;
-export type TaskCategory = typeof taskCategories.$inferSelect;
-export type TaskCategoryInsert = typeof taskCategories.$inferInsert;
-export type AgendaEvent = typeof agendaEvents.$inferSelect;
-export type AgendaEventInsert = typeof agendaEvents.$inferInsert;
-export type DayOfItem = typeof dayOfItems.$inferSelect;
-export type DayOfItemInsert = typeof dayOfItems.$inferInsert;
-export type Idea = typeof ideas.$inferSelect;
-export type IdeaInsert = typeof ideas.$inferInsert;
-export type IdeaCollection = typeof ideaCollections.$inferSelect;
-export type IdeaCollectionInsert = typeof ideaCollections.$inferInsert;
-export type VendorPayment = typeof vendorPayments.$inferSelect;
-export type VendorPaymentInsert = typeof vendorPayments.$inferInsert;
-export type Accommodation = typeof accommodations.$inferSelect;
-export type AccommodationInsert = typeof accommodations.$inferInsert;
-export type Gift = typeof gifts.$inferSelect;
-export type GiftInsert = typeof gifts.$inferInsert;
+export type WeddingInsert = Wedding;
+export type GuestInsert = Guest;
+export type GuestGroupInsert = GuestGroup;
+export type TableInsert = Table;
+export type VendorInsert = Vendor;
+export type QuotePricingInsert = QuotePricing;
+export type VendorPaymentInsert = VendorPayment;
+export type AccommodationInsert = Accommodation;
+export type GiftInsert = Gift;
+export type TaskCategoryInsert = TaskCategory;
+export type TaskInsert = Task;
+export type AgendaEventInsert = AgendaEvent;
+export type DayOfItemInsert = DayOfItem;
+export type IdeaCollectionInsert = IdeaCollection;
+export type IdeaInsert = Idea;

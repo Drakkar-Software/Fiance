@@ -16,8 +16,8 @@ import {
 } from "@drakkar.software/starfish-client/zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { useStore } from "zustand";
-import { createBackupDocument, restoreFromBackup, saveToLocalStorage } from "./sync";
-import { getDatabase } from "@/db/provider";
+import { createBackupDocument, restoreFromBackup } from "./sync";
+import { getStorage } from "@/lib/kv-storage";
 
 // Re-export Starfish React hooks for components
 export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/zustand";
@@ -102,7 +102,7 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     ) {
       isRestoring = true;
       try {
-        restoreFromBackup(state.data as Record<string, unknown>, getDatabase());
+        restoreFromBackup(state.data as Record<string, unknown>, getStorage());
         lastSyncTimestamp = new Date().toISOString();
       } finally {
         isRestoring = false;
@@ -133,7 +133,6 @@ export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
  * Debounces the Starfish push to avoid feedback loops during rapid typing.
  */
 export function notifySync(): void {
-  saveToLocalStorage();
   if (!store || isRestoring) return;
   // Debounce the remote push — only push after typing settles
   if (pushTimer) clearTimeout(pushTimer);

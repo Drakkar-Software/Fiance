@@ -3,9 +3,7 @@
  * Handles backup document creation and restoration via Starfish
  */
 
-import { Platform } from "react-native";
-import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import type * as schema from "@/db/schema";
+import { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -14,8 +12,6 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
-
-type DrizzleDB = ExpoSQLiteDatabase<typeof schema>;
 
 export interface BackupData {
   version: number;
@@ -38,18 +34,6 @@ export interface BackupData {
 }
 
 const BACKUP_VERSION = 5;
-
-const WEB_STORAGE_KEY = "wedding_data";
-
-/** Save all store state to localStorage (web only, called after every mutation) */
-export function saveToLocalStorage(): void {
-  if (Platform.OS !== "web") return;
-  try {
-    localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(createBackupDocument()));
-  } catch (err) {
-    console.warn("[sync] saveToLocalStorage failed:", err);
-  }
-}
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -74,10 +58,10 @@ export function createBackupDocument(): Record<string, unknown> {
   };
 }
 
-/** Restore all stores + SQLite from a pulled backup document */
+/** Restore all stores + KV storage from a pulled backup document */
 export function restoreFromBackup(
   data: Record<string, unknown>,
-  db: DrizzleDB | null,
+  storage: SQLiteStorage | null,
 ): void {
   const backup = data as unknown as BackupData;
 
@@ -102,69 +86,55 @@ export function restoreFromBackup(
   // v3 → v4: added companionId field on guests (nullable, no migration needed)
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
 
-  if (db) {
-    // Native: write to SQLite (source of truth) then re-hydrate stores from it
-    restoreAllTables(db, {
-      wedding: backup.wedding,
-      guests: ((backup.guests || []) as any[]).map((g: any) => ({
-        ...g,
-        invitationType: migrateInvType(g.invitationType ?? g.invitation_type ?? "FULL"),
-      })),
-      tables: (backup.tables || []) as any[],
-      guestGroups: (backup.guestGroups || []) as any[],
-      vendors: ((backup.vendors || []) as any[]).map((v: any) => ({
-        ...v,
-        pppSource: migratePppSource(v.pppSource ?? v.ppp_source ?? null),
-      })),
-      quotePricings: quotePricings as any[],
-      tasks: ((backup.tasks || []) as any[]).map((t: any) =>
-        t.status === "IN_PROGRESS" || t.status === "CANCELLED"
-          ? { ...t, status: "TODO" }
-          : t
-      ),
-      taskCategories: (backup.taskCategories || []) as any[],
-      agendaEvents: (backup.agendaEvents || []) as any[],
-      dayOfItems: dayOfItems as any[],
-      ideas: ideas as any[],
-      ideaCollections: (backup.ideaCollections || []) as any[],
-      vendorPayments: (backup.vendorPayments || []) as any[],
-      accommodations: (backup.accommodations || []) as any[],
-      gifts: (backup.gifts || []) as any[],
-    });
-    hydrateAllStores(db);
-  } else {
-    // Web: hydrate Zustand stores directly from the backup data
-    if (backup.wedding) useWeddingStore.getState().setWedding(backup.wedding as any);
-    useGuestsStore.getState().setGroups((backup.guestGroups || []) as any[]);
-    useGuestsStore.getState().setGuests(
-      ((backup.guests || []) as any[]).map((g: any) => ({
-        ...g,
-        invitationType: migrateInvType(g.invitationType ?? g.invitation_type ?? "FULL"),
-      }))
-    );
-    useGuestsStore.getState().setTables((backup.tables || []) as any[]);
-    useVendorsStore.getState().setVendors(
-      ((backup.vendors || []) as any[]).map((v: any) => ({
-        ...v,
-        pppSource: migratePppSource(v.pppSource ?? v.ppp_source ?? null),
-      }))
-    );
-    useVendorsStore.getState().setQuotePricings(quotePricings as any[]);
-    useVendorsStore.getState().setVendorPayments((backup.vendorPayments || []) as any[]);
-    usePlanningStore.getState().setCategories((backup.taskCategories || []) as any[]);
-    const restoredTasks = ((backup.tasks || []) as any[]).map((t: any) =>
+  const restoredData = {
+    wedding: backup.wedding,
+    guests: ((backup.guests || []) as any[]).map((g: any) => ({
+      ...g,
+      invitationType: migrateInvType(g.invitationType ?? g.invitation_type ?? "FULL"),
+    })),
+    tables: (backup.tables || []) as any[],
+    guestGroups: (backup.guestGroups || []) as any[],
+    vendors: ((backup.vendors || []) as any[]).map((v: any) => ({
+      ...v,
+      pppSource: migratePppSource(v.pppSource ?? v.ppp_source ?? null),
+    })),
+    quotePricings: quotePricings as any[],
+    tasks: ((backup.tasks || []) as any[]).map((t: any) =>
       t.status === "IN_PROGRESS" || t.status === "CANCELLED"
         ? { ...t, status: "TODO" }
         : t
-    );
-    usePlanningStore.getState().setTasks(restoredTasks);
-    usePlanningStore.getState().setAgendaEvents((backup.agendaEvents || []) as any[]);
-    usePlanningStore.getState().setDayOfItems(dayOfItems as any[]);
-    useIdeasStore.getState().setCollections((backup.ideaCollections || []) as any[]);
-    useIdeasStore.getState().setIdeas(ideas as any[]);
-    useAccommodationsStore.getState().setAccommodations((backup.accommodations || []) as any[]);
-    useGiftsStore.getState().setGifts((backup.gifts || []) as any[]);
-    saveToLocalStorage();
+    ),
+    taskCategories: (backup.taskCategories || []) as any[],
+    agendaEvents: (backup.agendaEvents || []) as any[],
+    dayOfItems: dayOfItems as any[],
+    ideas: ideas as any[],
+    ideaCollections: (backup.ideaCollections || []) as any[],
+    vendorPayments: (backup.vendorPayments || []) as any[],
+    accommodations: (backup.accommodations || []) as any[],
+    gifts: (backup.gifts || []) as any[],
+  };
+
+  // Write to KV storage then re-hydrate stores from it
+  if (storage) {
+    restoreAllTables(storage, restoredData);
+    hydrateAllStores(storage);
+  } else {
+    // KV not ready (shouldn't happen in normal flow, but hydrate stores directly)
+    if (restoredData.wedding) useWeddingStore.getState().setWedding(restoredData.wedding as any);
+    useGuestsStore.getState().setGroups(restoredData.guestGroups);
+    useGuestsStore.getState().setGuests(restoredData.guests);
+    useGuestsStore.getState().setTables(restoredData.tables);
+    useVendorsStore.getState().setVendors(restoredData.vendors);
+    useVendorsStore.getState().setQuotePricings(restoredData.quotePricings);
+    useVendorsStore.getState().setVendorPayments(restoredData.vendorPayments);
+    usePlanningStore.getState().setCategories(restoredData.taskCategories);
+    usePlanningStore.getState().setTasks(restoredData.tasks);
+    usePlanningStore.getState().setAgendaEvents(restoredData.agendaEvents);
+    usePlanningStore.getState().setDayOfItems(restoredData.dayOfItems);
+    useIdeasStore.getState().setCollections(restoredData.ideaCollections);
+    useIdeasStore.getState().setIdeas(restoredData.ideas);
+    useAccommodationsStore.getState().setAccommodations(restoredData.accommodations);
+    useGiftsStore.getState().setGifts(restoredData.gifts);
   }
 }
 

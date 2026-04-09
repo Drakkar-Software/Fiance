@@ -1,12 +1,9 @@
 import { create } from "zustand";
 import type { Accommodation } from "@/db/schema";
-import { getDatabase } from "@/db/provider";
-import {
-  persistAccommodation,
-  updateAccommodationDb,
-  deleteAccommodationDb,
-} from "@/lib/persistence";
+import { getStorage } from "@/lib/kv-storage";
+import { persistAccommodations, persistGuests } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { useGuestsStore } from "@/store/useGuestsStore";
 
 interface AccommodationsState {
   accommodations: Accommodation[];
@@ -23,8 +20,8 @@ export const useAccommodationsStore = create<AccommodationsState>((set) => ({
     set((state) => ({
       accommodations: [...state.accommodations, accommodation],
     }));
-    const db = getDatabase();
-    if (db) persistAccommodation(db, accommodation);
+    const storage = getStorage();
+    if (storage) persistAccommodations(storage);
     notifySync();
   },
   updateAccommodation: (id, updates) => {
@@ -35,20 +32,27 @@ export const useAccommodationsStore = create<AccommodationsState>((set) => ({
           : a
       ),
     }));
-    const db = getDatabase();
-    if (db)
-      updateAccommodationDb(db, id, {
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      });
+    const storage = getStorage();
+    if (storage) persistAccommodations(storage);
     notifySync();
   },
   removeAccommodation: (id) => {
     set((state) => ({
       accommodations: state.accommodations.filter((a) => a.id !== id),
     }));
-    const db = getDatabase();
-    if (db) deleteAccommodationDb(db, id);
+    // Nullify accommodation reference on guests (cascade)
+    useGuestsStore.getState().setGuests(
+      useGuestsStore.getState().guests.map((g) =>
+        g.accommodationId === id
+          ? { ...g, accommodationId: null, roomNumber: null }
+          : g
+      )
+    );
+    const storage = getStorage();
+    if (storage) {
+      persistAccommodations(storage);
+      persistGuests(storage);
+    }
     notifySync();
   },
 }));
