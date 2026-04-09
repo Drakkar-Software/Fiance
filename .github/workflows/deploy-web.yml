@@ -42,6 +42,17 @@ jobs:
       - name: Create 404.html for SPA routing
         run: cp dist/index.html dist/404.html
 
+      - name: Relocate WASM out of node_modules path
+        run: |
+          WASM_FILE=$(find dist/assets/node_modules -name "*.wasm" -type f | head -1)
+          if [ -n "$WASM_FILE" ]; then
+            WASM_NAME=$(basename "$WASM_FILE")
+            WASM_OLD_PATH="${WASM_FILE#dist/}"
+            cp "$WASM_FILE" "dist/$WASM_NAME"
+            echo "/$WASM_OLD_PATH /$WASM_NAME 200" >> dist/_redirects
+            echo "Relocated $WASM_FILE → dist/$WASM_NAME"
+          fi
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
