@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator } from "rea
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -23,6 +24,7 @@ import { usePwaInstall } from "@/lib/usePwaInstall";
 
 export default function DashboardScreen() {
   const { t } = useTranslation("dashboard");
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -143,14 +145,15 @@ export default function DashboardScreen() {
     >
       {/* Header / Countdown */}
       <View
-        className="px-6 pt-16 pb-10 relative"
+        className="px-6 pb-10 relative"
         style={{
+          paddingTop: insets.top + 16,
           backgroundColor: "#EC4899",
           borderBottomLeftRadius: 32,
           borderBottomRightRadius: 32,
         }}
       >
-        <View className="absolute top-14 right-3 z-10" pointerEvents="box-none">
+        <View className="absolute right-3 z-10" style={{ top: insets.top + 8 }} pointerEvents="box-none">
           <Pressable
             onPress={() => router.push("/(tabs)/settings")}
             className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
@@ -171,7 +174,7 @@ export default function DashboardScreen() {
                 {daysUntil}
               </Text>
               <Text className="text-white/60 text-xl font-medium ml-2">
-                jours
+                {t("days")}
               </Text>
             </View>
             <Text className="text-white/60 text-sm mt-1">
@@ -208,23 +211,20 @@ export default function DashboardScreen() {
                 <AlertTriangle size={14} color="#EF4444" />
               </View>
               <Text className="text-sm font-semibold text-red-700 dark:text-red-300">
-                Actions urgentes
+                {t("urgentActions")}
               </Text>
             </View>
             {urgentDeposits.map((v) => (
               <View key={v.id} className="flex-row items-center mb-1.5 ml-8">
                 <Text className="text-sm text-red-600 dark:text-red-400 flex-1">
-                  Acompte {v.name} — échéance{" "}
-                  {v.depositDueDate
-                    ? format(new Date(v.depositDueDate), "dd/MM")
-                    : ""}
+                  {t("deposit", { name: v.name, date: v.depositDueDate ? format(new Date(v.depositDueDate), "dd/MM") : "" })}
                 </Text>
               </View>
             ))}
             {expiringQuotes.map((v) => (
               <View key={v.id} className="flex-row items-center mb-1.5 ml-8">
                 <Text className="text-sm text-amber-600 dark:text-amber-400 flex-1">
-                  Devis {v.name} expire bientôt
+                  {t("quoteExpiring", { name: v.name })}
                 </Text>
               </View>
             ))}
@@ -282,11 +282,11 @@ export default function DashboardScreen() {
                 <PieChart size={16} color="#7B9A7B" />
               </View>
               <Text className="text-base font-semibold text-gray-900 dark:text-white">
-                Budget
+                {t("budget")}
               </Text>
             </View>
             <Text className="text-xs text-gray-400">
-              {bookedVendors.length} réservé{bookedVendors.length !== 1 ? "s" : ""}
+              {t("booked", { count: bookedVendors.length })}
             </Text>
           </View>
           <View className="flex-row justify-between mb-2">
@@ -304,7 +304,7 @@ export default function DashboardScreen() {
           />
           {budget.remaining < 0 && (
             <Text className="text-xs text-red-500 mt-2 font-medium">
-              Dépassement de {formatMoney(Math.abs(budget.remaining))}
+              {t("overBudget", { amount: formatMoney(Math.abs(budget.remaining)) })}
             </Text>
           )}
         </Pressable>
@@ -391,7 +391,7 @@ export default function DashboardScreen() {
               <Briefcase size={16} color="#EC4899" />
             </View>
             <Text className="text-base font-semibold text-gray-900 dark:text-white">
-              Prestataires
+              {t("vendors")}
             </Text>
           </View>
           <View className="flex-row">
@@ -425,8 +425,8 @@ export default function DashboardScreen() {
               <Sparkles size={20} color="#A855F7" />
             </View>
           }
-          title="Mes inspirations"
-          subtitle={`${ideaCount} idée${ideaCount !== 1 ? "s" : ""} sauvegardée${ideaCount !== 1 ? "s" : ""}`}
+          title={t("myInspirations")}
+          subtitle={t("idea", { count: ideaCount })}
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/(tabs)/ideas")}
         />
