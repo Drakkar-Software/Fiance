@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -25,6 +25,9 @@ import { usePwaInstall } from "@/lib/usePwaInstall";
 export default function DashboardScreen() {
   const { t } = useTranslation("dashboard");
   const insets = useSafeAreaInsets();
+  // Fallback to RNStatusBar.currentHeight when safe area insets aren't populated yet
+  // (e.g. before react-native-edge-to-edge plugin takes effect on Android)
+  const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const router = useRouter();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -147,13 +150,13 @@ export default function DashboardScreen() {
       <View
         className="px-6 pb-10 relative"
         style={{
-          paddingTop: insets.top + 16,
+          paddingTop: topInset + 16,
           backgroundColor: "#EC4899",
           borderBottomLeftRadius: 32,
           borderBottomRightRadius: 32,
         }}
       >
-        <View className="absolute right-3 z-10" style={{ top: insets.top + 8 }} pointerEvents="box-none">
+        <View className="absolute right-3 z-10" style={{ top: topInset + 8 }} pointerEvents="box-none">
           <Pressable
             onPress={() => router.push("/(tabs)/settings")}
             className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"

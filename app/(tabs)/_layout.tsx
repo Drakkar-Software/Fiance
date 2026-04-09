@@ -26,8 +26,10 @@ export default function TabLayout() {
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.04,
           shadowRadius: 12,
-          paddingBottom: Platform.OS === "ios" ? 0 : 8,
-          height: Platform.OS === "ios" ? 88 : 64,
+          // iOS: fixed height that includes home indicator space
+          // Android: no hardcoded height — let React Navigation + SafeAreaProvider
+          //   compute the correct height including gesture/button nav bar inset
+          ...(Platform.OS === "ios" ? { paddingBottom: 0, height: 88 } : {}),
         },
         tabBarLabelStyle: {
           fontSize: 11,
