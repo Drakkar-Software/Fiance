@@ -8,7 +8,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import {
   Heart,
@@ -67,7 +66,6 @@ const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
 
 export default function IdeasScreen() {
   const { t } = useTranslation("ideas");
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const ideas = useIdeasStore((s) => s.ideas);
   const collections = useIdeasStore((s) => s.collections);
@@ -131,7 +129,7 @@ export default function IdeasScreen() {
     : null;
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <SearchBar
         value={search}
         onChangeText={setSearch}

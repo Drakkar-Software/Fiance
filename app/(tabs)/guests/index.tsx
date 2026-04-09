@@ -14,7 +14,6 @@ import {
   Trash2, FolderOpen, Map as MapIcon,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import {
   RSVP_STATUS_LABELS,
@@ -36,11 +35,10 @@ type InviteAspect = "guests" | "groups" | "tables";
 
 export default function GuestsListScreen() {
   const { t } = useTranslation("guests");
-  const insets = useSafeAreaInsets();
   const [aspect, setAspect] = useState<InviteAspect>("guests");
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },

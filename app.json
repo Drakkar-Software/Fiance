@@ -55,6 +55,7 @@
       "url": "https://u.expo.dev/2da930dd-2220-4371-8588-05a9fe390c44"
     },
     "plugins": [
+      "react-native-edge-to-edge",
       "expo-router",
       "expo-camera",
       "expo-sqlite",

@@ -3,7 +3,6 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Briefcase, Ellipsis } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS, VENDOR_TYPE_ICONS } from "@/db/types";
 import type { VendorType } from "@/db/types";
@@ -19,7 +18,6 @@ const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
 
 export default function VendorsListScreen() {
   const { t } = useTranslation("vendors");
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const vendors = useVendorsStore((s) => s.vendors);
   const [activeType, setActiveType] = useState<string>("ALL");
@@ -51,7 +49,7 @@ export default function VendorsListScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <SearchBar
         value={search}
         onChangeText={setSearch}

@@ -37,11 +37,9 @@ import { RenameSheet } from "@/components/RenameSheet";
 import { InviteQRSheet } from "@/components/InviteQRSheet";
 import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { t } = useTranslation("settings");
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
@@ -195,9 +193,9 @@ export default function SettingsScreen() {
   const deleteWeddingEntry = registry?.weddings.find((w) => w.id === deleteWeddingId);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
+    <>
     <ScrollView
-      className="flex-1"
+      className="flex-1 bg-gray-50 dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
       {/* Wedding info */}
@@ -515,7 +513,7 @@ export default function SettingsScreen() {
       onClose={() => setShowInviteQR(false)}
       inviteUrl={inviteUrl}
     />
-    </View>
+    </>
   );
 }
 
