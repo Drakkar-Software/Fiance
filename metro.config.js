@@ -13,6 +13,15 @@ config.resolver.nodeModulesPaths = [
 ]
 
 if (!config.resolver.assetExts.includes('wasm')) config.resolver.assetExts.push('wasm')
+
+config.server = {
+  ...config.server,
+  enhanceMiddleware: (middleware) => (req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless')
+    middleware(req, res, next)
+  },
+}
 if (!config.resolver.unstable_conditionNames.includes('import')) config.resolver.unstable_conditionNames.push('import', 'default', 'require')
 if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
 
