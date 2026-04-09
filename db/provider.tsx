@@ -44,7 +44,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
         clearAllStores();
         closeStorage();
 
-        const kv = initStorage(dbFileName);
+        const kv = await initStorage(dbFileName);
 
         migrateToKvIfNeeded(kv, dbFileName);
 

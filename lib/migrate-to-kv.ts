@@ -9,6 +9,7 @@
 import { Platform } from "react-native";
 import { openDatabaseSync } from "expo-sqlite";
 import { SQLiteStorage } from "expo-sqlite/kv-store";
+import { readCollection, writeCollection } from "./kv-storage";
 
 const MIGRATION_FLAG = "__migrated_to_kv";
 
@@ -336,31 +337,31 @@ function migrateFromSQLite(kv: SQLiteStorage, dbFileName: string): boolean {
   }
 }
 
-// ─── Web migration: localStorage → KV ───────────────────────────────────────
+// ─── Web migration: localStorage blob → AsyncStorage keys ───────────────────
 
-function migrateFromLocalStorage(kv: SQLiteStorage): boolean {
+function migrateFromLocalStorage(): boolean {
   try {
     const raw = localStorage.getItem("wedding_data");
     if (!raw) return false;
     const data = JSON.parse(raw);
     if (!data?.version) return false;
 
-    if (data.wedding) kv.setItemSync("wedding", JSON.stringify(data.wedding));
-    if (data.guestGroups) kv.setItemSync("guestGroups", JSON.stringify(data.guestGroups));
-    if (data.guests) kv.setItemSync("guests", JSON.stringify(data.guests));
-    if (data.tables) kv.setItemSync("tables", JSON.stringify(data.tables));
-    if (data.vendors) kv.setItemSync("vendors", JSON.stringify(data.vendors));
-    if (data.quotePricings) kv.setItemSync("quotePricings", JSON.stringify(data.quotePricings));
-    if (data.vendorPayments) kv.setItemSync("vendorPayments", JSON.stringify(data.vendorPayments));
-    if (data.accommodations) kv.setItemSync("accommodations", JSON.stringify(data.accommodations));
-    if (data.gifts) kv.setItemSync("gifts", JSON.stringify(data.gifts));
-    if (data.taskCategories) kv.setItemSync("taskCategories", JSON.stringify(data.taskCategories));
-    if (data.tasks) kv.setItemSync("tasks", JSON.stringify(data.tasks));
-    if (data.agendaEvents) kv.setItemSync("agendaEvents", JSON.stringify(data.agendaEvents));
+    if (data.wedding) writeCollection("wedding", data.wedding);
+    if (data.guestGroups) writeCollection("guestGroups", data.guestGroups);
+    if (data.guests) writeCollection("guests", data.guests);
+    if (data.tables) writeCollection("tables", data.tables);
+    if (data.vendors) writeCollection("vendors", data.vendors);
+    if (data.quotePricings) writeCollection("quotePricings", data.quotePricings);
+    if (data.vendorPayments) writeCollection("vendorPayments", data.vendorPayments);
+    if (data.accommodations) writeCollection("accommodations", data.accommodations);
+    if (data.gifts) writeCollection("gifts", data.gifts);
+    if (data.taskCategories) writeCollection("taskCategories", data.taskCategories);
+    if (data.tasks) writeCollection("tasks", data.tasks);
+    if (data.agendaEvents) writeCollection("agendaEvents", data.agendaEvents);
     if (data.dayOfItems ?? data.jourJItems)
-      kv.setItemSync("dayOfItems", JSON.stringify(data.dayOfItems ?? data.jourJItems));
-    if (data.ideaCollections) kv.setItemSync("ideaCollections", JSON.stringify(data.ideaCollections));
-    if (data.ideas) kv.setItemSync("ideas", JSON.stringify(data.ideas));
+      writeCollection("dayOfItems", data.dayOfItems ?? data.jourJItems);
+    if (data.ideaCollections) writeCollection("ideaCollections", data.ideaCollections);
+    if (data.ideas) writeCollection("ideas", data.ideas);
 
     localStorage.removeItem("wedding_data");
     return true;
@@ -376,14 +377,15 @@ function migrateFromLocalStorage(kv: SQLiteStorage): boolean {
  * Runs a one-time migration from legacy storage into the given KV store.
  * Safe to call on every boot — no-ops if migration was already done.
  */
-export function migrateToKvIfNeeded(kv: SQLiteStorage, dbFileName: string): void {
-  if (kv.getItemSync(MIGRATION_FLAG) === "true") return;
+export function migrateToKvIfNeeded(kv: SQLiteStorage | null, dbFileName: string): void {
+  // readCollection handles both old raw "true" and new JSON-encoded values
+  if (readCollection<any>(MIGRATION_FLAG)) return;
 
   if (Platform.OS === "web") {
-    migrateFromLocalStorage(kv);
-  } else {
+    migrateFromLocalStorage();
+  } else if (kv) {
     migrateFromSQLite(kv, dbFileName);
   }
 
-  kv.setItemSync(MIGRATION_FLAG, "true");
+  writeCollection(MIGRATION_FLAG, "true");
 }
