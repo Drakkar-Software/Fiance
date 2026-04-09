@@ -25,6 +25,8 @@
   "noTasks": "Aucune tâche",
   "addFirstTask": "Ajoutez votre première tâche ou générez le planning type",
   "addTask": "Ajouter une tâche",
+  "confirmGenerate": "Générer le planning",
+  "confirmGenerateMsg": "Cela va créer {{taskCount}} tâches réparties en {{categoryCount}} catégories. Continuer ?",
   "planningGenerated": "Planning généré",
   "planningGeneratedMsg": "Le planning type de préparation a été ajouté.",
   "existingPlanning": "Planning existant",

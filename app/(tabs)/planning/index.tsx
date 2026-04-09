@@ -26,6 +26,8 @@ import { TimelineItem } from "@/components/TimelineItem";
 import {
   generateDefaultCategories,
   generateTemplateTasks,
+  TEMPLATE_TASK_COUNT,
+  TEMPLATE_CATEGORY_COUNT,
 } from "@/lib/planning";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { deriveAuthToken } from "@/lib/identity";
@@ -106,7 +108,14 @@ function PreparationView() {
         ]
       );
     } else {
-      doGenerate();
+      Alert.alert(
+        t("confirmGenerate"),
+        t("confirmGenerateMsg", { taskCount: TEMPLATE_TASK_COUNT, categoryCount: TEMPLATE_CATEGORY_COUNT }),
+        [
+          { text: t("common:cancel"), style: "cancel" },
+          { text: t("common:confirm"), onPress: doGenerate },
+        ]
+      );
     }
   }, [categories, tasks, weddingDate]);
 

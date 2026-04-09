@@ -32,10 +32,10 @@ interface TemplateTask {
 const T = "planning:templateTasks";
 
 const TEMPLATE_TASKS: TemplateTask[] = [
-  { titleKey: `${T}.setDate`, categoryKey: "planning:categories.admin", monthsBefore: null, priority: "CRITICAL" },
-  { titleKey: `${T}.defineBudget`, categoryKey: "planning:categories.budget", monthsBefore: null, priority: "CRITICAL" },
-  { titleKey: `${T}.guestList`, categoryKey: "planning:categories.guests", monthsBefore: null, priority: "HIGH" },
-  { titleKey: `${T}.ceremonyType`, categoryKey: "planning:categories.admin", monthsBefore: null, priority: "HIGH" },
+  { titleKey: `${T}.setDate`, categoryKey: "planning:categories.admin", monthsBefore: 18, priority: "CRITICAL" },
+  { titleKey: `${T}.defineBudget`, categoryKey: "planning:categories.budget", monthsBefore: 18, priority: "CRITICAL" },
+  { titleKey: `${T}.guestList`, categoryKey: "planning:categories.guests", monthsBefore: 18, priority: "HIGH" },
+  { titleKey: `${T}.ceremonyType`, categoryKey: "planning:categories.admin", monthsBefore: 18, priority: "HIGH" },
   { titleKey: `${T}.bookVenue`, categoryKey: "planning:categories.venue", monthsBefore: 18, priority: "CRITICAL" },
   { titleKey: `${T}.bookPhotographer`, categoryKey: "planning:categories.photo", monthsBefore: 18, priority: "HIGH" },
   { titleKey: `${T}.bookVideographer`, categoryKey: "planning:categories.photo", monthsBefore: 18, priority: "MEDIUM" },
@@ -67,6 +67,9 @@ const TEMPLATE_TASKS: TemplateTask[] = [
   { titleKey: `${T}.thankGuests`, categoryKey: "planning:categories.guests", monthsBefore: -1, priority: "MEDIUM" },
   { titleKey: `${T}.collectPhotos`, categoryKey: "planning:categories.photo", monthsBefore: -2, priority: "MEDIUM" },
 ];
+
+export const TEMPLATE_TASK_COUNT = TEMPLATE_TASKS.length;
+export const TEMPLATE_CATEGORY_COUNT = CATEGORY_KEYS.length;
 
 /** Generate default categories with UUIDs */
 export function generateDefaultCategories(): TaskCategory[] {

@@ -25,6 +25,8 @@
   "noTasks": "No tasks",
   "addFirstTask": "Add your first task or generate the planning template",
   "addTask": "Add a task",
+  "confirmGenerate": "Generate planning",
+  "confirmGenerateMsg": "This will create {{taskCount}} tasks across {{categoryCount}} categories. Continue?",
   "planningGenerated": "Planning generated",
   "planningGeneratedMsg": "The planning template has been added.",
   "existingPlanning": "Existing planning",
