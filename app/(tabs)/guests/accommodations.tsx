@@ -120,8 +120,8 @@ export default function AccommodationsScreen() {
   const assignedCount = acceptedGuests.filter((g) => g.accommodationId).length;
   const remaining = totalRooms - assignedCount;
 
-  const AccommodationForm = ({ onConfirm, onCancel, confirmLabel }: { onConfirm: () => void; onCancel: () => void; confirmLabel: string }) => (
-    <FormCard>
+  const formFields = (
+    <>
       <InputRow label={t("accommodationName")} value={form.name} onChangeText={setField("name")} />
       <InputRow label={t("accommodationAddress")} value={form.address} onChangeText={setField("address")} />
       <InputRow label={t("accommodationPhone")} value={form.phone} onChangeText={setField("phone")} keyboardType="phone-pad" />
@@ -130,15 +130,7 @@ export default function AccommodationsScreen() {
       <DateRow label={t("checkOut")} value={form.checkOutDate} onChange={setField("checkOutDate")} />
       <InputRow label={t("roomCount")} value={form.roomCount} onChangeText={setField("roomCount")} keyboardType="numeric" />
       <InputRow label={t("pricePerNight")} value={form.pricePerNight} onChangeText={setField("pricePerNight")} keyboardType="numeric" />
-      <View className="flex-row gap-2 mt-2">
-        <Pressable onPress={onConfirm} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
-          <Text className="text-white font-semibold text-sm">{confirmLabel}</Text>
-        </Pressable>
-        <Pressable onPress={onCancel} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
-          <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
-        </Pressable>
-      </View>
-    </FormCard>
+    </>
   );
 
   return (
@@ -175,11 +167,17 @@ export default function AccommodationsScreen() {
           {showAdd && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{t("newAccommodation")}</Text>
-              <AccommodationForm
-                onConfirm={handleAdd}
-                onCancel={resetForm}
-                confirmLabel={t("common:create")}
-              />
+              <FormCard>
+                {formFields}
+                <View className="flex-row gap-2 mt-2">
+                  <Pressable onPress={handleAdd} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
+                    <Text className="text-white font-semibold text-sm">{t("common:create")}</Text>
+                  </Pressable>
+                  <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
+                    <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                  </Pressable>
+                </View>
+              </FormCard>
             </View>
           )}
 
@@ -193,11 +191,17 @@ export default function AccommodationsScreen() {
               return (
                 <View key={acc.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
                   <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{acc.name}</Text>
-                  <AccommodationForm
-                    onConfirm={handleSaveEdit}
-                    onCancel={resetForm}
-                    confirmLabel={t("common:save")}
-                  />
+                  <FormCard>
+                    {formFields}
+                    <View className="flex-row gap-2 mt-2">
+                      <Pressable onPress={handleSaveEdit} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
+                        <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
+                      </Pressable>
+                      <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
+                        <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                      </Pressable>
+                    </View>
+                  </FormCard>
                 </View>
               );
             }
