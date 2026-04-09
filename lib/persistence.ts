@@ -4,7 +4,7 @@
  * Each "persist" function writes the full collection from the matching Zustand store.
  */
 
-import { SQLiteStorage } from "expo-sqlite/kv-store";
+import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";

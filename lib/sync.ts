@@ -3,7 +3,7 @@
  * Handles backup document creation and restoration via Starfish
  */
 
-import { SQLiteStorage } from "expo-sqlite/kv-store";
+import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { SQLiteStorage } from "expo-sqlite/kv-store";
+import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { View, Text, ActivityIndicator } from "react-native";
 import { initStorage, getStorage, closeStorage } from "@/lib/kv-storage";
 import { hydrateAllStores, clearAllStores } from "@/lib/persistence";
