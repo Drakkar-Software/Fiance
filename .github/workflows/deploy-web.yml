@@ -34,9 +34,6 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Check migrations
-        run: pnpm check:migrations
-
       - name: Build web
         run: pnpm build:web
         env:

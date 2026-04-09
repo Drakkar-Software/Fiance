@@ -11,8 +11,6 @@ pnpm run android          # Run on Android emulator
 pnpm run ios              # Run on iOS simulator
 pnpm run web              # Run in browser
 pnpm lint                 # ESLint
-pnpm db:generate          # Generate Drizzle migrations from schema.ts
-pnpm db:push              # Apply migrations to SQLite
 pnpm build:web            # Export for Cloudflare Pages (output: dist/)
 pnpm test                 # Run tests (Vitest)
 pnpm test:watch           # Run tests in watch mode
@@ -51,12 +49,6 @@ Create `store/useNewStore.ts` with Zustand `create()`. Add table to `db/schema.t
 ### Adding a new screen
 
 Create file under `app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab entry in `app/(tabs)/_layout.tsx` if it's a new tab.
-
-### Database changes
-
-Edit `db/schema.ts`, then run `pnpm db:generate`. If a new migration file is generated, add it to the migrations list in `db/provider.tsx`. Types are inferred via Drizzle's `$inferSelect`/`$inferInsert`. Enums, labels, and color mappings live in `db/types.ts`.
-
-`pnpm db:push` is a no-op (expo-sqlite runs migrations at app startup from `db/provider.tsx`, not via drizzle-kit push). New migrations must be added manually to the `migrations` array in `db/provider.tsx`.
 
 ### Styling
 

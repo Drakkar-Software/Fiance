@@ -71,13 +71,6 @@ pnpm run ios         # iOS simulator
 pnpm run web         # Browser
 ```
 
-### Database
-
-```bash
-pnpm db:generate     # Generate Drizzle migrations from schema.ts
-pnpm db:push         # Apply migrations to SQLite
-```
-
 ## Build & Deploy
 
 ### Web (Cloudflare Pages)
