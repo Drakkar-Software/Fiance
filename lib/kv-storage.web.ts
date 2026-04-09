@@ -1,12 +1,10 @@
 /**
- * Web stub for kv-storage — uses AsyncStorage + in-memory cache.
+ * Web stub for kv-storage — uses localStorage + in-memory cache.
  * No expo-sqlite imports (no SQLite/WASM on web).
  *
  * initStorage pre-loads all keys so reads stay synchronous everywhere.
- * Writes update the cache immediately and flush to AsyncStorage in background.
+ * Writes update the cache immediately and flush to localStorage.
  */
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const webCache = new Map<string, string>();
 let webInitialized = false;
@@ -15,10 +13,10 @@ let webInitialized = false;
 const WEB_STORAGE_READY = {} as any;
 
 export async function initStorage(_databaseName: string): Promise<any> {
-  const keys = await AsyncStorage.getAllKeys();
-  if (keys.length > 0) {
-    const pairs = await AsyncStorage.multiGet(keys as string[]);
-    for (const [key, value] of pairs) {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key) {
+      const value = localStorage.getItem(key);
       if (value != null) webCache.set(key, value);
     }
   }
@@ -48,5 +46,5 @@ export function readCollection<T>(key: string): T | null {
 export function writeCollection<T>(key: string, data: T): void {
   const value = JSON.stringify(data);
   webCache.set(key, value);
-  AsyncStorage.setItem(key, value); // fire-and-forget
+  localStorage.setItem(key, value);
 }
