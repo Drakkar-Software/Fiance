@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { ChevronUp, ChevronDown, Target } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
@@ -19,6 +20,7 @@ import { InputRow, ChipSelect } from "@/components/FormSection";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const budget = useBudgetSummary();
   const vendors = useVendorsStore((s) => s.vendors);
@@ -104,8 +106,9 @@ export default function BudgetScreen() {
     );
 
   return (
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
     <ScrollView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      className="flex-1"
       showsVerticalScrollIndicator={false}
     >
       {/* Global summary */}
@@ -472,5 +475,6 @@ export default function BudgetScreen() {
 
       <View className="h-8" />
     </ScrollView>
+    </View>
   );
 }

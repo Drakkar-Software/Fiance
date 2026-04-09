@@ -8,6 +8,7 @@ import {
 } from "lucide-react-native";
 import { isBefore } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -40,6 +41,7 @@ const ASPECTS: PlanningAspect[] = ["preparation", "agenda", "day-of"];
 
 export default function PlanningScreen() {
   const { t } = useTranslation("planning");
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ aspect?: string }>();
   const initialAspect = ASPECTS.includes(params.aspect as PlanningAspect)
@@ -54,7 +56,7 @@ export default function PlanningScreen() {
   }, [params.aspect]);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950" style={{ paddingTop: insets.top }}>
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
         activeKey={aspect}

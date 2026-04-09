@@ -156,30 +156,23 @@ export default function RootLayout() {
 
   const handleUnlock = useCallback(() => setLocked(false), []);
 
-  if (locked === null) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (locked) {
-    return (
-      <>
-        <StatusBar style="auto" />
-        <LockScreen onUnlock={handleUnlock} />
-      </>
-    );
-  }
-
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
-          <AppContent />
-          <Toaster />
+          {locked === null ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator size="large" />
+            </View>
+          ) : locked ? (
+            <LockScreen onUnlock={handleUnlock} />
+          ) : (
+            <>
+              <AppContent />
+              <Toaster />
+            </>
+          )}
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
