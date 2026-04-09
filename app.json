@@ -52,7 +52,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/78314429-ee37-428e-85a6-1fa93f3286a7"
+      "url": "https://u.expo.dev/2da930dd-2220-4371-8588-05a9fe390c44"
     },
     "plugins": [
       "expo-router",
@@ -76,7 +76,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "78314429-ee37-428e-85a6-1fa93f3286a7"
+        "projectId": "2da930dd-2220-4371-8588-05a9fe390c44"
       }
     }
   }
