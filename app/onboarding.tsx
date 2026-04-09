@@ -11,9 +11,10 @@ import {
   Image,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { PlusCircle, Link, ArrowLeft, CheckCircle2 } from "lucide-react-native";
-import { generatePassphrase } from "@/lib/identity";
+import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
+import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { QRScannerScreen } from "@/components/QRScannerScreen";
 
 type Mode = "choose" | "create" | "join";
 
@@ -192,32 +193,84 @@ function JoinWeddingForm({
 }) {
   const { t } = useTranslation("common");
   const [label, setLabel] = useState(initialName || "");
-  const [password, setPassword] = useState(initialPassword || "");
+  const [password] = useState(initialPassword || "");
   const [saving, setSaving] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
-  const handleJoin = async () => {
-    if (!label.trim()) {
-      Alert.alert(t("error"), t("onboarding.nameRequired"));
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert(t("error"), t("onboarding.passwordRequired"));
-      return;
-    }
+  const handleJoin = async (name: string, pwd: string) => {
     setSaving(true);
     try {
-      await onJoin(label.trim(), password.trim());
+      await onJoin(name.trim(), pwd.trim());
     } catch (e: any) {
       Alert.alert(t("error"), e.message);
       setSaving(false);
     }
   };
 
+  const handleScanned = async (url: string) => {
+    setScanning(false);
+    const params = parseInviteUrl(url);
+    if (!params) {
+      Alert.alert(t("error"), t("onboarding.invalidQR"));
+      return;
+    }
+    await handleJoin(params.name, params.password);
+  };
+
+  // Deep link path: pre-filled from invite URL
+  if (initialPassword) {
+    return (
+      <KeyboardAvoidingView
+        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          className="flex-1 px-6"
+          contentContainerStyle={{ justifyContent: "center", flexGrow: 1 }}
+        >
+          <Pressable onPress={onBack} className="mb-6">
+            <ArrowLeft size={24} color="#9CA3AF" />
+          </Pressable>
+
+          <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {t("onboarding.joinTitle")}
+          </Text>
+
+          <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
+            {t("onboarding.weddingNameLabel")}
+          </Text>
+          <TextInput
+            className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
+            placeholder={t("onboarding.weddingNamePlaceholder")}
+            placeholderTextColor="#C0C0C8"
+            value={label}
+            onChangeText={setLabel}
+          />
+
+          <View className="flex-row items-center gap-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-100 dark:border-emerald-900 rounded-xl px-4 py-3.5 mb-8">
+            <CheckCircle2 size={18} color="#10B981" />
+            <Text className="text-sm font-medium text-emerald-700 dark:text-emerald-300 flex-1">
+              {t("onboarding.inviteReady")}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={() => handleJoin(label, password)}
+            disabled={saving}
+            className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
+          >
+            <Text className="text-white font-semibold text-base">
+              {saving ? t("onboarding.joining") : t("onboarding.join")}
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  // Manual path: scan QR code
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <ScrollView
         className="flex-1 px-6"
         contentContainerStyle={{ justifyContent: "center", flexGrow: 1 }}
@@ -229,58 +282,33 @@ function JoinWeddingForm({
         <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {t("onboarding.joinTitle")}
         </Text>
-        {!initialPassword && (
-          <Text className="text-base text-gray-400 mb-8">
-            {t("onboarding.enterPassword")}
-          </Text>
-        )}
-
-        <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-          {t("onboarding.weddingNameLabel")}
-        </Text>
-        <TextInput
-          className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
-          placeholder={t("onboarding.weddingNamePlaceholder")}
-          placeholderTextColor="#C0C0C8"
-          value={label}
-          onChangeText={setLabel}
-        />
-
-        {initialPassword ? (
-          <View className="flex-row items-center gap-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-100 dark:border-emerald-900 rounded-xl px-4 py-3.5 mb-8">
-            <CheckCircle2 size={18} color="#10B981" />
-            <Text className="text-sm font-medium text-emerald-700 dark:text-emerald-300 flex-1">
-              {t("onboarding.inviteReady")}
-            </Text>
-          </View>
-        ) : (
-          <>
-            <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
-              {t("onboarding.password")}
-            </Text>
-            <TextInput
-              className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
-              placeholder={t("onboarding.passwordPlaceholder")}
-              placeholderTextColor="#C0C0C8"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </>
-        )}
 
         <Pressable
-          onPress={handleJoin}
+          onPress={() => setScanning(true)}
           disabled={saving}
-          className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
+          className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600 mb-6"
         >
-          <Text className="text-white font-semibold text-base">
-            {saving ? t("onboarding.joining") : t("onboarding.join")}
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <ScanLine size={20} color="#fff" />
+            <Text className="text-white font-semibold text-base">
+              {t("onboarding.scanQR")}
+            </Text>
+          </View>
         </Pressable>
+
+        <View className="bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900 rounded-2xl px-5 py-4">
+          <Text className="text-sm text-primary-700 dark:text-primary-300 leading-5">
+            {t("onboarding.scanGuide")}
+          </Text>
+        </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+
+      {scanning && (
+        <QRScannerScreen
+          onScanned={handleScanned}
+          onClose={() => setScanning(false)}
+        />
+      )}
+    </View>
   );
 }

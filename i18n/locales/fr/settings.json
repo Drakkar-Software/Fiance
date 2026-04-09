@@ -20,6 +20,8 @@
   "tapToEnable": "Appuyez pour activer la synchronisation",
   "shareInviteLink": "Partager un lien d'invitation",
   "sendLinkToJoin": "Envoyer un lien pour rejoindre ce mariage",
+  "scanFromOtherDevice": "Scannez ce code depuis l'autre appareil pour rejoindre le mariage",
+  "shareLink": "Partager le lien",
   "enableSyncToShare": "Activez la synchronisation pour partager",
   "joinOurWedding": "Rejoins notre mariage sur WeddingOS !\n{{url}}",
   "myWeddings": "Mes mariages",

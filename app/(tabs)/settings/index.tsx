@@ -7,7 +7,6 @@ import {
   ScrollView,
   Pressable,
   Alert,
-  Share,
   Platform,
 } from "react-native";
 import { format } from "date-fns";
@@ -35,6 +34,7 @@ import {
 import { SectionTitle } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { RenameSheet } from "@/components/RenameSheet";
+import { InviteQRSheet } from "@/components/InviteQRSheet";
 import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
 
@@ -126,21 +126,18 @@ export default function SettingsScreen() {
     setSyncEnabled(true);
   }, [syncEnabled, activeEntry, premium]);
 
-  const handleInvite = useCallback(async () => {
-    const password = activeEntry?.seedPhrase;
-    const name = activeEntry?.label;
-    if (!password || !name) {
+  const [showInviteQR, setShowInviteQR] = useState(false);
+  const inviteUrl =
+    activeEntry?.label && activeEntry?.seedPhrase
+      ? buildInviteUrl(activeEntry.label, activeEntry.seedPhrase)
+      : "";
+
+  const handleInvite = useCallback(() => {
+    if (!activeEntry?.seedPhrase) {
       Alert.alert(t("common:error"), t("noPassword"));
       return;
     }
-    const url = buildInviteUrl(name, password);
-    try {
-      await Share.share({
-        message: t("joinOurWedding", { url }),
-      });
-    } catch {
-      // User cancelled share
-    }
+    setShowInviteQR(true);
   }, [activeEntry]);
 
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
@@ -509,6 +506,12 @@ export default function SettingsScreen() {
         setRenameWeddingId(null);
       }}
       onCancel={() => setRenameWeddingId(null)}
+    />
+
+    <InviteQRSheet
+      visible={showInviteQR}
+      onClose={() => setShowInviteQR(false)}
+      inviteUrl={inviteUrl}
     />
     </>
   );

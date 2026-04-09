@@ -52,7 +52,13 @@
     "joining": "Connexion...",
     "join": "Rejoindre",
     "inviteReady": "Invitation valide",
-    "inviteFailed": "Impossible de charger les détails du mariage"
+    "inviteFailed": "Impossible de charger les détails du mariage",
+    "scanQR": "Scanner le QR code",
+    "scanGuide": "Ouvrez WeddingOS sur l'autre appareil, allez dans Réglages → Partager un lien d'invitation pour afficher le QR code.",
+    "cameraPermissionTitle": "Accès à la caméra requis",
+    "cameraPermissionMessage": "L'accès à la caméra est nécessaire pour scanner le QR code d'invitation.",
+    "allowCamera": "Autoriser la caméra",
+    "invalidQR": "QR code invalide. Assurez-vous de scanner le QR code d'invitation WeddingOS."
   },
   "join": {
     "newWedding": "Nouveau mariage",
