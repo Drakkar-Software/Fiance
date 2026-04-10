@@ -1,1 +1,1 @@
-export * from 'sonner';
+export * from "@drakkar.software/seahorse/utils/toast";

@@ -5,6 +5,7 @@ import { AppState, View, ActivityIndicator, Text } from "react-native";
 import { Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Linking from "expo-linking";
@@ -136,6 +137,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
+        <ForgeThemeProvider theme={{ colors: { primary: "#EC4899" } }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
           {locked === null ? (
@@ -151,6 +153,7 @@ export default function RootLayout() {
             </>
           )}
         </BottomSheetModalProvider>
+        </ForgeThemeProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );
