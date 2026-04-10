@@ -33,6 +33,22 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     const runtimeFile = moduleName.replace('nativewind/', '')
     return { type: 'sourceFile', filePath: path.join(reactRuntimeDir, runtimeFile + '.js') }
   }
+  // Break the react-native-css circular dependency on web.
+  // The babel import-plugin rewrites `require("react-native")` to
+  // `require("react-native-css/components")` in all files. Inside pnpm, the plugin's
+  // __dirname-based `isFromThisModule` check fails due to symlink path mismatch, so it
+  // also rewrites react-native imports inside react-native-css's own files (e.g. web/api.js).
+  // This creates: react-native-css/components → react-native-css → web/api.js →
+  //   react-native → react-native-css/components (cycle → TDZ crash).
+  // Fix: when react-native-css internals incorrectly try to import react-native-css/components,
+  // redirect back to react-native-web (what react-native resolves to on web anyway).
+  if (
+    platform === 'web' &&
+    (moduleName === 'react-native-css/components' || moduleName === 'react-native-css') &&
+    context.originModulePath.includes('react-native-css')
+  ) {
+    return context.resolveRequest(context, 'react-native-web', platform)
+  }
   // Metro doesn't apply platform extensions inside node_modules subpath exports.
   // Redirect seahorse modules that have .web.js variants when bundling for web.
   if (platform === 'web' && moduleName.startsWith('@drakkar.software/seahorse/utils/')) {
