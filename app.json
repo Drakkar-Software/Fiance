@@ -73,7 +73,9 @@
             }
           }
         }
-      ]
+      ],
+      "expo-localization",
+      "expo-sharing"
     ],
     "extra": {
       "eas": {
