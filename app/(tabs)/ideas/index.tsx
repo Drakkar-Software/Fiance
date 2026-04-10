@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { FlashList } from "@drakkar.software/seahorse/primitives";
+import { LegendList } from "@legendapp/list";
 import { useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -298,12 +298,13 @@ export default function IdeasScreen() {
           onAction={() => navigateToIdea("new")}
         />
       ) : (
-        <FlashList
+        <LegendList
           data={filteredIdeas}
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
           estimatedItemSize={130}
+          recycleItems
           contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 96 }}
           columnWrapperStyle={{ gap: 10 }}
           ItemSeparatorComponent={() => <View className="h-2.5" />}
