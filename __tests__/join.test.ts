@@ -25,12 +25,6 @@ vi.mock("expo-linking", () => ({
   },
 }));
 
-// Mock expo-crypto (needed by identity.ts)
-vi.mock("expo-crypto", () => ({
-  getRandomValues: (arr: Uint8Array) => { for (let i = 0; i < arr.length; i++) arr[i] = i; return arr; },
-  digestStringAsync: vi.fn(async (_: string, data: string) => data + "_hashed"),
-  CryptoDigestAlgorithm: { SHA256: "SHA-256" },
-}));
 
 import { decodeInviteToken, buildInviteUrl } from "@/lib/identity";
 

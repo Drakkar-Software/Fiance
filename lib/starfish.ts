@@ -2,12 +2,17 @@
  * Starfish cloud sync integration for WeddingOS
  * Uses createStarfishStore() Zustand binding for reactive sync state
  *
- * v1.5.0: Uses built-in resilient fetch, union merge, structured logging,
- *         cross-tab sync, and restore() method.
+ * v1.6.0: Uses onRemoteUpdate (eliminates isRestoring guard) and createDebouncedSync.
  */
 
 import { Platform } from "react-native";
-import { StarfishClient, SyncManager, consoleSyncLogger, createUnionMerge } from "@drakkar.software/starfish-client";
+import {
+  StarfishClient,
+  SyncManager,
+  consoleSyncLogger,
+  createUnionMerge,
+  createDebouncedSync,
+} from "@drakkar.software/starfish-client";
 import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
 import { setupCrossTabSync } from "@drakkar.software/starfish-client/broadcast";
 import {
@@ -24,10 +29,9 @@ export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/
 
 let store: StoreApi<StarfishStore> | null = null;
 let crossTabCleanup: (() => void) | null = null;
-let isRestoring = false;
+let debouncedNotify: (() => void) | null = null;
+let debouncedCancel: (() => void) | null = null;
 let lastSyncTimestamp: string | null = null;
-let pushTimer: ReturnType<typeof setTimeout> | null = null;
-const PUSH_DEBOUNCE_MS = 2000;
 
 // Reactive listeners for sync status changes
 type SyncStatusListener = (enabled: boolean) => void;
@@ -81,7 +85,31 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     syncManager,
     storage: false,
     devtools: __DEV__,
+    onRemoteUpdate: (data) => {
+      restoreFromBackup(data, getStorage());
+      lastSyncTimestamp = new Date().toISOString();
+    },
   });
+
+  // Track last successful push
+  store.subscribe((state, prevState) => {
+    if (prevState.syncing && !state.syncing && !state.error) {
+      lastSyncTimestamp = new Date().toISOString();
+    }
+  });
+
+  const debounced = createDebouncedSync(store, {
+    delayMs: 2000,
+    serialize: () => createBackupDocument(),
+    warnBytes: 900_000,
+    maxBytes: 1_048_576,
+    onSizeWarning: (bytes) =>
+      console.warn(`[sync] Document ~${(bytes / 1024).toFixed(0)}KB approaching 1MB limit`),
+    onSizeExceeded: (bytes) =>
+      console.error(`[sync] Document ${(bytes / 1024).toFixed(0)}KB exceeds 1MB server limit, push blocked`),
+  });
+  debouncedNotify = debounced.notify;
+  debouncedCancel = debounced.cancel;
 
   notifySyncStatus(true);
 
@@ -89,30 +117,6 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
   if (Platform.OS === "web") {
     crossTabCleanup = setupCrossTabSync(store, "wedding-sync");
   }
-
-  // Only restore from explicit remote pulls (user-initiated or join flow).
-  // The subscription watches for pull results; local pushes never trigger it
-  // because notifySync uses restore() which doesn't mark dirty.
-  store.subscribe((state, prevState) => {
-    if (
-      state.data &&
-      state.data !== prevState.data &&
-      (state.data as Record<string, unknown>).version &&
-      !isRestoring
-    ) {
-      isRestoring = true;
-      try {
-        restoreFromBackup(state.data as Record<string, unknown>, getStorage());
-        lastSyncTimestamp = new Date().toISOString();
-      } finally {
-        isRestoring = false;
-      }
-    }
-    // Track last successful sync (push or pull completed without error)
-    if (prevState.syncing && !state.syncing && !state.error) {
-      lastSyncTimestamp = new Date().toISOString();
-    }
-  });
 
   return store;
 }
@@ -129,33 +133,10 @@ export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
 
 /**
  * Called by domain stores after every mutation.
- * Saves to localStorage immediately (web persistence).
- * Debounces the Starfish push to avoid feedback loops during rapid typing.
+ * Debounces the Starfish push to avoid flooding the server during rapid typing.
  */
 export function notifySync(): void {
-  if (!store || isRestoring) return;
-  // Debounce the remote push — only push after typing settles
-  if (pushTimer) clearTimeout(pushTimer);
-  pushTimer = setTimeout(() => {
-    pushTimer = null;
-    if (!store || isRestoring) return;
-    const doc = createBackupDocument();
-    const size = JSON.stringify(doc).length;
-    // Encryption adds ~33% overhead (base64); warn if approaching 1MB server limit
-    const estimatedEncryptedSize = Math.ceil(size * 1.34);
-    if (estimatedEncryptedSize > 900_000) {
-      console.warn(`[sync] Document size ${(size / 1024).toFixed(0)}KB (~${(estimatedEncryptedSize / 1024).toFixed(0)}KB encrypted) approaching 1MB server limit`);
-    }
-    if (estimatedEncryptedSize > 1_048_576) {
-      console.error("[sync] Document exceeds 1MB server limit, push may fail");
-    }
-    isRestoring = true; // prevent subscription from restoring our own push
-    try {
-      store!.getState().set(() => doc);
-    } finally {
-      isRestoring = false;
-    }
-  }, PUSH_DEBOUNCE_MS);
+  debouncedNotify?.();
 }
 
 export function getLastSyncTimestamp(): string | null {
@@ -175,10 +156,9 @@ export function getSyncStatus(): { status: SyncStatusValue; message: string } | 
 }
 
 export function teardownStarfish(): void {
-  if (pushTimer) {
-    clearTimeout(pushTimer);
-    pushTimer = null;
-  }
+  debouncedCancel?.();
+  debouncedNotify = null;
+  debouncedCancel = null;
   if (crossTabCleanup) {
     crossTabCleanup();
     crossTabCleanup = null;

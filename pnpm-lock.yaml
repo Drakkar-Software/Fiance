@@ -12,8 +12,8 @@ importers:
         specifier: ^7.29.2
         version: 7.29.2
       '@drakkar.software/starfish-client':
-        specifier: 1.5.0
-        version: 1.5.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
+        specifier: 1.6.0
+        version: 1.6.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
       '@drakkar.software/starfish-protocol':
         specifier: 1.5.0
         version: 1.5.0
@@ -758,8 +758,8 @@ packages:
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
 
-  '@drakkar.software/starfish-client@1.5.0':
-    resolution: {integrity: sha512-LGI+/jDSVUBzeqzc1dt9J858dudEgxgUdXPV10y/5t42m9ZegeT9jmenPSJuS8GDFpFwcnTlYBpbrA1RSlfDPQ==}
+  '@drakkar.software/starfish-client@1.6.0':
+    resolution: {integrity: sha512-8I20x8jW3SipIaBmWddGNwOqNef9ZOPQJh4gahy4ZKXB0zC2xau4UI3qWBtcUy54uhz8Ugz+9ZX4Y67hX5XdDQ==}
     peerDependencies:
       '@legendapp/state': '>=2.0.0'
       immer: '>=9.0.0'
@@ -6513,7 +6513,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@drakkar.software/starfish-client@1.5.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))':
+  '@drakkar.software/starfish-client@1.6.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))':
     dependencies:
       '@drakkar.software/starfish-protocol': 1.5.0
     optionalDependencies:
