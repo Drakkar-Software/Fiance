@@ -19,11 +19,19 @@ if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push
 // Force CJS @babel/runtime helpers: the ESM versions export via .default which breaks
 // pre-compiled packages (e.g. expo-router) that call require(helper)(...) directly.
 const babelRuntimeDir = path.dirname(require.resolve('@babel/runtime/package.json'))
-const seahorseRoot = path.dirname(require.resolve('@drakkar.software/seahorse/package.json'))
+const seahorseRoot = path.resolve(projectRoot, 'node_modules/@drakkar.software/seahorse')
+const reactRuntimeDir = path.dirname(require.resolve('react/package.json'))
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName.startsWith('@babel/runtime/helpers/') && !moduleName.includes('/esm/')) {
     const helperFile = path.join(babelRuntimeDir, moduleName.replace('@babel/runtime/', '') + '.js')
     return { type: 'sourceFile', filePath: helperFile }
+  }
+  // NativeWind v5 no longer ships a jsx-runtime (class transforms happen at compile time).
+  // Pre-compiled files built with jsxImportSource:"nativewind" still import it, so redirect
+  // to React's standard jsx-runtime which is the correct no-op equivalent.
+  if (moduleName === 'nativewind/jsx-runtime' || moduleName === 'nativewind/jsx-dev-runtime') {
+    const runtimeFile = moduleName.replace('nativewind/', '')
+    return { type: 'sourceFile', filePath: path.join(reactRuntimeDir, runtimeFile + '.js') }
   }
   // Metro doesn't apply platform extensions inside node_modules subpath exports.
   // Redirect seahorse modules that have .web.js variants when bundling for web.
