@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
-    "@drakkar.software/seahorse": "0.7.0",
+    "@drakkar.software/seahorse": "0.7.1",
     "@drakkar.software/starfish-client": "1.7.0",
     "@drakkar.software/starfish-protocol": "1.5.0",
     "@expo/html-elements": "^55.0.3",

@@ -25,10 +25,10 @@ export function MarketingNav() {
   ];
 
   return (
-    <View className="w-full bg-accent-cream border-b border-accent-rose-light">
+    <View className="w-full bg-accent-cream border-b border-accent-rose-light" style={{ overflow: "visible" }}>
       <View
         className="flex-row items-center justify-between px-6 py-4"
-        style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
+        style={{ maxWidth: 1100, alignSelf: "center", width: "100%", overflow: "visible" }}
       >
         {/* Logo */}
         <Pressable onPress={() => router.push("/")} className="active:opacity-70">
@@ -51,9 +51,9 @@ export function MarketingNav() {
         </View>
 
         {/* Right side actions */}
-        <View className="flex-row items-center gap-3">
+        <View className="flex-row items-center gap-3" style={{ overflow: "visible" }}>
           {/* Language dropdown */}
-          <View style={{ position: "relative" }}>
+          <View style={{ position: "relative", overflow: "visible" }}>
             <Pressable
               onPress={() => setLangOpen((o) => !o)}
               className="flex-row items-center gap-1 p-2 active:opacity-60"
