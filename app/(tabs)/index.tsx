@@ -18,8 +18,6 @@ import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp
 import { deriveAuthToken } from "@/lib/identity";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
-import { IconCard } from "@/components/IconCard";
-import { StatCard } from "@/components/StatCard";
 import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 
@@ -244,35 +242,35 @@ export default function DashboardScreen() {
 
         {/* PWA install banner — Chromium browsers */}
         {canInstall && (
-          <IconCard
-            icon={
-              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-                <Download size={20} color="#EC4899" />
-              </View>
-            }
-            title={t("installApp")}
-            subtitle={t("installAppDesc")}
-            right={<ChevronRight size={18} color="#C0C0C8" />}
+          <Pressable
             onPress={install}
-          />
+            className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+              <Download size={20} color="#EC4899" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("installApp")}</Text>
+              <Text className="text-xs text-gray-400 mt-0.5">{t("installAppDesc")}</Text>
+            </View>
+            <ChevronRight size={18} color="#C0C0C8" />
+          </Pressable>
         )}
 
         {/* PWA install banner — iOS Safari (no beforeinstallprompt support) */}
         {isIosSafari && (
-          <IconCard
-            icon={
-              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-                <Download size={20} color="#EC4899" />
-              </View>
-            }
-            title={t("installApp")}
-            subtitle={t("installIosSteps")}
-            right={
-              <Pressable onPress={dismissIosBanner} className="p-1">
-                <X size={18} color="#C0C0C8" />
-              </Pressable>
-            }
-          />
+          <View className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center">
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+              <Download size={20} color="#EC4899" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("installApp")}</Text>
+              <Text className="text-xs text-gray-400 mt-0.5">{t("installIosSteps")}</Text>
+            </View>
+            <Pressable onPress={dismissIosBanner} className="p-1">
+              <X size={18} color="#C0C0C8" />
+            </Pressable>
+          </View>
         )}
 
         {/* Budget summary card */}
@@ -315,48 +313,56 @@ export default function DashboardScreen() {
 
         {/* Guests + Planning row */}
         <View className="flex-row gap-3 mb-3">
-          <StatCard
-            icon={
-              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center">
+          <Pressable
+            onPress={() => router.push("/(tabs)/guests")}
+            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+          >
+            <View className="flex-row items-center mb-3">
+              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center mr-2.5">
                 <Users size={16} color="#E8B4B8" />
               </View>
-            }
-            label={t("guests")}
-            value={counts.accepted}
-            total={counts.total}
-            footer={t("confirmed")}
-            alert={
-              counts.no_table_count > 0 ? (
-                <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
-                  <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
-                    {t("noTable", { count: counts.no_table_count })}
-                  </Text>
-                </View>
-              ) : undefined
-            }
-            onPress={() => router.push("/(tabs)/guests")}
-          />
-          <StatCard
-            icon={
-              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center">
+              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t("guests")}
+              </Text>
+            </View>
+            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+              {counts.accepted}
+              <Text className="text-lg text-gray-300 font-normal">/{counts.total}</Text>
+            </Text>
+            <Text className="text-xs text-gray-400 mt-1">{t("confirmed")}</Text>
+            {counts.no_table_count > 0 && (
+              <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
+                <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
+                  {t("noTable", { count: counts.no_table_count })}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/(tabs)/planning")}
+            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+          >
+            <View className="flex-row items-center mb-3">
+              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
                 <Calendar size={16} color="#C9956B" />
               </View>
-            }
-            label={t("planning")}
-            value={completionRate}
-            unit="%"
-            footer={t("completed")}
-            alert={
-              overdueTasks.length > 0 ? (
-                <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
-                  <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
-                    {t("overdue", { count: overdueTasks.length })}
-                  </Text>
-                </View>
-              ) : undefined
-            }
-            onPress={() => router.push("/(tabs)/planning")}
-          />
+              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t("planning")}
+              </Text>
+            </View>
+            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+              {completionRate}
+              <Text className="text-lg text-gray-300 font-normal">%</Text>
+            </Text>
+            <Text className="text-xs text-gray-400 mt-1">{t("completed")}</Text>
+            {overdueTasks.length > 0 && (
+              <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
+                <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
+                  {t("overdue", { count: overdueTasks.length })}
+                </Text>
+              </View>
+            )}
+          </Pressable>
         </View>
 
         {/* RSVP sync — inside guests area */}
@@ -423,17 +429,19 @@ export default function DashboardScreen() {
         </Pressable>
 
         {/* Inspirations */}
-        <IconCard
-          icon={
-            <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center">
-              <Sparkles size={20} color="#A855F7" />
-            </View>
-          }
-          title={t("myInspirations")}
-          subtitle={t("idea", { count: ideaCount })}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
+        <Pressable
           onPress={() => router.push("/(tabs)/ideas")}
-        />
+          className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+        >
+          <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center mr-3">
+            <Sparkles size={20} color="#A855F7" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("myInspirations")}</Text>
+            <Text className="text-xs text-gray-400 mt-0.5">{t("idea", { count: ideaCount })}</Text>
+          </View>
+          <ChevronRight size={18} color="#C0C0C8" />
+        </Pressable>
 
         {/* Next appointments */}
         <Pressable
