@@ -45,8 +45,6 @@
     "@expo/log-box": "55.0.10",
     "@gorhom/bottom-sheet": "^5.2.9",
     "@hookform/resolvers": "^3.10.0",
-    "@legendapp/list": "^2.0.19",
-    "@legendapp/motion": "^2.5.3",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/netinfo": "^11.5.2",
     "@shopify/react-native-skia": "2.4.18",
