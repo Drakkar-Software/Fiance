@@ -10,6 +10,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Linking from "expo-linking";
 import * as Updates from "expo-updates";
 import NetInfo from "@react-native-community/netinfo";
+import { createMobileLifecycle } from "@drakkar.software/starfish-client";
 import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore } from "@/lib/starfish";
 import { parseInviteUrl } from "@/lib/identity";
@@ -125,33 +126,9 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    const appSub = AppState.addEventListener("change", (state) => {
-      const sf = getStarfishStore();
-      if (!sf) return;
-      if (state === "background") {
-        if (sf.getState().dirty) {
-          sf.getState().flush();
-        }
-      } else if (state === "active") {
-        // Pull partner's changes when returning to foreground
-        const { online, syncing } = sf.getState();
-        if (online && !syncing) {
-          sf.getState().pull().catch(() => {});
-        }
-      }
-    });
-
-    const netSub = NetInfo.addEventListener(({ isConnected }) => {
-      const sf = getStarfishStore();
-      if (sf) {
-        sf.getState().setOnline(!!isConnected);
-      }
-    });
-
-    return () => {
-      appSub.remove();
-      netSub();
-    };
+    const sf = getStarfishStore();
+    if (!sf) return;
+    return createMobileLifecycle(sf, { appState: AppState, netInfo: NetInfo });
   }, []);
 
   const handleUnlock = useCallback(() => setLocked(false), []);

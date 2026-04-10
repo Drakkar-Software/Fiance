@@ -3,7 +3,7 @@
  * to an unauthenticated Starfish collection so guests can view the timeline.
  */
 
-import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
+import { StarfishClient, SyncManager, createDedupFetch, createDebouncedPush } from "@drakkar.software/starfish-client";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
@@ -50,8 +50,8 @@ export interface FaqItem {
 }
 
 let syncManager: SyncManager | null = null;
-let pushTimer: ReturnType<typeof setTimeout> | null = null;
-const PUSH_DEBOUNCE_MS = 2000;
+let debouncedNotify: (() => void) | null = null;
+let debouncedCancel: (() => void) | null = null;
 
 export function initPublicPageSync(config: {
   serverUrl: string;
@@ -69,6 +69,13 @@ export function initPublicPageSync(config: {
     pushPath: `/push/wedding-page/${config.userId}`,
     maxRetries: 2,
   });
+
+  const debounced = createDebouncedPush(syncManager, {
+    serialize: () => buildPublicPageDocument() as unknown as Record<string, unknown>,
+    onError: (err) => console.warn("[public-page] Push failed:", err),
+  });
+  debouncedNotify = debounced.notify;
+  debouncedCancel = debounced.cancel;
 }
 
 /** Pull the current public page to seed the baseHash for subsequent pushes */
@@ -82,10 +89,9 @@ export async function pullPublicPageSync(): Promise<void> {
 }
 
 export function teardownPublicPageSync(): void {
-  if (pushTimer) {
-    clearTimeout(pushTimer);
-    pushTimer = null;
-  }
+  debouncedCancel?.();
+  debouncedNotify = null;
+  debouncedCancel = null;
   syncManager = null;
 }
 
@@ -135,18 +141,7 @@ export function buildPublicPageDocument(): PublicWeddingPage {
 
 /** Debounced push of public page data to Starfish */
 export function notifyPublicPageSync(): void {
-  if (!syncManager) return;
-  if (pushTimer) clearTimeout(pushTimer);
-  pushTimer = setTimeout(async () => {
-    pushTimer = null;
-    if (!syncManager) return;
-    try {
-      const doc = buildPublicPageDocument();
-      await syncManager.push(doc as unknown as Record<string, unknown>);
-    } catch (err) {
-      console.warn("[public-page] Push failed:", err);
-    }
-  }, PUSH_DEBOUNCE_MS);
+  debouncedNotify?.();
 }
 
 /**
