@@ -53,7 +53,7 @@ export function MarketingNav() {
             <Globe size={16} className="text-typography-500" />
           </Pressable>
           <Pressable
-            onPress={() => router.push("/")}
+            onPress={() => router.push("/home" as any)}
             className="hidden md:flex bg-primary-500 px-4 py-2 rounded-full active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("nav.openApp")}</Text>
@@ -90,7 +90,7 @@ export function MarketingNav() {
           <Pressable
             onPress={() => {
               setMenuOpen(false);
-              router.push("/");
+              router.push("/home" as any);
             }}
             className="bg-primary-500 px-4 py-3 rounded-full items-center active:opacity-70"
           >

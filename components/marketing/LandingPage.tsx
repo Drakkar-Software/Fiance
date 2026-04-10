@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView } from "react-native-css/components";
+import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -7,8 +7,6 @@ import {
   Camera, Globe, WifiOff, Lock, ShieldCheck, Star, Heart,
 } from "lucide-react-native";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { MarketingNav } from "./MarketingNav";
-import { MarketingFooter } from "./MarketingFooter";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -83,9 +81,7 @@ export function LandingPage() {
   ] as const;
 
   return (
-    <ScrollView className="flex-1 bg-accent-cream">
-      <MarketingNav />
-
+    <View className="w-full">
       {/* Hero */}
       <View className="w-full py-20 px-6 items-center bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
@@ -103,13 +99,13 @@ export function LandingPage() {
           </Text>
           <View className="flex-row gap-3 flex-wrap justify-center">
             <Pressable
-              onPress={() => router.push("/onboarding" as any)}
+              onPress={() => router.push("/home" as any)}
               className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push("/seating-chart" as any)}
+              onPress={() => router.push("/home" as any)}
               className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
@@ -205,7 +201,7 @@ export function LandingPage() {
             {t("landing.download.subtitle")}
           </Text>
           <Pressable
-            onPress={() => router.push("/onboarding" as any)}
+            onPress={() => router.push("/home" as any)}
             className="bg-primary-500 px-10 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
@@ -213,7 +209,6 @@ export function LandingPage() {
         </View>
       </View>
 
-      <MarketingFooter />
-    </ScrollView>
+    </View>
   );
 }

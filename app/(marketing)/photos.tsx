@@ -79,7 +79,7 @@ export default function PhotosPage() {
             {t("photos.hero.subheadline")}
           </Text>
           <Pressable
-            onPress={() => router.push("/onboarding" as any)}
+            onPress={() => router.push("/home" as any)}
             className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("photos.hero.ctaPrimary")}</Text>
@@ -143,7 +143,7 @@ export default function PhotosPage() {
             {t("photos.appCta.description")}
           </Text>
           <Pressable
-            onPress={() => router.push("/onboarding" as any)}
+            onPress={() => router.push("/home" as any)}
             className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("photos.appCta.cta")}</Text>

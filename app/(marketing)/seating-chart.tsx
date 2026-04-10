@@ -62,7 +62,7 @@ export default function SeatingChartPage() {
               <Text className="text-base font-semibold text-white">{t("seatingChart.hero.ctaPrimary")}</Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push("/onboarding" as any)}
+              onPress={() => router.push("/home" as any)}
               className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-primary-500">{t("seatingChart.hero.ctaSecondary")}</Text>
@@ -119,7 +119,7 @@ export default function SeatingChartPage() {
             {t("seatingChart.appCta.description")}
           </Text>
           <Pressable
-            onPress={() => router.push("/onboarding" as any)}
+            onPress={() => router.push("/home" as any)}
             className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("seatingChart.appCta.cta")}</Text>

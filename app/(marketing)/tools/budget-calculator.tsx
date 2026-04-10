@@ -202,7 +202,7 @@ export default function BudgetCalculatorTool() {
             {t("tools.appCta.description")}
           </Text>
           <Pressable
-            onPress={() => router.push("/onboarding" as any)}
+            onPress={() => router.push("/home" as any)}
             className="bg-primary-500 px-8 py-3 rounded-full active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("tools.appCta.cta")}</Text>

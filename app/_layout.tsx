@@ -34,7 +34,6 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
 import { Toaster } from "@/lib/toast/sonner";
 import OnboardingScreen from "./onboarding";
-import { LandingPage } from "@/components/marketing/LandingPage";
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -92,9 +91,6 @@ function AppContent() {
   }
 
   if (!registry || registry.weddings.length === 0) {
-    if (Platform.OS === "web") {
-      return <LandingPage />;
-    }
     return (
       <OnboardingScreen
         inviteName={inviteParams?.name}
