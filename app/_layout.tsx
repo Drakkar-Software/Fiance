@@ -132,7 +132,9 @@ export default function RootLayout() {
       colorScheme === "dark" ||
       (colorScheme === "system" && systemScheme === "dark");
 
-    Appearance.setColorScheme(colorScheme === "system" ? null : colorScheme);
+    if (Platform.OS !== "web") {
+      Appearance.setColorScheme(colorScheme === "system" ? null : colorScheme);
+    }
 
     if (Platform.OS === "web" && typeof document !== "undefined") {
       document.documentElement.classList.toggle("dark", isDark);
