@@ -1,9 +1,12 @@
 import React from "react";
 import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
 export default function IdeesLayout() {
-  const isDark = useColorScheme() === "dark";
+  const appColorScheme = useSettingsStore((s) => s.colorScheme);
+  const systemScheme = useColorScheme();
+  const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
   return (
     <Stack
       screenOptions={{

@@ -4,11 +4,13 @@ import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
 import { usePlanningStore } from "@/store/usePlanningStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const appColorScheme = useSettingsStore((s) => s.colorScheme);
+  const systemScheme = useColorScheme();
+  const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
     () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),

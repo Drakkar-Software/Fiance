@@ -12,8 +12,8 @@ importers:
         specifier: ^7.29.2
         version: 7.29.2
       '@drakkar.software/seahorse':
-        specifier: ^0.5.0
-        version: 0.5.0(d3e3aee077196fa52f44f52cccb06d28)
+        specifier: 0.6.1
+        version: 0.6.1(d3e3aee077196fa52f44f52cccb06d28)
       '@drakkar.software/starfish-client':
         specifier: 1.7.0
         version: 1.7.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
@@ -764,8 +764,8 @@ packages:
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
 
-  '@drakkar.software/seahorse@0.5.0':
-    resolution: {integrity: sha512-RH40bGydQNhKIIK8f6G/ZP7YAanFA4tk3YX9zL1ox9fGSWCu2Odkwv9dXtA+8oxKsj5fuQDTsmEfo8hkQs6QtQ==}
+  '@drakkar.software/seahorse@0.6.1':
+    resolution: {integrity: sha512-Rr7HZL5uL9/mQyR3FPcUNJFnhCMFi8qpuABlH4stBK3NhIaSe/72FjxiJn863BcSaf8qMjr16ywMXA+7gn6hMQ==}
     peerDependencies:
       '@expo/html-elements': '>=55.0.0'
       '@gorhom/bottom-sheet': '>=5.0.0'
@@ -6481,7 +6481,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@drakkar.software/seahorse@0.5.0(d3e3aee077196fa52f44f52cccb06d28)':
+  '@drakkar.software/seahorse@0.6.1(d3e3aee077196fa52f44f52cccb06d28)':
     dependencies:
       clsx: 2.1.1
       lucide-react-native: 1.8.0(react-native-svg@15.15.3(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
