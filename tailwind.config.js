@@ -1,4 +1,11 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * NOTE: This config is NOT consumed by the Tailwind v4 CSS pipeline.
+ * The project uses @tailwindcss/postcss (v4) with CSS-first configuration.
+ * All theme values (accent colors, primary overrides) live in global.css.
+ * This file is retained for IDE tooling and Storybook compatibility only.
+ *
+ * @type {import('tailwindcss').Config}
+ */
 module.exports = {
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
