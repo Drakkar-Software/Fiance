@@ -84,7 +84,7 @@ export default function BudgetCalculatorTool() {
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 800, width: "100%", alignSelf: "center" }}>
           <Pressable
-            onPress={() => router.push("/budget" as any)}
+            onPress={() => router.push("/feature/budget" as any)}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />

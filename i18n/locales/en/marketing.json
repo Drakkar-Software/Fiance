@@ -123,7 +123,7 @@
     "meta": {
       "title": "Free Wedding Seating Chart Maker | WeddingOS",
       "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Free tool included in the WeddingOS wedding planning app.",
-      "canonical": "https://wedding-os.pages.dev/seating-chart"
+      "canonical": "https://wedding-os.pages.dev/feature/seating-chart"
     },
     "hero": {
       "headline": "Wedding Seating Chart",
@@ -173,7 +173,7 @@
     "meta": {
       "title": "Free Wedding Budget Calculator & Planner | WeddingOS",
       "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Free calculator and complete mobile app.",
-      "canonical": "https://wedding-os.pages.dev/budget"
+      "canonical": "https://wedding-os.pages.dev/feature/budget"
     },
     "hero": {
       "headline": "Wedding Budget Planner",
@@ -223,7 +223,7 @@
     "meta": {
       "title": "Free & Private Wedding Photo Sharing App | WeddingOS",
       "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Free wedding photo app.",
-      "canonical": "https://wedding-os.pages.dev/photos"
+      "canonical": "https://wedding-os.pages.dev/feature/photos"
     },
     "hero": {
       "headline": "Wedding Photo Sharing",
@@ -271,7 +271,7 @@
     }
   },
   "tools": {
-    "backToTools": "← All tools",
+    "backToTools": "All tools",
     "appCta": {
       "title": "Need more features?",
       "description": "The full WeddingOS app offers all these features and much more, for free.",

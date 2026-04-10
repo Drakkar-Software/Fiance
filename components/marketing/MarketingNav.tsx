@@ -15,9 +15,9 @@ export function MarketingNav() {
   }
 
   const links = [
-    { label: t("nav.seatingChart"), href: "/seating-chart" },
-    { label: t("nav.budget"), href: "/budget" },
-    { label: t("nav.photos"), href: "/photos" },
+    { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
+    { label: t("nav.budget"), href: "/feature/budget" },
+    { label: t("nav.photos"), href: "/feature/photos" },
     { label: t("nav.tools"), href: "/tools/seating-chart" },
   ];
 

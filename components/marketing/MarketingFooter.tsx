@@ -8,9 +8,9 @@ export function MarketingFooter() {
   const router = useRouter();
 
   const featureLinks = [
-    { label: t("nav.seatingChart"), href: "/seating-chart" },
-    { label: t("nav.budget"), href: "/budget" },
-    { label: t("nav.photos"), href: "/photos" },
+    { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
+    { label: t("nav.budget"), href: "/feature/budget" },
+    { label: t("nav.photos"), href: "/feature/photos" },
   ];
 
   const toolLinks = [

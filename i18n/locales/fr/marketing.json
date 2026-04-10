@@ -123,7 +123,7 @@
     "meta": {
       "title": "Plan de table mariage gratuit | WeddingOS",
       "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Outil gratuit inclus dans l'application mariage WeddingOS.",
-      "canonical": "https://wedding-os.pages.dev/seating-chart"
+      "canonical": "https://wedding-os.pages.dev/feature/seating-chart"
     },
     "hero": {
       "headline": "Plan de table mariage",
@@ -173,7 +173,7 @@
     "meta": {
       "title": "Budget mariage gratuit — Simulateur & Calculateur | WeddingOS",
       "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur gratuit et application mobile complète.",
-      "canonical": "https://wedding-os.pages.dev/budget"
+      "canonical": "https://wedding-os.pages.dev/feature/budget"
     },
     "hero": {
       "headline": "Budget mariage",
@@ -223,7 +223,7 @@
     "meta": {
       "title": "Application partage photos mariage gratuite & privée | WeddingOS",
       "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage gratuite.",
-      "canonical": "https://wedding-os.pages.dev/photos"
+      "canonical": "https://wedding-os.pages.dev/feature/photos"
     },
     "hero": {
       "headline": "Partage de photos mariage",
@@ -271,7 +271,7 @@
     }
   },
   "tools": {
-    "backToTools": "← Tous les outils",
+    "backToTools": "Tous les outils",
     "appCta": {
       "title": "Besoin de plus de fonctionnalités ?",
       "description": "L'application complète WeddingOS offre toutes ces fonctionnalités et bien plus, gratuitement.",

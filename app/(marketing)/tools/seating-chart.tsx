@@ -153,7 +153,7 @@ export default function SeatingChartTool() {
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>
           <Pressable
-            onPress={() => router.push("/seating-chart" as any)}
+            onPress={() => router.push("/feature/seating-chart" as any)}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />
