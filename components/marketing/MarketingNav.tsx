@@ -5,14 +5,17 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { Globe, Menu, X } from "lucide-react-native";
 
+const LANGUAGES = [
+  { code: "fr", label: "Français" },
+  { code: "en", label: "English" },
+] as const;
+
 export function MarketingNav() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  function toggleLang() {
-    i18n.changeLanguage(i18n.language === "fr" ? "en" : "fr");
-  }
+  const [langOpen, setLangOpen] = useState(false);
+  const currentLang = i18n.language === "en" ? "en" : "fr";
 
   const links = [
     { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
@@ -49,9 +52,43 @@ export function MarketingNav() {
 
         {/* Right side actions */}
         <View className="flex-row items-center gap-3">
-          <Pressable onPress={toggleLang} className="p-2 active:opacity-60">
-            <Globe size={16} className="text-typography-500" />
-          </Pressable>
+          {/* Language dropdown */}
+          <View style={{ position: "relative" }}>
+            <Pressable
+              onPress={() => setLangOpen((o) => !o)}
+              className="flex-row items-center gap-1 p-2 active:opacity-60"
+            >
+              <Globe size={16} className="text-typography-500" />
+              <Text className="text-xs font-semibold text-typography-500 uppercase">{currentLang}</Text>
+            </Pressable>
+            {langOpen && (
+              <View
+                className="bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm"
+                style={{ position: "absolute", top: 36, right: 0, minWidth: 120, zIndex: 100 }}
+              >
+                {LANGUAGES.map((lang) => (
+                  <Pressable
+                    key={lang.code}
+                    onPress={() => {
+                      i18n.changeLanguage(lang.code);
+                      setLangOpen(false);
+                    }}
+                    className="px-4 py-2.5 active:opacity-60"
+                  >
+                    <Text
+                      className={`text-sm ${
+                        currentLang === lang.code
+                          ? "font-semibold text-primary-500"
+                          : "text-typography-600"
+                      }`}
+                    >
+                      {lang.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </View>
           <Pressable
             onPress={() => router.push("/home" as any)}
             className="hidden md:flex bg-primary-500 px-4 py-2 rounded-full active:opacity-70"
@@ -87,6 +124,28 @@ export function MarketingNav() {
               <Text className="text-base text-typography-700">{link.label}</Text>
             </Pressable>
           ))}
+          {/* Language selector */}
+          <View className="flex-row gap-2">
+            {LANGUAGES.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => i18n.changeLanguage(lang.code)}
+                className={`flex-1 py-2.5 rounded-xl items-center border active:opacity-70 ${
+                  currentLang === lang.code
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-white border-accent-rose-light"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-medium ${
+                    currentLang === lang.code ? "text-white" : "text-typography-600"
+                  }`}
+                >
+                  {lang.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
           <Pressable
             onPress={() => {
               setMenuOpen(false);
