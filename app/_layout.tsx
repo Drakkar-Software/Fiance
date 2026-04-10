@@ -39,7 +39,8 @@ function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
   const segments = useSegments();
-  const isPublicPage = segments[0] === "wedding" || segments[0] === "(marketing)";
+  // (marketing) routes are web-only; on native they should fall through to the app
+  const isPublicPage = segments[0] === "wedding" || (Platform.OS === "web" && segments[0] === "(marketing)");
   const [inviteParams, setInviteParams] = useState<{
     name: string;
     password: string;
@@ -91,6 +92,15 @@ function AppContent() {
   }
 
   if (!registry || registry.weddings.length === 0) {
+    if (Platform.OS !== "web") {
+      // Native: render tabs stack without DB; home.tsx shows inline onboarding
+      return (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="wedding/[id]" />
+        </Stack>
+      );
+    }
     return (
       <OnboardingScreen
         inviteName={inviteParams?.name}

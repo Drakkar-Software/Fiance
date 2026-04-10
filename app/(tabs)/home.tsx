@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native-css/components";
-import { Alert, StatusBar as RNStatusBar } from "react-native";
+import { Alert, Platform, StatusBar as RNStatusBar } from "react-native";
+import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -15,13 +16,46 @@ import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
-import { deriveAuthToken } from "@/lib/identity";
+import { deriveAuthToken, parseInviteUrl } from "@/lib/identity";
+import OnboardingScreen from "../onboarding";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 
-export default function DashboardScreen() {
+export default function HomeScreen() {
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
+  const [inviteParams, setInviteParams] = useState<{ name: string; password: string } | null>(null);
+
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        const params = parseInviteUrl(url);
+        if (params) setInviteParams(params);
+      }
+    });
+    const sub = Linking.addEventListener("url", ({ url }) => {
+      const params = parseInviteUrl(url);
+      if (params) setInviteParams(params);
+    });
+    return () => sub.remove();
+  }, []);
+
+  if (Platform.OS !== "web" && isLoaded && (!registry || registry.weddings.length === 0)) {
+    return (
+      <OnboardingScreen
+        inviteName={inviteParams?.name}
+        invitePassword={inviteParams?.password}
+      />
+    );
+  }
+
+  return <DashboardScreen />;
+}
+
+function DashboardScreen() {
   const { t } = useTranslation("dashboard");
   const insets = useSafeAreaInsets();
   // Fallback to RNStatusBar.currentHeight when safe area insets aren't populated yet

@@ -5,12 +5,16 @@ import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
+  const hasWedding = Platform.OS === "web" || (isLoaded && !!registry?.weddings.length);
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
     () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),
@@ -22,7 +26,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: "#EC4899",
         tabBarInactiveTintColor: isDark ? "#6B7280" : "#B0B0B8",
-        tabBarStyle: {
+        tabBarStyle: !hasWedding ? { display: "none" } : {
           backgroundColor: isDark ? "#111827" : "#FFFFFF",
           borderTopColor: isDark ? "#1F2937" : "#F3F4F6",
           borderTopWidth: 1,

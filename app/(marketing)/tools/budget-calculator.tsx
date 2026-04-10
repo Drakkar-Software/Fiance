@@ -75,7 +75,9 @@ export default function BudgetCalculatorTool() {
       }),
       `\nTotal: ${totalPercentage}%`,
     ];
-    await exportToPdf({ content: lines.join("\n"), filename: "budget-mariage" });
+    const content = lines.join("\n");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:40px 60px;line-height:1.7;color:#1a1a1a}pre{font-family:inherit;white-space:pre-wrap;margin:0}</style></head><body><pre>${content}</pre></body></html>`;
+    await exportToPdf(html, "budget-mariage.pdf");
   }
 
   return (

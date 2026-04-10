@@ -144,7 +144,9 @@ export default function SeatingChartTool() {
       lines.push(`\nNon assignés`);
       unassigned.forEach((g) => lines.push(`  • ${g.name}`));
     }
-    await exportToPdf({ content: lines.join("\n"), filename: "plan-de-table" });
+    const content = lines.join("\n");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:40px 60px;line-height:1.7;color:#1a1a1a}pre{font-family:inherit;white-space:pre-wrap;margin:0}</style></head><body><pre>${content}</pre></body></html>`;
+    await exportToPdf(html, "plan-de-table.pdf");
   }
 
   return (
