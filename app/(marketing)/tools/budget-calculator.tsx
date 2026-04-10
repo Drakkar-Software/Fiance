@@ -9,22 +9,21 @@ import { exportToPdf } from "@drakkar.software/seahorse/utils/file-export";
 interface Category {
   key: string;
   percentage: number;
-  color: string;
 }
 
 const DEFAULT_CATEGORIES: Category[] = [
-  { key: "venue", percentage: 38, color: "#EC4899" },
-  { key: "catering", percentage: 15, color: "#C9956B" },
-  { key: "photography", percentage: 10, color: "#7B9A7B" },
-  { key: "music", percentage: 5, color: "#E8B4B8" },
-  { key: "decoration", percentage: 8, color: "#F2E0DA" },
-  { key: "dress", percentage: 6, color: "#E8D5C0" },
-  { key: "transport", percentage: 3, color: "#D5E5D0" },
-  { key: "beauty", percentage: 3, color: "#FBF7F2" },
-  { key: "rings", percentage: 4, color: "#F5DDE0" },
-  { key: "invitations", percentage: 2, color: "#C9956B" },
-  { key: "honeymoon", percentage: 3, color: "#7B9A7B" },
-  { key: "misc", percentage: 3, color: "#EC4899" },
+  { key: "venue", percentage: 38 },
+  { key: "catering", percentage: 15 },
+  { key: "photography", percentage: 10 },
+  { key: "music", percentage: 5 },
+  { key: "decoration", percentage: 8 },
+  { key: "dress", percentage: 6 },
+  { key: "transport", percentage: 3 },
+  { key: "beauty", percentage: 3 },
+  { key: "rings", percentage: 4 },
+  { key: "invitations", percentage: 2 },
+  { key: "honeymoon", percentage: 3 },
+  { key: "misc", percentage: 3 },
 ];
 
 function formatAmount(amount: number): string {
@@ -67,17 +66,17 @@ export default function BudgetCalculatorTool() {
 
   async function handleExport() {
     const lines = [
-      `Simulateur budget mariage — ${formatAmount(budget)}\n`,
+      `${t("tools.budgetCalculator.pdfTitle")} — ${formatAmount(budget)}\n`,
       ...categories.map((c) => {
         const amount = (budget * c.percentage) / 100;
         const label = t(`tools.budgetCalculator.categories.${c.key}`);
         return `${label}: ${c.percentage}% = ${formatAmount(amount)}`;
       }),
-      `\nTotal: ${totalPercentage}%`,
+      `\n${t("tools.budgetCalculator.total")}: ${totalPercentage}%`,
     ];
     const content = lines.join("\n");
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:40px 60px;line-height:1.7;color:#1a1a1a}pre{font-family:inherit;white-space:pre-wrap;margin:0}</style></head><body><pre>${content}</pre></body></html>`;
-    await exportToPdf(html, "budget-mariage.pdf");
+    await exportToPdf(html, t("tools.budgetCalculator.pdfFilename"));
   }
 
   return (

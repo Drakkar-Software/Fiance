@@ -154,7 +154,7 @@ export default function TimelineTool() {
 
   async function handleExport() {
     const lines = [
-      "Planning Jour J\n",
+      `${t("tools.timeline.pdfTitle")}\n`,
       ...events.map((e) => {
         const parts = [`${e.time}  ${e.title}`];
         if (e.location) parts.push(`        📍 ${e.location}`);
@@ -164,7 +164,7 @@ export default function TimelineTool() {
     ];
     const content = lines.join("\n\n");
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:40px 60px;line-height:1.7;color:#1a1a1a}pre{font-family:inherit;white-space:pre-wrap;margin:0}</style></head><body><pre>${content}</pre></body></html>`;
-    await exportToPdf(html, "planning-jour-j.pdf");
+    await exportToPdf(html, t("tools.timeline.pdfFilename"));
   }
 
   return (

@@ -129,10 +129,10 @@ export default function SeatingChartTool() {
   }
 
   async function handleExport() {
-    const lines: string[] = ["Plan de table\n"];
+    const lines: string[] = [`${t("tools.seatingChart.pdfTitle")}\n`];
     for (const table of tables) {
       const assigned = guests.filter((g) => g.tableId === table.id);
-      lines.push(`\n${table.name} (${table.capacity} places)`);
+      lines.push(`\n${table.name} (${table.capacity} ${t("tools.seatingChart.seats")})`);
       if (assigned.length === 0) {
         lines.push("  —");
       } else {
@@ -141,12 +141,12 @@ export default function SeatingChartTool() {
     }
     const unassigned = guests.filter((g) => !g.tableId);
     if (unassigned.length > 0) {
-      lines.push(`\nNon assignés`);
+      lines.push(`\n${t("tools.seatingChart.pdfUnassigned")}`);
       unassigned.forEach((g) => lines.push(`  • ${g.name}`));
     }
     const content = lines.join("\n");
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:40px 60px;line-height:1.7;color:#1a1a1a}pre{font-family:inherit;white-space:pre-wrap;margin:0}</style></head><body><pre>${content}</pre></body></html>`;
-    await exportToPdf(html, "plan-de-table.pdf");
+    await exportToPdf(html, t("tools.seatingChart.pdfFilename"));
   }
 
   return (

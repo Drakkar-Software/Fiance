@@ -4,7 +4,7 @@
     "seatingChart": "Plan de table",
     "budget": "Budget",
     "photos": "Photos",
-    "tools": "Outils gratuits",
+    "tools": "Outils",
     "toolsSeatingChart": "Outil plan de table",
     "toolsBudget": "Simulateur budget",
     "toolsTimeline": "Planning jour J",
@@ -12,25 +12,25 @@
     "openApp": "Ouvrir l'app"
   },
   "footer": {
-    "tagline": "L'organisateur de mariage gratuit, privé et hors ligne.",
+    "tagline": "L'organisateur de mariage privé et hors ligne.",
     "features": "Fonctionnalités",
-    "tools": "Outils gratuits",
+    "tools": "Outils",
     "privacy": "100% Privé",
     "legal": "Mentions légales",
     "madeWith": "Fait avec ♥ pour les futurs mariés"
   },
   "landing": {
     "meta": {
-      "title": "WeddingOS — Organisez votre mariage gratuitement | Application mariage privée",
-      "description": "Application mariage gratuite et privée. Budget, plan de table, invités, prestataires, planning, checklist. Fonctionne hors ligne, zéro publicité, données 100% privées.",
+      "title": "WeddingOS — Organisez votre mariage simplement | Application mariage privée",
+      "description": "Application mariage privée. Budget, plan de table, invités, prestataires, planning, checklist. Fonctionne hors ligne, zéro publicité, données 100% privées.",
       "canonical": "https://wedding-os.pages.dev/"
     },
     "hero": {
       "headline": "Organisez votre mariage simplement",
-      "subheadline": "L'application de planification mariage gratuite, 100% privée et sans publicité. Budget, invités, plan de table, prestataires — tout en un.",
+      "subheadline": "L'application de planification mariage 100% privée et sans publicité. Budget, invités, plan de table, prestataires — tout en un.",
       "ctaPrimary": "Créer mon mariage",
       "ctaSecondary": "Rejoindre un mariage",
-      "badge": "Gratuit • Hors ligne • Sans publicité"
+      "badge": "Hors ligne • Privé • Sans publicité"
     },
     "features": {
       "title": "Tout ce dont vous avez besoin",
@@ -73,7 +73,7 @@
       }
     },
     "tools": {
-      "title": "Outils gratuits",
+      "title": "Outils en ligne",
       "subtitle": "Utilisez nos outils en ligne sans créer de compte.",
       "seatingChart": {
         "title": "Plan de table mariage",
@@ -105,10 +105,6 @@
       "encrypted": {
         "title": "Chiffrement de bout en bout",
         "description": "La synchronisation optionnelle utilise AES-256-GCM. Seuls vous et votre partenaire pouvez lire les données."
-      },
-      "free": {
-        "title": "Gratuit pour toujours",
-        "description": "Aucun abonnement, aucun achat in-app. L'application est et restera gratuite."
       }
     },
     "download": {
@@ -121,14 +117,14 @@
   },
   "seatingChart": {
     "meta": {
-      "title": "Plan de table mariage gratuit | WeddingOS",
-      "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Outil gratuit inclus dans l'application mariage WeddingOS.",
+      "title": "Plan de table mariage en ligne | WeddingOS",
+      "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Inclus dans l'application mariage WeddingOS.",
       "canonical": "https://wedding-os.pages.dev/feature/seating-chart"
     },
     "hero": {
       "headline": "Plan de table mariage",
       "subheadline": "Organisez votre plan de table facilement avec notre outil interactif. Créez, ajustez et imprimez votre placement de tables en quelques minutes.",
-      "ctaPrimary": "Essayer l'outil gratuit",
+      "ctaPrimary": "Essayer l'outil",
       "ctaSecondary": "Télécharger l'application"
     },
     "features": {
@@ -159,20 +155,20 @@
       }
     },
     "toolCta": {
-      "title": "Essayez l'outil plan de table gratuit",
+      "title": "Essayez l'outil plan de table",
       "description": "Créez votre plan de table en ligne sans créer de compte.",
-      "cta": "Utiliser l'outil gratuit"
+      "cta": "Utiliser l'outil"
     },
     "appCta": {
       "title": "Plan de table complet dans l'application",
       "description": "L'application mobile offre toutes les fonctionnalités : glisser-déposer, synchronisation avec votre liste d'invités, export PDF et plus.",
-      "cta": "Télécharger gratuitement"
+      "cta": "Télécharger l'application"
     }
   },
   "budget": {
     "meta": {
-      "title": "Budget mariage gratuit — Simulateur & Calculateur | WeddingOS",
-      "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur gratuit et application mobile complète.",
+      "title": "Budget mariage — Simulateur & Calculateur | WeddingOS",
+      "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur interactif et application mobile complète.",
       "canonical": "https://wedding-os.pages.dev/feature/budget"
     },
     "hero": {
@@ -209,20 +205,20 @@
       }
     },
     "toolCta": {
-      "title": "Simulateur de budget mariage gratuit",
+      "title": "Simulateur de budget mariage",
       "description": "Estimez la répartition idéale de votre budget selon le nombre d'invités.",
       "cta": "Simuler mon budget"
     },
     "appCta": {
       "title": "Suivi complet dans l'application",
       "description": "L'application mobile offre le suivi en temps réel, l'historique des paiements et la synchronisation avec vos prestataires.",
-      "cta": "Télécharger gratuitement"
+      "cta": "Télécharger l'application"
     }
   },
   "photos": {
     "meta": {
-      "title": "Application partage photos mariage gratuite & privée | WeddingOS",
-      "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage gratuite.",
+      "title": "Application partage photos mariage privée | WeddingOS",
+      "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage.",
       "canonical": "https://wedding-os.pages.dev/feature/photos"
     },
     "hero": {
@@ -260,31 +256,31 @@
     },
     "comparison": {
       "title": "Pourquoi pas les autres apps ?",
-      "features": ["Gratuit", "Sans publicité", "Privé", "Sans compte invité", "Hors ligne"],
+      "features": ["Sans publicité", "Privé", "Sans compte invité", "Hors ligne"],
       "weddingos": "WeddingOS",
       "others": "Autres apps"
     },
     "appCta": {
       "title": "Créez votre album photo mariage",
-      "description": "Disponible sur iOS, Android et web. Gratuit, sans abonnement.",
-      "cta": "Télécharger gratuitement"
+      "description": "Disponible sur iOS, Android et web. Aucun abonnement.",
+      "cta": "Télécharger l'application"
     }
   },
   "tools": {
     "backToTools": "Tous les outils",
     "appCta": {
       "title": "Besoin de plus de fonctionnalités ?",
-      "description": "L'application complète WeddingOS offre toutes ces fonctionnalités et bien plus, gratuitement.",
-      "cta": "Télécharger gratuitement"
+      "description": "L'application complète WeddingOS offre toutes ces fonctionnalités et bien plus.",
+      "cta": "Télécharger l'application"
     },
     "seatingChart": {
       "meta": {
-        "title": "Plan de table mariage gratuit en ligne | WeddingOS",
-        "description": "Créez votre plan de table mariage gratuitement en ligne. Ajoutez vos tables et invités, visualisez le résultat et exportez en PDF. Aucun compte requis.",
+        "title": "Plan de table mariage en ligne | WeddingOS",
+        "description": "Créez votre plan de table mariage en ligne. Ajoutez vos tables et invités, visualisez le résultat et exportez en PDF. Aucun compte requis.",
         "canonical": "https://wedding-os.pages.dev/tools/seating-chart"
       },
       "title": "Plan de table mariage",
-      "subtitle": "Créez votre plan de table gratuitement. Ajoutez vos tables, assignez vos invités, exportez en PDF.",
+      "subtitle": "Créez votre plan de table en ligne. Ajoutez vos tables, assignez vos invités, exportez en PDF.",
       "addTable": "Ajouter une table",
       "addGuest": "Ajouter un invité",
       "tableName": "Nom de la table",
@@ -308,12 +304,15 @@
       "noTables": "Aucune table — commencez par en ajouter une.",
       "noGuests": "Aucun invité — ajoutez des invités pour les assigner aux tables.",
       "deleteTable": "Supprimer la table",
-      "deleteGuest": "Supprimer"
+      "deleteGuest": "Supprimer",
+      "pdfTitle": "Plan de table",
+      "pdfUnassigned": "Non assignés",
+      "pdfFilename": "plan-de-table.pdf"
     },
     "budgetCalculator": {
       "meta": {
-        "title": "Simulateur budget mariage gratuit | WeddingOS",
-        "description": "Estimez et répartissez votre budget mariage par catégorie. Simulateur interactif gratuit. Téléchargez votre estimation en PDF.",
+        "title": "Simulateur budget mariage | WeddingOS",
+        "description": "Estimez et répartissez votre budget mariage par catégorie. Simulateur interactif. Téléchargez votre estimation en PDF.",
         "canonical": "https://wedding-os.pages.dev/tools/budget-calculator"
       },
       "title": "Simulateur de budget mariage",
@@ -329,6 +328,8 @@
       "remaining": "Restant à allouer",
       "exportPdf": "Télécharger en PDF",
       "reset": "Réinitialiser",
+      "pdfTitle": "Simulateur budget mariage",
+      "pdfFilename": "budget-mariage.pdf",
       "categories": {
         "venue": "Salle de réception",
         "catering": "Traiteur & boissons",
@@ -346,8 +347,8 @@
     },
     "timeline": {
       "meta": {
-        "title": "Planning jour J mariage gratuit | WeddingOS",
-        "description": "Créez le programme de votre journée mariage. Ajoutez, réorganisez et imprimez votre planning jour J. Modèle de planning mariage gratuit.",
+        "title": "Planning jour J mariage | WeddingOS",
+        "description": "Créez le programme de votre journée mariage. Ajoutez, réorganisez et imprimez votre planning jour J. Modèle de planning mariage.",
         "canonical": "https://wedding-os.pages.dev/tools/timeline"
       },
       "title": "Planning jour J mariage",
@@ -364,6 +365,8 @@
       "reset": "Réinitialiser avec le modèle",
       "noEvents": "Aucun événement — commencez par le modèle ou ajoutez un événement.",
       "useTemplate": "Utiliser le modèle",
+      "pdfTitle": "Planning jour J",
+      "pdfFilename": "planning-jour-j.pdf",
       "templateEvents": {
         "gettingReady": "Préparatifs de la mariée",
         "groomReady": "Préparatifs du marié",

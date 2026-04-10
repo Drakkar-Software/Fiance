@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   DollarSign, Users, LayoutGrid, Store, CalendarCheck,
-  Camera, Globe, WifiOff, Lock, ShieldCheck, Star, Heart,
+  Camera, Globe, WifiOff, Lock, ShieldCheck, Star,
 } from "lucide-react-native";
 import { usePageMeta } from "@/lib/use-page-meta";
 
@@ -77,7 +77,6 @@ export function LandingPage() {
     { key: "offline", icon: <WifiOff size={20} className="text-accent-sage" /> },
     { key: "noAds", icon: <ShieldCheck size={20} className="text-accent-sage" /> },
     { key: "encrypted", icon: <Lock size={20} className="text-accent-sage" /> },
-    { key: "free", icon: <Heart size={20} className="text-primary-400" /> },
   ] as const;
 
   return (

@@ -4,7 +4,7 @@
     "seatingChart": "Seating Chart",
     "budget": "Budget",
     "photos": "Photos",
-    "tools": "Free Tools",
+    "tools": "Tools",
     "toolsSeatingChart": "Seating chart tool",
     "toolsBudget": "Budget calculator",
     "toolsTimeline": "Day-of timeline",
@@ -12,25 +12,25 @@
     "openApp": "Open app"
   },
   "footer": {
-    "tagline": "The free, private, offline wedding planner.",
+    "tagline": "The private, offline-first wedding planner.",
     "features": "Features",
-    "tools": "Free Tools",
+    "tools": "Tools",
     "privacy": "100% Private",
     "legal": "Legal",
     "madeWith": "Made with ♥ for future newlyweds"
   },
   "landing": {
     "meta": {
-      "title": "WeddingOS — Free Wedding Planning App | Private & Offline",
-      "description": "Free, private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data.",
+      "title": "WeddingOS — Wedding Planning App | Private & Offline",
+      "description": "Private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data.",
       "canonical": "https://wedding-os.pages.dev/"
     },
     "hero": {
       "headline": "Plan your wedding, simply",
-      "subheadline": "The free, 100% private, ad-free wedding planning app. Budget, guests, seating chart, vendors — all in one place.",
+      "subheadline": "The 100% private, ad-free wedding planning app. Budget, guests, seating chart, vendors — all in one place.",
       "ctaPrimary": "Create my wedding",
       "ctaSecondary": "Join a wedding",
-      "badge": "Free • Offline • No ads"
+      "badge": "Offline • Private • No ads"
     },
     "features": {
       "title": "Everything you need",
@@ -73,7 +73,7 @@
       }
     },
     "tools": {
-      "title": "Free Tools",
+      "title": "Online Tools",
       "subtitle": "Use our online tools without creating an account.",
       "seatingChart": {
         "title": "Wedding Seating Chart",
@@ -105,10 +105,6 @@
       "encrypted": {
         "title": "End-to-end encryption",
         "description": "Optional sync uses AES-256-GCM. Only you and your partner can read the data."
-      },
-      "free": {
-        "title": "Free forever",
-        "description": "No subscription, no in-app purchases. The app is and will remain free."
       }
     },
     "download": {
@@ -121,14 +117,14 @@
   },
   "seatingChart": {
     "meta": {
-      "title": "Free Wedding Seating Chart Maker | WeddingOS",
-      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Free tool included in the WeddingOS wedding planning app.",
+      "title": "Wedding Seating Chart Maker | WeddingOS",
+      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the WeddingOS wedding planning app.",
       "canonical": "https://wedding-os.pages.dev/feature/seating-chart"
     },
     "hero": {
       "headline": "Wedding Seating Chart",
       "subheadline": "Organize your wedding seating chart easily with our interactive tool. Create, adjust and print your table layout in minutes.",
-      "ctaPrimary": "Try the free tool",
+      "ctaPrimary": "Try the tool",
       "ctaSecondary": "Download the app"
     },
     "features": {
@@ -159,25 +155,25 @@
       }
     },
     "toolCta": {
-      "title": "Try the free seating chart tool",
+      "title": "Try the seating chart tool",
       "description": "Create your seating chart online without creating an account.",
-      "cta": "Use the free tool"
+      "cta": "Use the tool"
     },
     "appCta": {
       "title": "Full seating chart in the app",
       "description": "The mobile app offers all features: drag and drop, sync with your guest list, PDF export and more.",
-      "cta": "Download for free"
+      "cta": "Download the app"
     }
   },
   "budget": {
     "meta": {
-      "title": "Free Wedding Budget Calculator & Planner | WeddingOS",
-      "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Free calculator and complete mobile app.",
+      "title": "Wedding Budget Calculator & Planner | WeddingOS",
+      "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Interactive calculator and complete mobile app.",
       "canonical": "https://wedding-os.pages.dev/feature/budget"
     },
     "hero": {
       "headline": "Wedding Budget Planner",
-      "subheadline": "Plan every euro of your wedding budget. Track expenses by category, manage deposits and visualize your balances in real time.",
+      "subheadline": "Plan every dollar of your wedding budget. Track expenses by category, manage deposits and visualize your balances in real time.",
       "ctaPrimary": "Calculate my budget",
       "ctaSecondary": "Download the app"
     },
@@ -209,20 +205,20 @@
       }
     },
     "toolCta": {
-      "title": "Free wedding budget calculator",
+      "title": "Wedding budget calculator",
       "description": "Estimate the ideal budget breakdown based on your guest count.",
       "cta": "Calculate my budget"
     },
     "appCta": {
       "title": "Complete tracking in the app",
       "description": "The mobile app offers real-time tracking, payment history and sync with your vendors.",
-      "cta": "Download for free"
+      "cta": "Download the app"
     }
   },
   "photos": {
     "meta": {
-      "title": "Free & Private Wedding Photo Sharing App | WeddingOS",
-      "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Free wedding photo app.",
+      "title": "Private Wedding Photo Sharing App | WeddingOS",
+      "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Wedding photo app.",
       "canonical": "https://wedding-os.pages.dev/feature/photos"
     },
     "hero": {
@@ -260,31 +256,31 @@
     },
     "comparison": {
       "title": "Why not other apps?",
-      "features": ["Free", "No ads", "Private", "No guest account", "Offline"],
+      "features": ["No ads", "Private", "No guest account", "Offline"],
       "weddingos": "WeddingOS",
       "others": "Other apps"
     },
     "appCta": {
       "title": "Create your wedding photo album",
-      "description": "Available on iOS, Android and web. Free, no subscription.",
-      "cta": "Download for free"
+      "description": "Available on iOS, Android and web.",
+      "cta": "Download the app"
     }
   },
   "tools": {
     "backToTools": "All tools",
     "appCta": {
       "title": "Need more features?",
-      "description": "The full WeddingOS app offers all these features and much more, for free.",
-      "cta": "Download for free"
+      "description": "The full WeddingOS app offers all these features and much more.",
+      "cta": "Download the app"
     },
     "seatingChart": {
       "meta": {
-        "title": "Free Online Wedding Seating Chart Maker | WeddingOS",
-        "description": "Create your wedding seating chart for free online. Add your tables and guests, visualize the result and export as PDF. No account required.",
+        "title": "Online Wedding Seating Chart Maker | WeddingOS",
+        "description": "Create your wedding seating chart online. Add your tables and guests, visualize the result and export as PDF. No account required.",
         "canonical": "https://wedding-os.pages.dev/tools/seating-chart"
       },
       "title": "Wedding Seating Chart Maker",
-      "subtitle": "Create your seating chart for free. Add tables, assign guests, export as PDF.",
+      "subtitle": "Create your seating chart online. Add tables, assign guests, export as PDF.",
       "addTable": "Add table",
       "addGuest": "Add guest",
       "tableName": "Table name",
@@ -308,12 +304,15 @@
       "noTables": "No tables — start by adding one.",
       "noGuests": "No guests — add guests to assign them to tables.",
       "deleteTable": "Delete table",
-      "deleteGuest": "Delete"
+      "deleteGuest": "Delete",
+      "pdfTitle": "Seating chart",
+      "pdfUnassigned": "Unassigned",
+      "pdfFilename": "seating-chart.pdf"
     },
     "budgetCalculator": {
       "meta": {
-        "title": "Free Wedding Budget Calculator | WeddingOS",
-        "description": "Estimate and allocate your wedding budget by category. Free interactive calculator. Download your estimate as PDF.",
+        "title": "Wedding Budget Calculator | WeddingOS",
+        "description": "Estimate and allocate your wedding budget by category. Interactive calculator. Download your estimate as PDF.",
         "canonical": "https://wedding-os.pages.dev/tools/budget-calculator"
       },
       "title": "Wedding Budget Calculator",
@@ -329,6 +328,8 @@
       "remaining": "Remaining to allocate",
       "exportPdf": "Download as PDF",
       "reset": "Reset",
+      "pdfTitle": "Wedding budget",
+      "pdfFilename": "wedding-budget.pdf",
       "categories": {
         "venue": "Reception venue",
         "catering": "Catering & drinks",
@@ -346,8 +347,8 @@
     },
     "timeline": {
       "meta": {
-        "title": "Free Wedding Day-of Timeline Builder | WeddingOS",
-        "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Free wedding planning timeline template.",
+        "title": "Wedding Day-of Timeline Builder | WeddingOS",
+        "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Wedding planning timeline template.",
         "canonical": "https://wedding-os.pages.dev/tools/timeline"
       },
       "title": "Wedding Day-of Timeline",
@@ -364,6 +365,8 @@
       "reset": "Reset to template",
       "noEvents": "No events — start with the template or add an event.",
       "useTemplate": "Use template",
+      "pdfTitle": "Wedding day timeline",
+      "pdfFilename": "wedding-day-timeline.pdf",
       "templateEvents": {
         "gettingReady": "Bride getting ready",
         "groomReady": "Groom getting ready",
