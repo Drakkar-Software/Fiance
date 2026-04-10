@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, useColorScheme } from "react-native";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
@@ -7,6 +7,8 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
     () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),
@@ -17,18 +19,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#EC4899",
-        tabBarInactiveTintColor: "#B0B0B8",
+        tabBarInactiveTintColor: isDark ? "#6B7280" : "#B0B0B8",
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopWidth: 0,
+          backgroundColor: isDark ? "#111827" : "#FFFFFF",
+          borderTopColor: isDark ? "#1F2937" : "#F3F4F6",
+          borderTopWidth: 1,
           elevation: 0,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.04,
           shadowRadius: 12,
-          // iOS: fixed height that includes home indicator space
-          // Android: no hardcoded height — let React Navigation + SafeAreaProvider
-          //   compute the correct height including gesture/button nav bar inset
           ...(Platform.OS === "ios" ? { paddingBottom: 0, height: 88 } : {}),
         },
         tabBarLabelStyle: {
@@ -36,6 +36,10 @@ export default function TabLayout() {
           fontWeight: "500",
           marginTop: -2,
         },
+        headerStyle: {
+          backgroundColor: isDark ? "#111827" : "#FFFFFF",
+        },
+        headerTintColor: isDark ? "#FFFFFF" : "#111827",
         headerTitleStyle: {
           fontWeight: "600",
           fontSize: 17,

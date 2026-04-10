@@ -1,7 +1,18 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
-import { AppState } from "react-native";
+import { AppState, Appearance, Platform, useColorScheme } from "react-native";
+
+// Apply dark class synchronously before React renders (prevents flash on web)
+if (typeof document !== "undefined") {
+  try {
+    const stored = localStorage.getItem("wos_color_scheme") || "system";
+    const isDark =
+      stored === "dark" ||
+      (stored === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", isDark);
+  } catch {}
+}
 import { View, ActivityIndicator, Text } from "react-native-css/components";
 import { Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -103,14 +114,30 @@ export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
   const loadNotifications = useSettingsStore((s) => s.loadNotifications);
+  const loadColorScheme = useSettingsStore((s) => s.loadColorScheme);
+  const colorScheme = useSettingsStore((s) => s.colorScheme);
+  const systemScheme = useColorScheme();
   const [locked, setLocked] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadRegistry();
-    Promise.all([loadLanguage(), loadNotifications(), isLockEnabled()]).then(
-      ([, , enabled]) => setLocked(enabled)
+    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled()]).then(
+      ([, , , enabled]) => setLocked(enabled)
     );
   }, []);
+
+  // Sync color scheme: override native Appearance + toggle CSS dark class on web
+  useEffect(() => {
+    const isDark =
+      colorScheme === "dark" ||
+      (colorScheme === "system" && systemScheme === "dark");
+
+    Appearance.setColorScheme(colorScheme === "system" ? null : colorScheme);
+
+    if (Platform.OS === "web" && typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", isDark);
+    }
+  }, [colorScheme, systemScheme]);
 
   useEffect(() => {
     if (__DEV__) return;

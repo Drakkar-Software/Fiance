@@ -38,6 +38,7 @@
     },
     "web": {
       "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/favicon.png",
       "name": "WeddingOS — Organisez votre mariage",
       "shortName": "WeddingOS",

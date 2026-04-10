@@ -37,6 +37,8 @@ export default function SettingsScreen() {
   const { t } = useTranslation("settings");
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
+  const colorScheme = useSettingsStore((s) => s.colorScheme);
+  const setColorScheme = useSettingsStore((s) => s.setColorScheme);
   const tasks = usePlanningStore((s) => s.tasks);
 
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -423,6 +425,32 @@ export default function SettingsScreen() {
               English
             </Text>
           </Pressable>
+        </View>
+      </View>
+
+      {/* Appearance */}
+      <View className="px-4 mt-4">
+        <SectionTitle>{t("appearance")}</SectionTitle>
+        <View className="flex-row gap-2">
+          {(["system", "light", "dark"] as const).map((scheme) => (
+            <Pressable
+              key={scheme}
+              onPress={() => setColorScheme(scheme)}
+              className={`flex-1 py-3 rounded-2xl items-center border ${
+                colorScheme === scheme
+                  ? "bg-primary-500 border-primary-500"
+                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+              }`}
+            >
+              <Text
+                className={`text-sm font-medium ${
+                  colorScheme === scheme ? "text-white" : "text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                {t(`theme${scheme.charAt(0).toUpperCase()}${scheme.slice(1)}` as "themeSystem" | "themeLight" | "themeDark")}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </View>
 

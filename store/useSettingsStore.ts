@@ -5,19 +5,26 @@ import { getLocales } from "expo-localization";
 import i18n from "@/i18n";
 
 type Language = "en" | "fr";
+type ColorScheme = "system" | "light" | "dark";
+
+const COLOR_SCHEME_KEY = "wos_color_scheme";
 
 interface SettingsState {
   language: Language;
   notificationsEnabled: boolean;
+  colorScheme: ColorScheme;
   setLanguage: (lang: Language) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
+  setColorScheme: (scheme: ColorScheme) => void;
   loadLanguage: () => Promise<void>;
   loadNotifications: () => Promise<void>;
+  loadColorScheme: () => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
   language: "fr",
   notificationsEnabled: Platform.OS !== "web",
+  colorScheme: "system",
   setLanguage: (lang) => {
     set({ language: lang });
     i18n.changeLanguage(lang);
@@ -26,6 +33,14 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setNotificationsEnabled: (enabled) => {
     set({ notificationsEnabled: enabled });
     secureSet("notifications_enabled", enabled ? "true" : "false");
+  },
+  setColorScheme: (scheme) => {
+    set({ colorScheme: scheme });
+    if (Platform.OS === "web") {
+      try { localStorage.setItem(COLOR_SCHEME_KEY, scheme); } catch {}
+    } else {
+      secureSet(COLOR_SCHEME_KEY, scheme);
+    }
   },
   loadLanguage: async () => {
     const stored = await secureGet("app_language");
@@ -49,5 +64,16 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       set({ notificationsEnabled: stored === "true" });
     }
     // Default remains true on native if never set
+  },
+  loadColorScheme: async () => {
+    let stored: string | null = null;
+    if (Platform.OS === "web") {
+      try { stored = localStorage.getItem(COLOR_SCHEME_KEY); } catch {}
+    } else {
+      stored = await secureGet(COLOR_SCHEME_KEY);
+    }
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      set({ colorScheme: stored as ColorScheme });
+    }
   },
 }));

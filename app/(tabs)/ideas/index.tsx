@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, FlatList } from "react-native-css/components";
-import { useWindowDimensions } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { FlatList, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
