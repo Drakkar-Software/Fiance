@@ -24,7 +24,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>((set) => ({
   language: "fr",
   notificationsEnabled: Platform.OS !== "web",
-  colorScheme: "system",
+  colorScheme: "light",
   setLanguage: (lang) => {
     set({ language: lang });
     i18n.changeLanguage(lang);
@@ -72,8 +72,9 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     } else {
       stored = await secureGet(COLOR_SCHEME_KEY);
     }
-    if (stored === "light" || stored === "dark" || stored === "system") {
-      set({ colorScheme: stored as ColorScheme });
+    if (stored === "light" || stored === "dark") {
+      set({ colorScheme: stored });
     }
+    // "system" stored from a previous version is discarded; default "light" remains
   },
 }));

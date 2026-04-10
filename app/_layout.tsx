@@ -6,7 +6,7 @@ import { AppState, Appearance, Platform, useColorScheme } from "react-native";
 // Apply dark class synchronously before React renders (prevents flash on web)
 if (typeof document !== "undefined") {
   try {
-    const stored = localStorage.getItem("wos_color_scheme") || "system";
+    const stored = localStorage.getItem("wos_color_scheme") || "light";
     const isDark =
       stored === "dark" ||
       (stored === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);

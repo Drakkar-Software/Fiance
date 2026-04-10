@@ -432,7 +432,7 @@ export default function SettingsScreen() {
       <View className="px-4 mt-4">
         <SectionTitle>{t("appearance")}</SectionTitle>
         <View className="flex-row gap-2">
-          {(["system", "light", "dark"] as const).map((scheme) => (
+          {(["light", "dark"] as const).map((scheme) => (
             <Pressable
               key={scheme}
               onPress={() => setColorScheme(scheme)}
