@@ -1,3 +1,41 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";
+
+@import "@drakkar.software/seahorse/tailwind-theme";
+
+@source "./app/**/*.{ts,tsx}";
+@source "./components/**/*.{ts,tsx}";
+@source "./components/**/*.stories.{ts,tsx}";
+
+/* WeddingOS brand: override primary palette to pink */
+:root {
+  --color-primary-0: 255 245 251;
+  --color-primary-50: 253 242 248;
+  --color-primary-100: 252 231 243;
+  --color-primary-200: 251 207 232;
+  --color-primary-300: 249 168 212;
+  --color-primary-400: 244 114 182;
+  --color-primary-500: 236 72 153;
+  --color-primary-600: 219 39 119;
+  --color-primary-700: 190 24 93;
+  --color-primary-800: 157 23 77;
+  --color-primary-900: 131 24 67;
+  --color-primary-950: 80 7 36;
+}
+
+:root.dark {
+  --color-primary-0: 80 7 36;
+  --color-primary-50: 131 24 67;
+  --color-primary-100: 157 23 77;
+  --color-primary-200: 190 24 93;
+  --color-primary-300: 219 39 119;
+  --color-primary-400: 236 72 153;
+  --color-primary-500: 244 114 182;
+  --color-primary-600: 249 168 212;
+  --color-primary-700: 251 207 232;
+  --color-primary-800: 252 231 243;
+  --color-primary-900: 253 242 248;
+  --color-primary-950: 255 245 251;
+}
