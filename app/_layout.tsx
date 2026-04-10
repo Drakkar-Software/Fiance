@@ -34,12 +34,13 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
 import { Toaster } from "@/lib/toast/sonner";
 import OnboardingScreen from "./onboarding";
+import { LandingPage } from "@/components/marketing/LandingPage";
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
   const segments = useSegments();
-  const isPublicPage = segments[0] === "wedding";
+  const isPublicPage = segments[0] === "wedding" || segments[0] === "(marketing)";
   const [inviteParams, setInviteParams] = useState<{
     name: string;
     password: string;
@@ -76,6 +77,7 @@ function AppContent() {
     return (
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="wedding/[id]" />
+        <Stack.Screen name="(marketing)" />
       </Stack>
     );
   }
@@ -90,6 +92,9 @@ function AppContent() {
   }
 
   if (!registry || registry.weddings.length === 0) {
+    if (Platform.OS === "web") {
+      return <LandingPage />;
+    }
     return (
       <OnboardingScreen
         inviteName={inviteParams?.name}

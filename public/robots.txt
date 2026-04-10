@@ -1,6 +1,10 @@
 User-agent: *
 Allow: /
 Allow: /wedding/
+Allow: /seating-chart
+Allow: /budget
+Allow: /photos
+Allow: /tools/
 
 Disallow: /_expo/
 Disallow: /assets/

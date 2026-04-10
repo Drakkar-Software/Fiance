@@ -22,7 +22,6 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="keywords" content={seo.keywords} />
         <meta name="author" content="WeddingOS" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://wedding-os.pages.dev/" />
 
         {/* Alternate language */}
         <link rel="alternate" hrefLang="fr" href="https://wedding-os.pages.dev/" />
