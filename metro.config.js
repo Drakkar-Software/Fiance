@@ -40,12 +40,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // also rewrites react-native imports inside react-native-css's own files (e.g. web/api.js).
   // This creates: react-native-css/components → react-native-css → web/api.js →
   //   react-native → react-native-css/components (cycle → TDZ crash).
-  // Fix: when react-native-css internals incorrectly try to import react-native-css/components,
-  // redirect back to react-native-web (what react-native resolves to on web anyway).
+  // @legendapp/list also does require('react-native') which gets rewritten the same way,
+  // causing a TDZ crash when FlashList (from seahorse/primitives) is used on web.
+  // Fix: redirect react-native-css/components requests from these packages to react-native-web.
   if (
     platform === 'web' &&
     (moduleName === 'react-native-css/components' || moduleName === 'react-native-css') &&
-    context.originModulePath.includes('react-native-css')
+    (context.originModulePath.includes('react-native-css') || context.originModulePath.includes('@legendapp/'))
   ) {
     return context.resolveRequest(context, 'react-native-web', platform)
   }
