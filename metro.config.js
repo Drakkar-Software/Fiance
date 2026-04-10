@@ -45,4 +45,8 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return context.resolveRequest(context, moduleName, platform)
 }
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+// globalClassNamePolyfill: false — avoids react-native-css/components circular
+// dependency on web (FlatList.js imports react-native-css which imports back
+// into components). The nativewind/babel import-plugin handles className→style
+// transforms at compile time instead, which doesn't trigger the cycle.
+module.exports = withNativeWind(config, { input: "./global.css", globalClassNamePolyfill: false });
