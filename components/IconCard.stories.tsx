@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook/react";
 import React from "react";
-import { Text } from "react-native";
+import { Text } from "react-native-css/components";
 import { fn } from "storybook/test";
 import { Camera, MapPin, ChevronRight } from "lucide-react";
 import { IconCard } from "./IconCard";

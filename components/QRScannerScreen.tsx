@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable } from "react-native-css/components";
+import { StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react-native";

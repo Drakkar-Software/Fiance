@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook/react";
 import React from "react";
-import { Text } from "react-native";
+import { Text } from "react-native-css/components";
 import { CollapsibleSection } from "./CollapsibleSection";
 
 const meta: Meta<typeof CollapsibleSection> = {

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Briefcase } from "lucide-react-native";
 import { useTranslation } from "react-i18next";

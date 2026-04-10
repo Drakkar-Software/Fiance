@@ -1,12 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  ScrollView,
-  useWindowDimensions,
-} from "react-native";
+import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/components";
+import { useWindowDimensions } from "react-native";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useGuestsStore } from "@/store/useGuestsStore";

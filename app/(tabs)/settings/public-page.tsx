@@ -1,13 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Share,
-  Alert,
-  Linking,
-} from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Share, Alert, Linking } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";

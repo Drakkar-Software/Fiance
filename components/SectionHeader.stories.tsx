@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook/react";
 import React from "react";
-import { Text, Pressable } from "react-native";
+import { Text, Pressable } from "react-native-css/components";
 import { Settings } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 

@@ -1,7 +1,8 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
-import { AppState, View, ActivityIndicator, Text } from "react-native";
+import { AppState } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native-css/components";
 import { Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

@@ -1,12 +1,6 @@
 import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
-  Linking,
-} from "react-native";
+import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
+import { Linking } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {

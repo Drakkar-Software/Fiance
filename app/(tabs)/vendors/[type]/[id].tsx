@@ -1,12 +1,6 @@
 import React, { useState, useMemo } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
+import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";

@@ -1,6 +1,6 @@
 import type { Preview } from "storybook/react";
 import React from "react";
-import { View } from "react-native";
+import { View } from "react-native-css/components";
 import "../global.css";
 import "./i18n";
 

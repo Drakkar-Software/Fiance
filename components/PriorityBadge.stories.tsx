@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook/react";
 import React from "react";
-import { View } from "react-native";
+import { View } from "react-native-css/components";
 import { PriorityBadge } from "./PriorityBadge";
 
 const meta: Meta<typeof PriorityBadge> = {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TextInput, Alert } from "react-native";
+import { View, Text, ScrollView, TextInput } from "react-native-css/components";
+import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";

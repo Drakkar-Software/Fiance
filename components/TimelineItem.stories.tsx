@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook/react";
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text } from "react-native-css/components";
 import { fn } from "storybook/test";
 import { Circle, CheckCircle2 } from "lucide-react";
 import { TimelineItem } from "./TimelineItem";

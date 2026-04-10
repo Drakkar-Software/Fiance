@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, Alert, Share } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Alert, Share } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {

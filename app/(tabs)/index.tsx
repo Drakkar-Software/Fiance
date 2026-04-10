@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator, StatusBar as RNStatusBar } from "react-native";
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native-css/components";
+import { Alert, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";

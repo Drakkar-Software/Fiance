@@ -1,11 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";

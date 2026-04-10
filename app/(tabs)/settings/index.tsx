@@ -1,14 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Alert,
-  Platform,
-} from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Alert, Platform } from "react-native";
 import { format } from "date-fns";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, BedDouble } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";

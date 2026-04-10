@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  Alert,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Image,
-} from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
+import { Alert, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
 import { generatePassphrase, parseInviteUrl } from "@/lib/identity";

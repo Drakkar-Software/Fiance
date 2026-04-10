@@ -1,12 +1,6 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Image,
-  Dimensions,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, Image } from "react-native-css/components";
+import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";

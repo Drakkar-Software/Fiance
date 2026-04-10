@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
+import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";

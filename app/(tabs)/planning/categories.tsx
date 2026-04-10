@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView } from "react-native-css/components";
 import { usePlanningStore } from "@/store/usePlanningStore";
 
 export default function CategoriesScreen() {

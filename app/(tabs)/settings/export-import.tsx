@@ -1,11 +1,6 @@
 import React, { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, Download, Upload, FileText, Table2 } from "lucide-react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";

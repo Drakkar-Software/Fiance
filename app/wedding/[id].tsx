@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, Platform, TextInput, Linking } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, TextInput } from "react-native-css/components";
+import { Platform, Linking } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";

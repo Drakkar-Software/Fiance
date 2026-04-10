@@ -1,12 +1,6 @@
 import React, { useState, useMemo } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
