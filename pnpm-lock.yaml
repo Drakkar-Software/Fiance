@@ -19,6 +19,7 @@ specifiers:
   '@expo/log-box': 55.0.10
   '@gorhom/bottom-sheet': ^5.2.9
   '@hookform/resolvers': ^3.10.0
+  '@legendapp/list': '>=1.0.0'
   '@react-native-async-storage/async-storage': ^2.2.0
   '@react-native-community/netinfo': ^11.5.2
   '@sentry/react-native': ^6.0.0
@@ -88,7 +89,7 @@ specifiers:
 
 dependencies:
   '@babel/runtime': 7.29.2
-  '@drakkar.software/seahorse': 0.7.2_2f9c7da62a0635a9594ae46a9a16327b
+  '@drakkar.software/seahorse': 0.7.2_8637144bf9d9281092b3101b64016147
   '@drakkar.software/starfish-client': 1.11.0_react@19.2.0+zustand@5.0.12
   '@drakkar.software/starfish-protocol': 1.11.0
   '@drakkar.software/sunglasses-adapter-console': 0.3.0
@@ -101,6 +102,7 @@ dependencies:
   '@expo/log-box': 55.0.10_4a4e258826428e0609ba6dd8832c630b
   '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
   '@hookform/resolvers': 3.10.0_react-hook-form@7.72.1
+  '@legendapp/list': 2.0.19_react-native@0.83.4+react@19.2.0
   '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.4
   '@react-native-community/netinfo': 11.5.2_react-native@0.83.4+react@19.2.0
   '@sentry/react-native': 6.22.0_4a4e258826428e0609ba6dd8832c630b
@@ -1238,7 +1240,7 @@ packages:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  /@drakkar.software/seahorse/0.7.2_2f9c7da62a0635a9594ae46a9a16327b:
+  /@drakkar.software/seahorse/0.7.2_8637144bf9d9281092b3101b64016147:
     resolution: {integrity: sha512-0djajUn6NTzAs1AmzCoucb9AB/uM9ZrbsRNe4oVdHxl0DAf6mgAcZqeTL0veWY0bBvejknY4b/HlBu1hBBxARQ==}
     peerDependencies:
       '@expo/html-elements': '>=55.0.0'
@@ -1304,6 +1306,7 @@ packages:
     dependencies:
       '@expo/html-elements': 55.0.3_508cc241f94123043423c9a0ef98e530
       '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
+      '@legendapp/list': 2.0.19_react-native@0.83.4+react@19.2.0
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.4
       clsx: 2.1.1
       date-fns: 3.6.0
@@ -2383,6 +2386,17 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  /@legendapp/list/2.0.19_react-native@0.83.4+react@19.2.0:
+    resolution: {integrity: sha512-zDWg8yg0smKxxk+M7gwAbZAnf5uczohPA+IjqLSkImz7+e9ytxeT0Mq35RBO9RTKODOXfV/aIgm1uqUHLBEdmg==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 19.2.0
+      react-native: 0.83.4_c933ad1581318756add432bf45df9101
+      use-sync-external-store: 1.6.0_react@19.2.0
+    dev: false
 
   /@napi-rs/wasm-runtime/0.2.12:
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
