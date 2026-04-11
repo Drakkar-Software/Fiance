@@ -19,6 +19,13 @@ export async function deriveUserId(seedPhrase: string): Promise<string> {
   return authToken.slice(0, 16);
 }
 
+/** Resolve server URL from entry or env fallback. */
+export function resolveServerUrl(
+  entry?: WeddingRegistryEntry | null,
+): string | null {
+  return entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL!;
+}
+
 /**
  * Resolve full server credentials from a registry entry.
  * Returns null if seedPhrase or serverUrl (direct or env) is missing.
@@ -27,7 +34,7 @@ export async function resolveServerConfig(
   entry: WeddingRegistryEntry | null | undefined,
 ): Promise<ServerConfig | null> {
   const password = entry?.seedPhrase;
-  const serverUrl = entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL!;
+  const serverUrl = resolveServerUrl(entry);
   if (!password || !serverUrl) return null;
   const authToken = await deriveAuthToken(password);
   const userId = authToken.slice(0, 16);

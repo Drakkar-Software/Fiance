@@ -17,7 +17,7 @@ import {
   onSyncStatusChange,
 } from "@/lib/starfish";
 import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
-import { resolveServerConfig } from "@/lib/server";
+import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -94,7 +94,7 @@ export default function SettingsScreen() {
 
     if (!premium) return; // blocked by UI, but guard anyway
 
-    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
+    const serverUrl = resolveServerUrl(activeEntry);
     if (!activeEntry?.seedPhrase || !serverUrl) {
       Alert.alert(t("syncImpossible"), t("noServerOrPassword"));
       return;

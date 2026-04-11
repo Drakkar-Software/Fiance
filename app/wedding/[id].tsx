@@ -9,6 +9,7 @@ import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { printPublicSchedule } from "@/lib/print-schedule";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
+import { resolveServerUrl } from "@/lib/server";
 import { TimelineItem } from "@/components/TimelineItem";
 
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
@@ -69,7 +70,7 @@ export default function WeddingPublicPage() {
 
   useEffect(() => {
     if (!id) return;
-    const serverUrl = process.env.EXPO_PUBLIC_SYNC_URL;
+    const serverUrl = resolveServerUrl();
     if (!serverUrl) {
       setError(true);
       setLoading(false);
@@ -555,7 +556,7 @@ export default function WeddingPublicPage() {
                           onPress={async () => {
                             if (!rsvpStatus || submitting) return;
                             setSubmitting(true);
-                            const serverUrl = process.env.EXPO_PUBLIC_SYNC_URL;
+                            const serverUrl = resolveServerUrl();
                             if (!serverUrl) { setSubmitting(false); return; }
                             const ok = await submitRsvp(serverUrl, id!, {
                               rsvpToken: selectedGuest.rsvpToken,
