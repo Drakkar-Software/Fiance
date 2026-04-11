@@ -21,6 +21,7 @@ import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
+import * as Sentry from "@sentry/react-native";
 import NetInfo from "@react-native-community/netinfo";
 import { createMobileLifecycle } from "@drakkar.software/starfish-client";
 import { getStarfishStore } from "@/lib/starfish";
@@ -29,6 +30,26 @@ import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
+import { SunglassesProvider, useSunglasses, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
+import { SunglassesErrorBoundary, createSentryBeforeSend } from "@drakkar.software/sunglasses-error-capture";
+import { initAnalytics, getAnalyticsCore } from "@/lib/analytics";
+import type { SunglassesCore } from "@drakkar.software/sunglasses-core";
+
+// Initialize Sentry at module load — before any components render.
+// beforeSend lazily accesses the analytics client once it's ready.
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  beforeSend: (event: any, hint: any) => {
+    const core = getAnalyticsCore();
+    if (!core) return process.env.EXPO_PUBLIC_SENTRY_DSN ? event : null;
+    return (createSentryBeforeSend(core, {
+      suppressSentrySend: !process.env.EXPO_PUBLIC_SENTRY_DSN,
+      maxMessageLength: 200,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any)(event, hint);
+  },
+});
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -88,6 +109,23 @@ function AppContent() {
   );
 }
 
+function InnerApp() {
+  const client = useSunglasses();
+  useExpoRouterScreenTracking(client);
+  return (
+    <>
+      <AppContent />
+      <Toaster />
+    </>
+  );
+}
+
+const crashFallback = (
+  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text>Une erreur inattendue s'est produite. Veuillez relancer l'application.</Text>
+  </View>
+);
+
 export default function RootLayout() {
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
@@ -96,11 +134,15 @@ export default function RootLayout() {
   const colorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const [locked, setLocked] = useState<boolean | null>(null);
+  const [analyticsClient, setAnalyticsClient] = useState<SunglassesCore | null>(null);
 
   useEffect(() => {
     loadRegistry();
-    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled()]).then(
-      ([, , , enabled]) => setLocked(enabled)
+    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled(), initAnalytics()]).then(
+      ([, , , enabled, client]) => {
+        setLocked(enabled);
+        setAnalyticsClient(client);
+      }
     );
   }, []);
 
@@ -111,7 +153,8 @@ export default function RootLayout() {
       (colorScheme === "system" && systemScheme === "dark");
 
     if (Platform.OS !== "web") {
-      Appearance.setColorScheme(colorScheme === "system" ? null : colorScheme);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      Appearance.setColorScheme(colorScheme === "system" ? undefined : colorScheme as any);
     }
 
     if (Platform.OS === "web" && typeof document !== "undefined") {
@@ -148,17 +191,18 @@ export default function RootLayout() {
         <ForgeThemeProvider theme={{ colors: { primary: "#EC4899" } }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
-          {locked === null ? (
+          {locked === null || analyticsClient === null ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" />
             </View>
           ) : locked ? (
             <LockScreen onUnlock={handleUnlock} />
           ) : (
-            <>
-              <AppContent />
-              <Toaster />
-            </>
+            <SunglassesErrorBoundary client={analyticsClient} fallback={crashFallback}>
+              <SunglassesProvider client={analyticsClient}>
+                <InnerApp />
+              </SunglassesProvider>
+            </SunglassesErrorBoundary>
           )}
         </BottomSheetModalProvider>
         </ForgeThemeProvider>

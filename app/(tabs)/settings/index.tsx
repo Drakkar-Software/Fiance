@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
+import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
+import { analytics, starfishAnalyticsAdapter } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
@@ -80,6 +82,17 @@ export default function SettingsScreen() {
     return sf.subscribe(update);
   }, [syncEnabled, t]);
 
+  const analyticsClient = useSunglasses();
+  const [analyticsConsented, setAnalyticsConsented] = useState(
+    analyticsClient.getConsentStatus() === "opted-in"
+  );
+
+  const handleToggleAnalytics = useCallback(async (value: boolean) => {
+    if (value) await analyticsClient.optIn();
+    else await analyticsClient.optOut();
+    setAnalyticsConsented(value);
+  }, [analyticsClient]);
+
   const premium = isPremium();
 
   const handleToggleSync = useCallback(async () => {
@@ -87,6 +100,8 @@ export default function SettingsScreen() {
 
     if (syncEnabled) {
       teardownStarfish();
+      starfishAnalyticsAdapter.deactivate();
+      analytics.capture("sync_disabled");
       setSyncEnabled(false);
       updateRegistryWedding(activeEntry.id, { syncDisabled: true });
       return;
@@ -109,6 +124,8 @@ export default function SettingsScreen() {
     if (!config) return;
 
     initStarfish(config);
+    starfishAnalyticsAdapter.activate(config.serverUrl, config.authToken);
+    analytics.capture("sync_enabled");
     setSyncEnabled(true);
   }, [syncEnabled, activeEntry, premium]);
 
@@ -441,6 +458,22 @@ export default function SettingsScreen() {
         }}
         onCancel={() => setShowPinSetup(false)}
       />
+
+      {/* Analytics */}
+      <View className="px-4 mt-4">
+        <SectionTitle>{t("analytics")}</SectionTitle>
+        <ToggleCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+              <Text style={{ fontSize: 18 }}>📊</Text>
+            </View>
+          }
+          title={t("analyticsToggle")}
+          subtitle={analyticsConsented ? t("analyticsOnDesc") : t("analyticsOffDesc")}
+          enabled={analyticsConsented}
+          onToggle={() => handleToggleAnalytics(!analyticsConsented)}
+        />
+      </View>
 
       {/* About */}
       <View className="px-4 mt-4 mb-8">

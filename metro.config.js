@@ -1,6 +1,7 @@
 const path = require('node:path')
 const { withNativeWind } = require('nativewind/metro')
 const { getDefaultConfig } = require("expo/metro-config");
+const { withSentryConfig } = require("@sentry/react-native/metro");
 
 const projectRoot = __dirname
 const workspaceRoot = projectRoot
@@ -40,4 +41,4 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return resolve(context, moduleName, platform)
 }
 
-module.exports = withNativeWind(config, { input: './global.css' })
+module.exports = withSentryConfig(withNativeWind(config, { input: './global.css' }))
