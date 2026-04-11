@@ -6,6 +6,7 @@
 import * as Crypto from "expo-crypto";
 import { deleteDatabaseAsync } from "expo-sqlite";
 import { secureGet, secureSet } from "./secure-store";
+import { resolveServerUrl } from "./server";
 
 const REGISTRY_KEY = "wedding_registry";
 
@@ -55,7 +56,7 @@ export async function createWeddingEntry(
     dbFileName: `wedding_${id}.db`,
     createdAt: new Date().toISOString(),
     seedPhrase,
-    serverUrl: serverUrl || process.env.EXPO_PUBLIC_SYNC_URL,
+    serverUrl: resolveServerUrl(serverUrl),
   };
 
   const registry = await loadRegistry();

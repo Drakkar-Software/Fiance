@@ -19,11 +19,15 @@ export async function deriveUserId(seedPhrase: string): Promise<string> {
   return authToken.slice(0, 16);
 }
 
-/** Resolve server URL from entry or env fallback. */
+/** Resolve server URL from an entry, a bare URL string, or the env fallback. */
 export function resolveServerUrl(
-  entry?: WeddingRegistryEntry | null,
-): string | null {
-  return entry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL!;
+  entryOrUrl?: WeddingRegistryEntry | string | null,
+): string | undefined {
+  if (process.env.EXPO_PUBLIC_SYNC_URL!) {
+    return process.env.EXPO_PUBLIC_SYNC_URL
+  }
+  const url = typeof entryOrUrl === "string" ? entryOrUrl : entryOrUrl?.serverUrl;
+  return url;
 }
 
 /**
