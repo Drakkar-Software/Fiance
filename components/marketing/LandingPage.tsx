@@ -70,7 +70,6 @@ export function LandingPage() {
     { key: "photos", icon: <Camera size={18} className="text-accent-gold" /> },
     { key: "publicPage", icon: <Globe size={18} className="text-accent-gold" /> },
     { key: "offline", icon: <WifiOff size={18} className="text-accent-gold" /> },
-    { key: "sync", icon: <Lock size={18} className="text-accent-gold" /> },
   ] as const;
 
   const privacyFeatures = [

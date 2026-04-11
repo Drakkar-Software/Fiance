@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import * as Linking from "expo-linking";
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
 import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
@@ -12,7 +11,6 @@ import { QRScannerScreen } from "@/components/QRScannerScreen";
 type Mode = "choose" | "create" | "join";
 
 export default function OnboardingScreen() {
-  const router = useRouter();
   const [mode, setMode] = useState<Mode>("choose");
   const [inviteParams, setInviteParams] = useState<{ name: string; password: string } | null>(null);
   const createWedding = useWeddingRegistryStore((s) => s.createWedding);
@@ -45,7 +43,7 @@ export default function OnboardingScreen() {
         onCreate={async (label) => {
           const passphrase = generatePassphrase();
           await createWedding(label, passphrase);
-          router.replace("/home" as any);
+          // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
         }}
       />
     );
@@ -58,7 +56,7 @@ export default function OnboardingScreen() {
       initialPassword={inviteParams?.password}
       onJoin={async (label, password) => {
         await createWedding(label, password);
-        router.replace("/home" as any);
+        // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
       }}
     />
   );

@@ -64,12 +64,8 @@
         "description": "Create your personalized wedding web page to share details with your guests."
       },
       "offline": {
-        "title": "100% Offline",
-        "description": "Works without internet. Your data stays on your phone."
-      },
-      "sync": {
-        "title": "Encrypted Sync",
-        "description": "Sync with your partner via AES-256 encryption. Nobody else has access."
+        "title": "Offline & Sync",
+        "description": "Works without internet. Sync with your partner via AES-256 encryption — your data stays private."
       }
     },
     "tools": {

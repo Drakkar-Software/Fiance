@@ -38,11 +38,21 @@ function AppContent() {
   // (marketing) routes are web-only; on native they should fall through to the app
   const isPublicPage = segments[0] === "wedding" || (Platform.OS === "web" && segments[0] === "(marketing)");
 
-  // Redirect to /onboarding when no wedding exists
+  // Redirect to /onboarding when no wedding — skip if already there to avoid loop
   useEffect(() => {
-    if (!isLoaded || isPublicPage) return;
+    if (!isLoaded || isPublicPage || segments[0] === "onboarding") return;
     if (!registry || registry.weddings.length === 0) {
       router.replace("/onboarding" as any);
+    }
+  }, [isLoaded, isPublicPage, registry?.weddings.length]);
+
+  // Navigate to /home after onboarding completes. Fired in a useEffect so it runs
+  // after (tabs)/_layout re-renders and mounts DatabaseProvider, guaranteeing the
+  // DB context is available before home.tsx renders.
+  useEffect(() => {
+    if (!isLoaded || isPublicPage || segments[0] !== "onboarding") return;
+    if (registry?.weddings.length) {
+      router.replace("/home" as any);
     }
   }, [isLoaded, isPublicPage, registry?.weddings.length]);
 
@@ -56,7 +66,11 @@ function AppContent() {
     );
   }
 
-  if (!isLoaded) {
+  // Show spinner while loading OR while the /onboarding redirect is in flight.
+  // Prevents a one-frame flash of the empty dashboard on first load when there
+  // is no wedding yet and the useEffect hasn't fired yet.
+  const hasWedding = isLoaded && !!registry?.weddings.length;
+  if (!hasWedding && segments[0] !== "onboarding") {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />

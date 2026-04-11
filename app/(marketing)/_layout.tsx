@@ -5,7 +5,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 
 export default function MarketingLayout() {
   return (
-    <View style={{ flex: 1, overflow: "visible" }}>
+    <View style={{ flex: 1 }}>
       <MarketingNav />
       <ScrollView style={{ flex: 1 }} className="bg-accent-cream">
         <Slot />

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Platform } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,7 +16,9 @@ export function MarketingNav() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; right: number } | null>(null);
   const currentLang = i18n.language === "en" ? "en" : "fr";
+  const langButtonRef = useRef<any>(null);
 
   const links = [
     { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
@@ -24,14 +27,33 @@ export function MarketingNav() {
     { label: t("nav.tools"), href: "/tools/seating-chart" },
   ];
 
+  function handleLangPress() {
+    if (langOpen) {
+      setLangOpen(false);
+      return;
+    }
+    // Use measureInWindow to get the button's viewport-relative position,
+    // then position the dropdown with `position: fixed` so no ancestor
+    // overflow: hidden can clip it.
+    if (Platform.OS === "web" && langButtonRef.current) {
+      langButtonRef.current.measureInWindow((x: number, y: number, w: number, h: number) => {
+        const vw = typeof window !== "undefined" ? window.innerWidth : 400;
+        setDropdownPos({ top: y + h + 4, right: vw - x - w });
+        setLangOpen(true);
+      });
+    } else {
+      setLangOpen(true);
+    }
+  }
+
   return (
-    <View className="w-full bg-accent-cream border-b border-accent-rose-light" style={{ overflow: "visible" }}>
+    <View className="w-full bg-accent-cream border-b border-accent-rose-light">
       <View
         className="flex-row items-center justify-between px-6 py-4"
-        style={{ maxWidth: 1100, alignSelf: "center", width: "100%", overflow: "visible" }}
+        style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
       >
         {/* Logo */}
-        <Pressable onPress={() => router.push("/")} className="active:opacity-70">
+        <Pressable onPress={() => router.push("/" as any)} className="active:opacity-70">
           <Text className="text-lg font-bold text-primary-500">WeddingOS</Text>
         </Pressable>
 
@@ -51,50 +73,24 @@ export function MarketingNav() {
         </View>
 
         {/* Right side actions */}
-        <View className="flex-row items-center gap-3" style={{ overflow: "visible" }}>
-          {/* Language dropdown */}
-          <View style={{ position: "relative", overflow: "visible" }}>
-            <Pressable
-              onPress={() => setLangOpen((o) => !o)}
-              className="flex-row items-center gap-1 p-2 active:opacity-60"
-            >
-              <Globe size={16} className="text-typography-500" />
-              <Text className="text-xs font-semibold text-typography-500 uppercase">{currentLang}</Text>
-            </Pressable>
-            {langOpen && (
-              <View
-                className="bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm"
-                style={{ position: "absolute", top: 36, right: 0, minWidth: 120, zIndex: 100 }}
-              >
-                {LANGUAGES.map((lang) => (
-                  <Pressable
-                    key={lang.code}
-                    onPress={() => {
-                      i18n.changeLanguage(lang.code);
-                      setLangOpen(false);
-                    }}
-                    className="px-4 py-2.5 active:opacity-60"
-                  >
-                    <Text
-                      className={`text-sm ${
-                        currentLang === lang.code
-                          ? "font-semibold text-primary-500"
-                          : "text-typography-600"
-                      }`}
-                    >
-                      {lang.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            )}
-          </View>
+        <View className="flex-row items-center gap-3">
+          {/* Language button */}
+          <Pressable
+            ref={langButtonRef}
+            onPress={handleLangPress}
+            className="flex-row items-center gap-1 p-2 active:opacity-60"
+          >
+            <Globe size={16} className="text-typography-500" />
+            <Text className="text-xs font-semibold text-typography-500 uppercase">{currentLang}</Text>
+          </Pressable>
+
           <Pressable
             onPress={() => router.push("/home" as any)}
             className="hidden md:flex bg-primary-500 px-4 py-2 rounded-full active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("nav.openApp")}</Text>
           </Pressable>
+
           {/* Mobile hamburger */}
           <Pressable
             onPress={() => setMenuOpen((o) => !o)}
@@ -108,6 +104,50 @@ export function MarketingNav() {
           </Pressable>
         </View>
       </View>
+
+      {/* Language dropdown — rendered at nav root so it doesn't inherit any clipping context.
+          On web: fixed positioning escapes all overflow:hidden ancestors (CSS spec guarantee).
+          On native: absolute positioning relative to nav. */}
+      {langOpen && (
+        <>
+          {/* Backdrop — catches outside clicks */}
+          <Pressable
+            onPress={() => setLangOpen(false)}
+            className={Platform.OS === "web" ? "fixed inset-0" : "absolute inset-0"}
+            style={{ zIndex: 98 }}
+          />
+          {/* Dropdown panel */}
+          <View
+            className={`bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm${Platform.OS === "web" ? " fixed" : " absolute"}`}
+            style={
+              Platform.OS === "web" && dropdownPos
+                ? { top: dropdownPos.top, right: dropdownPos.right, minWidth: 120, zIndex: 99 }
+                : { top: 56, right: 24, minWidth: 120, zIndex: 99 }
+            }
+          >
+            {LANGUAGES.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => {
+                  i18n.changeLanguage(lang.code);
+                  setLangOpen(false);
+                }}
+                className="px-4 py-2.5 active:opacity-60"
+              >
+                <Text
+                  className={`text-sm ${
+                    currentLang === lang.code
+                      ? "font-semibold text-primary-500"
+                      : "text-typography-600"
+                  }`}
+                >
+                  {lang.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
+      )}
 
       {/* Mobile menu */}
       {menuOpen && (

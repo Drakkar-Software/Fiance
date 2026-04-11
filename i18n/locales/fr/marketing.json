@@ -64,12 +64,8 @@
         "description": "Créez votre page web de mariage personnalisée pour partager les infos avec vos invités."
       },
       "offline": {
-        "title": "100% hors ligne",
-        "description": "Fonctionne sans connexion internet. Vos données restent sur votre téléphone."
-      },
-      "sync": {
-        "title": "Synchronisation chiffrée",
-        "description": "Synchronisez avec votre partenaire via un chiffrement AES-256. Personne d'autre n'a accès."
+        "title": "Hors ligne & Synchronisation",
+        "description": "Fonctionne sans connexion. Synchronisez avec votre partenaire via chiffrement AES-256 — vos données restent privées."
       }
     },
     "tools": {
