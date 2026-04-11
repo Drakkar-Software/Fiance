@@ -50,5 +50,15 @@ export const config: SyncConfig = {
       allowedMimeTypes: ["application/json"],
       ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
     },
+    {
+      name: "analytics-events",
+      storagePath: "analytics/{identity}/events",
+      readRoles: ["self"],
+      writeRoles: ["self"],
+      encryption: "none",
+      maxBodyBytes: 65_536,
+      allowedMimeTypes: ["application/json"],
+      ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
+    },
   ],
 };

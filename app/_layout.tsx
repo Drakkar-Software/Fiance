@@ -122,7 +122,7 @@ function InnerApp() {
 
 const crashFallback = (
   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Une erreur inattendue s'est produite. Veuillez relancer l'application.{"\n"}An unexpected error occurred. Please restart the app.</Text>
+    <Text>An unexpected error occurred. Please restart the app.</Text>
   </View>
 );
 
