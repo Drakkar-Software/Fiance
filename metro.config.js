@@ -1,11 +1,10 @@
 const path = require('node:path')
 const { withNativeWind } = require('nativewind/metro')
-const { getDefaultConfig } = require("expo/metro-config");
-const { withSentryConfig } = require("@sentry/react-native/metro");
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 
 const projectRoot = __dirname
 const workspaceRoot = projectRoot
-const config = getDefaultConfig(projectRoot)
+const config = getSentryExpoConfig(projectRoot)
 
 config.resolver.unstable_enableSymlinks = true
 config.resolver.nodeModulesPaths = [
@@ -41,10 +40,4 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return resolve(context, moduleName, platform)
 }
 
-// withSentryConfig wraps the serializer in a way that breaks web bundling.
-// Only apply it for native builds.
-const isWebBuild = process.argv.some((a) => a === 'web') ||
-  process.argv.some((a, i, arr) => a === '--platform' && arr[i + 1] === 'web')
-
-const nativeWindConfig = withNativeWind(config, { input: './global.css' })
-module.exports = isWebBuild ? nativeWindConfig : withSentryConfig(nativeWindConfig)
+module.exports = withNativeWind(config, { input: './global.css' })
