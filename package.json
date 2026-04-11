@@ -42,7 +42,7 @@
     "@drakkar.software/seahorse": "0.7.2",
     "@drakkar.software/starfish-client": "^1.11.0",
     "@drakkar.software/starfish-protocol": "^1.11.0",
-    "@drakkar.software/sunglasses-core": "^0.2.0",
+    "@drakkar.software/sunglasses-core": "^0.3.0",
     "@drakkar.software/sunglasses-react-native": "^0.2.1",
     "@drakkar.software/sunglasses-storage-async-storage": "^0.1.0",
     "@drakkar.software/sunglasses-adapter-console": "^0.1.0",

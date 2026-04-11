@@ -11,7 +11,7 @@ specifiers:
   '@drakkar.software/starfish-protocol': ^1.11.0
   '@drakkar.software/sunglasses-adapter-console': ^0.1.0
   '@drakkar.software/sunglasses-adapter-starfish': ^0.1.0
-  '@drakkar.software/sunglasses-core': ^0.2.0
+  '@drakkar.software/sunglasses-core': ^0.3.0
   '@drakkar.software/sunglasses-error-capture': ^0.1.0
   '@drakkar.software/sunglasses-react-native': ^0.2.1
   '@drakkar.software/sunglasses-storage-async-storage': ^0.1.0
@@ -93,7 +93,7 @@ dependencies:
   '@drakkar.software/starfish-protocol': 1.11.0
   '@drakkar.software/sunglasses-adapter-console': 0.1.0
   '@drakkar.software/sunglasses-adapter-starfish': 0.1.0
-  '@drakkar.software/sunglasses-core': 0.2.0
+  '@drakkar.software/sunglasses-core': 0.3.0
   '@drakkar.software/sunglasses-error-capture': 0.1.0_react@19.2.0
   '@drakkar.software/sunglasses-react-native': 0.2.1_a1f48b2da1e8069012cfbb8542a4bcdc
   '@drakkar.software/sunglasses-storage-async-storage': 0.1.0_a20128f7da3967792562aa04ed7a086d
@@ -1366,6 +1366,10 @@ packages:
 
   /@drakkar.software/sunglasses-core/0.2.0:
     resolution: {integrity: sha512-OyXcl4u9pyiGMxtZRLpuraZ5ZcWhzR1ZfZLBHD7gAXsNgine38BU6eqzaKmSe5z+veRr2YqLGhJ5lh75csjUrg==}
+    dev: false
+
+  /@drakkar.software/sunglasses-core/0.3.0:
+    resolution: {integrity: sha512-hc8uhQJBViOZqiLC+2Q/IFzXUNxoOjgZ2D9FCqhPVkWoleQCd54OKU8Dxka5SaRMEzs0XX6yTkNrsisF+wmRPg==}
     dev: false
 
   /@drakkar.software/sunglasses-error-capture/0.1.0_react@19.2.0:
