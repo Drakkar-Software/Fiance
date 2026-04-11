@@ -14,63 +14,37 @@ if (typeof document !== "undefined") {
   } catch {}
 }
 import { View, ActivityIndicator, Text } from "react-native-css/components";
-import { Stack, useSegments } from "expo-router";
+import { Stack, useSegments, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import * as Linking from "expo-linking";
 import * as Updates from "expo-updates";
 import NetInfo from "@react-native-community/netinfo";
 import { createMobileLifecycle } from "@drakkar.software/starfish-client";
-import { DatabaseProvider } from "@/db/provider";
 import { getStarfishStore } from "@/lib/starfish";
-import { parseInviteUrl } from "@/lib/identity";
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
 import { Toaster } from "@/lib/toast/sonner";
-import OnboardingScreen from "./onboarding";
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
   const segments = useSegments();
+  const router = useRouter();
   // (marketing) routes are web-only; on native they should fall through to the app
   const isPublicPage = segments[0] === "wedding" || (Platform.OS === "web" && segments[0] === "(marketing)");
-  const [inviteParams, setInviteParams] = useState<{
-    name: string;
-    password: string;
-  } | null>(null);
 
-  const activeWedding = registry?.weddings.find(
-    (w) => w.id === registry.activeWeddingId
-  ) ?? registry?.weddings[0] ?? null;
-
-  // Handle deep links (initial + while app is open)
+  // Redirect to /onboarding when no wedding exists
   useEffect(() => {
-    function handleUrl(event: { url: string }) {
-      const params = parseInviteUrl(event.url);
-      if (params) setInviteParams(params);
+    if (!isLoaded || isPublicPage) return;
+    if (!registry || registry.weddings.length === 0) {
+      router.replace("/onboarding" as any);
     }
-
-    Linking.getInitialURL().then((url) => {
-      if (url) handleUrl({ url });
-    });
-
-    const sub = Linking.addEventListener("url", handleUrl);
-    return () => sub.remove();
-  }, []);
-
-  // Clear invite params once a wedding is created (onboarding completes)
-  useEffect(() => {
-    if (registry && registry.weddings.length > 0 && inviteParams) {
-      setInviteParams(null);
-    }
-  }, [registry?.weddings.length]);
+  }, [isLoaded, isPublicPage, registry?.weddings.length]);
 
   // Public wedding page — always reachable, no auth required
   if (isPublicPage) {
@@ -91,33 +65,12 @@ function AppContent() {
     );
   }
 
-  if (!registry || registry.weddings.length === 0) {
-    if (Platform.OS !== "web") {
-      // Native: render tabs stack without DB; home.tsx shows inline onboarding
-      return (
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="wedding/[id]" />
-        </Stack>
-      );
-    }
-    return (
-      <OnboardingScreen
-        inviteName={inviteParams?.name}
-        invitePassword={inviteParams?.password}
-      />
-    );
-  }
-
   return (
-    <DatabaseProvider dbFileName={activeWedding!.dbFileName}>
-      <SyncInitializer wedding={activeWedding!} />
-      <NotificationInitializer />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="wedding/[id]" />
-      </Stack>
-    </DatabaseProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="wedding/[id]" />
+    </Stack>
   );
 }
 

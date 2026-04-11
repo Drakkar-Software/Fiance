@@ -6,6 +6,8 @@ import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { DatabaseProvider } from "@/db/provider";
+import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
@@ -14,14 +16,15 @@ export default function TabLayout() {
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
-  const hasWedding = Platform.OS === "web" || (isLoaded && !!registry?.weddings.length);
+  const hasWedding = isLoaded && !!registry?.weddings.length;
+  const activeWedding = registry?.weddings.find((w) => w.id === registry.activeWeddingId) ?? registry?.weddings[0] ?? null;
   const tasks = usePlanningStore((s) => s.tasks);
   const overdueTasks = React.useMemo(
     () => tasks.filter((task) => task.status !== "DONE" && task.dueDate && new Date(task.dueDate) < new Date()),
     [tasks]
   );
 
-  return (
+  const tabs = (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#EC4899",
@@ -125,5 +128,15 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  );
+
+  if (!activeWedding) return tabs;
+
+  return (
+    <DatabaseProvider dbFileName={activeWedding.dbFileName}>
+      <SyncInitializer wedding={activeWedding} />
+      <NotificationInitializer />
+      {tabs}
+    </DatabaseProvider>
   );
 }

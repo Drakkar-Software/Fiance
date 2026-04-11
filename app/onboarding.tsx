@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
+import * as Linking from "expo-linking";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
 import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
@@ -9,23 +11,28 @@ import { QRScannerScreen } from "@/components/QRScannerScreen";
 
 type Mode = "choose" | "create" | "join";
 
-interface OnboardingProps {
-  /** Pre-filled from a deep link invite */
-  inviteName?: string;
-  invitePassword?: string;
-  /** Override join handler (e.g. to navigate after creation) */
-  onJoinOverride?: (label: string, password: string) => Promise<void>;
-}
-
-export default function OnboardingScreen({
-  inviteName,
-  invitePassword,
-  onJoinOverride,
-}: OnboardingProps = {}) {
-  const [mode, setMode] = useState<Mode>(
-    inviteName && invitePassword ? "join" : "choose"
-  );
+export default function OnboardingScreen() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("choose");
+  const [inviteParams, setInviteParams] = useState<{ name: string; password: string } | null>(null);
   const createWedding = useWeddingRegistryStore((s) => s.createWedding);
+
+  // Handle invite deep links
+  useEffect(() => {
+    function handleUrl({ url }: { url: string }) {
+      const params = parseInviteUrl(url);
+      if (!params) return;
+      setInviteParams(params);
+      setMode("join");
+    }
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl({ url });
+    });
+
+    const sub = Linking.addEventListener("url", handleUrl);
+    return () => sub.remove();
+  }, []);
 
   if (mode === "choose") {
     return <ChooseMode onSelect={setMode} />;
@@ -38,6 +45,7 @@ export default function OnboardingScreen({
         onCreate={async (label) => {
           const passphrase = generatePassphrase();
           await createWedding(label, passphrase);
+          router.replace("/home" as any);
         }}
       />
     );
@@ -46,11 +54,12 @@ export default function OnboardingScreen({
   return (
     <JoinWeddingForm
       onBack={() => setMode("choose")}
-      initialName={inviteName}
-      initialPassword={invitePassword}
-      onJoin={onJoinOverride ?? (async (label, password) => {
+      initialName={inviteParams?.name}
+      initialPassword={inviteParams?.password}
+      onJoin={async (label, password) => {
         await createWedding(label, password);
-      })}
+        router.replace("/home" as any);
+      }}
     />
   );
 }
