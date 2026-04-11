@@ -31,7 +31,7 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
 import { SunglassesProvider, useSunglasses, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
-import { SunglassesErrorBoundary, createSentryBeforeSend } from "@drakkar.software/sunglasses-error-capture";
+import { SunglassesErrorBoundary, createSentryBeforeSend } from "@drakkar.software/sunglasses-adapter-sentry";
 import { initAnalytics, getAnalyticsCore } from "@/lib/analytics";
 import type { SunglassesCore } from "@drakkar.software/sunglasses-core";
 
