@@ -14,6 +14,7 @@ import {
 import type { VendorType, VendorStatus } from "@/db/types";
 import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
 import type { CustomSection } from "@/lib/vendorTypeConfig";
+import { analytics } from "@/lib/analytics";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow, ChipSelect } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -120,6 +121,7 @@ export default function VendorDetailScreen() {
         id: Crypto.randomUUID(),
         createdAt: now,
       } as Vendor);
+      analytics.capture("vendor_added", { category: type });
     } else {
       updateVendor(id!, vendorData);
     }

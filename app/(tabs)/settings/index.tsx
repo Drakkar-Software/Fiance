@@ -300,6 +300,7 @@ export default function SettingsScreen() {
                 onPress={() => {
                   if (!isActive) {
                     switchWedding(w.id);
+                    analytics.capture("wedding_switched");
                     router.replace("/(tabs)");
                   }
                 }}

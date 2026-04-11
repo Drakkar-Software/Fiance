@@ -21,6 +21,7 @@ import type {
 } from "@/db/types";
 import { UserPlus, XCircle, Share2, BedDouble, Tag } from "lucide-react-native";
 import { toast } from "@/lib/toast/sonner";
+import { analytics } from "@/lib/analytics";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
@@ -139,6 +140,7 @@ export default function GuestDetailScreen() {
     const guestId = isNew ? Crypto.randomUUID() : id!;
     if (isNew) {
       addGuest({ ...guestData, id: guestId, createdAt: now } as Guest);
+      analytics.capture("guest_added");
     } else {
       updateGuest(guestId, guestData);
     }

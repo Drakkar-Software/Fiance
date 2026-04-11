@@ -24,6 +24,7 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { IDEA_CATEGORY_LABELS } from "@/db/types";
 import type { IdeaCategory } from "@/db/types";
+import { analytics } from "@/lib/analytics";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -120,6 +121,7 @@ export default function IdeaDetailScreen() {
         colorPalette: null,
         createdAt: now,
       } as Idea);
+      analytics.capture("idea_added");
     } else {
       updateIdea(id!, ideaData);
     }
