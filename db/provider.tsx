@@ -3,8 +3,6 @@ import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { View, Text, ActivityIndicator } from "react-native-css/components";
 import { initStorage, getStorage, closeStorage } from "@/lib/kv-storage";
 import { hydrateAllStores, clearAllStores } from "@/lib/persistence";
-import { migrateToKvIfNeeded } from "@/lib/migrate-to-kv";
-
 // ─── Global storage singleton (accessible outside React) ─────────────────────
 
 export function getDatabase(): SQLiteStorage | null {
@@ -45,8 +43,6 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
         closeStorage();
 
         const kv = await initStorage(dbFileName);
-
-        migrateToKvIfNeeded(kv, dbFileName);
 
         hydrateAllStores(kv);
 

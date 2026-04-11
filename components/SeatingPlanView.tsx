@@ -52,7 +52,6 @@ function DraggableTable({
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
   const isDragging = useSharedValue(false);
-  const dragDistance = useSharedValue(0);
 
   // Stable callback refs — avoids stale closures inside runOnJS worklets
   const onDragEndRef = useRef(onDragEnd);
@@ -85,26 +84,29 @@ function DraggableTable({
   const size = Math.max(TABLE_SIZE_BASE, Math.min(96, TABLE_SIZE_BASE + capacity * 3));
   const tableWidth = isRound ? size : Math.round(size * 1.4);
 
+  // Tap handles selection; Pan (minDistance=5) handles drag.
+  // Race ensures only one activates: tap wins for clicks, pan wins once drag starts.
+  const tap = Gesture.Tap().onEnd(() => {
+    runOnJS(handleSelect)();
+  });
+
   const pan = Gesture.Pan()
+    .minDistance(5)
     .onStart(() => {
       startX.value = translateX.value;
       startY.value = translateY.value;
       isDragging.value = true;
-      dragDistance.value = 0;
     })
     .onChange((e) => {
       translateX.value = Math.max(0, Math.min(CANVAS_W - tableWidth, startX.value + e.translationX));
       translateY.value = Math.max(0, Math.min(CANVAS_H - size, startY.value + e.translationY));
-      dragDistance.value = Math.abs(e.translationX) + Math.abs(e.translationY);
     })
     .onEnd(() => {
       isDragging.value = false;
-      if (dragDistance.value < 4) {
-        runOnJS(handleSelect)();
-      } else {
-        runOnJS(handleDragEnd)(translateX.value, translateY.value);
-      }
+      runOnJS(handleDragEnd)(translateX.value, translateY.value);
     });
+
+  const gesture = Gesture.Race(pan, tap);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
@@ -113,7 +115,7 @@ function DraggableTable({
   }));
 
   return (
-    <GestureDetector gesture={pan}>
+    <GestureDetector gesture={gesture}>
       <Animated.View
         style={[{ position: "absolute", left: 0, top: 0, width: tableWidth, height: size }, animatedStyle]}
       >
