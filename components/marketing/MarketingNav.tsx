@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Platform } from "react-native";
+import { Modal, Dimensions } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -32,13 +32,10 @@ export function MarketingNav() {
       setLangOpen(false);
       return;
     }
-    // Use measureInWindow to get the button's viewport-relative position,
-    // then position the dropdown with `position: fixed` so no ancestor
-    // overflow: hidden can clip it.
-    if (Platform.OS === "web" && langButtonRef.current) {
+    if (langButtonRef.current) {
       langButtonRef.current.measureInWindow((x: number, y: number, w: number, h: number) => {
-        const vw = typeof window !== "undefined" ? window.innerWidth : 400;
-        setDropdownPos({ top: y + h + 4, right: vw - x - w });
+        const screenWidth = typeof window !== "undefined" ? window.innerWidth : Dimensions.get("window").width;
+        setDropdownPos({ top: y + h + 4, right: screenWidth - x - w });
         setLangOpen(true);
       });
     } else {
@@ -105,25 +102,29 @@ export function MarketingNav() {
         </View>
       </View>
 
-      {/* Language dropdown — rendered at nav root so it doesn't inherit any clipping context.
-          On web: fixed positioning escapes all overflow:hidden ancestors (CSS spec guarantee).
-          On native: absolute positioning relative to nav. */}
-      {langOpen && (
-        <>
-          {/* Backdrop — catches outside clicks */}
-          <Pressable
-            onPress={() => setLangOpen(false)}
-            className={Platform.OS === "web" ? "fixed inset-0" : "absolute inset-0"}
-            style={{ zIndex: 98 }}
-          />
-          {/* Dropdown panel */}
+      {/* Language dropdown — Modal renders via ReactDOM.createPortal on web, escaping all
+          overflow/stacking contexts. Position: absolute inside Modal = viewport coordinates. */}
+      <Modal
+        visible={langOpen}
+        transparent
+        animationType="none"
+        onRequestClose={() => setLangOpen(false)}
+      >
+        {/* Backdrop — catches outside clicks */}
+        <Pressable
+          onPress={() => setLangOpen(false)}
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        />
+        {/* Dropdown panel */}
+        {dropdownPos && (
           <View
-            className={`bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm${Platform.OS === "web" ? " fixed" : " absolute"}`}
-            style={
-              Platform.OS === "web" && dropdownPos
-                ? { top: dropdownPos.top, right: dropdownPos.right, minWidth: 120, zIndex: 99 }
-                : { top: 56, right: 24, minWidth: 120, zIndex: 99 }
-            }
+            className="bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm"
+            style={{
+              position: "absolute",
+              top: dropdownPos.top,
+              right: dropdownPos.right,
+              minWidth: 120,
+            }}
           >
             {LANGUAGES.map((lang) => (
               <Pressable
@@ -146,8 +147,8 @@ export function MarketingNav() {
               </Pressable>
             ))}
           </View>
-        </>
-      )}
+        )}
+      </Modal>
 
       {/* Mobile menu */}
       {menuOpen && (
