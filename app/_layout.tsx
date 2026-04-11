@@ -122,7 +122,7 @@ function InnerApp() {
 
 const crashFallback = (
   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Une erreur inattendue s'est produite. Veuillez relancer l'application.</Text>
+    <Text>Une erreur inattendue s'est produite. Veuillez relancer l'application.{"\n"}An unexpected error occurred. Please restart the app.</Text>
   </View>
 );
 
@@ -135,13 +135,15 @@ export default function RootLayout() {
   const systemScheme = useColorScheme();
   const [locked, setLocked] = useState<boolean | null>(null);
   const [analyticsClient, setAnalyticsClient] = useState<SunglassesCore | null>(null);
+  const [analyticsReady, setAnalyticsReady] = useState(false);
 
   useEffect(() => {
     loadRegistry();
-    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled(), initAnalytics()]).then(
+    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled(), initAnalytics().catch(() => null)]).then(
       ([, , , enabled, client]) => {
         setLocked(enabled);
         setAnalyticsClient(client);
+        setAnalyticsReady(true);
       }
     );
   }, []);
@@ -191,18 +193,20 @@ export default function RootLayout() {
         <ForgeThemeProvider theme={{ colors: { primary: "#EC4899" } }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
-          {locked === null || analyticsClient === null ? (
+          {locked === null || !analyticsReady ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" />
             </View>
           ) : locked ? (
             <LockScreen onUnlock={handleUnlock} />
-          ) : (
+          ) : analyticsClient ? (
             <SunglassesErrorBoundary client={analyticsClient} fallback={crashFallback}>
               <SunglassesProvider client={analyticsClient}>
                 <InnerApp />
               </SunglassesProvider>
             </SunglassesErrorBoundary>
+          ) : (
+            <><AppContent /><Toaster /></>
           )}
         </BottomSheetModalProvider>
         </ForgeThemeProvider>

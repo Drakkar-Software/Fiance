@@ -26,6 +26,7 @@ class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
   private inner: StarfishAnalyticsAdapter | null = null;
 
   activate(serverUrl: string, authToken: string) {
+    this.inner?.shutdown().catch(() => {});
     this.inner = new StarfishAnalyticsAdapter({
       serverUrl,
       storagePath: "analytics/{identity}/events",

@@ -16,6 +16,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
   useEffect(() => {
     if (getStarfishStore()) teardownStarfish();
     teardownPublicPageSync();
+    starfishAnalyticsAdapter.deactivate();
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
 
@@ -36,7 +37,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => { cancelled = true; starfishAnalyticsAdapter.deactivate(); };
   }, [wedding.id]);
 
   // Re-push public page when day-of items or wedding info change
