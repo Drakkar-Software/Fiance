@@ -124,6 +124,13 @@ export const INVITATION_TYPE_LABELS: Record<InvitationType, string> = {
   BOTH_DAYS: "guests:invitationTypes.BOTH_DAYS",
 };
 
+/** Seed data for the built-in invitation types (French labels = app primary language) */
+export const DEFAULT_INVITATION_TYPES = [
+  { id: "CEREMONY", label: "Cérémonie uniquement", isDefault: true, needsSleeping: false },
+  { id: "COCKTAIL", label: "Cocktail uniquement", isDefault: true, needsSleeping: false },
+  { id: "FULL", label: "Journée complète", isDefault: true, needsSleeping: false },
+] as const;
+
 export const RSVP_STATUS_LABELS: Record<RsvpStatus, string> = {
   PENDING: "guests:rsvp.PENDING",
   ACCEPTED: "guests:rsvp.ACCEPTED",

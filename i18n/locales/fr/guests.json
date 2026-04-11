@@ -2,8 +2,7 @@
   "invitationTypes": {
     "CEREMONY": "Cérémonie uniquement",
     "COCKTAIL": "Cocktail uniquement",
-    "FULL": "Journée complète",
-    "BOTH_DAYS": "Journée et lendemain"
+    "FULL": "Journée complète"
   },
   "rsvp": {
     "PENDING": "En attente",
@@ -118,5 +117,18 @@
   "guestsScreen": "Invités",
   "guestDetailScreen": "Invité",
   "tablesPlanScreen": "Plan de tables",
-  "openPlanView": "Voir le plan"
+  "openPlanView": "Voir le plan",
+  "invitationTypesScreen": "Types d'invitation",
+  "newInvitationType": "Nouveau type",
+  "invitationTypeName": "Nom du type",
+  "invitationTypeNamePlaceholder": "ex: Vin d'honneur, Brunch, Soirée...",
+  "noInvitationTypes": "Aucun type d'invitation",
+  "createInvitationTypesDesc": "Définissez les types d'invitation pour vos invités",
+  "deleteInvitationType": "Supprimer ce type ?",
+  "deleteInvitationTypeMsg": "Les invités de ce type seront réassignés au type par défaut.",
+  "invitationTypeNameRequired": "Le nom est obligatoire",
+  "needsSleeping": "Nécessite un hébergement",
+  "needsSleepingDesc": "Activez si les invités de ce type ont généralement besoin d'une chambre. Aide à identifier les invités sans hébergement assigné.",
+  "manageMenu": "Gérer",
+  "guestsWithType": "{{count}} invité(s)"
 }

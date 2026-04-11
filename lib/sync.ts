@@ -11,6 +11,8 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { DEFAULT_INVITATION_TYPES } from "@/db/types";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
 export interface BackupData {
@@ -31,9 +33,10 @@ export interface BackupData {
   vendorPayments: unknown[];
   accommodations: unknown[];
   gifts: unknown[];
+  invitationTypes?: unknown[];
 }
 
-const BACKUP_VERSION = 5;
+const BACKUP_VERSION = 6;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -55,6 +58,7 @@ export function createBackupDocument(): Record<string, unknown> {
     vendorPayments: useVendorsStore.getState().vendorPayments,
     accommodations: useAccommodationsStore.getState().accommodations,
     gifts: useGiftsStore.getState().gifts,
+    invitationTypes: useInvitationTypesStore.getState().invitationTypes,
   };
 }
 
@@ -85,6 +89,13 @@ export function restoreFromBackup(
 
   // v3 → v4: added companionId field on guests (nullable, no migration needed)
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
+  // v5 → v6: added invitationTypes collection (user-configurable)
+
+  const now = new Date().toISOString();
+  const rawInvTypes = (backup.invitationTypes || []) as any[];
+  const restoredInvitationTypes = rawInvTypes.length > 0
+    ? rawInvTypes
+    : DEFAULT_INVITATION_TYPES.map((t) => ({ ...t, createdAt: now, updatedAt: now }));
 
   const restoredData = {
     wedding: backup.wedding,
@@ -112,6 +123,7 @@ export function restoreFromBackup(
     vendorPayments: (backup.vendorPayments || []) as any[],
     accommodations: (backup.accommodations || []) as any[],
     gifts: (backup.gifts || []) as any[],
+    invitationTypes: restoredInvitationTypes,
   };
 
   // Write to KV storage then re-hydrate stores from it
@@ -135,6 +147,7 @@ export function restoreFromBackup(
     useIdeasStore.getState().setIdeas(restoredData.ideas);
     useAccommodationsStore.getState().setAccommodations(restoredData.accommodations);
     useGiftsStore.getState().setGifts(restoredData.gifts);
+    useInvitationTypesStore.getState().setInvitationTypes(restoredData.invitationTypes);
   }
 }
 

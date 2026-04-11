@@ -145,6 +145,15 @@ export interface Gift {
   updatedAt: string | null;
 }
 
+export interface InvitationTypeEntity {
+  id: string;
+  label: string;
+  isDefault: boolean;
+  needsSleeping: boolean;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
 export interface TaskCategory {
   id: string;
   name: string;

@@ -12,6 +12,8 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { DEFAULT_INVITATION_TYPES } from "@/db/types";
 import { readCollection, writeCollection } from "./kv-storage";
 
 // ─── Clear all stores (for wedding switching) ──────────────────────────────
@@ -32,6 +34,7 @@ export function clearAllStores(): void {
   useIdeasStore.getState().setIdeas([]);
   useAccommodationsStore.getState().setAccommodations([]);
   useGiftsStore.getState().setGifts([]);
+  useInvitationTypesStore.getState().setInvitationTypes([]);
 }
 
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
@@ -65,6 +68,16 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
   useAccommodationsStore.getState().setAccommodations(readCollection<any[]>("accommodations") ?? []);
 
   useGiftsStore.getState().setGifts(readCollection<any[]>("gifts") ?? []);
+
+  const storedInvTypes = readCollection<any[]>("invitationTypes");
+  if (storedInvTypes && storedInvTypes.length > 0) {
+    useInvitationTypesStore.getState().setInvitationTypes(storedInvTypes);
+  } else {
+    const now = new Date().toISOString();
+    const defaults = DEFAULT_INVITATION_TYPES.map((t) => ({ ...t, createdAt: now, updatedAt: now }));
+    useInvitationTypesStore.getState().setInvitationTypes(defaults);
+    writeCollection("invitationTypes", defaults);
+  }
 }
 
 // ─── Collection-level write-through helpers ─────────────────────────────────
@@ -130,6 +143,10 @@ export function persistGifts(_storage: SQLiteStorage): void {
   writeCollection("gifts", useGiftsStore.getState().gifts);
 }
 
+export function persistInvitationTypes(_storage: SQLiteStorage): void {
+  writeCollection("invitationTypes", useInvitationTypesStore.getState().invitationTypes);
+}
+
 // ─── Bulk restore (for sync pull and import) ────────────────────────────────
 
 export function restoreAllTables(_storage: SQLiteStorage, data: {
@@ -148,6 +165,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   vendorPayments?: any[];
   accommodations?: any[];
   gifts?: any[];
+  invitationTypes?: any[];
 }): void {
   writeCollection("wedding", data.wedding);
   writeCollection("guestGroups", data.guestGroups);
@@ -164,4 +182,5 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("ideaCollections", data.ideaCollections);
   writeCollection("ideas", data.ideas);
   writeCollection("gifts", data.gifts ?? []);
+  writeCollection("invitationTypes", data.invitationTypes ?? []);
 }

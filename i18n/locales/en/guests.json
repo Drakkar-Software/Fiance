@@ -2,8 +2,7 @@
   "invitationTypes": {
     "CEREMONY": "Ceremony only",
     "COCKTAIL": "Cocktail only",
-    "FULL": "Full day",
-    "BOTH_DAYS": "Full day and next day"
+    "FULL": "Full day"
   },
   "rsvp": {
     "PENDING": "Pending",
@@ -118,5 +117,18 @@
   "guestsScreen": "Guests",
   "guestDetailScreen": "Guest",
   "tablesPlanScreen": "Seating plan",
-  "openPlanView": "View plan"
+  "openPlanView": "View plan",
+  "invitationTypesScreen": "Invitation types",
+  "newInvitationType": "New type",
+  "invitationTypeName": "Type name",
+  "invitationTypeNamePlaceholder": "e.g. Cocktail hour, Brunch, Evening party...",
+  "noInvitationTypes": "No invitation types",
+  "createInvitationTypesDesc": "Define invitation types for your guests",
+  "deleteInvitationType": "Delete this type?",
+  "deleteInvitationTypeMsg": "Guests with this type will be reassigned to the default type.",
+  "invitationTypeNameRequired": "Name is required",
+  "needsSleeping": "Needs accommodation",
+  "needsSleepingDesc": "Enable if guests of this type generally need a room. Helps track guests without an assigned accommodation.",
+  "manageMenu": "Manage",
+  "guestsWithType": "{{count}} guest(s)"
 }

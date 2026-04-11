@@ -7,6 +7,7 @@ import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
+import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useGuestRsvpUrl } from "@/lib/rsvp-sync";
 import {
@@ -15,11 +16,10 @@ import {
   DIET_LABELS,
 } from "@/db/types";
 import type {
-  InvitationType,
   RsvpStatus,
   Diet,
 } from "@/db/types";
-import { UserPlus, XCircle, Share2, BedDouble } from "lucide-react-native";
+import { UserPlus, XCircle, Share2, BedDouble, Tag } from "lucide-react-native";
 import { toast } from "@/lib/toast/sonner";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
@@ -62,6 +62,7 @@ export default function GuestDetailScreen() {
   const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
   const isPostWedding = weddingDate ? new Date(weddingDate) < new Date() : false;
   const accommodations = useAccommodationsStore((s) => s.accommodations);
+  const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
@@ -71,8 +72,8 @@ export default function GuestDetailScreen() {
   const [firstName, setFirstName] = useState(existing?.firstName || "");
   const [lastName, setLastName] = useState(existing?.lastName || "");
   const [groupId, setGroupId] = useState(existing?.groupId || "");
-  const [invitationType, setInvitationType] = useState<InvitationType>(
-    (existing?.invitationType as InvitationType) || "FULL"
+  const [invitationType, setInvitationType] = useState<string>(
+    existing?.invitationType || "FULL"
   );
   const [rsvpStatus, setRsvpStatus] = useState<RsvpStatus>(
     (existing?.rsvpStatus as RsvpStatus) || "PENDING"
@@ -265,6 +266,27 @@ export default function GuestDetailScreen() {
           activeKey={rsvpStatus}
           onSelect={(k) => setRsvpStatus(k as RsvpStatus)}
         />
+
+        {/* Invitation Type */}
+        <SectionTitle>{t("invitationType")}</SectionTitle>
+        {invitationTypes.length > 0 ? (
+          <HorizontalChipSelect
+            options={invitationTypes.map((it) => ({ key: it.id, label: it.label }))}
+            activeKey={invitationType}
+            onSelect={setInvitationType}
+          />
+        ) : (
+          <Pressable
+            onPress={() => router.push("/(tabs)/guests/invitation-types")}
+            className="flex-row items-center gap-1.5 mb-4 active:opacity-60"
+          >
+            <Tag size={14} color="#9CA3AF" />
+            <Text className="text-xs text-gray-400 dark:text-gray-500">
+              {t("noInvitationTypes")} —{" "}
+              <Text className="text-primary-500 font-medium">{t("newInvitationType")}</Text>
+            </Text>
+          </Pressable>
+        )}
 
         {/* Table */}
         <SectionTitle>{t("table")}</SectionTitle>

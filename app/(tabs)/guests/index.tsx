@@ -9,13 +9,14 @@ import {
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
+import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import {
   RSVP_STATUS_LABELS,
   RSVP_STATUS_COLORS,
-  INVITATION_TYPE_LABELS,
   DIET_LABELS,
 } from "@/db/types";
-import type { RsvpStatus, InvitationType } from "@/db/types";
+import type { RsvpStatus } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
@@ -56,7 +57,7 @@ export default function GuestsListScreen() {
 
 // ─── Guest Card ─────────────────────────────────────────────────────────
 
-function GuestCard({ guest }: { guest: Guest }) {
+function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTypeLabel: string }) {
   const { t } = useTranslation("guests");
   const router = useRouter();
   const companionName = useGuestsStore((s) => {
@@ -87,7 +88,7 @@ function GuestCard({ guest }: { guest: Guest }) {
             {guest.firstName} {guest.lastName}
           </Text>
           <Text className="text-sm text-gray-400 mt-0.5">
-            {t(INVITATION_TYPE_LABELS[guest.invitationType as InvitationType])}
+            {invitationTypeLabel}
             {(guest.childrenCount ?? 0) > 0 ? ` · ${guest.childrenCount} ${t("child")}` : ""}
             {guest.diet && guest.diet !== "STANDARD"
               ? ` · ${t(DIET_LABELS[guest.diet as keyof typeof DIET_LABELS])}`
@@ -115,25 +116,44 @@ function GuestsView() {
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
   const groups = useGuestsStore((s) => s.groups);
+  const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
   const counts = useMemo(() => computeCounts(guests), [guests]);
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
 
+  // Map invitationType id → label for display
+  const typeLabels = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const it of invitationTypes) map.set(it.id, it.label);
+    return map;
+  }, [invitationTypes]);
+
+  // Set of type IDs that require sleeping
+  const sleepingTypeIds = useMemo(
+    () => new Set(invitationTypes.filter((it) => it.needsSleeping).map((it) => it.id)),
+    [invitationTypes]
+  );
+
+  // Count accepted guests whose type needsSleeping and have no accommodation
+  const noAccomCount = useMemo(
+    () => guests.filter(
+      (g) => g.rsvpStatus === "ACCEPTED" && sleepingTypeIds.has(g.invitationType) && !g.accommodationId
+    ).length,
+    [guests, sleepingTypeIds]
+  );
+
   const filteredGuests = useMemo(() => {
     return guests
       .filter((g) => {
-        // RSVP / no-table filter
         if (rsvpFilter === "NO_TABLE") {
           if (g.rsvpStatus !== "ACCEPTED" || g.tableId || g.noTableNeeded) return false;
         } else if (rsvpFilter === "NO_ACCOM") {
-          if (g.rsvpStatus !== "ACCEPTED" || g.accommodationId) return false;
+          if (g.rsvpStatus !== "ACCEPTED" || !sleepingTypeIds.has(g.invitationType) || g.accommodationId) return false;
         } else if (rsvpFilter !== "ALL" && g.rsvpStatus !== rsvpFilter) {
           return false;
         }
-        // Invitation type filter
         if (typeFilter !== "ALL" && g.invitationType !== typeFilter) return false;
-        // Search
         if (search) {
           const q = search.toLowerCase();
           return (
@@ -149,7 +169,7 @@ function GuestsView() {
           `${b.lastName}${b.firstName}`
         )
       );
-  }, [guests, search, rsvpFilter, typeFilter]);
+  }, [guests, search, rsvpFilter, typeFilter, sleepingTypeIds]);
 
   const groupedGuests = useMemo(() => {
     if (groups.length === 0) return null;
@@ -170,22 +190,24 @@ function GuestsView() {
     { key: "DECLINED", label: t("declined"), count: counts.declined },
     { key: "MAYBE", label: t("maybe"), count: counts.maybe },
     { key: "NO_TABLE", label: t("noTable"), count: counts.no_table_count },
-    { key: "NO_ACCOM", label: t("noAccommodation"), count: counts.no_accommodation_count },
+    ...(noAccomCount > 0 || rsvpFilter === "NO_ACCOM"
+      ? [{ key: "NO_ACCOM", label: t("noAccommodation"), count: noAccomCount }]
+      : []),
   ];
 
-  const typeCounts = useMemo(() => ({
-    CEREMONY: guests.filter((g) => g.invitationType === "CEREMONY").length,
-    COCKTAIL: guests.filter((g) => g.invitationType === "COCKTAIL").length,
-    FULL: guests.filter((g) => g.invitationType === "FULL").length,
-    BOTH_DAYS: guests.filter((g) => g.invitationType === "BOTH_DAYS").length,
-  }), [guests]);
+  const typeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const g of guests) {
+      map.set(g.invitationType, (map.get(g.invitationType) ?? 0) + 1);
+    }
+    return map;
+  }, [guests]);
 
-  const typeTabs = [
-    { key: "CEREMONY", label: t("invitationTypes.CEREMONY"), count: typeCounts.CEREMONY },
-    { key: "COCKTAIL", label: t("invitationTypes.COCKTAIL"), count: typeCounts.COCKTAIL },
-    { key: "FULL", label: t("invitationTypes.FULL"), count: typeCounts.FULL },
-    { key: "BOTH_DAYS", label: t("invitationTypes.BOTH_DAYS"), count: typeCounts.BOTH_DAYS },
-  ];
+  const typeTabs = invitationTypes.map((it) => ({
+    key: it.id,
+    label: it.label,
+    count: typeCounts.get(it.id) ?? 0,
+  }));
 
   return (
     <View className="flex-1">
@@ -270,7 +292,7 @@ function GuestsView() {
           {groupedGuests ? (
             <>
               {groupedGuests.ungrouped.map((guest) => (
-                <GuestCard key={guest.id} guest={guest} />
+                <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
               ))}
               {groupedGuests.byGroup.map(({ group, guests: gList }) => (
                 <CollapsibleSection
@@ -279,14 +301,14 @@ function GuestsView() {
                   count={gList.length}
                 >
                   {gList.map((guest) => (
-                    <GuestCard key={guest.id} guest={guest} />
+                    <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
                   ))}
                 </CollapsibleSection>
               ))}
             </>
           ) : (
             filteredGuests.map((guest) => (
-              <GuestCard key={guest.id} guest={guest} />
+              <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
             ))
           )}
           <View className="h-24" />
