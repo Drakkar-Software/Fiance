@@ -41,4 +41,10 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return resolve(context, moduleName, platform)
 }
 
-module.exports = withSentryConfig(withNativeWind(config, { input: './global.css' }))
+// withSentryConfig wraps the serializer in a way that breaks web bundling.
+// Only apply it for native builds.
+const isWebBuild = process.argv.some((a) => a === 'web') ||
+  process.argv.some((a, i, arr) => a === '--platform' && arr[i + 1] === 'web')
+
+const nativeWindConfig = withNativeWind(config, { input: './global.css' })
+module.exports = isWebBuild ? nativeWindConfig : withSentryConfig(nativeWindConfig)
