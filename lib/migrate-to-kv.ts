@@ -158,7 +158,7 @@ function mapAccommodation(row: any) {
     website: row.website ?? null,
     checkInDate: row.check_in_date ?? null,
     checkOutDate: row.check_out_date ?? null,
-    roomCount: row.room_count ?? null,
+    bedCount: row.room_count ?? null,
     pricePerNight: row.price_per_night ?? null,
     notes: row.notes ?? null,
     createdAt: row.created_at ?? null,

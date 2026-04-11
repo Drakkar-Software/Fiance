@@ -122,7 +122,7 @@ export interface Accommodation {
   website: string | null;
   checkInDate: string | null;
   checkOutDate: string | null;
-  roomCount: number | null;
+  bedCount: number | null;
   pricePerNight: number | null;
   notes: string | null;
   createdAt: string | null;

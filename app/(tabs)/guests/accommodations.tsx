@@ -19,7 +19,7 @@ type FormState = {
   website: string;
   checkInDate: string;
   checkOutDate: string;
-  roomCount: string;
+  bedCount: string;
   pricePerNight: string;
 };
 
@@ -30,7 +30,7 @@ const EMPTY_FORM: FormState = {
   website: "",
   checkInDate: "",
   checkOutDate: "",
-  roomCount: "",
+  bedCount: "",
   pricePerNight: "",
 };
 
@@ -70,7 +70,7 @@ export default function AccommodationsScreen() {
       website: form.website || null,
       checkInDate: form.checkInDate || null,
       checkOutDate: form.checkOutDate || null,
-      roomCount: form.roomCount ? parseInt(form.roomCount) : null,
+      bedCount: form.bedCount ? parseInt(form.bedCount) : null,
       pricePerNight: form.pricePerNight ? parseFloat(form.pricePerNight) : null,
       notes: null,
       createdAt: now,
@@ -87,7 +87,7 @@ export default function AccommodationsScreen() {
       website: acc.website || "",
       checkInDate: acc.checkInDate || "",
       checkOutDate: acc.checkOutDate || "",
-      roomCount: acc.roomCount != null ? String(acc.roomCount) : "",
+      bedCount: acc.bedCount != null ? String(acc.bedCount) : "",
       pricePerNight: acc.pricePerNight != null ? String(acc.pricePerNight) : "",
     });
     setEditingId(acc.id);
@@ -103,7 +103,7 @@ export default function AccommodationsScreen() {
       website: form.website || null,
       checkInDate: form.checkInDate || null,
       checkOutDate: form.checkOutDate || null,
-      roomCount: form.roomCount ? parseInt(form.roomCount) : null,
+      bedCount: form.bedCount ? parseInt(form.bedCount) : null,
       pricePerNight: form.pricePerNight ? parseFloat(form.pricePerNight) : null,
     });
     resetForm();
@@ -111,7 +111,7 @@ export default function AccommodationsScreen() {
 
   // Summary stats
   const acceptedGuests = guests.filter((g) => g.rsvpStatus === "ACCEPTED");
-  const totalRooms = accommodations.reduce((sum, a) => sum + (a.roomCount ?? 0), 0);
+  const totalRooms = accommodations.reduce((sum, a) => sum + (a.bedCount ?? 0), 0);
   const assignedCount = acceptedGuests.filter((g) => g.accommodationId).length;
   const remaining = totalRooms - assignedCount;
 
@@ -123,7 +123,7 @@ export default function AccommodationsScreen() {
       <InputRow label={t("accommodationWebsite")} value={form.website} onChangeText={setField("website")} />
       <DateRow label={t("checkIn")} value={form.checkInDate} onChange={setField("checkInDate")} />
       <DateRow label={t("checkOut")} value={form.checkOutDate} onChange={setField("checkOutDate")} />
-      <InputRow label={t("roomCount")} value={form.roomCount} onChangeText={setField("roomCount")} keyboardType="numeric" />
+      <InputRow label={t("roomCount")} value={form.bedCount} onChangeText={setField("bedCount")} keyboardType="numeric" />
       <InputRow label={t("pricePerNight")} value={form.pricePerNight} onChangeText={setField("pricePerNight")} keyboardType="numeric" />
     </>
   );
@@ -179,8 +179,8 @@ export default function AccommodationsScreen() {
           {/* List */}
           {accommodations.map((acc) => {
             const guestCount = guests.filter((g) => g.accommodationId === acc.id).length;
-            const isFull = acc.roomCount != null && guestCount >= acc.roomCount;
-            const isOver = acc.roomCount != null && guestCount > acc.roomCount;
+            const isFull = acc.bedCount != null && guestCount >= acc.bedCount;
+            const isOver = acc.bedCount != null && guestCount > acc.bedCount;
 
             if (editingId === acc.id) {
               return (
@@ -214,7 +214,7 @@ export default function AccommodationsScreen() {
                     {/* Capacity badge */}
                     <View className={`px-2 py-0.5 rounded-full mr-1 ${isOver ? "bg-red-100" : isFull ? "bg-amber-100" : "bg-green-50"}`}>
                       <Text className={`text-xs font-semibold ${isOver ? "text-red-600" : isFull ? "text-amber-600" : "text-green-700"}`}>
-                        {acc.roomCount != null ? `${guestCount}/${acc.roomCount}` : guestCount}
+                        {acc.bedCount != null ? `${guestCount}/${acc.bedCount}` : guestCount}
                       </Text>
                     </View>
                     <Pressable onPress={() => handleEdit(acc)} className="w-8 h-8 items-center justify-center">
