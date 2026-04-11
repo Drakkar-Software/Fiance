@@ -6,6 +6,8 @@ import Animated, {
   useAnimatedStyle,
   runOnJS,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import type { Table, Guest } from "@/db/schema";
 
 const CANVAS_W = 700;
@@ -147,6 +149,7 @@ interface Props {
 }
 
 export function PlanView({ tables, guests, updateTable }: Props) {
+  const { t } = useTranslation("guests");
   const allAtOrigin = tables.every((t) => (t.positionX ?? 0) === 0 && (t.positionY ?? 0) === 0);
   const autoPositions = useMemo(
     () => (allAtOrigin ? autoArrange(tables) : null),
@@ -157,9 +160,17 @@ export function PlanView({ tables, guests, updateTable }: Props) {
     autoPositions ? autoPositions[t.id] : { x: t.positionX ?? 0, y: t.positionY ?? 0 };
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const sheetRef = useRef<BottomSheetModal>(null);
 
   const selectedTable = selectedId ? tables.find((t) => t.id === selectedId) : null;
   const selectedGuests = selectedId ? guests.filter((g) => g.tableId === selectedId) : [];
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
+    ),
+    [],
+  );
 
   return (
     <View className="flex-1">
@@ -198,7 +209,10 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                   isSelected={selectedId === table.id}
                   initialX={x}
                   initialY={y}
-                  onSelect={() => setSelectedId((prev) => (prev === table.id ? null : table.id))}
+                  onSelect={() => {
+                    setSelectedId(table.id);
+                    sheetRef.current?.present();
+                  }}
                   onDragEnd={(newX, newY) => {
                     if (allAtOrigin && autoPositions) {
                       // Commit all auto-arranged positions before the first manual placement
@@ -216,27 +230,83 @@ export function PlanView({ tables, guests, updateTable }: Props) {
         </ScrollView>
       </ScrollView>
 
-      {/* Selected table detail */}
-      {selectedTable && (
-        <View className="mx-4 mb-4 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
-          <Text className="text-sm font-bold text-gray-900 dark:text-white mb-2">
-            {selectedTable.name} — {selectedGuests.length}/{selectedTable.capacity ?? "∞"} invités
-          </Text>
-          {selectedGuests.length === 0 ? (
-            <Text className="text-sm text-gray-400">Aucun invité assigné</Text>
-          ) : (
-            <View className="flex-row flex-wrap gap-1.5">
-              {selectedGuests.map((g) => (
-                <View key={g.id} className="bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-full">
-                  <Text className="text-xs text-gray-600 dark:text-gray-300">
-                    {g.firstName} {g.lastName[0]}.
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-      )}
+      <BottomSheetModal
+        ref={sheetRef}
+        enableDynamicSizing
+        enablePanDownToClose
+        backdropComponent={renderBackdrop}
+        onDismiss={() => setSelectedId(null)}
+        backgroundStyle={{ backgroundColor: "transparent" }}
+        handleComponent={() => null}
+      >
+        <BottomSheetView>
+          <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
+            <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
+
+            {selectedTable && (
+              <>
+                <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                  {selectedTable.name}
+                </Text>
+                <Text className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  {selectedGuests.length} / {selectedTable.capacity ?? "∞"}
+                </Text>
+
+                <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+                  {selectedGuests.length === 0 ? (
+                    <Text className="text-center text-gray-400 py-6">
+                      {t("noGuestsAssigned")}
+                    </Text>
+                  ) : (
+                    selectedGuests.map((guest) => (
+                      <View
+                        key={guest.id}
+                        className="flex-row items-center py-2.5 border-b border-gray-50 dark:border-gray-800"
+                      >
+                        <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
+                          <Text className="text-primary-500 font-bold text-xs">
+                            {guest.firstName[0]}{guest.lastName[0]}
+                          </Text>
+                        </View>
+                        <Text className="flex-1 text-base text-gray-900 dark:text-white">
+                          {guest.firstName} {guest.lastName}
+                        </Text>
+                        {guest.rsvpStatus && (
+                          <View
+                            className={`px-2 py-0.5 rounded-full ${
+                              guest.rsvpStatus === "ACCEPTED"
+                                ? "bg-green-100 dark:bg-green-900"
+                                : guest.rsvpStatus === "DECLINED"
+                                ? "bg-red-100 dark:bg-red-900"
+                                : guest.rsvpStatus === "MAYBE"
+                                ? "bg-yellow-100 dark:bg-yellow-900"
+                                : "bg-gray-100 dark:bg-gray-800"
+                            }`}
+                          >
+                            <Text
+                              className={`text-xs font-medium ${
+                                guest.rsvpStatus === "ACCEPTED"
+                                  ? "text-green-700 dark:text-green-300"
+                                  : guest.rsvpStatus === "DECLINED"
+                                  ? "text-red-700 dark:text-red-300"
+                                  : guest.rsvpStatus === "MAYBE"
+                                  ? "text-yellow-700 dark:text-yellow-300"
+                                  : "text-gray-600 dark:text-gray-400"
+                              }`}
+                            >
+                              {t(`rsvp.${guest.rsvpStatus}`)}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    ))
+                  )}
+                </ScrollView>
+              </>
+            )}
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
     </View>
   );
 }
