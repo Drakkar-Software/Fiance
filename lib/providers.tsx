@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { usePathname } from "expo-router";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
 import { initPublicPageSync, teardownPublicPageSync, pullPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
-import { deriveAuthToken, deriveEncryptionKey } from "@/lib/identity";
+import { resolveServerConfig } from "@/lib/server";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -17,18 +17,13 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     teardownPublicPageSync();
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
-    const serverUrl = wedding.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-    if (!serverUrl) return;
 
     let cancelled = false;
     (async () => {
-      const authToken = await deriveAuthToken(wedding.seedPhrase!);
-      if (cancelled) return;
-      const userId = authToken.slice(0, 16);
-      const encryptionKey = await deriveEncryptionKey(wedding.seedPhrase!, userId);
-      if (cancelled) return;
-      initStarfish({ serverUrl, authToken, userId, encryptionKey });
-      initPublicPageSync({ serverUrl, authToken, userId });
+      const config = await resolveServerConfig(wedding);
+      if (cancelled || !config) return;
+      initStarfish(config);
+      initPublicPageSync(config);
       const sf = getStarfishStore();
       if (sf && !cancelled) {
         try { await sf.getState().pull(); } catch { /* sync will retry */ }

@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import { StarfishClient, SyncManager, createDedupFetch } from "@drakkar.software/starfish-client";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import * as Crypto from "expo-crypto";
-import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
+import { buildWeddingPageUrl } from "@/lib/identity";
+import { deriveUserId } from "@/lib/server";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 /**
@@ -29,9 +30,8 @@ export function useGuestRsvpUrl(
     if (!guestId || !activeEntry?.seedPhrase) return;
     let cancelled = false;
     (async () => {
-      const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
+      const userId = await deriveUserId(activeEntry.seedPhrase!);
       if (cancelled) return;
-      const userId = authToken.slice(0, 16);
       const baseUrl = buildWeddingPageUrl(userId);
       const { guests, updateGuest } = useGuestsStore.getState();
       let token = guests.find((g) => g.id === guestId)?.rsvpToken;

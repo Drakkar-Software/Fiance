@@ -16,7 +16,8 @@ import {
   getSyncStatus,
   onSyncStatusChange,
 } from "@/lib/starfish";
-import { deriveAuthToken, deriveEncryptionKey, buildInviteUrl, generatePassphrase } from "@/lib/identity";
+import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
+import { resolveServerConfig } from "@/lib/server";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -93,32 +94,21 @@ export default function SettingsScreen() {
 
     if (!premium) return; // blocked by UI, but guard anyway
 
-    const password = activeEntry?.seedPhrase;
     const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-    if (!password || !serverUrl) {
-      Alert.alert(
-        t("syncImpossible"),
-        t("noServerOrPassword")
-      );
+    if (!activeEntry?.seedPhrase || !serverUrl) {
+      Alert.alert(t("syncImpossible"), t("noServerOrPassword"));
       return;
     }
 
     if (!activeEntry?.serverUrl) {
       updateRegistryWedding(activeEntry.id, { serverUrl });
     }
-
     updateRegistryWedding(activeEntry.id, { syncDisabled: false });
 
-    const authToken = await deriveAuthToken(password);
-    const userId = authToken.slice(0, 16);
-    const encryptionKey = await deriveEncryptionKey(password, userId);
+    const config = await resolveServerConfig(activeEntry);
+    if (!config) return;
 
-    initStarfish({
-      serverUrl,
-      authToken,
-      userId,
-      encryptionKey,
-    });
+    initStarfish(config);
     setSyncEnabled(true);
   }, [syncEnabled, activeEntry, premium]);
 

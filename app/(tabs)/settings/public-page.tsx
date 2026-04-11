@@ -12,7 +12,8 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { deriveAuthToken, buildWeddingPageUrl } from "@/lib/identity";
+import { buildWeddingPageUrl } from "@/lib/identity";
+import { resolveServerConfig, deriveUserId } from "@/lib/server";
 import { recalculateDueDates } from "@/lib/planning";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
@@ -113,14 +114,11 @@ export default function PublicPageScreen() {
   const [syncingRsvp, setSyncingRsvp] = useState(false);
 
   const handlePublishRoster = useCallback(async () => {
-    const password = activeEntry?.seedPhrase;
-    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-    if (!password || !serverUrl) return;
+    const config = await resolveServerConfig(activeEntry);
+    if (!config) return;
     setPublishingRoster(true);
     try {
-      const authToken = await deriveAuthToken(password);
-      const userId = authToken.slice(0, 16);
-      await pushRsvpRoster({ serverUrl, authToken, userId });
+      await pushRsvpRoster(config);
       Alert.alert(t("publishRosterSuccess"));
     } catch (e: any) {
       Alert.alert(t("common:error"), e.message);
@@ -130,14 +128,11 @@ export default function PublicPageScreen() {
   }, [activeEntry, t]);
 
   const handleSyncRsvp = useCallback(async () => {
-    const password = activeEntry?.seedPhrase;
-    const serverUrl = activeEntry?.serverUrl || process.env.EXPO_PUBLIC_SYNC_URL;
-    if (!password || !serverUrl) return;
+    const config = await resolveServerConfig(activeEntry);
+    if (!config) return;
     setSyncingRsvp(true);
     try {
-      const authToken = await deriveAuthToken(password);
-      const userId = authToken.slice(0, 16);
-      const submissions = await fetchRsvpInbox({ serverUrl, authToken, userId });
+      const submissions = await fetchRsvpInbox(config);
       const count = applyRsvpSubmissions(submissions);
       Alert.alert(count > 0 ? t("syncRsvpSuccess", { count }) : t("syncRsvpNone"));
     } catch (e: any) {
@@ -149,11 +144,9 @@ export default function PublicPageScreen() {
 
   // Share
   const handleShare = useCallback(async () => {
-    const password = activeEntry?.seedPhrase;
-    if (!password) return;
+    if (!activeEntry?.seedPhrase) return;
     try {
-      const authToken = await deriveAuthToken(password);
-      const userId = authToken.slice(0, 16);
+      const userId = await deriveUserId(activeEntry.seedPhrase);
       const url = buildWeddingPageUrl(userId);
       await Share.share({ message: t("sharePublicPageMsg", { url }) });
     } catch {}
@@ -317,8 +310,7 @@ export default function PublicPageScreen() {
           <Pressable
             onPress={async () => {
               try {
-                const authToken = await deriveAuthToken(activeEntry.seedPhrase!);
-                const userId = authToken.slice(0, 16);
+                const userId = await deriveUserId(activeEntry.seedPhrase!);
                 if (typeof window !== "undefined") {
                   router.push(`/wedding/${userId}`);
                 } else {

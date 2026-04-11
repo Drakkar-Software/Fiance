@@ -31,8 +31,8 @@ import {
   TEMPLATE_CATEGORY_COUNT,
 } from "@/lib/planning";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { deriveAuthToken } from "@/lib/identity";
 import { buildWeddingPageUrl } from "@/lib/identity";
+import { deriveUserId } from "@/lib/server";
 
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
@@ -506,8 +506,7 @@ function DayOfView() {
   const handleShareTimeline = useCallback(async () => {
     if (!activeEntry?.seedPhrase) return;
     try {
-      const authToken = await deriveAuthToken(activeEntry.seedPhrase);
-      const userId = authToken.slice(0, 16);
+      const userId = await deriveUserId(activeEntry.seedPhrase);
       const url = buildWeddingPageUrl(userId);
       await Share.share({ message: t("shareTimelineMessage", { url }) });
     } catch {}
