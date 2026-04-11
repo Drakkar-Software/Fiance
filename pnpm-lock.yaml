@@ -20,6 +20,7 @@ specifiers:
   '@gorhom/bottom-sheet': ^5.2.9
   '@hookform/resolvers': ^3.10.0
   '@legendapp/list': '>=1.0.0'
+  '@legendapp/motion': '>=2.0.0'
   '@react-native-async-storage/async-storage': ^2.2.0
   '@react-native-community/netinfo': ^11.5.2
   '@sentry/react-native': ^6.0.0
@@ -42,6 +43,7 @@ specifiers:
   expo-document-picker: ~55.0.13
   expo-file-system: ^55.0.16
   expo-font: ^55.0.6
+  expo-haptics: ~55.0.14
   expo-image-picker: ~55.0.18
   expo-linking: ^55.0.12
   expo-local-authentication: ~55.0.13
@@ -89,7 +91,7 @@ specifiers:
 
 dependencies:
   '@babel/runtime': 7.29.2
-  '@drakkar.software/seahorse': 0.7.2_8637144bf9d9281092b3101b64016147
+  '@drakkar.software/seahorse': 0.7.2_292275f3664acba4999bd0f31927fdad
   '@drakkar.software/starfish-client': 1.11.0_react@19.2.0+zustand@5.0.12
   '@drakkar.software/starfish-protocol': 1.11.0
   '@drakkar.software/sunglasses-adapter-console': 0.3.0
@@ -103,6 +105,7 @@ dependencies:
   '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
   '@hookform/resolvers': 3.10.0_react-hook-form@7.72.1
   '@legendapp/list': 2.0.19_react-native@0.83.4+react@19.2.0
+  '@legendapp/motion': 2.5.3_03b87d0988d1afb486cbb1c2501f8309
   '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.4
   '@react-native-community/netinfo': 11.5.2_react-native@0.83.4+react@19.2.0
   '@sentry/react-native': 6.22.0_4a4e258826428e0609ba6dd8832c630b
@@ -118,6 +121,7 @@ dependencies:
   expo-document-picker: 55.0.13_expo@55.0.14
   expo-file-system: 55.0.16_expo@55.0.14+react-native@0.83.4
   expo-font: 55.0.6_4a4e258826428e0609ba6dd8832c630b
+  expo-haptics: 55.0.14_expo@55.0.14
   expo-image-picker: 55.0.18_expo@55.0.14
   expo-linking: 55.0.12_b5cd1bfc708c3a4a948491c3c57e0a64
   expo-local-authentication: 55.0.13_expo@55.0.14
@@ -1240,7 +1244,7 @@ packages:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  /@drakkar.software/seahorse/0.7.2_8637144bf9d9281092b3101b64016147:
+  /@drakkar.software/seahorse/0.7.2_292275f3664acba4999bd0f31927fdad:
     resolution: {integrity: sha512-0djajUn6NTzAs1AmzCoucb9AB/uM9ZrbsRNe4oVdHxl0DAf6mgAcZqeTL0veWY0bBvejknY4b/HlBu1hBBxARQ==}
     peerDependencies:
       '@expo/html-elements': '>=55.0.0'
@@ -1307,11 +1311,13 @@ packages:
       '@expo/html-elements': 55.0.3_508cc241f94123043423c9a0ef98e530
       '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
       '@legendapp/list': 2.0.19_react-native@0.83.4+react@19.2.0
+      '@legendapp/motion': 2.5.3_03b87d0988d1afb486cbb1c2501f8309
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.4
       clsx: 2.1.1
       date-fns: 3.6.0
       expo-document-picker: 55.0.13_expo@55.0.14
       expo-file-system: 55.0.16_expo@55.0.14+react-native@0.83.4
+      expo-haptics: 55.0.14_expo@55.0.14
       expo-local-authentication: 55.0.13_expo@55.0.14
       expo-print: 55.0.13_expo@55.0.14+react-native@0.83.4
       expo-secure-store: 55.0.13_expo@55.0.14
@@ -2396,6 +2402,30 @@ packages:
       react: 19.2.0
       react-native: 0.83.4_c933ad1581318756add432bf45df9101
       use-sync-external-store: 1.6.0_react@19.2.0
+    dev: false
+
+  /@legendapp/motion/2.5.3_03b87d0988d1afb486cbb1c2501f8309:
+    resolution: {integrity: sha512-IcNiStiK3qG5LaIPLC8fVV0BHIrkf7EY5HfOv3xbuMH0z4D945yaaEDafP5bboHf/uj9XRjTQHVTtZgwpMNlHw==}
+    peerDependencies:
+      nativewind: '>=4.0.0'
+      react: '>=16'
+      react-native: '*'
+    dependencies:
+      '@legendapp/tools': 2.0.1_react@19.2.0
+      nativewind: 5.0.0-preview.3_724813c9de0a51142dc3834e12fa1bdb
+      react: 19.2.0
+      react-native: 0.83.4_c933ad1581318756add432bf45df9101
+    dev: false
+
+  /@legendapp/tools/2.0.1_react@19.2.0:
+    resolution: {integrity: sha512-Kxt0HWvWElRK6oybHRzcYxdgaKGwuaiRNreS7usW7QuHXRIHaH4yMcW2YNRG4DHE5fpefv+Bno/BohQcCE4FaA==}
+    peerDependencies:
+      react: '>=16'
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 19.2.0
     dev: false
 
   /@napi-rs/wasm-runtime/0.2.12:
@@ -6314,6 +6344,14 @@ packages:
       expo: 55.0.14_f80a20a71c82ee1e6df14978df251dab
       react: 19.2.0
       react-native: 0.83.4_c933ad1581318756add432bf45df9101
+    dev: false
+
+  /expo-haptics/55.0.14_expo@55.0.14:
+    resolution: {integrity: sha512-KjDItBsA9mi1f5nRwf8g1wOdfEcLHwvEdt5Jl1sMCDETR/homcGOl+F3QIiPOl/PRlbGVieQsjTtF4DGtHOj6g==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 55.0.14_f80a20a71c82ee1e6df14978df251dab
     dev: false
 
   /expo-image-loader/55.0.0_expo@55.0.14:
