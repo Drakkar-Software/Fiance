@@ -127,6 +127,7 @@ function getSyncRouter(env: Env): Hono {
     securityHeaders: true,
     logger: createConsoleLogger(),
     auditLogger: createConsoleAuditLogger(),
+    configEndpoint: { auth: "role-filtered" },
   });
 
   saveConfig(store, config).catch(() => {});

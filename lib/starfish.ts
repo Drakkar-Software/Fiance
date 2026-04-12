@@ -12,6 +12,7 @@ import {
   consoleSyncLogger,
   createUnionMerge,
   createDebouncedSync,
+  fetchServerConfig,
 } from "@drakkar.software/starfish-client";
 import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
 import { setupCrossTabSync } from "@drakkar.software/starfish-client/broadcast";
@@ -53,15 +54,27 @@ export interface StarfishConfig {
   encryptionKey: string;
 }
 
-export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
+export async function initStarfish(config: StarfishConfig): Promise<StoreApi<StarfishStore>> {
   const { fetch: resilientFetch } = createResilientFetch(
     { maxRetries: 3, initialDelayMs: 500 },
     { threshold: 5, cooldownMs: 30_000 },
   );
 
+  const authHeaders = { Authorization: `Bearer ${config.authToken}` };
+
+  // Fetch server collection config to get live limits
+  let weddingMaxBytes = 1_048_576;
+  try {
+    const serverConfig = await fetchServerConfig(config.serverUrl, { headers: authHeaders });
+    const weddingCollection = serverConfig.collections.find((c) => c.name === "wedding");
+    if (weddingCollection?.maxBodyBytes) weddingMaxBytes = weddingCollection.maxBodyBytes;
+  } catch {
+    // Fall back to hardcoded limit if config endpoint is unreachable
+  }
+
   const client = new StarfishClient({
     baseUrl: config.serverUrl,
-    auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
+    auth: async () => authHeaders,
     fetch: resilientFetch,
   });
 
@@ -72,8 +85,8 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
     encryptionSecret: config.encryptionKey,
     encryptionSalt: config.userId,
     onConflict: createUnionMerge({
-      timestampField: "updatedAt",
-      documentTimestampField: "timestamp",
+      timestampKey: "updatedAt",
+      documentTimestampKey: "timestamp",
     }),
     maxRetries: 3,
     loggerName: "wedding-sync",
@@ -101,12 +114,12 @@ export function initStarfish(config: StarfishConfig): StoreApi<StarfishStore> {
   const debounced = createDebouncedSync(store, {
     delayMs: 2000,
     serialize: () => createBackupDocument(),
-    warnBytes: 900_000,
-    maxBytes: 1_048_576,
+    warnBytes: Math.floor(weddingMaxBytes * 0.9),
+    maxBytes: weddingMaxBytes,
     onSizeWarning: (bytes) =>
-      console.warn(`[sync] Document ~${(bytes / 1024).toFixed(0)}KB approaching 1MB limit`),
+      console.warn(`[sync] Document ~${(bytes / 1024).toFixed(0)}KB approaching ${(weddingMaxBytes / 1024).toFixed(0)}KB limit`),
     onSizeExceeded: (bytes) =>
-      console.error(`[sync] Document ${(bytes / 1024).toFixed(0)}KB exceeds 1MB server limit, push blocked`),
+      console.error(`[sync] Document ${(bytes / 1024).toFixed(0)}KB exceeds ${(weddingMaxBytes / 1024).toFixed(0)}KB server limit, push blocked`),
   });
   debouncedNotify = debounced.notify;
   debouncedCancel = debounced.cancel;

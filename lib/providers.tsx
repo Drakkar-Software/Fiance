@@ -24,7 +24,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     (async () => {
       const config = await resolveServerConfig(wedding);
       if (cancelled || !config) return;
-      initStarfish(config);
+      await initStarfish(config);
       starfishAnalyticsAdapter.activate(config.serverUrl);
       initPublicPageSync(config);
       const sf = getStarfishStore();

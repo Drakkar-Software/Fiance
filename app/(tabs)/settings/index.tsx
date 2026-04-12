@@ -123,7 +123,7 @@ export default function SettingsScreen() {
     const config = await resolveServerConfig(activeEntry);
     if (!config) return;
 
-    initStarfish(config);
+    await initStarfish(config);
     starfishAnalyticsAdapter.activate(config.serverUrl);
     analytics.capture("sync_enabled");
     setSyncEnabled(true);

@@ -40,8 +40,8 @@
   "dependencies": {
     "@babel/runtime": "^7.29.2",
     "@drakkar.software/seahorse": "0.7.2",
-    "@drakkar.software/starfish-client": "^1.11.0",
-    "@drakkar.software/starfish-protocol": "^1.11.0",
+    "@drakkar.software/starfish-client": "^1.14.0",
+    "@drakkar.software/starfish-protocol": "^1.14.0",
     "@drakkar.software/sunglasses-adapter-console": "^0.6.0",
     "@drakkar.software/sunglasses-adapter-sentry": "^0.6.0",
     "@drakkar.software/sunglasses-adapter-starfish": "^0.6.0",
