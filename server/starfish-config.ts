@@ -59,7 +59,8 @@ export const config: SyncConfig = {
       maxBodyBytes: 65_536,
       allowedMimeTypes: ["application/json"],
       ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
-      queueOnly: true,
+      // TODO: restore queueOnly: true once queueOnly + writeRoles["public"] is supported
+      queueOnly: false,
     },
   ],
 };
