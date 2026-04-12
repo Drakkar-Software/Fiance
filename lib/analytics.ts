@@ -34,17 +34,17 @@ export type WeddingOSEvents = {
 /**
  * Lazy wrapper around StarfishAnalyticsAdapter.
  * Included in the adapter list from app start (so the core knows about it),
- * but is a no-op until activate() is called once sync credentials are available.
+ * but is a no-op until activate() is called once the server URL is known.
+ * No auth token — the analytics-events collection is public (writeRoles: ["public"]).
  */
 class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
   private inner: StarfishAnalyticsAdapter | null = null;
 
-  activate(serverUrl: string, authToken: string) {
+  activate(serverUrl: string) {
     this.inner?.shutdown().catch(() => {});
     this.inner = new StarfishAnalyticsAdapter({
       serverUrl,
       storagePath: "analytics/{identity}/events",
-      authToken,
       pushOnly: true,
     });
   }
