@@ -3,7 +3,7 @@ import { usePathname } from "expo-router";
 import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
 import { initPublicPageSync, teardownPublicPageSync, pullPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
 import { resolveServerConfig } from "@/lib/server";
-import { starfishAnalyticsAdapter } from "@/lib/analytics";
+import { starfishAnalyticsAdapter, analytics } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -26,6 +26,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       if (cancelled || !config) return;
       initStarfish(config);
       starfishAnalyticsAdapter.activate(config.serverUrl, config.authToken);
+      analytics.identify(config.userId);
       initPublicPageSync(config);
       const sf = getStarfishStore();
       if (sf && !cancelled) {

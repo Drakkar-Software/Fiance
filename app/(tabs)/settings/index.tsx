@@ -125,6 +125,7 @@ export default function SettingsScreen() {
 
     initStarfish(config);
     starfishAnalyticsAdapter.activate(config.serverUrl, config.authToken);
+    analytics.identify(config.userId);
     analytics.capture("sync_enabled");
     setSyncEnabled(true);
   }, [syncEnabled, activeEntry, premium]);
