@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { SunglassesCore, asTyped } from "@drakkar.software/sunglasses-core";
+import { SunglassesCore } from "@drakkar.software/sunglasses-core";
 import type { IAnalyticsAdapter, SunglassesEvent } from "@drakkar.software/sunglasses-core";
 import { AsyncStorageAdapter } from "@drakkar.software/sunglasses-storage-async-storage";
 import { ConsoleAdapter } from "@drakkar.software/sunglasses-adapter-console";
@@ -71,9 +71,9 @@ export const starfishAnalyticsAdapter = new LazyStarfishAnalyticsAdapter();
 let _core: SunglassesCore | null = null;
 
 // Pre-init stub — noops until initAnalytics() resolves
-export const analytics = { capture: () => {} } as unknown as ReturnType<
-  typeof asTyped<WeddingOSEvents>
->;
+export const analytics = {
+  capture: (_event: keyof WeddingOSEvents, _props?: unknown) => {},
+} as { capture: SunglassesCore["capture"] };
 
 export async function initAnalytics(): Promise<SunglassesCore> {
   const adapters: IAnalyticsAdapter[] = [starfishAnalyticsAdapter];
@@ -89,7 +89,8 @@ export async function initAnalytics(): Promise<SunglassesCore> {
     enableEventCounting: true,
   });
 
-  Object.assign(analytics, asTyped<WeddingOSEvents>(_core));
+  (analytics as unknown as { capture: typeof _core.capture }).capture =
+    _core.capture.bind(_core);
   return _core;
 }
 
