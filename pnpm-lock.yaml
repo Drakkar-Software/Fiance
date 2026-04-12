@@ -9,12 +9,12 @@ specifiers:
   '@drakkar.software/seahorse': 0.7.2
   '@drakkar.software/starfish-client': ^1.11.0
   '@drakkar.software/starfish-protocol': ^1.11.0
-  '@drakkar.software/sunglasses-adapter-console': ^0.3.0
-  '@drakkar.software/sunglasses-adapter-sentry': ^0.3.0
-  '@drakkar.software/sunglasses-adapter-starfish': ^0.3.0
-  '@drakkar.software/sunglasses-core': ^0.3.0
-  '@drakkar.software/sunglasses-react-native': ^0.3.0
-  '@drakkar.software/sunglasses-storage-async-storage': ^0.3.0
+  '@drakkar.software/sunglasses-adapter-console': ^0.4.0
+  '@drakkar.software/sunglasses-adapter-sentry': ^0.4.0
+  '@drakkar.software/sunglasses-adapter-starfish': ^0.4.0
+  '@drakkar.software/sunglasses-core': ^0.4.0
+  '@drakkar.software/sunglasses-react-native': ^0.4.0
+  '@drakkar.software/sunglasses-storage-async-storage': ^0.4.0
   '@expo/html-elements': ^55.0.3
   '@expo/log-box': 55.0.10
   '@gorhom/bottom-sheet': ^5.2.9
@@ -94,12 +94,12 @@ dependencies:
   '@drakkar.software/seahorse': 0.7.2_292275f3664acba4999bd0f31927fdad
   '@drakkar.software/starfish-client': 1.11.0_react@19.2.0+zustand@5.0.12
   '@drakkar.software/starfish-protocol': 1.11.0
-  '@drakkar.software/sunglasses-adapter-console': 0.3.0
-  '@drakkar.software/sunglasses-adapter-sentry': 0.3.0_react@19.2.0
-  '@drakkar.software/sunglasses-adapter-starfish': 0.3.0
-  '@drakkar.software/sunglasses-core': 0.3.0
-  '@drakkar.software/sunglasses-react-native': 0.3.0_a1f48b2da1e8069012cfbb8542a4bcdc
-  '@drakkar.software/sunglasses-storage-async-storage': 0.3.0_a20128f7da3967792562aa04ed7a086d
+  '@drakkar.software/sunglasses-adapter-console': 0.4.0
+  '@drakkar.software/sunglasses-adapter-sentry': 0.4.0_react@19.2.0
+  '@drakkar.software/sunglasses-adapter-starfish': 0.4.0
+  '@drakkar.software/sunglasses-core': 0.4.0
+  '@drakkar.software/sunglasses-react-native': 0.4.0_a1f48b2da1e8069012cfbb8542a4bcdc
+  '@drakkar.software/sunglasses-storage-async-storage': 0.4.0_a20128f7da3967792562aa04ed7a086d
   '@expo/html-elements': 55.0.3_508cc241f94123043423c9a0ef98e530
   '@expo/log-box': 55.0.10_4a4e258826428e0609ba6dd8832c630b
   '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
@@ -1361,36 +1361,36 @@ packages:
     resolution: {integrity: sha512-fOPzGAc0eeHNf1m6apPa3NLUwLSmPny6GfGfk9O3MwSFg3Pn7uFGRnzdt6mPXYXnQuskcTSLCBiDY6pN9Wsv8Q==}
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-console/0.3.0:
-    resolution: {integrity: sha512-MGE2jjLS7eYB50CuNihJ1aI6WR30aF1DqI7//ORueE2wC3yywNZi6hKOs9Spt5xKjITx9ml0dRcIkSNpfubADQ==}
+  /@drakkar.software/sunglasses-adapter-console/0.4.0:
+    resolution: {integrity: sha512-3rDD2UcRKmPBsozAo4csYzTRkAtcpRMp2u/H6vQUe6ZVQIXmxrcOy6xlyYPHuAqb/N19R3Uga76S42owu0XZ2g==}
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.3.0
+      '@drakkar.software/sunglasses-core': 0.4.0
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-sentry/0.3.0_react@19.2.0:
-    resolution: {integrity: sha512-mBBIbhCyte+EK1iXoCc4jiJFhjLlC/YSvQnSLRMWFmnuaAYsU038bHeiL6FkXNBuk/FxG1DzbS6pRizmEqYbew==}
+  /@drakkar.software/sunglasses-adapter-sentry/0.4.0_react@19.2.0:
+    resolution: {integrity: sha512-ip4t3oJUKuZQhyan2qE1NSFHZU5EZq0+31pYMrKrEBOCAs5qcaqX/yC8TEhcQLmpF6Nncfgj5x9QDoe+Qc4ybA==}
     peerDependencies:
       react: '>=17'
     peerDependenciesMeta:
       react:
         optional: true
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.3.0
+      '@drakkar.software/sunglasses-core': 0.4.0
       react: 19.2.0
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-starfish/0.3.0:
-    resolution: {integrity: sha512-s04oazxy5+U7A20csnPyT/RkfI90jn00NAmkgBkP2slBP50yGb/O55PHtZ7K8418X+680P4CtEpZ0x62w2i7iA==}
+  /@drakkar.software/sunglasses-adapter-starfish/0.4.0:
+    resolution: {integrity: sha512-MfSuOZpRcdU+xr0ICeBI3mjTxzx7x5nLqdRIEaAbVoL9Ow+AnSgZioWf520CNFJ2wPJ3JvzLIBT5eh+eVxHJHw==}
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.3.0
+      '@drakkar.software/sunglasses-core': 0.4.0
     dev: false
 
-  /@drakkar.software/sunglasses-core/0.3.0:
-    resolution: {integrity: sha512-hc8uhQJBViOZqiLC+2Q/IFzXUNxoOjgZ2D9FCqhPVkWoleQCd54OKU8Dxka5SaRMEzs0XX6yTkNrsisF+wmRPg==}
+  /@drakkar.software/sunglasses-core/0.4.0:
+    resolution: {integrity: sha512-58nOrJAe1lnE3/vNngwqgnbGM5FjXzogWo2s3XKb3t0cybPm+CDzbvKwcuJcDpcpgwq9xJZYJCOTKlmyqeBNqw==}
     dev: false
 
-  /@drakkar.software/sunglasses-react-native/0.3.0_a1f48b2da1e8069012cfbb8542a4bcdc:
-    resolution: {integrity: sha512-9IRet+RK6Zeabj4nwqMUtv703jDSWmgoLwiikClY+LSglbtz0uVyrRX+/wp9H26v1blZcNB/r5UrN/Wa2SSVuA==}
+  /@drakkar.software/sunglasses-react-native/0.4.0_a1f48b2da1e8069012cfbb8542a4bcdc:
+    resolution: {integrity: sha512-XSxXUQHQAVjGupF7+UOICi6RTi0Blf9bEpBKI+KHeGkJ2adasnCAc17wRFzAQHZStqp09HCMFzOXe4vY9vascQ==}
     peerDependencies:
       expo-router: '>=3.0.0'
       react: '>=18.0.0'
@@ -1399,18 +1399,18 @@ packages:
       expo-router:
         optional: true
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.3.0
+      '@drakkar.software/sunglasses-core': 0.4.0
       expo-router: 55.0.12_c0246fb67ac9894a6da195d4672f1740
       react: 19.2.0
       react-native: 0.83.4_c933ad1581318756add432bf45df9101
     dev: false
 
-  /@drakkar.software/sunglasses-storage-async-storage/0.3.0_a20128f7da3967792562aa04ed7a086d:
-    resolution: {integrity: sha512-IH95N98isZBrgJj85Yu4pQJAGTZCNDOjiuJ4q5PSXrqg19x/WvAsRZaYDnlZZlmGv+WKZ0J1xiN4hZb03lOGqg==}
+  /@drakkar.software/sunglasses-storage-async-storage/0.4.0_a20128f7da3967792562aa04ed7a086d:
+    resolution: {integrity: sha512-TEVFiJXkHD/J9rTBZspp0eXX97S5sSD79ZpmjYCyzDNqFhhiPgBxqvIeGV507Jl+dVP6J96BrWUBH469dx2n5w==}
     peerDependencies:
       '@react-native-async-storage/async-storage': '>=1.x'
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.3.0
+      '@drakkar.software/sunglasses-core': 0.4.0
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.4
     dev: false
 
