@@ -80,7 +80,7 @@ export async function initAnalytics(): Promise<SunglassesCore> {
   if (__DEV__) adapters.unshift(new ConsoleAdapter());
 
   _core = await SunglassesCore.create({
-    storage: new AsyncStorageAdapter(),
+    storage: new AsyncStorageAdapter(""),
     adapters,
     defaultOptIn: true,
     platform: Platform.OS === "web" ? "web" : "react-native",
