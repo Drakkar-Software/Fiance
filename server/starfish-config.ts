@@ -53,8 +53,8 @@ export const config: SyncConfig = {
     {
       name: "analytics-events",
       storagePath: "analytics/{identity}/events",
-      readRoles: ["self"],
-      writeRoles: ["self"],
+      readRoles: [],
+      writeRoles: ["public"],
       encryption: "none",
       maxBodyBytes: 65_536,
       allowedMimeTypes: ["application/json"],
