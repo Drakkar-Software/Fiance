@@ -16,6 +16,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
 import { StatusBadge } from "@/components/StatusBadge";
 import { InputRow, ChipSelect } from "@/components/FormSection";
+import { analytics } from "@/lib/analytics";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
@@ -50,6 +51,7 @@ export default function BudgetScreen() {
     }
     _setBudgetTarget(total.toString());
     updateWedding({ budgetTarget: total, categoryBudgets: JSON.stringify(targets) });
+    analytics.capture("budget_template_applied", { template: templateKey });
   }, [updateWedding]);
 
   const [budgetTarget, _setBudgetTarget] = useState(

@@ -7,6 +7,7 @@ import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-reac
 import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { QRScannerScreen } from "@/components/QRScannerScreen";
+import { analytics } from "@/lib/analytics";
 
 type Mode = "choose" | "create" | "join";
 
@@ -43,6 +44,7 @@ export default function OnboardingScreen() {
         onCreate={async (label) => {
           const passphrase = generatePassphrase();
           await createWedding(label, passphrase);
+          analytics.capture("wedding_created", { method: "new" });
           // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
         }}
       />
@@ -56,6 +58,7 @@ export default function OnboardingScreen() {
       initialPassword={inviteParams?.password}
       onJoin={async (label, password) => {
         await createWedding(label, password);
+        analytics.capture("wedding_created", { method: "invite" });
         // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
       }}
     />

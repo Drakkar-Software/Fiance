@@ -33,6 +33,7 @@ import {
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { buildWeddingPageUrl } from "@/lib/identity";
 import { deriveUserId } from "@/lib/server";
+import { analytics } from "@/lib/analytics";
 
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
@@ -96,6 +97,7 @@ function PreparationView() {
       }
       const templateTasks = generateTemplateTasks(cats, weddingDate || undefined);
       setTasks([...tasks, ...templateTasks]);
+      analytics.capture("planning_template_generated");
       Alert.alert(t("planningGenerated"), t("planningGeneratedMsg"));
     };
 
@@ -179,6 +181,7 @@ function PreparationView() {
       updateTask(taskId, { status: "TODO", completedAt: null });
     } else {
       updateTask(taskId, { status: "DONE", completedAt: new Date().toISOString() });
+      analytics.capture("task_completed");
     }
   };
 

@@ -20,6 +20,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
+import { analytics } from "@/lib/analytics";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -108,7 +109,16 @@ function DashboardScreen() {
     expiringQuotes.length > 0 ||
     criticalUnstarted.length > 0;
 
-  const { canInstall, install, isIosSafari, dismissIosBanner } = usePwaInstall();
+  const { canInstall, install: installPwa, isIosSafari, dismissIosBanner } = usePwaInstall();
+
+  const install = useCallback(() => {
+    analytics.capture("pwa_install_clicked");
+    installPwa();
+  }, [installPwa]);
+
+  useEffect(() => {
+    analytics.capture("home_opened", { days_until: daysUntil ?? undefined });
+  }, []);
 
   // RSVP sync
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -122,6 +132,7 @@ function DashboardScreen() {
   );
 
   const handleRsvpSync = useCallback(async () => {
+    analytics.capture("rsvp_sync_triggered");
     setSyncing(true);
     try {
       const config = await getRsvpConfig();

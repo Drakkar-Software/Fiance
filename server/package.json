@@ -6,7 +6,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@drakkar.software/starfish-server": "1.11.0",
+    "@drakkar.software/starfish-server": "1.13.0",
     "hono": "4.12.12"
   },
   "devDependencies": {
