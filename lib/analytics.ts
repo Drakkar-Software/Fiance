@@ -45,6 +45,7 @@ class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
       serverUrl,
       storagePath: "analytics/{identity}/events",
       authToken,
+      pushOnly: true,
     });
   }
 
