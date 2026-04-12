@@ -40,11 +40,11 @@ export type WeddingOSEvents = {
 class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
   private inner: StarfishAnalyticsAdapter | null = null;
 
-  activate(serverUrl: string) {
+  activate(serverUrl: string, anonymousId: string) {
     this.inner?.shutdown().catch(() => {});
     this.inner = new StarfishAnalyticsAdapter({
       serverUrl,
-      storagePath: "analytics/{identity}/events",
+      storagePath: `analytics/${anonymousId}/events`,
       pushOnly: true,
     });
   }
