@@ -2,7 +2,6 @@
  * Starfish cloud sync integration for WeddingOS
  * Uses createStarfishStore() Zustand binding for reactive sync state
  *
- * v1.6.0: Uses onRemoteUpdate (eliminates isRestoring guard) and createDebouncedSync.
  */
 
 import { Platform } from "react-native";
