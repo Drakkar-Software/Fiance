@@ -6,15 +6,29 @@ import { ConsoleAdapter } from "@drakkar.software/sunglasses-adapter-console";
 import { StarfishAnalyticsAdapter } from "@drakkar.software/sunglasses-adapter-starfish";
 
 export type WeddingOSEvents = {
-  wedding_created: { method: "new" | "import" | "invite" };
-  wedding_switched: undefined;
-  guest_added: undefined;
-  vendor_added: { category: string };
-  task_completed: undefined;
-  sync_enabled: undefined;
-  sync_disabled: undefined;
-  export_data: undefined;
-  import_data: undefined;
+  // Lifecycle
+  wedding_created:             { method: "new" | "import" | "invite" };
+  wedding_switched:            undefined;
+  // Home
+  home_opened:                 { days_until?: number };
+  rsvp_sync_triggered:         undefined;
+  pwa_install_clicked:         undefined;
+  // Guests
+  guest_added:                 undefined;
+  // Vendors
+  vendor_added:                { category: string };
+  // Planning
+  task_completed:              undefined;
+  planning_template_generated: undefined;
+  // Budget
+  budget_template_applied:     { template: string };
+  // Ideas
+  idea_added:                  undefined;
+  // Settings
+  sync_enabled:                undefined;
+  sync_disabled:               undefined;
+  export_data:                 undefined;
+  import_data:                 undefined;
 };
 
 /**
@@ -31,8 +45,6 @@ class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
       serverUrl,
       storagePath: "analytics/{identity}/events",
       authToken,
-      rotatePathOnSuccess: true,
-      pathStorage: new AsyncStorageAdapter(),
     });
   }
 

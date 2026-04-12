@@ -16,8 +16,6 @@ config.resolver.nodeModulesPaths = [
 if (!config.resolver.unstable_conditionNames.includes('require'))
   config.resolver.unstable_conditionNames.unshift('require')
 
-if (!config.resolver.sourceExts.includes('sql')) config.resolver.sourceExts.push('sql')
-
 const originalResolveRequest = config.resolver.resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const resolve = originalResolveRequest ?? context.resolveRequest
