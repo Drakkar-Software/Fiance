@@ -34,6 +34,7 @@
     "build:web": "expo export --platform web && node scripts/inject-pwa.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "server:dev": "cd server && wrangler dev",
     "deploy": "npm install && npx expo export --platform web && node scripts/inject-pwa.js && dotenv -- wrangler pages deploy dist --project-name wedding-os",
     "update:eas": "eas update --auto"
   },

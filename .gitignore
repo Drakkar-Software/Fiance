@@ -1,6 +1,8 @@
 node_modules/
 .expo/
 dist/
+.wrangler/
+.dev.vars
 *.jks
 *.p8
 *.p12

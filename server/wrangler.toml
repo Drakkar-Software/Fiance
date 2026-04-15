@@ -6,6 +6,9 @@ compatibility_date = "2026-04-07"
 binding = "BUCKET"
 bucket_name = "wedding-os-sync"
 
+[dev]
+port = 8787
+
 [observability]
 [observability.logs]
 enabled = false
