@@ -33,9 +33,11 @@ export async function deriveEncryptionKey(password: string, _salt: string): Prom
 }
 
 /** Build a deep link URL to invite someone to a wedding (URL-safe base64 payload) */
-export function buildInviteUrl(name: string, password: string): string {
+export function buildInviteUrl(name: string, password: string, memberId?: string): string {
   const baseUrl = Linking.createURL("join");
-  return _buildInviteUrl(baseUrl, { n: name, p: password });
+  const payload: Record<string, unknown> = { n: name, p: password };
+  if (memberId) payload.m = memberId;
+  return _buildInviteUrl(baseUrl, payload);
 }
 
 /** Build a URL to the public wedding page (uses userId, no secret needed) */
@@ -43,21 +45,32 @@ export function buildWeddingPageUrl(userId: string): string {
   return Linking.createURL(`wedding/${userId}`);
 }
 
-/** Decode a URL-safe base64 invite token into name + password. Returns null if malformed. */
-export function decodeInviteToken(
-  token: string | undefined
-): { name: string; password: string } | null {
+export interface InvitePayload {
+  name: string;
+  password: string;
+  /** Partner's group-crypto member identity (present in group-crypto invites only) */
+  memberId?: string;
+}
+
+/** Decode a URL-safe base64 invite token into name + password (+ optional memberId). Returns null if malformed. */
+export function decodeInviteToken(token: string | undefined): InvitePayload | null {
   if (!token) return null;
   const result = _parseInviteUrl(`?t=${token}`);
   if (!result || typeof result.n !== "string" || typeof result.p !== "string") return null;
-  return { name: result.n, password: result.p };
+  return {
+    name: result.n,
+    password: result.p,
+    memberId: typeof result.m === "string" ? result.m : undefined,
+  };
 }
 
 /** Parse invite params from a deep link URL. Returns null if not an invite link. */
-export function parseInviteUrl(
-  url: string
-): { name: string; password: string } | null {
+export function parseInviteUrl(url: string): InvitePayload | null {
   const result = _parseInviteUrl(url);
   if (!result || typeof result.n !== "string" || typeof result.p !== "string") return null;
-  return { name: result.n, password: result.p };
+  return {
+    name: result.n,
+    password: result.p,
+    memberId: typeof result.m === "string" ? result.m : undefined,
+  };
 }

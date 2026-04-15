@@ -66,5 +66,7 @@
     "confirmJoin": "Souhaitez-vous en rejoindre un nouveau{{name}} ?",
     "yesJoin": "Oui, rejoindre",
     "noGoBack": "Non, revenir à l'accueil"
-  }
+  },
+  "syncSizeWarning": "Sauvegarde volumineuse ({{kb}} Ko / {{max}} Ko max)",
+  "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — synchro bloquée"
 }

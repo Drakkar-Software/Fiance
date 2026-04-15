@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
-import { analytics, starfishAnalyticsAdapter } from "@/lib/analytics";
+import { analytics, starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
@@ -20,6 +20,7 @@ import {
 } from "@/lib/starfish";
 import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
+import { createGroupInvite } from "@/lib/group-crypto";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -124,24 +125,47 @@ export default function SettingsScreen() {
     if (!config) return;
 
     await initStarfish(config);
-    starfishAnalyticsAdapter.activate(config.serverUrl);
+    const userData = await getAnalyticsCore()?.exportUserData();
+    starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
     analytics.capture("sync_enabled");
     setSyncEnabled(true);
   }, [syncEnabled, activeEntry, premium]);
 
   const [showInviteQR, setShowInviteQR] = useState(false);
-  const inviteUrl =
-    activeEntry?.label && activeEntry?.seedPhrase
-      ? buildInviteUrl(activeEntry.label, activeEntry.seedPhrase)
-      : "";
+  const [inviteUrl, setInviteUrl] = useState("");
 
-  const handleInvite = useCallback(() => {
+  const handleInvite = useCallback(async () => {
     if (!activeEntry?.seedPhrase) {
       Alert.alert(t("common:error"), t("noPassword"));
       return;
     }
+
+    // Group-crypto invite: create/reuse keyring when sync is configured
+    if (syncEnabled && activeEntry) {
+      try {
+        const config = await resolveServerConfig(activeEntry);
+        if (config) {
+          // Reuse existing keyring if present (admin already created one)
+          if (!activeEntry.groupKeyring) {
+            const result = await createGroupInvite(activeEntry, config);
+            updateRegistryWedding(activeEntry.id, { groupKeyring: result.groupKeyringJson });
+            setInviteUrl(result.inviteUrl);
+          } else {
+            // Rebuild invite URL from existing keyring (same admin+partner already set)
+            setInviteUrl(buildInviteUrl(activeEntry.label, activeEntry.seedPhrase));
+          }
+          setShowInviteQR(true);
+          return;
+        }
+      } catch (err) {
+        console.warn("[invite] Group-crypto setup failed, falling back:", err);
+      }
+    }
+
+    // Legacy fallback: share seedPhrase directly (no group keyring)
+    setInviteUrl(buildInviteUrl(activeEntry.label, activeEntry.seedPhrase));
     setShowInviteQR(true);
-  }, [activeEntry]);
+  }, [activeEntry, syncEnabled, updateRegistryWedding, t]);
 
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
 
@@ -257,14 +281,13 @@ export default function SettingsScreen() {
           <IconCard
             icon={
               <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-                <Share2 size={20} color={syncEnabled ? "#EC4899" : "#9CA3AF"} />
+                <Share2 size={20} color="#EC4899" />
               </View>
             }
             title={t("shareInviteLink")}
-            subtitle={syncEnabled ? t("sendLinkToJoin") : t("enableSyncToShare")}
+            subtitle={t("sendLinkToJoin")}
             right={<ChevronRight size={18} color="#C0C0C8" />}
-            onPress={syncEnabled ? handleInvite : undefined}
-            className={!syncEnabled ? "opacity-50" : ""}
+            onPress={handleInvite}
           />
         )}
 

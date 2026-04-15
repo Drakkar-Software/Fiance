@@ -43,5 +43,9 @@
   "rsvpSyncDesc": "Publishes the guest list and retrieves responses received online",
   "syncSuccess_one": "{{count}} new response retrieved",
   "syncSuccess_other": "{{count}} new responses retrieved",
-  "syncNone": "No new responses"
+  "syncNone": "No new responses",
+  "quickActions": "Quick actions",
+  "quickAddGuest": "Guest",
+  "quickAddTask": "Task",
+  "quickAddExpense": "Expense"
 }

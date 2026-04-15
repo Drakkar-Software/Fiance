@@ -66,5 +66,7 @@
     "confirmJoin": "Do you want to join a new one{{name}}?",
     "yesJoin": "Yes, join",
     "noGoBack": "No, go back home"
-  }
+  },
+  "syncSizeWarning": "Backup is getting large ({{kb}} KB / {{max}} KB max)",
+  "syncSizeExceeded": "Backup too large ({{kb}} KB) — sync blocked"
 }

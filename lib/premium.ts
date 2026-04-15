@@ -1,10 +1,24 @@
 /**
  * Premium / in-app purchase gate
- * Stub implementation — returns true for now.
- * Replace with actual purchase check (RevenueCat, Expo IAP, etc.)
+ * Reads entitlements from the server via pullEntitlements (Starfish 1.17.0).
+ * Falls back to true when sync is not enabled or no entitlements are configured
+ * (backward compatibility during rollout).
  */
 
+import { getStarfishStore } from "@/lib/starfish";
+import { useEntitlementsStore } from "@/store/useEntitlementsStore";
+
 export function isPremium(): boolean {
-  // TODO: wire to actual in-app purchase provider
-  return true;
+  if (!getStarfishStore()) return true; // sync not enabled → no gate
+  const { features } = useEntitlementsStore.getState();
+  if (features.length === 0) return true; // entitlements not loaded → assume premium
+  return features.includes("paid-cloud-sync");
+}
+
+/** Reactive hook — use in components that need to re-render when entitlements change. */
+export function useIsPremium(): boolean {
+  const features = useEntitlementsStore((s) => s.features);
+  if (!getStarfishStore()) return true;
+  if (features.length === 0) return true;
+  return features.includes("paid-cloud-sync");
 }

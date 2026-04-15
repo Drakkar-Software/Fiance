@@ -13,14 +13,14 @@ function useJoinAndNavigate() {
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
 
   return useCallback(
-    async (label: string, password: string) => {
+    async (label: string, password: string, memberId?: string) => {
       const existing = registry?.weddings.find(
         (w) => w.seedPhrase === password,
       );
       if (existing) {
         await switchWedding(existing.id);
       } else {
-        await createWedding(label, password);
+        await createWedding(label, password, undefined, memberId);
       }
       router.replace("/");
     },
@@ -56,7 +56,7 @@ export default function JoinScreen() {
     return <ConfirmJoin weddingName={name} onConfirm={() => setConfirmed(true)} />;
   }
 
-  return <AutoJoin name={name} password={password} onJoin={joinAndNavigate} />;
+  return <AutoJoin name={name} password={password} memberId={invite.memberId} onJoin={joinAndNavigate} />;
 }
 
 function AlreadyJoinedRedirect({ password }: { password: string }) {
@@ -79,14 +79,16 @@ function AlreadyJoinedRedirect({ password }: { password: string }) {
 function AutoJoin({
   name,
   password,
+  memberId,
   onJoin,
 }: {
   name: string;
   password: string;
-  onJoin: (label: string, password: string) => Promise<void>;
+  memberId?: string;
+  onJoin: (label: string, password: string, memberId?: string) => Promise<void>;
 }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { onJoin(name, password); }, []);
+  useEffect(() => { onJoin(name, password, memberId); }, []);
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950 items-center justify-center">

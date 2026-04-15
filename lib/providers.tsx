@@ -1,8 +1,14 @@
 import { useEffect } from "react";
-import { usePathname } from "expo-router";
-import { getStarfishStore, initStarfish, teardownStarfish } from "@/lib/starfish";
+import { AppState } from "react-native";
+
+import { createMobileLifecycle } from "@drakkar.software/starfish-client";
+import NetInfo from "@react-native-community/netinfo";
+import { getStarfishStore, getStarfishClient, initStarfish, teardownStarfish } from "@/lib/starfish";
+import { pullEntitlements } from "@drakkar.software/starfish-client";
+import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { initPublicPageSync, teardownPublicPageSync, pullPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
 import { resolveServerConfig } from "@/lib/server";
+import { resolveGroupEncryptor } from "@/lib/group-crypto";
 import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
@@ -24,12 +30,23 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     (async () => {
       const config = await resolveServerConfig(wedding);
       if (cancelled || !config) return;
-      await initStarfish(config);
+      const encryptor = await resolveGroupEncryptor(wedding, config).catch(() => null);
+      if (cancelled) return;
+      await initStarfish(config, encryptor ?? undefined);
       const userData = await getAnalyticsCore()?.exportUserData();
       starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
       initPublicPageSync(config);
+
+      // Pull entitlements (Starfish 1.17.0) — empty array = assume premium (backward compat)
+      const sfClient = getStarfishClient();
+      if (sfClient && !cancelled) {
+        const features = await pullEntitlements(sfClient, config.userId).catch(() => [] as string[]);
+        if (!cancelled) useEntitlementsStore.getState().setFeatures(features);
+      }
+
       const sf = getStarfishStore();
       if (sf && !cancelled) {
+        createMobileLifecycle(sf, { appState: AppState, netInfo: NetInfo });
         try { await sf.getState().pull(); } catch { /* sync will retry */ }
       }
       if (!cancelled) {
@@ -38,7 +55,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       }
     })();
 
-    return () => { cancelled = true; starfishAnalyticsAdapter.deactivate(); };
+    return () => {
+      cancelled = true;
+      starfishAnalyticsAdapter.deactivate();
+      useEntitlementsStore.getState().setFeatures([]);
+    };
   }, [wedding.id]);
 
   // Re-push public page when day-of items or wedding info change

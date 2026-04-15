@@ -5,6 +5,7 @@
  */
 
 import { Platform } from "react-native";
+import i18n from "i18next";
 import {
   StarfishClient,
   SyncManager,
@@ -12,7 +13,9 @@ import {
   createUnionMerge,
   createDebouncedSync,
   fetchServerConfig,
+  type Encryptor,
 } from "@drakkar.software/starfish-client";
+import { toast } from "@/lib/toast/sonner";
 import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
 import { setupCrossTabSync } from "@drakkar.software/starfish-client/broadcast";
 import {
@@ -28,6 +31,7 @@ import { getStorage } from "@/lib/kv-storage";
 export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/zustand";
 
 let store: StoreApi<StarfishStore> | null = null;
+let activeClient: StarfishClient | null = null;
 let crossTabCleanup: (() => void) | null = null;
 let debouncedNotify: (() => void) | null = null;
 let debouncedCancel: (() => void) | null = null;
@@ -53,7 +57,7 @@ export interface StarfishConfig {
   encryptionKey: string;
 }
 
-export async function initStarfish(config: StarfishConfig): Promise<StoreApi<StarfishStore>> {
+export async function initStarfish(config: StarfishConfig, encryptor?: Encryptor): Promise<StoreApi<StarfishStore>> {
   const { fetch: resilientFetch } = createResilientFetch(
     { maxRetries: 3, initialDelayMs: 500 },
     { threshold: 5, cooldownMs: 30_000 },
@@ -76,6 +80,7 @@ export async function initStarfish(config: StarfishConfig): Promise<StoreApi<Sta
     auth: async () => authHeaders,
     fetch: resilientFetch,
   });
+  activeClient = client;
 
   const syncManager = new SyncManager({
     client,
@@ -83,6 +88,7 @@ export async function initStarfish(config: StarfishConfig): Promise<StoreApi<Sta
     pushPath: `/push/wedding/${config.userId}`,
     encryptionSecret: config.encryptionKey,
     encryptionSalt: config.userId,
+    encryptor, // takes precedence over encryptionSecret/Salt when set (group-crypto mode)
     onConflict: createUnionMerge({
       timestampKey: "updatedAt",
       documentTimestampKey: "timestamp",
@@ -115,10 +121,17 @@ export async function initStarfish(config: StarfishConfig): Promise<StoreApi<Sta
     serialize: () => createBackupDocument(),
     warnBytes: Math.floor(weddingMaxBytes * 0.9),
     maxBytes: weddingMaxBytes,
-    onSizeWarning: (bytes) =>
-      console.warn(`[sync] Document ~${(bytes / 1024).toFixed(0)}KB approaching ${(weddingMaxBytes / 1024).toFixed(0)}KB limit`),
-    onSizeExceeded: (bytes) =>
-      console.error(`[sync] Document ${(bytes / 1024).toFixed(0)}KB exceeds ${(weddingMaxBytes / 1024).toFixed(0)}KB server limit, push blocked`),
+    onSizeWarning: (bytes) => {
+      const kb = Math.round(bytes / 1024);
+      const max = Math.round(weddingMaxBytes / 1024);
+      console.warn(`[sync] Document ~${kb}KB approaching ${max}KB limit`);
+      toast.warning(i18n.t("common:syncSizeWarning", { kb, max }));
+    },
+    onSizeExceeded: (bytes) => {
+      const kb = Math.round(bytes / 1024);
+      console.error(`[sync] Document ${kb}KB exceeds ${Math.round(weddingMaxBytes / 1024)}KB server limit, push blocked`);
+      toast.error(i18n.t("common:syncSizeExceeded", { kb }));
+    },
   });
   debouncedNotify = debounced.notify;
   debouncedCancel = debounced.cancel;
@@ -135,6 +148,10 @@ export async function initStarfish(config: StarfishConfig): Promise<StoreApi<Sta
 
 export function getStarfishStore(): StoreApi<StarfishStore> | null {
   return store;
+}
+
+export function getStarfishClient(): StarfishClient | null {
+  return activeClient;
 }
 
 /** React hook for reading Starfish sync state in components */
@@ -176,6 +193,7 @@ export function teardownStarfish(): void {
     crossTabCleanup = null;
   }
   store = null;
+  activeClient = null;
   lastSyncTimestamp = null;
   notifySyncStatus(false);
 }

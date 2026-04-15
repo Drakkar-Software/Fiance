@@ -43,5 +43,9 @@
   "rsvpSyncDesc": "Publie la liste d'invités et récupère les réponses reçues en ligne",
   "syncSuccess_one": "{{count}} nouvelle réponse récupérée",
   "syncSuccess_other": "{{count}} nouvelles réponses récupérées",
-  "syncNone": "Aucune nouvelle réponse"
+  "syncNone": "Aucune nouvelle réponse",
+  "quickActions": "Actions rapides",
+  "quickAddGuest": "Invité",
+  "quickAddTask": "Tâche",
+  "quickAddExpense": "Dépense"
 }

@@ -1,5 +1,5 @@
-import React from "react";
-import { Platform, useColorScheme } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Platform, View, useColorScheme } from "react-native";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Home, Briefcase, Users, Calendar, Sparkles, PieChart, Settings } from "lucide-react-native";
@@ -8,6 +8,9 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { DatabaseProvider } from "@/db/provider";
 import { SyncInitializer, NotificationInitializer } from "@/lib/providers";
+import { getStarfishStore, onSyncStatusChange } from "@/lib/starfish";
+import { subscribeSyncStatus, type SyncStatus } from "@drakkar.software/starfish-client/zustand";
+import { OfflineBanner } from "@/components/OfflineBanner";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
@@ -124,7 +127,9 @@ export default function TabLayout() {
           title: t("tabs.settings"),
           headerShown: false,
           href: null,
-          tabBarIcon: ({ color }) => <Settings size={22} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <SyncSettingsIcon color={color} dotBorder={isDark ? "#111827" : "#FFFFFF"} />
+          ),
         }}
       />
     </Tabs>
@@ -136,7 +141,66 @@ export default function TabLayout() {
     <DatabaseProvider dbFileName={activeWedding.dbFileName}>
       <SyncInitializer wedding={activeWedding} />
       <NotificationInitializer />
-      {tabs}
+      <View style={{ flex: 1 }}>
+        {tabs}
+        <OfflineBanner />
+      </View>
     </DatabaseProvider>
+  );
+}
+
+function SyncSettingsIcon({ color, dotBorder }: { color: string; dotBorder: string }) {
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+
+  useEffect(() => {
+    let unsubStore: (() => void) | null = null;
+
+    const attach = (enabled: boolean) => {
+      unsubStore?.();
+      unsubStore = null;
+      if (enabled) {
+        const sf = getStarfishStore();
+        if (sf) {
+          unsubStore = subscribeSyncStatus(sf, setSyncStatus);
+        }
+      } else {
+        setSyncStatus(null);
+      }
+    };
+
+    attach(!!getStarfishStore());
+    const unsubInit = onSyncStatusChange(attach);
+
+    return () => {
+      unsubInit();
+      unsubStore?.();
+    };
+  }, []);
+
+  const dotColor =
+    syncStatus === "synced" ? "#10B981" :
+    syncStatus === "error" ? "#EF4444" :
+    syncStatus === "syncing" || syncStatus === "pending" ? "#F59E0B" :
+    null;
+
+  return (
+    <View style={{ width: 22, height: 22 }}>
+      <Settings size={22} color={color} />
+      {dotColor && (
+        <View
+          style={{
+            position: "absolute",
+            top: -2,
+            right: -2,
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: dotColor,
+            borderWidth: 1.5,
+            borderColor: dotBorder,
+          }}
+        />
+      )}
+    </View>
   );
 }

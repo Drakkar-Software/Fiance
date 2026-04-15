@@ -216,7 +216,38 @@ function DashboardScreen() {
         )}
       </View>
 
-      <View className="px-4 -mt-5">
+      {/* Quick action strip */}
+      <View className="flex-row px-4 gap-2 -mt-5 mb-3">
+        <Pressable
+          onPress={() => router.push("/(tabs)/guests")}
+          className="flex-1 bg-white dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+        >
+          <Users size={18} color="#EC4899" />
+          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+            {t("quickAddGuest")}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push("/(tabs)/planning")}
+          className="flex-1 bg-white dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+        >
+          <Calendar size={18} color="#F59E0B" />
+          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+            {t("quickAddTask")}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push("/(tabs)/budget")}
+          className="flex-1 bg-white dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+        >
+          <PieChart size={18} color="#10B981" />
+          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+            {t("quickAddExpense")}
+          </Text>
+        </Pressable>
+      </View>
+
+      <View className="px-4">
         {/* Urgent actions */}
         {hasUrgent && (
           <View className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-3 border border-red-100 dark:border-red-900">
