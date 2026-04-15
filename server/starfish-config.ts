@@ -51,6 +51,15 @@ export const config: SyncConfig = {
       ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
     },
     {
+      name: "keyring",
+      storagePath: "keyring/{identity}",
+      readRoles: ["self"],
+      writeRoles: ["self"],
+      encryption: "none",
+      maxBodyBytes: 16_384,
+      allowedMimeTypes: ["application/json"],
+    },
+    {
       name: "analytics-events",
       storagePath: "analytics/{identity}/events",
       readRoles: [],
