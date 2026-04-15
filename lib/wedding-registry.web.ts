@@ -7,8 +7,6 @@ import * as Crypto from "expo-crypto";
 import { secureGet, secureSet } from "./secure-store";
 import { resolveServerUrl } from "./server";
 
-export type { WeddingRegistryEntry, WeddingRegistry } from "./wedding-registry";
-
 const REGISTRY_KEY = "wedding_registry";
 
 export interface WeddingRegistryEntry {

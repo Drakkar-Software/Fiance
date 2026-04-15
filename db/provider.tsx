@@ -43,6 +43,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
         closeStorage();
 
         const kv = await initStorage(dbFileName);
+        if (!kv) throw new Error(`Failed to open storage: ${dbFileName}`);
 
         hydrateAllStores(kv);
 

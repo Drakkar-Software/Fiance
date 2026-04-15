@@ -32,12 +32,18 @@ const baseCounts: GuestCounts = {
   accepted: 80,
   declined: 10,
   pending: 10,
+  maybe: 0,
   cocktail_count: 70,
+  dinner_count: 60,
   full_count: 60,
   both_days_count: 40,
   children_count: 5,
   vegetarian_count: 8,
   sleeping_count: 30,
+  response_rate: 80,
+  no_table_count: 0,
+  no_accommodation_count: 0,
+  thank_you_pending_count: 0,
 };
 
 describe("getGuestCountForSource", () => {

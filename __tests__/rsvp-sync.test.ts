@@ -20,11 +20,11 @@ const { mockPull, mockPush, mockSyncManagerPull, mockSyncManagerPush, mockSyncMa
 
 vi.mock("@drakkar.software/starfish-client", () => ({
   // Must use `function` keyword for constructor mocks so `this` binds correctly
-  StarfishClient: vi.fn(function () {
+  StarfishClient: vi.fn(function (this: Record<string, unknown>) {
     this.pull = mockPull;
     this.push = mockPush;
   }),
-  SyncManager: vi.fn(function () {
+  SyncManager: vi.fn(function (this: Record<string, unknown>) {
     this.pull = mockSyncManagerPull;
     this.push = mockSyncManagerPush;
     this.update = mockSyncManagerUpdate;

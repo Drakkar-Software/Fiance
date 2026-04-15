@@ -147,7 +147,7 @@ export default function VendorDetailScreen() {
 
       {/* Tab bar */}
       <View className="flex-row mx-4 mt-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
-        {(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as const).map((tab) => {
+        {(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as ("infos" | "tarif" | "paiements")[]).map((tab) => {
           const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments" } as const;
           return (
             <Pressable

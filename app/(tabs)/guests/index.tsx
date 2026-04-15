@@ -555,6 +555,9 @@ function TablesView() {
       name: newTableName.trim(),
       capacity: newTableCapacity ? parseInt(newTableCapacity) : null,
       notes: null,
+      positionX: null,
+      positionY: null,
+      shape: null,
     });
     setNewTableName("");
     setNewTableCapacity("");

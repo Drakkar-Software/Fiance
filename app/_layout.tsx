@@ -1,7 +1,7 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
-import { AppState, Appearance, Platform, useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme } from "react-native";
 
 // Apply dark class synchronously before React renders (prevents flash on web)
 if (typeof document !== "undefined") {
@@ -22,9 +22,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
 import * as Sentry from "@sentry/react-native";
-import NetInfo from "@react-native-community/netinfo";
-import { createMobileLifecycle } from "@drakkar.software/starfish-client";
-import { getStarfishStore } from "@/lib/starfish";
+
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -177,12 +175,6 @@ export default function RootLayout() {
         // Silent fail — update check is best-effort
       }
     })();
-  }, []);
-
-  useEffect(() => {
-    const sf = getStarfishStore();
-    if (!sf) return;
-    return createMobileLifecycle(sf, { appState: AppState, netInfo: NetInfo });
   }, []);
 
   const handleUnlock = useCallback(() => setLocked(false), []);

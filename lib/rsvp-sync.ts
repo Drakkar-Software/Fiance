@@ -124,7 +124,7 @@ export async function pushRsvpRoster(config: {
     pushPath: `/push/rsvp-roster/${config.userId}`,
   });
 
-  await syncManager.push(roster);
+  await syncManager.push(roster as unknown as Record<string, unknown>);
 }
 
 /**
@@ -137,7 +137,7 @@ export async function fetchRsvpRoster(
   try {
     const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
     const result = await client.pull(`/pull/rsvp-roster/${userId}`);
-    return (result.data as RsvpRoster) ?? null;
+    return (result.data as unknown as RsvpRoster) ?? null;
   } catch {
     return null;
   }

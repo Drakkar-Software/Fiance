@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native-css/components";
+import type { ScrollView as RNScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 
@@ -28,8 +29,8 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const { t } = useTranslation("common");
   const sheetRef = useRef<BottomSheetModal>(null);
-  const hourRef = useRef<ScrollView>(null);
-  const minuteRef = useRef<ScrollView>(null);
+  const hourRef = useRef<RNScrollView>(null);
+  const minuteRef = useRef<RNScrollView>(null);
 
   const [selectedHour, setSelectedHour] = useState("12");
   const [selectedMinute, setSelectedMinute] = useState("00");

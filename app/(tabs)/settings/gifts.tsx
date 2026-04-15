@@ -97,7 +97,7 @@ export default function GiftsScreen() {
           <InputRow label={t("giftUrl")} value={formUrl} onChangeText={setFormUrl} placeholder="https://..." />
           <View className="py-3">
             <Text className="text-xs text-gray-400 mb-2 font-medium">{t("giftCategory")}</Text>
-            <ChipSelect options={CATEGORIES} value={formCategory} onChange={setFormCategory} labels={CATEGORY_LABELS} />
+            <ChipSelect options={[...CATEGORIES]} value={formCategory} onChange={setFormCategory} labels={CATEGORY_LABELS} />
           </View>
         </FormCard>
         <View className="flex-row gap-2 mb-8">
@@ -135,17 +135,17 @@ export default function GiftsScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {unclaimed.length > 0 && (
             <>
-              <SectionTitle>{t("giftUnclaimed")} ({unclaimed.length})</SectionTitle>
+              <SectionTitle>{`${t("giftUnclaimed")} (${unclaimed.length})`}</SectionTitle>
               {unclaimed.map((gift) => (
-                <GiftRow key={gift.id} gift={gift} t={t} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
+                <GiftRow key={gift.id} gift={gift} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
               ))}
             </>
           )}
           {claimed.length > 0 && (
             <View className="mt-3">
-              <SectionTitle>{t("giftClaimed")} ({claimed.length})</SectionTitle>
+              <SectionTitle>{`${t("giftClaimed")} (${claimed.length})`}</SectionTitle>
               {claimed.map((gift) => (
-                <GiftRow key={gift.id} gift={gift} t={t} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
+                <GiftRow key={gift.id} gift={gift} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
               ))}
             </View>
           )}
@@ -169,13 +169,13 @@ export default function GiftsScreen() {
 }
 
 function GiftRow({
-  gift, t, onPress, onDelete,
+  gift, onPress, onDelete,
 }: {
   gift: GiftType;
-  t: (key: string, opts?: Record<string, unknown>) => string;
   onPress: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation("settings");
   return (
     <Pressable
       onPress={onPress}

@@ -229,7 +229,7 @@ export function buildPublicTimelineHtml(
   const isMultiDay = Object.keys(groups).length > 1;
 
   const coupleNames = [about.partner1Name, about.partner2Name].filter(Boolean).join(" & ");
-  const metaParts = [about.venueName].filter(Boolean);
+  const metaParts = [about.venueName].filter((s): s is string => s != null);
 
   let body = "";
 
@@ -395,7 +395,7 @@ export async function exportToCsv(csv: string, filename: string): Promise<void> 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } else {
-    const { writeAsStringAsync, documentDirectory } = await import("expo-file-system");
+    const { writeAsStringAsync, documentDirectory } = await import("expo-file-system/legacy");
     const { shareAsync } = await import("expo-sharing");
     const uri = `${documentDirectory}${filename}`;
     await writeAsStringAsync(uri, csv, { encoding: "utf8" });
