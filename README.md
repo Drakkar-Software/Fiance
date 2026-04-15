@@ -106,6 +106,41 @@ To enable sync, go to **Settings > Synchronisation** and provide:
 
 An AES-256-GCM encryption key is generated automatically and stored in the device keychain. The server only stores opaque encrypted blobs — it never sees your data.
 
+### Local server development
+
+```bash
+# 1. Create local secrets file (gitignored)
+touch server/.dev.vars
+
+# 2. Start the local Starfish server on port 8787
+#    R2 is simulated locally — data stored in server/.wrangler/state/
+npm run server:dev
+
+# 3. In a second terminal, point the app at localhost
+echo 'EXPO_PUBLIC_SYNC_URL=http://localhost:8787' > .env.local
+npm run web
+```
+
+> For iOS simulator or physical device, replace `localhost` with your machine's LAN IP (e.g. `http://192.168.1.x:8787`).
+
+### Production deploy
+
+```bash
+cd server
+pnpm install
+wrangler deploy
+```
+
+Create R2 bucket:
+```bash
+wrangler r2 bucket create wedding-os-sync
+```
+
+Set production secrets:
+```bash
+wrangler secret put ENCRYPTION_SECRET
+```
+
 ## Architecture
 
 ### Data Flow: Zustand → SQLite → Starfish
