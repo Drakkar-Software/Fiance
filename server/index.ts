@@ -5,10 +5,12 @@ import {
   saveConfig,
   createConsoleLogger,
   createConsoleAuditLogger,
+  createEntitlementRoleEnricher,
   type ObjectStore,
   type AuthResult,
 } from "@drakkar.software/starfish-server";
 import { config } from "./starfish-config";
+import { createDoubloon, type DoubloonEnv } from "./doubloon";
 
 // ---------------------------------------------------------------------------
 // R2 ObjectStore using native Worker binding
@@ -86,7 +88,7 @@ class R2ObjectStore implements ObjectStore {
 // Cloudflare Worker env bindings
 // ---------------------------------------------------------------------------
 
-type Env = {
+type Env = DoubloonEnv & {
   BUCKET: R2Bucket;
   ENCRYPTION_SECRET: string;
 };
@@ -95,10 +97,15 @@ type Env = {
 // Auth
 // ---------------------------------------------------------------------------
 
-async function roleResolver(c: Context): Promise<AuthResult> {
+async function roleResolver(c: Context<{ Bindings: Env }>): Promise<AuthResult> {
   const token = c.req.header("authorization") ?? "";
   if (token.startsWith("Bearer ")) {
     const authToken = token.slice("Bearer ".length);
+    // Admin token used by Doubloon to write entitlements
+    if (authToken === c.env.DOUBLOON_ADMIN_TOKEN) {
+      return { identity: "doubloon-admin", roles: ["admin"] };
+    }
+    // Regular user token — identity from first 16 chars
     const userId = authToken.slice(0, 16);
     return { identity: userId, roles: ["user"] };
   }
@@ -112,11 +119,19 @@ async function roleResolver(c: Context): Promise<AuthResult> {
 const app = new Hono<{ Bindings: Env }>();
 
 let cachedRouter: Hono | null = null;
+let cachedDoubloon: ReturnType<typeof createDoubloon> | null = null;
 
 function getSyncRouter(env: Env): Hono {
   if (cachedRouter) return cachedRouter;
 
   const store = new R2ObjectStore(env.BUCKET);
+  const entitlementEnricher = createEntitlementRoleEnricher({
+    store,
+    path: "users/{identity}/entitlements",
+    field: "features",
+    rolePrefix: "entitlement",
+    cacheTtlMs: 0, // no cache — instant post-purchase propagation
+  });
 
   cachedRouter = createSyncRouter({
     store,
@@ -128,6 +143,7 @@ function getSyncRouter(env: Env): Hono {
     logger: createConsoleLogger(),
     auditLogger: createConsoleAuditLogger(),
     configEndpoint: { auth: "public" },
+    roleEnricher: entitlementEnricher,
   });
 
   saveConfig(store, config).catch(() => {});
@@ -135,10 +151,35 @@ function getSyncRouter(env: Env): Hono {
   return cachedRouter;
 }
 
+function getDoubloon(env: Env): ReturnType<typeof createDoubloon> {
+  if (cachedDoubloon) return cachedDoubloon;
+  cachedDoubloon = createDoubloon(env);
+  return cachedDoubloon;
+}
+
 app.all("/v1/*", (c) => {
   const url = new URL(c.req.raw.url);
   url.pathname = url.pathname.replace(/^\/v1/, "") || "/";
   return getSyncRouter(c.env).fetch(new Request(url, c.req.raw));
 });
+
+// ---------------------------------------------------------------------------
+// Doubloon webhook routes
+// ---------------------------------------------------------------------------
+
+async function handleDoubloonWebhook(c: Context<{ Bindings: Env }>) {
+  const headers: Record<string, string> = {};
+  c.req.raw.headers.forEach((value, key) => {
+    headers[key.toLowerCase()] = value;
+  });
+  const body = new Uint8Array(await c.req.arrayBuffer()) as unknown as Buffer;
+
+  const result = await getDoubloon(c.env).handleWebhook({ headers, body });
+  return c.text(result.body ?? "", result.status as 200 | 400 | 401 | 500);
+}
+
+app.post("/iap/apple", handleDoubloonWebhook);
+app.post("/iap/google", handleDoubloonWebhook);
+app.post("/stripe/webhook", handleDoubloonWebhook);
 
 export default app;

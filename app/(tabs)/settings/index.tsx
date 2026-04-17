@@ -8,7 +8,6 @@ import { Alert, Platform } from "react-native";
 import { format } from "date-fns";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
-import { isPremium } from "@/lib/premium";
 import { PinSetup } from "@/components/PinSetup";
 import {
   initStarfish,
@@ -35,6 +34,8 @@ import { RenameSheet } from "@/components/RenameSheet";
 import { InviteQRSheet } from "@/components/InviteQRSheet";
 import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useIsPremium } from "@/lib/premium";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -94,7 +95,13 @@ export default function SettingsScreen() {
     setAnalyticsConsented(value);
   }, [analyticsClient]);
 
-  const premium = isPremium();
+  const premium = useIsPremium();
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [starfishUserId, setStarfishUserId] = useState<string>("");
+  useEffect(() => {
+    if (!activeEntry?.seedPhrase) return;
+    resolveServerConfig(activeEntry).then((c) => { if (c) setStarfishUserId(c.userId); }).catch(() => {});
+  }, [activeEntry?.id, activeEntry?.seedPhrase]);
 
   const handleToggleSync = useCallback(async () => {
     if (!activeEntry?.id) return;
@@ -108,7 +115,7 @@ export default function SettingsScreen() {
       return;
     }
 
-    if (!premium) return; // blocked by UI, but guard anyway
+    if (!premium) { setShowPaywall(true); return; }
 
     const serverUrl = resolveServerUrl(activeEntry);
     if (!activeEntry?.seedPhrase || !serverUrl) {
@@ -135,6 +142,7 @@ export default function SettingsScreen() {
   const [inviteUrl, setInviteUrl] = useState("");
 
   const handleInvite = useCallback(async () => {
+    if (!premium) { setShowPaywall(true); return; }
     if (!activeEntry?.seedPhrase) {
       Alert.alert(t("common:error"), t("noPassword"));
       return;
@@ -275,7 +283,6 @@ export default function SettingsScreen() {
           }
           enabled={syncEnabled && premium}
           onToggle={handleToggleSync}
-          disabled={!premium}
         />
         {activeEntry?.seedPhrase && (
           <IconCard
@@ -570,6 +577,12 @@ export default function SettingsScreen() {
       visible={showInviteQR}
       onClose={() => setShowInviteQR(false)}
       inviteUrl={inviteUrl}
+    />
+
+    <PaywallSheet
+      visible={showPaywall}
+      onClose={() => setShowPaywall(false)}
+      userId={starfishUserId}
     />
     </>
   );

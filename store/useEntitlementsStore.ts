@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { getStorage, writeCollection } from "@/lib/kv-storage";
 
 interface EntitlementsState {
   features: string[];
@@ -7,12 +8,15 @@ interface EntitlementsState {
 
 export const useEntitlementsStore = create<EntitlementsState>((set) => ({
   features: [],
-  setFeatures: (features) => set({ features }),
+  setFeatures: (features) => {
+    set({ features });
+    const storage = getStorage();
+    if (storage) writeCollection("entitlements", features);
+  },
 }));
 
-/** Hook: returns true if the feature is granted, or if no entitlements loaded (backward compat). */
+/** Hook: returns true if the feature is granted. */
 export function useIsEntitled(feature: string): boolean {
   const features = useEntitlementsStore((s) => s.features);
-  if (features.length === 0) return true;
   return features.includes(feature);
 }

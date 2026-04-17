@@ -71,6 +71,7 @@
     "expo-file-system": "^55.0.16",
     "expo-font": "^55.0.6",
     "expo-haptics": "~55.0.14",
+    "expo-iap": "^4.2.1",
     "expo-image-picker": "~55.0.18",
     "expo-linking": "^55.0.12",
     "expo-local-authentication": "~55.0.13",

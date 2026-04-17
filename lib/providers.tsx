@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { AppState } from "react-native";
+import React, { useEffect } from "react";
+import { AppState, Platform } from "react-native";
 
 import { createMobileLifecycle } from "@drakkar.software/starfish-client";
 import NetInfo from "@react-native-community/netinfo";
@@ -12,6 +12,8 @@ import { resolveGroupEncryptor } from "@/lib/group-crypto";
 import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
+import { setupPurchaseListeners } from "@/lib/iap";
+import { handleReturnFromCheckout } from "@/lib/stripe";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -27,6 +29,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
 
     let cancelled = false;
+    let resolvedUserId: string | null = null;
     (async () => {
       const config = await resolveServerConfig(wedding);
       if (cancelled || !config) return;
@@ -37,11 +40,12 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
       initPublicPageSync(config);
 
-      // Pull entitlements (Starfish 1.17.0) — empty array = assume premium (backward compat)
+      // Pull entitlements from server — persisted to KV so the gate works on next cold start
+      resolvedUserId = config.userId;
       const sfClient = getStarfishClient();
       if (sfClient && !cancelled) {
-        const features = await pullEntitlements(sfClient, config.userId).catch(() => [] as string[]);
-        if (!cancelled) useEntitlementsStore.getState().setFeatures(features);
+        const features = await pullEntitlements(sfClient, config.userId).catch(() => null);
+        if (!cancelled && features !== null) useEntitlementsStore.getState().setFeatures(features);
       }
 
       const sf = getStarfishStore();
@@ -55,10 +59,19 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       }
     })();
 
+    const foregroundSub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") return;
+      const sfClient = getStarfishClient();
+      if (!sfClient || !resolvedUserId) return;
+      pullEntitlements(sfClient, resolvedUserId)
+        .then((features) => { if (features.length > 0) useEntitlementsStore.getState().setFeatures(features); })
+        .catch(() => {});
+    });
+
     return () => {
       cancelled = true;
+      foregroundSub.remove();
       starfishAnalyticsAdapter.deactivate();
-      useEntitlementsStore.getState().setFeatures([]);
     };
   }, [wedding.id]);
 
@@ -81,6 +94,30 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     });
     return () => { unsubPlanning(); unsubWedding(); };
   }, []);
+
+  return null;
+}
+
+/** Sets up IAP purchase listeners (mobile) or handles Stripe return (web) */
+export function IAPInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  const [starfishUserId, setStarfishUserId] = React.useState<string | null>(null);
+
+  useEffect(() => {
+    if (!wedding.seedPhrase) return;
+    resolveServerConfig(wedding).then((config) => {
+      if (config) setStarfishUserId(config.userId);
+    }).catch(() => {});
+  }, [wedding.id, wedding.seedPhrase]);
+
+  useEffect(() => {
+    if (!starfishUserId) return;
+    if (Platform.OS === "web") {
+      handleReturnFromCheckout(starfishUserId).catch(() => {});
+      return;
+    }
+    const teardown = setupPurchaseListeners(starfishUserId);
+    return () => { teardown?.(); };
+  }, [starfishUserId]);
 
   return null;
 }

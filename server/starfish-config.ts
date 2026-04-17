@@ -60,6 +60,15 @@ export const config: SyncConfig = {
       allowedMimeTypes: ["application/json"],
     },
     {
+      name: "entitlements",
+      storagePath: "users/{identity}/entitlements",
+      readRoles: ["self"],
+      writeRoles: ["admin"],
+      encryption: "none",
+      maxBodyBytes: 4_096,
+      allowedMimeTypes: ["application/json"],
+    },
+    {
       name: "analytics-events",
       storagePath: "analytics/{identity}/events",
       readRoles: [],

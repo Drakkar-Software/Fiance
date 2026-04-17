@@ -69,15 +69,26 @@
         "expo-build-properties",
         {
           "android": {
+            "kotlinVersion": "2.0.0",
             "memorySize": 4096,
             "extraGradleProperties": {
               "org.gradle.jvmargs": "-Xmx4096m -XX:MaxMetaspaceSize=512m"
             }
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
           }
         }
       ],
       "expo-localization",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-iap",
+        {
+          "iosProductIds": ["com.weddingos.app.premium.lifetime"],
+          "androidProductIds": ["com.weddingos.app.premium.lifetime"]
+        }
+      ]
     ],
     "extra": {
       "eas": {

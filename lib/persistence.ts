@@ -6,6 +6,8 @@
 
 import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useEntitlementsStore } from "@/store/useEntitlementsStore";
+import { hydrateOptimisticPurchase } from "@/store/useOptimisticPurchaseStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -40,6 +42,10 @@ export function clearAllStores(): void {
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
 
 export function hydrateAllStores(_storage: SQLiteStorage): void {
+  const entitlements = readCollection<string[]>("entitlements");
+  if (entitlements) useEntitlementsStore.getState().setFeatures(entitlements);
+  hydrateOptimisticPurchase();
+
   const wedding = readCollection<any>("wedding");
   if (wedding) useWeddingStore.getState().setWedding(wedding);
 
