@@ -11,7 +11,7 @@ const pwaHead = `
     <link rel="apple-touch-icon" href="/assets/icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="WeddingOS" />`;
+    <meta name="apple-mobile-web-app-title" content="Fiancé" />`;
 
 const swRegister = `<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js")</script>`;
 
@@ -26,7 +26,7 @@ console.log("PWA tags + service worker injected into dist/index.html");
 const manifest = {
   id: "/",
   name: seo.manifestName,
-  short_name: "WeddingOS",
+  short_name: "Fiancé",
   description: seo.manifestDescription,
   start_url: "/",
   scope: "/",

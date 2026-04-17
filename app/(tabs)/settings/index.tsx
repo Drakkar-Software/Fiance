@@ -511,7 +511,7 @@ export default function SettingsScreen() {
         <SectionTitle>{t("about")}</SectionTitle>
         <View className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
-            WeddingOS
+            Fiancé
           </Text>
           <Text className="text-sm text-gray-400 mt-1">
             Version 1.0.0

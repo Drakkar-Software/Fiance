@@ -33,11 +33,11 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build APK
-        run: eas build --platform android --profile preview --non-interactive --local --output ./wedding-os.apk
+        run: eas build --platform android --profile preview --non-interactive --local --output ./fiance.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wedding-os-apk
-          path: ./wedding-os.apk
+          name: fiance-apk
+          path: ./fiance.apk
           retention-days: 30

@@ -76,7 +76,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
           resizeMode="contain"
         />
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-          WeddingOS
+          Fiancé
         </Text>
         <Text className="text-base text-gray-400 mt-2 text-center">
           {t("onboarding.tagline")}

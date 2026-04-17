@@ -13,7 +13,7 @@
 @source "./components/**/*.stories.{ts,tsx}";
 @source "./node_modules/@drakkar.software/seahorse/dist/**/*.js";
 
-/* WeddingOS brand: accent palette (not in tailwind.config.js which TW4 ignores) */
+/* Fiancé brand: accent palette (not in tailwind.config.js which TW4 ignores) */
 @theme inline {
   --color-accent-gold: #C9956B;
   --color-accent-gold-light: #E8D5C0;
@@ -25,7 +25,7 @@
   --color-accent-rose-light: #F5DDE0;
 }
 
-/* WeddingOS brand: override primary palette to pink */
+/* Fiancé brand: override primary palette to pink */
 :root {
   --color-primary-0: 255 245 251;
   --color-primary-50: 253 242 248;

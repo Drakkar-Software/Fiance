@@ -1,6 +1,6 @@
 # Starfish Sync — Architecture & Implementation
 
-WeddingOS uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar.software/starfish-client` v1.3.2) for end-to-end encrypted cloud sync between devices. This document covers the full architecture: how the client is integrated, how data flows, how encryption works, and how conflicts are resolved.
+Fiancé uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar.software/starfish-client` v1.3.2) for end-to-end encrypted cloud sync between devices. This document covers the full architecture: how the client is integrated, how data flows, how encryption works, and how conflicts are resolved.
 
 ---
 
@@ -29,7 +29,7 @@ WeddingOS uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakk
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        WeddingOS App                            │
+│                        Fiancé App                            │
 │                                                                 │
 │  ┌───────────┐    notifySync()    ┌──────────────┐              │
 │  │  Zustand   │ ───────────────►  │ lib/starfish │              │
@@ -128,7 +128,7 @@ Behavior:
 - `set()` updates `data`, marks `dirty: true`, and immediately calls `flush()` if online
 - `flush()` is a no-op if already `syncing` or not `dirty`
 - `setOnline(true)` triggers `flush()` if there are pending changes
-- Persistence is disabled (`storage: false`) — WeddingOS manages its own persistence through SQLite/localStorage
+- Persistence is disabled (`storage: false`) — Fiancé manages its own persistence through SQLite/localStorage
 
 ---
 
@@ -236,7 +236,7 @@ seedPhrase (12-word passphrase)
 Deep links for sharing wedding access:
 
 ```
-weddingos://join?t={urlSafeBase64(JSON.stringify({ n: name, p: password }))}
+fiance://join?t={urlSafeBase64(JSON.stringify({ n: name, p: password }))}
 ```
 
 URL-safe base64 (RFC 4648 section 5): uses `-` and `_` instead of `+` and `/`, no padding.
@@ -414,7 +414,7 @@ Store subscription fires (in initStarfish)
 
 The `checkpoint` parameter (a server timestamp) tells the server to only return data updated since that point. On first pull, `checkpoint = 0` triggers a full sync. After each pull, `lastCheckpoint` is updated to the server's response timestamp.
 
-However, since WeddingOS uses E2E encryption, incremental pulls always return the full encrypted blob (the server can't merge encrypted documents). The checkpoint is still useful for the server to short-circuit "no changes" responses.
+However, since Fiancé uses E2E encryption, incremental pulls always return the full encrypted blob (the server can't merge encrypted documents). The checkpoint is still useful for the server to short-circuit "no changes" responses.
 
 ---
 

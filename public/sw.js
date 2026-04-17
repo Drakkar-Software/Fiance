@@ -1,4 +1,4 @@
-const CACHE_NAME = "weddingos-v1";
+const CACHE_NAME = "fiance-v1";
 const PRECACHE = ["/", "/manifest.json"];
 
 self.addEventListener("install", (e) => {

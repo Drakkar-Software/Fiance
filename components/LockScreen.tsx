@@ -6,10 +6,10 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     <SeahorseLockScreen
       onUnlock={onUnlock}
       labels={{
-        title: "WeddingOS",
+        title: "Fiancé",
         subtitle: "Entrez votre code PIN",
         errorLabel: "Code incorrect",
-        biometricPromptMessage: "Déverrouiller WeddingOS",
+        biometricPromptMessage: "Déverrouiller Fiancé",
         biometricCancelLabel: "Utiliser le PIN",
       }}
     />

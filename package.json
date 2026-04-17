@@ -1,5 +1,5 @@
 {
-  "name": "wedding-os",
+  "name": "fiance",
   "version": "1.1.1",
   "private": true,
   "description": "Application gratuite, privée et hors ligne pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board d'inspiration.",
@@ -20,7 +20,7 @@
     "expo",
     "react-native"
   ],
-  "homepage": "https://wedding-os.pages.dev",
+  "homepage": "https://fiance.pages.dev",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -35,7 +35,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "server:dev": "cd server && wrangler dev",
-    "deploy": "npm install && npx expo export --platform web && node scripts/inject-pwa.js && dotenv -- wrangler pages deploy dist --project-name wedding-os",
+    "deploy": "npm install && npx expo export --platform web && node scripts/inject-pwa.js && dotenv -- wrangler pages deploy dist --project-name fiance",
     "update:eas": "eas update --auto"
   },
   "dependencies": {

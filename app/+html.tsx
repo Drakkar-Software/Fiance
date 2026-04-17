@@ -20,21 +20,21 @@ export default function Root({ children }: PropsWithChildren) {
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
         <meta name="keywords" content={seo.keywords} />
-        <meta name="author" content="WeddingOS" />
+        <meta name="author" content="Fiancé" />
         <meta name="robots" content="index, follow" />
 
         {/* Alternate language */}
-        <link rel="alternate" hrefLang="fr" href="https://wedding-os.pages.dev/" />
-        <link rel="alternate" hrefLang="en" href="https://wedding-os.pages.dev/" />
+        <link rel="alternate" hrefLang="fr" href="https://fiance.pages.dev/" />
+        <link rel="alternate" hrefLang="en" href="https://fiance.pages.dev/" />
         <link
           rel="alternate"
           hrefLang="x-default"
-          href="https://wedding-os.pages.dev/"
+          href="https://fiance.pages.dev/"
         />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="WeddingOS" />
+        <meta property="og:site_name" content="Fiancé" />
         <meta property="og:locale" content="fr_FR" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:title" content={seo.ogTitle} />
@@ -43,7 +43,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
         <meta property="og:image:alt" content={seo.ogImageAlt} />
-        <meta property="og:url" content="https://wedding-os.pages.dev/" />
+        <meta property="og:url" content="https://fiance.pages.dev/" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -53,8 +53,8 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="twitter:image:alt" content={seo.ogImageAlt} />
 
         {/* App linking */}
-        <meta name="application-name" content="WeddingOS" />
-        <meta name="apple-mobile-web-app-title" content="WeddingOS" />
+        <meta name="application-name" content="Fiancé" />
+        <meta name="apple-mobile-web-app-title" content="Fiancé" />
         <meta name="mobile-web-app-capable" content="yes" />
 
         {/* JSON-LD Structured Data */}
@@ -64,7 +64,7 @@ export default function Root({ children }: PropsWithChildren) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              name: "WeddingOS",
+              name: "Fiancé",
               applicationCategory: "LifestyleApplication",
               operatingSystem: "iOS, Android, Web",
               description: seo.description,

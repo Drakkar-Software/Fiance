@@ -51,7 +51,7 @@ export function MarketingNav() {
       >
         {/* Logo */}
         <Pressable onPress={() => router.push("/" as any)} className="active:opacity-70">
-          <Text className="text-lg font-bold text-primary-500">WeddingOS</Text>
+          <Text className="text-lg font-bold text-primary-500">Fiancé</Text>
         </Pressable>
 
         {/* Desktop nav links */}

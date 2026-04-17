@@ -74,7 +74,7 @@ export async function scheduleTaskNotification(task: Task): Promise<void> {
   await Notifications.scheduleNotificationAsync({
     identifier: id,
     content: {
-      title: "WeddingOS",
+      title: "Fiancé",
       body: i18n.t("planning:notifications.taskReminder", { title: task.title }),
       data: { type: "task", id: task.id },
     },
@@ -98,7 +98,7 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
   await Notifications.scheduleNotificationAsync({
     identifier: id,
     content: {
-      title: "WeddingOS",
+      title: "Fiancé",
       body,
       data: { type: "agenda", id: event.id },
     },

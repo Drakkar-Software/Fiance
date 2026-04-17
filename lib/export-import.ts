@@ -1,5 +1,5 @@
 /**
- * Plain-text (unencrypted) JSON export / import for WeddingOS.
+ * Plain-text (unencrypted) JSON export / import for Fiancé.
  * Works on both web (browser download/upload) and native (share sheet / document picker).
  */
 
@@ -21,7 +21,7 @@ export type ImportError = "invalid_json" | "invalid_backup";
 function buildFilename(label: string): string {
   const safe = label.replace(/[^a-zA-Z0-9À-ÿ&_ -]/g, "").trim() || "wedding";
   const date = new Date().toISOString().slice(0, 10);
-  return `WeddingOS_${safe}_${date}.json`;
+  return `Fiancé_${safe}_${date}.json`;
 }
 
 // ─── Export ─────────────────────────────────────────────────────────────────

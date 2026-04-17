@@ -1,5 +1,5 @@
 /**
- * Identity & invite utilities for WeddingOS sync authentication.
+ * Identity & invite utilities for Fiancé sync authentication.
  * Built on top of @drakkar.software/starfish-client/identity.
  */
 

@@ -1,4 +1,4 @@
-# Competitor Analysis — WeddingOS
+# Competitor Analysis — Fiancé
 
 > Last updated: April 2026. Market data sourced from Semrush, Similarweb, Ahrefs, App Store / Play Store listings, and vendor pricing pages.
 
@@ -38,7 +38,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Revenue model:** Vendors pay $125–$1,000+/month for listings/advertising. Couples are the product, vendors are the customer.
 
-**WeddingOS coverage gaps vs. The Knot:**
+**Fiancé coverage gaps vs. The Knot:**
 - No offline functionality
 - No data privacy (guest/budget data used for vendor targeting)
 - Heavy advertising throughout the app
@@ -62,7 +62,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Key features:** 250,000+ vendor listings, 3M+ reviews, checklist, budget, guest list, wedding website, RSVP management.
 
-**WeddingOS coverage gaps vs. WeddingWire:**
+**Fiancé coverage gaps vs. WeddingWire:**
 - No offline mode
 - Frequent crash reports (App Store reviews)
 - Data used for vendor ad targeting
@@ -87,7 +87,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Revenue model:** Commission on registry purchases (affiliate/commerce). No couple-facing subscription.
 
-**WeddingOS coverage gaps vs. Zola:**
+**Fiancé coverage gaps vs. Zola:**
 - No offline functionality
 - Registry model monetizes couple data
 - No French localization
@@ -114,7 +114,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Key features:** 600+ website templates, guest list & RSVP, digital invitations, registry aggregator, personalized guest schedules, photo sharing, budget tools.
 
-**WeddingOS coverage gaps vs. Joy:**
+**Fiancé coverage gaps vs. Joy:**
 - No offline functionality
 - No privacy/encryption
 - No French market
@@ -135,7 +135,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Key features:** Honeymoon/experience registry, 200+ gift card brands, cash funds, free 1-page wedding website, QR sharing.
 
-**WeddingOS coverage gaps vs. Honeyfund:** Not a planning app — no checklist, budget, vendor management. Honeyfund is registry-only and not a direct competitor in planning; zero overlap with WeddingOS's offline/privacy angle.
+**Fiancé coverage gaps vs. Honeyfund:** Not a planning app — no checklist, budget, vendor management. Honeyfund is registry-only and not a direct competitor in planning; zero overlap with Fiancé's offline/privacy angle.
 
 ---
 
@@ -156,7 +156,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Key features:** Vendor search, customizable retro-planning checklist, guest list & table seating, budget tracker, free wedding website, WedShoots photo album.
 
-**WeddingOS coverage gaps vs. Mariages.net:**
+**Fiancé coverage gaps vs. Mariages.net:**
 - No offline functionality
 - Vendor-centric — couples are the product
 - Data used for vendor advertising
@@ -179,7 +179,7 @@ The global wedding planning apps market was valued at ~$2.5B USD in 2024, projec
 
 **Key features (historical):** Vendor directory (5,000+ pros), retro-planning/agenda, wedding website with RSVP, table plan, save-the-date, gift list, magazine content.
 
-> **Strategic note:** Zankyou's closure consolidated The Knot Worldwide's grip on the French market entirely via Mariages.net. The 350K+ French couples previously on Zankyou were migrated to Mariages.net, boosting its French authority. For WeddingOS, this means The Knot Worldwide now controls the top French wedding platform — increasing urgency to establish an independent, privacy-first alternative.
+> **Strategic note:** Zankyou's closure consolidated The Knot Worldwide's grip on the French market entirely via Mariages.net. The 350K+ French couples previously on Zankyou were migrated to Mariages.net, boosting its French authority. For Fiancé, this means The Knot Worldwide now controls the top French wedding platform — increasing urgency to establish an independent, privacy-first alternative.
 
 ---
 
@@ -203,7 +203,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Key features:** Custom-branded wedding app for guests, RSVP, event schedule, photo sharing, push notifications, wedding website.
 
-**WeddingOS coverage gaps vs. Appy Couple:** No planning tools whatsoever — no checklist, budget, vendor management. Guest-communication-only. Different use case from WeddingOS's couple-planning focus.
+**Fiancé coverage gaps vs. Appy Couple:** No planning tools whatsoever — no checklist, budget, vendor management. Guest-communication-only. Different use case from Fiancé's couple-planning focus.
 
 ---
 
@@ -225,7 +225,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Key features:** Highly customizable website (CSS/HTML), multi-event RSVP, guest segmentation, hotel block coordination, budget tracker, checklist, vendor management, seating chart, multi-language guest support.
 
-**WeddingOS coverage gaps vs. WedSites:**
+**Fiancé coverage gaps vs. WedSites:**
 - No mobile app at all
 - No offline capability
 - Not localized for French market
@@ -246,7 +246,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Key features:** Auto-generated timeline from wedding date, task management, payment tracking, cost-per-guest calculator, wedding countdown widget, offline-capable, minimal ads.
 
-**WeddingOS coverage gaps vs. WeddingHappy:**
+**Fiancé coverage gaps vs. WeddingHappy:**
 - No French localization
 - Premium sync requires payment
 - Less comprehensive (no mood board, no multi-wedding, no vendor comparison)
@@ -268,7 +268,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Positioning:** "Built for self-planning couples — no ads, no vendor influence."
 
-**WeddingOS coverage gaps vs. Kaiplan:** No French localization; paid model; no offline-first architecture.
+**Fiancé coverage gaps vs. Kaiplan:** No French localization; paid model; no offline-first architecture.
 
 ---
 
@@ -293,7 +293,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **French market:** Localized at bridebook.com/fr; France is top-3 traffic source. No France-exclusive vendor catalog depth — UK supplier base not transferable. Limited French wedding vendor coverage compared to Mariages.net.
 
-**WeddingOS coverage gaps vs. Bridebook:**
+**Fiancé coverage gaps vs. Bridebook:**
 - No offline functionality
 - UK-centric vendor database (thin French vendor coverage)
 - Vendor advertising model (couples monetized as leads)
@@ -317,13 +317,13 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Revenue model:** Per-project premium unlock ($9 one-time). Also targets professional planners (B2B) managing multiple client events — differentiated from almost all competitors.
 
-**WeddingOS coverage gaps vs. Planning.Wedding:**
+**Fiancé coverage gaps vs. Planning.Wedding:**
 - No mobile app (web-only)
 - No offline capability
 - Requires internet connection
 - French market is one of several (not primary focus)
 - No data encryption or privacy positioning
-- B2B feature set (professional planner dashboard) not relevant for WeddingOS's couple-first model
+- B2B feature set (professional planner dashboard) not relevant for Fiancé's couple-first model
 
 ---
 
@@ -343,7 +343,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Revenue model:** Subscription (B2C couples + B2B wedding professionals). Pricing not public; requires direct contact.
 
-**WeddingOS coverage gaps vs. Mariage Digital:**
+**Fiancé coverage gaps vs. Mariage Digital:**
 - No offline functionality
 - Subscription pricing (couples pay recurring fees)
 - No data encryption or privacy focus
@@ -367,10 +367,10 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Positioning:** "The most beautiful wedding planning app." Targets couples who want simplicity without vendor marketplace overwhelm.
 
-**WeddingOS coverage gaps vs. The Big Day:**
+**Fiancé coverage gaps vs. The Big Day:**
 - No offline-first architecture (requires sync)
 - No French localization
-- Paid after 14 days (WeddingOS is permanently free)
+- Paid after 14 days (Fiancé is permanently free)
 - No data encryption or privacy focus
 
 ---
@@ -394,7 +394,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 **Note:** `mywed.com` is primarily a **wedding photography marketplace** (different product from the planning app). The planning app `app.mywed.android` is a separate product.
 
-**WeddingOS coverage gaps vs. MyWed:**
+**Fiancé coverage gaps vs. MyWed:**
 - Aggressive paywall at 30 guests (very low threshold)
 - Ads in free tier
 - No offline-first architecture
@@ -406,7 +406,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 
 ## Feature Coverage Matrix
 
-| Feature | WeddingOS | The Knot | Zola | Joy | Mariages.net | WeddingHappy | WedSites | Kaiplan | Bridebook | The Big Day | MyWed | Planning.Wedding | Mariage Digital |
+| Feature | Fiancé | The Knot | Zola | Joy | Mariages.net | WeddingHappy | WedSites | Kaiplan | Bridebook | The Big Day | MyWed | Planning.Wedding | Mariage Digital |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Budget tracker | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Guest list & RSVP | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -431,7 +431,7 @@ The French gift registry space is instead covered by: **Listy**, **MilleMercisMa
 > \* = vendor *directory/marketplace* (ads-driven), not vendor management tool
 > Zankyou removed from matrix — closed November 2024.
 
-**WeddingOS is the only app that is simultaneously: free, offline-first, ad-free, privacy-first (no account, encrypted), French-language, and feature-complete.**
+**Fiancé is the only app that is simultaneously: free, offline-first, ad-free, privacy-first (no account, encrypted), French-language, and feature-complete.**
 
 ---
 
@@ -667,11 +667,11 @@ No significant web SEO footprint documented. Distribution relies on App Store an
 
 ---
 
-## Keyword Landscape — WeddingOS Opportunity Map
+## Keyword Landscape — Fiancé Opportunity Map
 
 ### English / US — App Store + Web
 
-| Keyword | Volume | Competition | WeddingOS Opportunity |
+| Keyword | Volume | Competition | Fiancé Opportunity |
 |---|---|---|---|
 | `wedding planner` | Very high | Very high | Brand term — hard to win |
 | `wedding planning app` | High | High | Target in ASO description |
@@ -688,7 +688,7 @@ No significant web SEO footprint documented. Distribution relies on App Store an
 
 ### French — App Store FR + Google FR
 
-| Keyword | Volume | Competition | WeddingOS Opportunity |
+| Keyword | Volume | Competition | Fiancé Opportunity |
 |---|---|---|---|
 | `organisation mariage` | High | High | Core keyword |
 | `application mariage` | High | Medium | Mobile-specific — target |
@@ -705,37 +705,37 @@ No significant web SEO footprint documented. Distribution relies on App Store an
 
 ---
 
-## Market Gaps WeddingOS Can Exploit
+## Market Gaps Fiancé Can Exploit
 
 ### 1. The Privacy Gap — Largest Opportunity
 
 Every major competitor (The Knot, WeddingWire, Zola, Joy, Mariages.net, Zankyou) monetizes through vendor advertising. Couples' guest lists, budgets, vendor preferences, and wedding dates fuel advertising targeting. GDPR is legally mandated in France/Europe; user data sensitivity is high. **No major player positions explicitly on privacy.**
 
-> **WeddingOS angle:** "Vos données de mariage restent sur votre appareil. Chiffrées. Sans pub. Sans tracking."
+> **Fiancé angle:** "Vos données de mariage restent sur votre appareil. Chiffrées. Sans pub. Sans tracking."
 
 ### 2. The Offline Gap
 
 Only WeddingHappy offers meaningful offline capability — and it's not French, not free, and not positioned as "offline-first by architecture." All major platforms require internet for virtually all operations.
 
-> **WeddingOS angle:** "Planifiez votre mariage partout — sans réseau. Visites de salles, lieux à la campagne, destinations à l'étranger."
+> **Fiancé angle:** "Planifiez votre mariage partout — sans réseau. Visites de salles, lieux à la campagne, destinations à l'étranger."
 
 ### 3. The French-Language Mobile Planning Gap
 
 Mariages.net and Zankyou have apps but are fundamentally vendor directories with planning tools bolted on. There is **no French-language, offline-first, privacy-first wedding planning app**.
 
-> **WeddingOS angle:** Première application mariage 100% française, hors ligne et sans publicité.
+> **Fiancé angle:** Première application mariage 100% française, hors ligne et sans publicité.
 
 ### 4. The "No Vendor Marketplace" Gap
 
 The Knot, WeddingWire, Mariages.net, and Zankyou are fundamentally vendor marketplaces. Their planning tools exist to acquire couples as leads for paying vendors. Kaiplan identified this gap in English — no one has addressed it in French.
 
-> **WeddingOS angle:** "Conçu pour les mariés, pas pour les prestataires. Personne ne paie pour être recommandé."
+> **Fiancé angle:** "Conçu pour les mariés, pas pour les prestataires. Personne ne paie pour être recommandé."
 
 ### 5. The One-Time Pricing Gap in France
 
 The couple-focused, no-ads segment (Appy Couple $49–$149, WedSites $99–$199, Kaiplan $100 lifetime) is entirely English-speaking. French couples currently have no premium couple-focused option — only free vendor-funded apps.
 
-> **WeddingOS pricing benchmark:** €0 freemium + optional €4.99–€9.99 one-time sync unlock fits market expectations while privacy/offline USP drives acquisition.
+> **Fiancé pricing benchmark:** €0 freemium + optional €4.99–€9.99 one-time sync unlock fits market expectations while privacy/offline USP drives acquisition.
 
 ---
 
@@ -748,7 +748,7 @@ The couple-focused, no-ads segment (Appy Couple $49–$149, WedSites $99–$199,
 | One-time fee | Appy Couple, WedSites | $49–$199 |
 | One-time lifetime | Kaiplan | $100 |
 | Monthly subscription | Kaiplan (monthly option) | $20/month |
-| **WeddingOS (recommended)** | Freemium + optional sync | **€0 + €4.99–9.99 one-time** |
+| **Fiancé (recommended)** | Freemium + optional sync | **€0 + €4.99–9.99 one-time** |
 
 ---
 
@@ -757,7 +757,7 @@ The couple-focused, no-ads segment (Appy Couple $49–$149, WedSites $99–$199,
 ### iOS App Store
 | Field | Recommended Value | Rationale |
 |---|---|---|
-| **App Name** (30 chars) | `WeddingOS – Mariage Hors Ligne` | "Hors ligne" uncontested in French |
+| **App Name** (30 chars) | `Fiancé – Mariage Hors Ligne` | "Hors ligne" uncontested in French |
 | **Subtitle** (30 chars) | `Privé, sans pub, hors ligne` | 3 differentiators in one line |
 | **Keywords** (100 chars) | `mariage,organisation,budget,invités,vendeurs,hors ligne,privé,offline,wedding,planner` | Covers FR + EN; no overlap with name/subtitle |
 | **Category** | Lifestyle (primary), Productivity (secondary) | Mirrors The Knot, Zola |
@@ -765,7 +765,7 @@ The couple-focused, no-ads segment (Appy Couple $49–$149, WedSites $99–$199,
 ### Google Play Store
 | Field | Recommended Value |
 |---|---|
-| **App Name** | `WeddingOS – Organiser Mariage Hors Ligne` |
+| **App Name** | `Fiancé – Organiser Mariage Hors Ligne` |
 | **Short Description** (80 chars) | `Organisation mariage gratuite : budget, invités, prestataires. Hors ligne & privé` |
 | **Tags** | Wedding, Planner, Budget, Offline, Privacy |
 

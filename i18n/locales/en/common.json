@@ -54,11 +54,11 @@
     "inviteReady": "Invitation valid",
     "inviteFailed": "Failed to load wedding details",
     "scanQR": "Scan QR code",
-    "scanGuide": "Open WeddingOS on the other device, go to Settings → Share invite link to display the QR code.",
+    "scanGuide": "Open Fiancé on the other device, go to Settings → Share invite link to display the QR code.",
     "cameraPermissionTitle": "Camera access required",
     "cameraPermissionMessage": "Camera access is needed to scan the invite QR code.",
     "allowCamera": "Allow camera",
-    "invalidQR": "Invalid QR code. Make sure you're scanning a WeddingOS invite QR code."
+    "invalidQR": "Invalid QR code. Make sure you're scanning a Fiancé invite QR code."
   },
   "join": {
     "newWedding": "New wedding",

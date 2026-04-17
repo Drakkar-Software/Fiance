@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "WeddingOS — Organisez votre mariage",
-  "short_name": "WeddingOS",
+  "name": "Fiancé — Organisez votre mariage",
+  "short_name": "Fiancé",
   "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne.",
   "start_url": "/home",
   "scope": "/",

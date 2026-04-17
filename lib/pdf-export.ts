@@ -1,5 +1,5 @@
 /**
- * PDF export utilities for WeddingOS
+ * PDF export utilities for Fiancé
  * Builds HTML documents for printing/PDF generation.
  */
 
@@ -76,7 +76,7 @@ export function buildGuestListHtml(
     <h1>Liste des invités</h1>
     <p>${guests.length} invités</p>
     <table><thead><tr><th>Nom</th><th>RSVP</th><th>Régime</th><th>Table</th><th>Groupe</th><th>Accompagnant</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="footer">Exporté depuis WeddingOS</div>
+    <div class="footer">Exporté depuis Fiancé</div>
   </body></html>`;
 }
 
@@ -106,7 +106,7 @@ export function buildBudgetHtml(
     <p>Reste à payer : ${formatMoney(summary.remainingToPay, currency)}</p>
     <h2>Par catégorie</h2>
     <table><thead><tr><th>Catégorie</th><th>Engagé</th><th>Confirmé</th><th>Objectif</th><th>Dépassement</th></tr></thead><tbody>${catRows}</tbody></table>
-    <div class="footer">Exporté depuis WeddingOS</div>
+    <div class="footer">Exporté depuis Fiancé</div>
   </body></html>`;
 }
 
@@ -269,7 +269,7 @@ export function buildPublicTimelineHtml(
     ${metaParts.length ? `<div class="meta">${metaParts.map(escapeHtml).join(" · ")}</div>` : ""}
   </div>
   ${body}
-  <div class="footer">WeddingOS</div>
+  <div class="footer">Fiancé</div>
 </body>
 </html>`;
 }
@@ -304,7 +304,7 @@ export function buildTimelineHtml(
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${BASE_STYLES}</style></head><body>
     <h1>${escapeHtml(title)}</h1>
     <table><thead><tr><th>Début</th><th>Fin</th><th>Moment</th><th>Lieu</th><th>Responsable</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="footer">Exporté depuis WeddingOS</div>
+    <div class="footer">Exporté depuis Fiancé</div>
   </body></html>`;
 }
 
@@ -331,7 +331,7 @@ export function buildVendorContactsHtml(vendors: Vendor[]): string {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${BASE_STYLES}</style></head><body>
     <h1>Contacts prestataires</h1>
     <table><thead><tr><th>Type</th><th>Nom</th><th>Contact</th><th>Tél.</th><th>Email</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="footer">Exporté depuis WeddingOS</div>
+    <div class="footer">Exporté depuis Fiancé</div>
   </body></html>`;
 }
 

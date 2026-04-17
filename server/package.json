@@ -1,5 +1,5 @@
 {
-  "name": "wedding-os-sync",
+  "name": "fiance-sync",
   "private": true,
   "scripts": {
     "dev": "wrangler dev",

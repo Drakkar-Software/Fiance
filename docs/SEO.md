@@ -1,6 +1,6 @@
-# SEO & ASO Strategy — WeddingOS
+# SEO & ASO Strategy — Fiancé
 
-This document covers the full SEO (web), ASO (App Store / Play Store), and keyword strategy for WeddingOS.
+This document covers the full SEO (web), ASO (App Store / Play Store), and keyword strategy for Fiancé.
 
 ---
 
@@ -61,11 +61,11 @@ All texts sourced from `i18n/locales/{lang}/seo.json`.
 
 | Tag | Content |
 |-----|---------|
-| `<title>` | `WeddingOS — Organisez votre mariage simplement \| Budget, Invités, Prestataires` |
+| `<title>` | `Fiancé — Organisez votre mariage simplement \| Budget, Invités, Prestataires` |
 | `meta description` | 160-char description covering all major features + offline + privacy USP |
 | `meta keywords` | 20 high-value French wedding terms |
 | `meta robots` | `index, follow` |
-| `link canonical` | `https://wedding-os.pages.dev/` |
+| `link canonical` | `https://fiance.pages.dev/` |
 | `link hreflang` | `fr`, `en`, `x-default` |
 
 ### Open Graph
@@ -74,10 +74,10 @@ All texts sourced from `i18n/locales/{lang}/seo.json`.
 |----------|-------|
 | `og:type` | `website` |
 | `og:locale` | `fr_FR` (alternate: `en_US`) |
-| `og:title` | `WeddingOS — Organisez votre mariage simplement` |
+| `og:title` | `Fiancé — Organisez votre mariage simplement` |
 | `og:description` | Short feature summary with offline USP |
 | `og:image` | `/assets/icon-512.png` (512x512) |
-| `og:url` | `https://wedding-os.pages.dev/` |
+| `og:url` | `https://fiance.pages.dev/` |
 
 ### Twitter Card
 
@@ -108,7 +108,7 @@ Type: `schema.org/SoftwareApplication`
 **`robots.txt`**:
 - Allow: `/`, `/wedding/`
 - Disallow: `/_expo/`, `/assets/`
-- Sitemap: `https://wedding-os.pages.dev/sitemap.xml`
+- Sitemap: `https://fiance.pages.dev/sitemap.xml`
 
 ### HTTP Headers (`_headers` — Cloudflare Pages)
 
@@ -126,7 +126,7 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 | Field | Value |
 |-------|-------|
 | `name` | From `seo.manifestName` |
-| `short_name` | `WeddingOS` |
+| `short_name` | `Fiancé` |
 | `description` | From `seo.manifestDescription` |
 | `categories` | `lifestyle`, `productivity`, `utilities` |
 | `lang` | `fr` |
@@ -141,7 +141,7 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 
 | Field | Recommended Value |
 |-------|-------------------|
-| **App Name** (30 chars) | `WeddingOS - Organiser Mariage` |
+| **App Name** (30 chars) | `Fiancé - Organiser Mariage` |
 | **Subtitle** (30 chars) | `Budget, Invités & Planning` |
 | **Keywords** (100 chars) | `mariage,wedding,budget,invités,prestataires,planning,checklist,RSVP,table,traiteur,organisateur,jour` |
 | **Category** | Lifestyle (primary), Productivity (secondary) |
@@ -149,9 +149,9 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 
 ### App Store Description (recommended)
 
-> **Organisez votre mariage simplement avec WeddingOS**
+> **Organisez votre mariage simplement avec Fiancé**
 >
-> WeddingOS est l'application gratuite et 100% privée pour planifier votre mariage de A à Z. Toutes vos données restent sur votre appareil — aucun compte requis, aucune donnée partagée.
+> Fiancé est l'application gratuite et 100% privée pour planifier votre mariage de A à Z. Toutes vos données restent sur votre appareil — aucun compte requis, aucune donnée partagée.
 >
 > **Budget mariage**
 > Suivez vos dépenses par catégorie (traiteur, lieu, photographe, fleuriste...). Visualisez le budget engagé vs confirmé. Recevez des alertes pour les acomptes à venir.
@@ -174,7 +174,7 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 > **Programme du Jour J**
 > Créez le déroulé de votre journée et partagez-le avec vos invités via un lien.
 >
-> **Pourquoi WeddingOS ?**
+> **Pourquoi Fiancé ?**
 > - 100% gratuit, sans publicité
 > - Fonctionne hors ligne
 > - Données privées (chiffrement AES-256)
@@ -185,9 +185,9 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 
 | Key | Value |
 |-----|-------|
-| `NSPhotoLibraryUsageDescription` | WeddingOS a besoin d'accéder à vos photos pour vos idées d'inspiration mariage. |
-| `NSCameraUsageDescription` | WeddingOS a besoin de l'appareil photo pour capturer vos inspirations mariage. |
-| `NSFaceIDUsageDescription` | Utilisez Face ID pour déverrouiller WeddingOS. |
+| `NSPhotoLibraryUsageDescription` | Fiancé a besoin d'accéder à vos photos pour vos idées d'inspiration mariage. |
+| `NSCameraUsageDescription` | Fiancé a besoin de l'appareil photo pour capturer vos inspirations mariage. |
+| `NSFaceIDUsageDescription` | Utilisez Face ID pour déverrouiller Fiancé. |
 
 ---
 
@@ -197,7 +197,7 @@ Generated at build time from `i18n/locales/fr/seo.json` via `scripts/inject-pwa.
 
 | Field | Recommended Value |
 |-------|-------------------|
-| **App Name** (30 chars) | `WeddingOS - Organiser Mariage` |
+| **App Name** (30 chars) | `Fiancé - Organiser Mariage` |
 | **Short Description** (80 chars) | `Organisez votre mariage gratuitement : budget, invités, prestataires et planning` |
 | **Category** | Lifestyle |
 | **Content Rating** | Everyone |

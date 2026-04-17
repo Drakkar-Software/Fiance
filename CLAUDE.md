@@ -31,7 +31,7 @@ pnpm build:web  # web export must succeed (catches Metro config errors, bundler 
 
 ## Architecture
 
-**WeddingOS** is a privacy-first, offline-first wedding planning app. Single Expo (SDK 55) codebase targeting iOS, Android, and web. All user-facing text is in French.
+**Fiancé** is a privacy-first, offline-first wedding planning app. Single Expo (SDK 55) codebase targeting iOS, Android, and web. All user-facing text is in French.
 
 ### Routing
 

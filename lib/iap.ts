@@ -4,7 +4,7 @@ import { getStarfishClient } from "@/lib/starfish";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { pullEntitlements } from "@drakkar.software/starfish-client";
 
-export const PREMIUM_SKU = "com.weddingos.app.premium.lifetime";
+export const PREMIUM_SKU = "com.fiance.app.premium.lifetime";
 
 // Dynamically imported to avoid Metro bundling on web
 let iapModule: typeof import("expo-iap") | null = null;

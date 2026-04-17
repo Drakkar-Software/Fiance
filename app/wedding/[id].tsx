@@ -15,7 +15,7 @@ import { TimelineItem } from "@/components/TimelineItem";
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
   if (Platform.OS !== "web") return;
   const names = [page.about.partner1Name, page.about.partner2Name].filter(Boolean).join(" & ");
-  const title = names ? t("seo:weddingOf", { names }) : "WeddingOS";
+  const title = names ? t("seo:weddingOf", { names }) : "Fiancé";
   const desc = page.about.description || t("seo:defaultDescription");
 
   document.title = title;
@@ -631,7 +631,7 @@ export default function WeddingPublicPage() {
             style={{ width: 28, height: 28, borderRadius: 6, opacity: 0.3 }}
             resizeMode="contain"
           />
-          <Text className="text-xs text-gray-300 mt-1">WeddingOS</Text>
+          <Text className="text-xs text-gray-300 mt-1">Fiancé</Text>
         </View>
         </View>
       </ScrollView>

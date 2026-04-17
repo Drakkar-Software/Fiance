@@ -7,7 +7,7 @@ import { describe, it, expect, vi } from "vitest";
 // expo-linking is still needed for buildInviteUrl / buildWeddingPageUrl
 vi.mock("expo-linking", () => ({
   createURL: (path: string, opts?: { queryParams?: Record<string, string> }) => {
-    const base = `weddingos:///${path}`;
+    const base = `fiance:///${path}`;
     if (opts?.queryParams) {
       const qs = Object.entries(opts.queryParams).map(([k, v]) => `${k}=${v}`).join("&");
       return `${base}?${qs}`;

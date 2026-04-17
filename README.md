@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/icon.png" alt="WeddingOS" width="120" height="120" style="border-radius: 24px;" />
+  <img src="assets/icon.png" alt="Fiancé" width="120" height="120" style="border-radius: 24px;" />
 </p>
 
-<h1 align="center">WeddingOS</h1>
+<h1 align="center">Fiancé</h1>
 
 <p align="center">
   Privacy-first, offline-first wedding planning app.<br/>
@@ -133,7 +133,7 @@ wrangler deploy
 
 Create R2 bucket:
 ```bash
-wrangler r2 bucket create wedding-os-sync
+wrangler r2 bucket create fiance-sync
 ```
 
 Set production secrets:

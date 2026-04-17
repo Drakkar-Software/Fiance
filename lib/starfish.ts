@@ -1,5 +1,5 @@
 /**
- * Starfish cloud sync integration for WeddingOS
+ * Starfish cloud sync integration for Fiancé
  * Uses createStarfishStore() Zustand binding for reactive sync state
  *
  */

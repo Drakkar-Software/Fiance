@@ -179,7 +179,7 @@ function DashboardScreen() {
         <Text className="text-white/70 text-sm font-medium tracking-wide">
           {wedding?.partner1Name && wedding?.partner2Name
             ? `${wedding.partner1Name} & ${wedding.partner2Name}`
-            : "WeddingOS"}
+            : "Fiancé"}
         </Text>
         {daysUntil != null && daysUntil >= 0 ? (
           <View className="mt-3">

@@ -5,7 +5,7 @@ import { AsyncStorageAdapter } from "@drakkar.software/sunglasses-storage-async-
 import { ConsoleAdapter } from "@drakkar.software/sunglasses-adapter-console";
 import { StarfishAnalyticsAdapter } from "@drakkar.software/sunglasses-adapter-starfish";
 
-export type WeddingOSEvents = {
+export type FianceEvents = {
   // Lifecycle
   wedding_created:             { method: "new" | "import" | "invite" };
   wedding_switched:            undefined;
@@ -71,7 +71,7 @@ export const starfishAnalyticsAdapter = new LazyStarfishAnalyticsAdapter();
 
 let _core: SunglassesCore | null = null;
 
-export const analytics = createLazyClient<WeddingOSEvents>();
+export const analytics = createLazyClient<FianceEvents>();
 
 export async function initAnalytics(): Promise<SunglassesCore> {
   const adapters: IAnalyticsAdapter[] = [starfishAnalyticsAdapter];

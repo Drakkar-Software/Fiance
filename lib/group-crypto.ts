@@ -1,5 +1,5 @@
 /**
- * Group-crypto helpers for WeddingOS partner invite flow.
+ * Group-crypto helpers for Fiancé partner invite flow.
  *
  * Admin creates a GroupKeyring on first invite; the keyring wraps a shared GEK
  * for both admin and the pre-computed partner identity. Partner pulls the keyring

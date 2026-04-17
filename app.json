@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "WeddingOS",
-    "slug": "wedding-os",
+    "name": "Fiancé",
+    "slug": "fiance",
     "version": "1.0.0",
     "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne, données 100% privées.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "weddingos",
+    "scheme": "fiance",
     "userInterfaceStyle": "automatic",
     "primaryColor": "#EC4899",
     "splash": {
@@ -16,12 +16,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.weddingos.app",
-      "appStoreUrl": "https://apps.apple.com/app/weddingos/id000000000",
+      "bundleIdentifier": "com.fiance.app",
+      "appStoreUrl": "https://apps.apple.com/app/fiance/id000000000",
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "WeddingOS a besoin d'accéder à vos photos pour vos idées d'inspiration mariage.",
-        "NSCameraUsageDescription": "WeddingOS a besoin de l'appareil photo pour capturer vos inspirations mariage.",
-        "NSFaceIDUsageDescription": "Utilisez Face ID pour déverrouiller WeddingOS.",
+        "NSPhotoLibraryUsageDescription": "Fiancé a besoin d'accéder à vos photos pour vos idées d'inspiration mariage.",
+        "NSCameraUsageDescription": "Fiancé a besoin de l'appareil photo pour capturer vos inspirations mariage.",
+        "NSFaceIDUsageDescription": "Utilisez Face ID pour déverrouiller Fiancé.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "config": {
@@ -33,15 +33,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.weddingos.app",
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.weddingos.app"
+      "package": "com.fiance.app",
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.fiance.app"
     },
     "web": {
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/favicon.png",
-      "name": "WeddingOS — Organisez votre mariage",
-      "shortName": "WeddingOS",
+      "name": "Fiancé — Organisez votre mariage",
+      "shortName": "Fiancé",
       "description": "Application gratuite et privée pour organiser votre mariage : budget, invités, prestataires, planning et mood board.",
       "lang": "fr",
       "themeColor": "#EC4899",
@@ -85,8 +85,8 @@
       [
         "expo-iap",
         {
-          "iosProductIds": ["com.weddingos.app.premium.lifetime"],
-          "androidProductIds": ["com.weddingos.app.premium.lifetime"]
+          "iosProductIds": ["com.fiance.app.premium.lifetime"],
+          "androidProductIds": ["com.fiance.app.premium.lifetime"]
         }
       ]
     ],

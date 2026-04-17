@@ -119,11 +119,11 @@ function createGoogleWalletResolver(
 
 const PREMIUM_PRODUCT = {
   slug: "paid-premium",
-  name: "WeddingOS Premium",
+  name: "Fiancé Premium",
   defaultDuration: 0, // lifetime — no expiry
 };
-const GOOGLE_PRODUCT_SKU = "com.weddingos.app.premium.lifetime";
-const PACKAGE_NAME = "com.weddingos.app";
+const GOOGLE_PRODUCT_SKU = "com.fiance.app.premium.lifetime";
+const PACKAGE_NAME = "com.fiance.app";
 
 export function createDoubloon(env: DoubloonEnv) {
   const adminClient = new StarfishClient({

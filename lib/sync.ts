@@ -1,5 +1,5 @@
 /**
- * Cloud sync utilities for WeddingOS
+ * Cloud sync utilities for Fiancé
  * Handles backup document creation and restoration via Starfish
  */
 
@@ -71,7 +71,7 @@ export function restoreFromBackup(
 
   if (backup.version > BACKUP_VERSION) {
     throw new Error(
-      `Backup version ${backup.version} is newer than app version ${BACKUP_VERSION}. Please update WeddingOS.`
+      `Backup version ${backup.version} is newer than app version ${BACKUP_VERSION}. Please update Fiancé.`
     );
   }
 

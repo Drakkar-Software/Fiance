@@ -21,9 +21,9 @@
   },
   "landing": {
     "meta": {
-      "title": "WeddingOS — Wedding Planning App | Private & Offline",
+      "title": "Fiancé — Wedding Planning App | Private & Offline",
       "description": "Private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data.",
-      "canonical": "https://wedding-os.pages.dev/"
+      "canonical": "https://fiance.pages.dev/"
     },
     "hero": {
       "headline": "Plan your wedding, simply",
@@ -89,7 +89,7 @@
     },
     "privacy": {
       "title": "Your privacy, our priority",
-      "subtitle": "WeddingOS was designed from the ground up to respect your privacy.",
+      "subtitle": "Fiancé was designed from the ground up to respect your privacy.",
       "offline": {
         "title": "Offline-first",
         "description": "All your data is stored on your device. No server reads it."
@@ -113,9 +113,9 @@
   },
   "seatingChart": {
     "meta": {
-      "title": "Wedding Seating Chart Maker | WeddingOS",
-      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the WeddingOS wedding planning app.",
-      "canonical": "https://wedding-os.pages.dev/feature/seating-chart"
+      "title": "Wedding Seating Chart Maker | Fiancé",
+      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the Fiancé wedding planning app.",
+      "canonical": "https://fiance.pages.dev/feature/seating-chart"
     },
     "hero": {
       "headline": "Wedding Seating Chart",
@@ -163,9 +163,9 @@
   },
   "budget": {
     "meta": {
-      "title": "Wedding Budget Calculator & Planner | WeddingOS",
+      "title": "Wedding Budget Calculator & Planner | Fiancé",
       "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Interactive calculator and complete mobile app.",
-      "canonical": "https://wedding-os.pages.dev/feature/budget"
+      "canonical": "https://fiance.pages.dev/feature/budget"
     },
     "hero": {
       "headline": "Wedding Budget Planner",
@@ -213,9 +213,9 @@
   },
   "photos": {
     "meta": {
-      "title": "Private Wedding Photo Sharing App | WeddingOS",
+      "title": "Private Wedding Photo Sharing App | Fiancé",
       "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Wedding photo app.",
-      "canonical": "https://wedding-os.pages.dev/feature/photos"
+      "canonical": "https://fiance.pages.dev/feature/photos"
     },
     "hero": {
       "headline": "Wedding Photo Sharing",
@@ -253,7 +253,7 @@
     "comparison": {
       "title": "Why not other apps?",
       "features": ["No ads", "Private", "No guest account", "Offline"],
-      "weddingos": "WeddingOS",
+      "weddingos": "Fiancé",
       "others": "Other apps"
     },
     "appCta": {
@@ -266,14 +266,14 @@
     "backToTools": "All tools",
     "appCta": {
       "title": "Need more features?",
-      "description": "The full WeddingOS app offers all these features and much more.",
+      "description": "The full Fiancé app offers all these features and much more.",
       "cta": "Download the app"
     },
     "seatingChart": {
       "meta": {
-        "title": "Online Wedding Seating Chart Maker | WeddingOS",
+        "title": "Online Wedding Seating Chart Maker | Fiancé",
         "description": "Create your wedding seating chart online. Add your tables and guests, visualize the result and export as PDF. No account required.",
-        "canonical": "https://wedding-os.pages.dev/tools/seating-chart"
+        "canonical": "https://fiance.pages.dev/tools/seating-chart"
       },
       "title": "Wedding Seating Chart Maker",
       "subtitle": "Create your seating chart online. Add tables, assign guests, export as PDF.",
@@ -307,9 +307,9 @@
     },
     "budgetCalculator": {
       "meta": {
-        "title": "Wedding Budget Calculator | WeddingOS",
+        "title": "Wedding Budget Calculator | Fiancé",
         "description": "Estimate and allocate your wedding budget by category. Interactive calculator. Download your estimate as PDF.",
-        "canonical": "https://wedding-os.pages.dev/tools/budget-calculator"
+        "canonical": "https://fiance.pages.dev/tools/budget-calculator"
       },
       "title": "Wedding Budget Calculator",
       "subtitle": "Enter your total budget and discover the recommended breakdown by category.",
@@ -343,9 +343,9 @@
     },
     "timeline": {
       "meta": {
-        "title": "Wedding Day-of Timeline Builder | WeddingOS",
+        "title": "Wedding Day-of Timeline Builder | Fiancé",
         "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Wedding planning timeline template.",
-        "canonical": "https://wedding-os.pages.dev/tools/timeline"
+        "canonical": "https://fiance.pages.dev/tools/timeline"
       },
       "title": "Wedding Day-of Timeline",
       "subtitle": "Build your wedding day schedule step by step. Export as PDF to distribute.",

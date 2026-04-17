@@ -29,7 +29,7 @@ export function MarketingFooter() {
         <View className="flex-row flex-wrap gap-10">
           {/* Brand */}
           <View className="flex-1" style={{ minWidth: 200 }}>
-            <Text className="text-lg font-bold text-white mb-2">WeddingOS</Text>
+            <Text className="text-lg font-bold text-white mb-2">Fiancé</Text>
             <Text className="text-sm text-typography-400 leading-5">{t("footer.tagline")}</Text>
           </View>
 
@@ -68,7 +68,7 @@ export function MarketingFooter() {
         {/* Bottom row */}
         <View className="flex-row flex-wrap items-center justify-between gap-4">
           <Text className="text-xs text-typography-500">{t("footer.madeWith")}</Text>
-          <Text className="text-xs text-typography-500">© {new Date().getFullYear()} WeddingOS</Text>
+          <Text className="text-xs text-typography-500">© {new Date().getFullYear()} Fiancé</Text>
         </View>
       </View>
     </View>

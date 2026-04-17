@@ -9,4 +9,4 @@ Allow: /tools/
 Disallow: /_expo/
 Disallow: /assets/
 
-Sitemap: https://wedding-os.pages.dev/sitemap.xml
+Sitemap: https://fiance.pages.dev/sitemap.xml

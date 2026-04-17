@@ -93,7 +93,7 @@ function AppContent() {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Loading WeddingOS...</Text>
+        <Text style={{ marginTop: 16 }}>Loading Fiancé...</Text>
       </View>
     );
   }
