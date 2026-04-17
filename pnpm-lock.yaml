@@ -18,11 +18,11 @@ importers:
         specifier: 0.7.2
         version: 0.7.2(25cd7f0ea151936cacc0157a01c89bca)
       '@drakkar.software/starfish-client':
-        specifier: ^1.17.0
-        version: 1.17.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
+        specifier: ^1.18.0
+        version: 1.18.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
       '@drakkar.software/starfish-protocol':
-        specifier: ^1.17.0
-        version: 1.17.0
+        specifier: ^1.18.0
+        version: 1.18.0
       '@drakkar.software/sunglasses-adapter-console':
         specifier: ^0.7.0
         version: 0.7.0
@@ -864,8 +864,8 @@ packages:
       sonner-native:
         optional: true
 
-  '@drakkar.software/starfish-client@1.17.0':
-    resolution: {integrity: sha512-rK4n+Qay3iaDRSLvfoVpBptM9NpEr5hdyE01O30CHuaMkU7wtP1T8pASC9f4RAcxgvIXNKz+C8n4MLjartDQ7g==}
+  '@drakkar.software/starfish-client@1.18.0':
+    resolution: {integrity: sha512-jtgJjest888ccKeRQAFrVV4Z32UEBG/zIJ09Jd1vng/49vZ7U4xbqB2tN8C0+vO7y6iGRISl5BNWY40MC6xIlw==}
     peerDependencies:
       '@legendapp/state': '>=2.0.0'
       immer: '>=9.0.0'
@@ -881,8 +881,8 @@ packages:
       zustand:
         optional: true
 
-  '@drakkar.software/starfish-protocol@1.17.0':
-    resolution: {integrity: sha512-gu6UYwC73PE0bbsBG/d1P7CcKp5zePKdtO8LN49x9d40RABZFFD2xprWxCyFPG5kxTnNCxohd0AMao9DgEyirQ==}
+  '@drakkar.software/starfish-protocol@1.18.0':
+    resolution: {integrity: sha512-jYXTiB6a6w+fBFG9hbejPx5fn7hKq9YjXo9Or1/mN8O2YU0WzYpmYLw7HbaxU15dashFPmjbmgaMA/tA8WLYSw==}
 
   '@drakkar.software/sunglasses-adapter-console@0.7.0':
     resolution: {integrity: sha512-NXTAZaE0ImJkXzePg+yQtHIsVeuYq/9Mt3mkXgrSdLmbgdq02aXxauJtTIsyZmJ70IxbV0HRVLi1qCeSM7XD8w==}
@@ -6733,15 +6733,15 @@ snapshots:
       sonner: 2.0.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       sonner-native: 0.21.0(react-native-gesture-handler@2.30.1(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-screens@4.23.0(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
 
-  '@drakkar.software/starfish-client@1.17.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))':
+  '@drakkar.software/starfish-client@1.18.0(react@19.2.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))':
     dependencies:
-      '@drakkar.software/starfish-protocol': 1.17.0
+      '@drakkar.software/starfish-protocol': 1.18.0
       '@noble/curves': 2.2.0
     optionalDependencies:
       react: 19.2.0
       zustand: 5.0.12(@types/react@19.2.14)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
 
-  '@drakkar.software/starfish-protocol@1.17.0': {}
+  '@drakkar.software/starfish-protocol@1.18.0': {}
 
   '@drakkar.software/sunglasses-adapter-console@0.7.0':
     dependencies:
