@@ -253,7 +253,7 @@
     "comparison": {
       "title": "Pourquoi pas les autres apps ?",
       "features": ["Sans publicité", "Privé", "Sans compte invité", "Hors ligne"],
-      "weddingos": "Fiancé",
+      "fiance": "Fiancé",
       "others": "Autres apps"
     },
     "appCta": {

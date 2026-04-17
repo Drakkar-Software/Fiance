@@ -21,12 +21,12 @@ function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title
   );
 }
 
-function ComparisonRow({ feature, hasWeddingOS, hasOthers }: { feature: string; hasWeddingOS: boolean; hasOthers: boolean }) {
+function ComparisonRow({ feature, hasFiance, hasOthers }: { feature: string; hasFiance: boolean; hasOthers: boolean }) {
   return (
     <View className="flex-row items-center py-3 border-b border-accent-rose-light">
       <Text className="flex-1 text-sm text-typography-700">{feature}</Text>
       <View className="w-20 items-center">
-        {hasWeddingOS ? (
+        {hasFiance ? (
           <CheckCircle size={18} className="text-accent-sage" />
         ) : (
           <XCircle size={18} className="text-typography-300" />
@@ -116,7 +116,7 @@ export default function PhotosPage() {
           <View className="flex-row items-center pb-3 border-b-2 border-typography-200 mb-1">
             <Text className="flex-1 text-xs font-semibold text-typography-400 uppercase tracking-widest" />
             <Text className="w-20 text-center text-sm font-semibold text-primary-500">
-              {t("photos.comparison.weddingos")}
+              {t("photos.comparison.fiance")}
             </Text>
             <Text className="w-20 text-center text-sm font-semibold text-typography-400">
               {t("photos.comparison.others")}
@@ -126,7 +126,7 @@ export default function PhotosPage() {
             <ComparisonRow
               key={i}
               feature={feature}
-              hasWeddingOS={true}
+              hasFiance={true}
               hasOthers={i >= 2}
             />
           ))}
