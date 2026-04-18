@@ -6,14 +6,14 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@drakkar.software/doubloon-bridge-apple": "file:../../Doubloon/packages/bridges/apple",
-    "@drakkar.software/doubloon-bridge-google": "file:../../Doubloon/packages/bridges/google",
-    "@drakkar.software/doubloon-bridge-stripe": "file:../../Doubloon/packages/bridges/stripe",
-    "@drakkar.software/doubloon-core": "file:../../Doubloon/packages/core",
-    "@drakkar.software/doubloon-server": "file:../../Doubloon/packages/server",
-    "@drakkar.software/doubloon-starfish": "file:../../Doubloon/packages/destinations/starfish",
+    "@drakkar.software/doubloon-bridge-apple": "0.3.0",
+    "@drakkar.software/doubloon-bridge-google": "0.3.0",
+    "@drakkar.software/doubloon-bridge-stripe":  "0.3.0",
+    "@drakkar.software/doubloon-core": "0.3.0",
+    "@drakkar.software/doubloon-server": "0.3.0",
+    "@drakkar.software/doubloon-starfish": "0.3.0",
     "@drakkar.software/starfish-client": "^1.18.0",
-    "@drakkar.software/starfish-server": "^1.18.0",
+    "@drakkar.software/starfish-server": "1.18.0",
     "hono": "4.12.12",
     "stripe": "^17.0.0"
   },
@@ -21,14 +21,5 @@
     "@cloudflare/workers-types": "4.20260408.1",
     "@types/node": "^22.0.0",
     "wrangler": "4.81.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "@drakkar.software/doubloon-core": "file:../../Doubloon/packages/core",
-      "@drakkar.software/doubloon-starfish": "file:../../Doubloon/packages/destinations/starfish",
-      "@drakkar.software/doubloon-bridge-apple": "file:../../Doubloon/packages/bridges/apple",
-      "@drakkar.software/doubloon-bridge-google": "file:../../Doubloon/packages/bridges/google",
-      "@drakkar.software/doubloon-bridge-stripe": "file:../../Doubloon/packages/bridges/stripe"
-    }
   }
 }
