@@ -28,7 +28,8 @@ export default function PremiumScreen() {
   const [price, setPrice] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>("");
 
-  const activeEntry = useWeddingRegistryStore((s) => s.registry.find((w) => w.active));
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
   useEffect(() => {
     if (!activeEntry?.seedPhrase) return;
