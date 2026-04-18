@@ -160,7 +160,7 @@ function getDoubloon(env: Env): ReturnType<typeof createDoubloon> {
 app.all("/v1/*", (c) => {
   const url = new URL(c.req.raw.url);
   url.pathname = url.pathname.replace(/^\/v1/, "") || "/";
-  return getSyncRouter(c.env).fetch(new Request(url, c.req.raw));
+  return getSyncRouter(c.env).fetch(new Request(url, c.req.raw), c.env, c.executionCtx);
 });
 
 // ---------------------------------------------------------------------------
