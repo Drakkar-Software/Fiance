@@ -169,7 +169,10 @@ function DashboardScreen() {
       >
         <View className="absolute right-3 z-10" style={{ top: topInset + 8 }} pointerEvents="box-none">
           <Pressable
-            onPress={() => router.push("/(tabs)/settings")}
+            onPress={(e) => {
+              if (Platform.OS === "web") (e.currentTarget as any)?.blur?.();
+              router.push("/(tabs)/settings");
+            }}
             className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >

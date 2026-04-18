@@ -4,40 +4,33 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
-  '@drakkar.software/doubloon-starfish': file:../../Doubloon/packages/destinations/starfish
-  '@drakkar.software/doubloon-bridge-apple': file:../../Doubloon/packages/bridges/apple
-  '@drakkar.software/doubloon-bridge-google': file:../../Doubloon/packages/bridges/google
-  '@drakkar.software/doubloon-bridge-stripe': file:../../Doubloon/packages/bridges/stripe
-
 importers:
 
   .:
     dependencies:
       '@drakkar.software/doubloon-bridge-apple':
-        specifier: file:../../Doubloon/packages/bridges/apple
-        version: file:../../Doubloon/packages/bridges/apple(@apple/app-store-server-library@3.0.0)
+        specifier: 0.3.0
+        version: 0.3.0(@apple/app-store-server-library@3.0.0)
       '@drakkar.software/doubloon-bridge-google':
-        specifier: file:../../Doubloon/packages/bridges/google
-        version: file:../../Doubloon/packages/bridges/google(googleapis@144.0.0)
+        specifier: 0.3.0
+        version: 0.3.0(googleapis@144.0.0)
       '@drakkar.software/doubloon-bridge-stripe':
-        specifier: file:../../Doubloon/packages/bridges/stripe
-        version: file:../../Doubloon/packages/bridges/stripe(stripe@17.7.0)
+        specifier: 0.3.1
+        version: 0.3.1(stripe@17.7.0)
       '@drakkar.software/doubloon-core':
-        specifier: file:../../Doubloon/packages/core
-        version: file:../../Doubloon/packages/core
+        specifier: 0.3.0
+        version: 0.3.0
       '@drakkar.software/doubloon-server':
-        specifier: file:../../Doubloon/packages/server
-        version: file:../../Doubloon/packages/server(@drakkar.software/doubloon-bridge-apple@file:../../Doubloon/packages/bridges/apple(@apple/app-store-server-library@3.0.0))(@drakkar.software/doubloon-bridge-google@file:../../Doubloon/packages/bridges/google(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@file:../../Doubloon/packages/bridges/stripe(stripe@17.7.0))(@drakkar.software/doubloon-starfish@file:../../Doubloon/packages/destinations/starfish(@drakkar.software/starfish-client@1.18.0))
+        specifier: 0.3.0
+        version: 0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.0.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@1.18.0))
       '@drakkar.software/doubloon-starfish':
-        specifier: file:../../Doubloon/packages/destinations/starfish
-        version: file:../../Doubloon/packages/destinations/starfish(@drakkar.software/starfish-client@1.18.0)
+        specifier: 0.3.0
+        version: 0.3.0(@drakkar.software/starfish-client@1.18.0)
       '@drakkar.software/starfish-client':
         specifier: ^1.18.0
         version: 1.18.0
       '@drakkar.software/starfish-server':
-        specifier: ^1.18.0
+        specifier: 1.18.0
         version: 1.18.0
       hono:
         specifier: 4.12.12
@@ -111,32 +104,32 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
-  '@drakkar.software/doubloon-bridge-apple@file:../../Doubloon/packages/bridges/apple':
-    resolution: {directory: ../../Doubloon/packages/bridges/apple, type: directory}
+  '@drakkar.software/doubloon-bridge-apple@0.3.0':
+    resolution: {integrity: sha512-PyXPayq99Q1MIqVETFeZOVnOpcwV4FKBWhbCt8a4gqHqWBOUfDcas3lZA0c2PAafkn+h9ygpdQjnM1Prn5E7sQ==}
     peerDependencies:
       '@apple/app-store-server-library': ^3.0.0
 
-  '@drakkar.software/doubloon-bridge-google@file:../../Doubloon/packages/bridges/google':
-    resolution: {directory: ../../Doubloon/packages/bridges/google, type: directory}
+  '@drakkar.software/doubloon-bridge-google@0.3.0':
+    resolution: {integrity: sha512-iafemn/+roCQ3wZKnoBtMoV6De+SEu3v5uaYulNFLfKdh9Eg1PbST0txay7DtMHw5OHXc22qLH0xubwuicNnGg==}
     peerDependencies:
       googleapis: ^144.0.0
 
-  '@drakkar.software/doubloon-bridge-stripe@file:../../Doubloon/packages/bridges/stripe':
-    resolution: {directory: ../../Doubloon/packages/bridges/stripe, type: directory}
+  '@drakkar.software/doubloon-bridge-stripe@0.3.1':
+    resolution: {integrity: sha512-qbogExTnFt1NDd9s28HC5UlviyTYM1eOyzVf42Y9SzT474i+jzPZfXN1K6v6MnSpNX6MZ3JcHnf+X5klCT3EVQ==}
     peerDependencies:
       stripe: ^17.0.0
 
-  '@drakkar.software/doubloon-core@file:../../Doubloon/packages/core':
-    resolution: {directory: ../../Doubloon/packages/core, type: directory}
+  '@drakkar.software/doubloon-core@0.3.0':
+    resolution: {integrity: sha512-C4VZa9UKJD0CuXHUeunS9oK7nTjpJR0c54giBLntS4a1uDmLAtTfbLGtWsB9nom5VMQC7OAUIevAJhrheuTI1A==}
 
-  '@drakkar.software/doubloon-server@file:../../Doubloon/packages/server':
-    resolution: {directory: ../../Doubloon/packages/server, type: directory}
+  '@drakkar.software/doubloon-server@0.3.0':
+    resolution: {integrity: sha512-Dxn6e0TDgePKl9RlYpHhhvMj1eFNyistA9jF3HXeFwnJAr/aFXdLr/H3DIiWgajJjZaW6ElQceTGYhBnQGyJ1g==}
     peerDependencies:
-      '@drakkar.software/doubloon-bridge-apple': workspace:*
-      '@drakkar.software/doubloon-bridge-google': workspace:*
-      '@drakkar.software/doubloon-bridge-stripe': workspace:*
-      '@drakkar.software/doubloon-bridge-x402': workspace:*
-      '@drakkar.software/doubloon-starfish': workspace:*
+      '@drakkar.software/doubloon-bridge-apple': 0.3.0
+      '@drakkar.software/doubloon-bridge-google': 0.3.0
+      '@drakkar.software/doubloon-bridge-stripe': 0.3.0
+      '@drakkar.software/doubloon-bridge-x402': 0.3.0
+      '@drakkar.software/doubloon-starfish': 0.3.0
     peerDependenciesMeta:
       '@drakkar.software/doubloon-bridge-apple':
         optional: true
@@ -149,8 +142,8 @@ packages:
       '@drakkar.software/doubloon-starfish':
         optional: true
 
-  '@drakkar.software/doubloon-starfish@file:../../Doubloon/packages/destinations/starfish':
-    resolution: {directory: ../../Doubloon/packages/destinations/starfish, type: directory}
+  '@drakkar.software/doubloon-starfish@0.3.0':
+    resolution: {integrity: sha512-0csxtbv/cOkjxy6klCotmTE0Dni9+y/x0wAkjBqBqGWebB1LBiKMhLwGt/cOu4sUOjZMqtL1qm3BGZfXvIHpZA==}
     peerDependencies:
       '@drakkar.software/starfish-client': '>=1.0.0'
 
@@ -944,35 +937,35 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@drakkar.software/doubloon-bridge-apple@file:../../Doubloon/packages/bridges/apple(@apple/app-store-server-library@3.0.0)':
+  '@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.0.0)':
     dependencies:
       '@apple/app-store-server-library': 3.0.0
-      '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
+      '@drakkar.software/doubloon-core': 0.3.0
 
-  '@drakkar.software/doubloon-bridge-google@file:../../Doubloon/packages/bridges/google(googleapis@144.0.0)':
+  '@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0)':
     dependencies:
-      '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
+      '@drakkar.software/doubloon-core': 0.3.0
       googleapis: 144.0.0
 
-  '@drakkar.software/doubloon-bridge-stripe@file:../../Doubloon/packages/bridges/stripe(stripe@17.7.0)':
+  '@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0)':
     dependencies:
-      '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
+      '@drakkar.software/doubloon-core': 0.3.0
       stripe: 17.7.0
 
-  '@drakkar.software/doubloon-core@file:../../Doubloon/packages/core': {}
+  '@drakkar.software/doubloon-core@0.3.0': {}
 
-  '@drakkar.software/doubloon-server@file:../../Doubloon/packages/server(@drakkar.software/doubloon-bridge-apple@file:../../Doubloon/packages/bridges/apple(@apple/app-store-server-library@3.0.0))(@drakkar.software/doubloon-bridge-google@file:../../Doubloon/packages/bridges/google(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@file:../../Doubloon/packages/bridges/stripe(stripe@17.7.0))(@drakkar.software/doubloon-starfish@file:../../Doubloon/packages/destinations/starfish(@drakkar.software/starfish-client@1.18.0))':
+  '@drakkar.software/doubloon-server@0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.0.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@1.18.0))':
     dependencies:
-      '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
+      '@drakkar.software/doubloon-core': 0.3.0
     optionalDependencies:
-      '@drakkar.software/doubloon-bridge-apple': file:../../Doubloon/packages/bridges/apple(@apple/app-store-server-library@3.0.0)
-      '@drakkar.software/doubloon-bridge-google': file:../../Doubloon/packages/bridges/google(googleapis@144.0.0)
-      '@drakkar.software/doubloon-bridge-stripe': file:../../Doubloon/packages/bridges/stripe(stripe@17.7.0)
-      '@drakkar.software/doubloon-starfish': file:../../Doubloon/packages/destinations/starfish(@drakkar.software/starfish-client@1.18.0)
+      '@drakkar.software/doubloon-bridge-apple': 0.3.0(@apple/app-store-server-library@3.0.0)
+      '@drakkar.software/doubloon-bridge-google': 0.3.0(googleapis@144.0.0)
+      '@drakkar.software/doubloon-bridge-stripe': 0.3.1(stripe@17.7.0)
+      '@drakkar.software/doubloon-starfish': 0.3.0(@drakkar.software/starfish-client@1.18.0)
 
-  '@drakkar.software/doubloon-starfish@file:../../Doubloon/packages/destinations/starfish(@drakkar.software/starfish-client@1.18.0)':
+  '@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@1.18.0)':
     dependencies:
-      '@drakkar.software/doubloon-core': file:../../Doubloon/packages/core
+      '@drakkar.software/doubloon-core': 0.3.0
       '@drakkar.software/starfish-client': 1.18.0
 
   '@drakkar.software/starfish-client@1.18.0':
