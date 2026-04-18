@@ -181,5 +181,6 @@
     "confirmSubtitle": "Entrez le même code pour confirmer",
     "mismatchError": "Les codes ne correspondent pas"
   },
-  "premiumBetaNote": "Pendant la bêta, toutes les fonctionnalités premium sont disponibles gratuitement. L'achat soutient le développement et débloquera l'accès à vie quand la bêta se terminera."
+  "premiumBetaNote": "Pendant la bêta, toutes les fonctionnalités premium sont disponibles gratuitement. L'achat soutient le développement et débloquera l'accès à vie quand la bêta se terminera.",
+  "madeBy": "Fabriqué en France par Drakkar-Software"
 }

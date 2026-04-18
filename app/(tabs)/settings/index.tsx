@@ -531,7 +531,9 @@ export default function SettingsScreen() {
           <Text className="text-sm text-gray-400 mt-1">
             Version 1.0.0
           </Text>
-
+          <Text className="text-xs text-gray-400 mt-2">
+            {t("madeBy")}
+          </Text>
         </View>
       </View>
 

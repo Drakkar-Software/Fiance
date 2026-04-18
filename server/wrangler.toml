@@ -11,8 +11,5 @@ bucket_name = "wedding-os-sync"
 port = 8787
 
 [observability]
-[observability.logs]
-enabled = false
-invocation_logs = true
-[observability.traces]
-enabled = false
+enabled = true
+head_sampling_rate = 1
