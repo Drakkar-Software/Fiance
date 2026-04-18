@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
 import {
@@ -233,8 +233,23 @@ export default function SettingsScreen() {
       className="flex-1 bg-gray-50 dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
-      {/* Wedding info */}
+      {/* Premium */}
       <View className="px-4 pt-4">
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <Sparkles size={20} color="#EC4899" />
+            </View>
+          }
+          title={premium ? t("premiumUnlocked") : t("premiumTitle")}
+          subtitle={premium ? t("premiumPitch") : t("premiumSectionDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/(tabs)/settings/premium")}
+        />
+      </View>
+
+      {/* Wedding info */}
+      <View className="px-4 pt-2">
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">

@@ -23,6 +23,7 @@ export default function SettingsLayout() {
       <Stack.Screen name="faq" options={{ title: t("configureFaq") }} />
       <Stack.Screen name="gifts" options={{ title: t("giftRegistry") }} />
       <Stack.Screen name="export-import" options={{ title: t("exportImportTitle") }} />
+      <Stack.Screen name="premium" options={{ title: t("premiumTitle") }} />
     </Stack>
   );
 }
