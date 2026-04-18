@@ -531,11 +531,7 @@ export default function SettingsScreen() {
           <Text className="text-sm text-gray-400 mt-1">
             Version 1.0.0
           </Text>
-          <View className="mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
-            <Text className="text-xs text-gray-400 leading-4">
-              {t("privacyLine")}
-            </Text>
-          </View>
+
         </View>
       </View>
 

@@ -67,12 +67,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="index"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
         name="vendors"
         options={{
           title: t("tabs.vendors"),
