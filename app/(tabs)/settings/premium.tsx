@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Cloud, Users, Globe, Infinity } from "lucide-react-native";
+import { Sparkles, Cloud, Users, Globe, BadgeCheck } from "lucide-react-native";
 import { useIsPremium } from "@/lib/premium";
 import { purchasePremium, restorePurchases, fetchPremiumProduct } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
@@ -18,7 +18,7 @@ const BENEFITS = [
   { key: "premiumBenefit1", icon: Cloud },
   { key: "premiumBenefit2", icon: Users },
   { key: "premiumBenefit3", icon: Globe },
-  { key: "premiumBenefit4", icon: Infinity },
+  { key: "premiumBenefit4", icon: BadgeCheck },
 ] as const;
 
 export default function PremiumScreen() {
@@ -44,7 +44,12 @@ export default function PremiumScreen() {
 
   const handlePurchase = useCallback(async () => {
     if (Platform.OS === "web") {
-      redirectToCheckout(userId);
+      try {
+        redirectToCheckout(userId);
+      } catch {
+        setState("error");
+        setTimeout(() => setState("idle"), 3000);
+      }
       return;
     }
     setState("loading");
