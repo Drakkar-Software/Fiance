@@ -8,7 +8,7 @@
   "dependencies": {
     "@drakkar.software/doubloon-bridge-apple": "0.3.0",
     "@drakkar.software/doubloon-bridge-google": "0.3.0",
-    "@drakkar.software/doubloon-bridge-stripe":  "0.3.0",
+    "@drakkar.software/doubloon-bridge-stripe":  "0.3.1",
     "@drakkar.software/doubloon-core": "0.3.0",
     "@drakkar.software/doubloon-server": "0.3.0",
     "@drakkar.software/doubloon-starfish": "0.3.0",

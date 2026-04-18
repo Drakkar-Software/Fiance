@@ -4,7 +4,7 @@ import { GoogleBridge } from "@drakkar.software/doubloon-bridge-google";
 import { StripeBridge } from "@drakkar.software/doubloon-bridge-stripe";
 import { createStarfishDestination } from "@drakkar.software/doubloon-starfish";
 import { StarfishClient } from "@drakkar.software/starfish-client";
-import type { WalletResolver, ChainReader, ChainWriter, MintInstruction, RevokeInstruction } from "@drakkar.software/doubloon-core";
+import type { WalletResolver } from "@drakkar.software/doubloon-core";
 
 export type DoubloonEnv = {
   STARFISH_SELF_URL: string;
@@ -20,47 +20,13 @@ export type DoubloonEnv = {
 // Wallet validator — accepts 16-char hex userIds derived from Starfish tokens
 // ---------------------------------------------------------------------------
 
-// client_reference_id may be "{userId}_{weddingId}" — extract just the userId part
-function extractUserId(address: string): string {
-  const idx = address.indexOf("_");
-  return idx === 16 ? address.slice(0, 16) : address;
-}
-
 function isValidUserId(address: string): boolean {
   if (!address || typeof address !== "string") return false;
-  // Starfish userId: first 16 chars of auth token (16 hex chars); supports compound "{userId}_{weddingId}"
-  if (/^[0-9a-f]{16}$/i.test(extractUserId(address))) return true;
+  if (/^[0-9a-f]{16}$/i.test(address)) return true;
   // Also accept standard Solana/EVM for forward-compat
   if (/^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{32,44}$/.test(address)) return true;
   if (/^0x[0-9a-fA-F]{40}$/.test(address)) return true;
   return false;
-}
-
-// Wraps ChainWriter/Reader to strip the optional weddingId suffix before storage path resolution
-class StrippingWriter implements ChainWriter {
-  constructor(private inner: ChainWriter) {}
-  mintEntitlement(params: MintInstruction & { signer: string; autoRenew?: boolean }) {
-    return this.inner.mintEntitlement({ ...params, user: extractUserId(params.user) });
-  }
-  revokeEntitlement(params: RevokeInstruction & { signer: string }) {
-    return this.inner.revokeEntitlement?.({ ...params, user: extractUserId(params.user) });
-  }
-}
-
-class StrippingReader implements ChainReader {
-  constructor(private inner: ChainReader) {}
-  checkEntitlement(productId: string, wallet: string) {
-    return this.inner.checkEntitlement(productId, extractUserId(wallet));
-  }
-  checkEntitlements(productIds: string[], wallet: string) {
-    return this.inner.checkEntitlements(productIds, extractUserId(wallet));
-  }
-  getEntitlement(productId: string, wallet: string) {
-    return this.inner.getEntitlement(productId, extractUserId(wallet));
-  }
-  getProduct(productId: string) {
-    return this.inner.getProduct(productId);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -69,7 +35,7 @@ class StrippingReader implements ChainReader {
 
 const directWalletResolver: WalletResolver = {
   async resolveWallet(_store, identifier) {
-    return extractUserId(identifier) || null;
+    return identifier || null;
   },
   async linkWallet() {},
 };
@@ -162,18 +128,13 @@ export function createDoubloon(env: DoubloonEnv) {
     auth: async () => ({ Authorization: `Bearer ${env.DOUBLOON_ADMIN_TOKEN}` }),
   });
 
-  const rawDestination = createStarfishDestination({
+  const destination = createStarfishDestination({
     client: adminClient,
     products: [PREMIUM_PRODUCT],
     signerKey: "doubloon-admin",
     storagePath: "users/{user}/entitlements",
     field: "features",
   });
-  const destination = {
-    ...rawDestination,
-    reader: new StrippingReader(rawDestination.reader),
-    writer: new StrippingWriter(rawDestination.writer),
-  };
 
   const productResolver = {
     resolveProductId: async () => PREMIUM_PRODUCT.slug,
@@ -210,6 +171,8 @@ export function createDoubloon(env: DoubloonEnv) {
           productResolver,
           walletResolver: directWalletResolver,
           walletValidator: isValidUserId,
+          // client_reference_id is "{userId}_{weddingId}" — extract just the userId
+          clientReferenceIdTransform: (id) => id.split("_")[0],
         }),
       },
       onMintFailure: async (instruction, error, ctx) => {
