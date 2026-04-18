@@ -35,12 +35,14 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
     async function init() {
       try {
         if (!dbFileName) {
+          clearAllStores();
+          closeStorage();
           setLoading(false);
           return;
         }
 
-        clearAllStores();
         closeStorage();
+        clearAllStores();
 
         const kv = await initStorage(dbFileName);
         if (!kv) throw new Error(`Failed to open storage: ${dbFileName}`);

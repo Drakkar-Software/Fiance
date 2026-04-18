@@ -135,16 +135,14 @@ export default function TabLayout() {
     </Tabs>
   );
 
-  if (!activeWedding) return tabs;
-
   return (
-    <DatabaseProvider dbFileName={activeWedding.dbFileName}>
-      <SyncInitializer wedding={activeWedding} />
-      <NotificationInitializer />
-      <IAPInitializer wedding={activeWedding} />
+    <DatabaseProvider dbFileName={activeWedding?.dbFileName}>
+      {activeWedding && <SyncInitializer wedding={activeWedding} />}
+      {activeWedding && <NotificationInitializer />}
+      {activeWedding && <IAPInitializer wedding={activeWedding} />}
       <View style={{ flex: 1 }}>
         {tabs}
-        <OfflineBanner />
+        {activeWedding && <OfflineBanner />}
       </View>
     </DatabaseProvider>
   );

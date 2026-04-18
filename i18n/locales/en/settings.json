@@ -181,5 +181,6 @@
     "createSubtitle": "Choose a 4-digit code",
     "confirmSubtitle": "Enter the same code to confirm",
     "mismatchError": "Codes do not match"
-  }
+  },
+  "premiumBetaNote": "During the beta, every premium feature is available for free. Purchasing now supports development and locks in lifetime access when the beta ends."
 }

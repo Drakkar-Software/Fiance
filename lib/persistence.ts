@@ -7,7 +7,7 @@
 import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { hydrateOptimisticPurchase } from "@/store/useOptimisticPurchaseStore";
+import { hydrateOptimisticPurchase, useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -21,6 +21,8 @@ import { readCollection, writeCollection } from "./kv-storage";
 // ─── Clear all stores (for wedding switching) ──────────────────────────────
 
 export function clearAllStores(): void {
+  useEntitlementsStore.getState().setFeatures([]);
+  useOptimisticPurchaseStore.getState().clearRecord();
   useWeddingStore.getState().setWedding(null as any);
   useGuestsStore.getState().setGuests([]);
   useGuestsStore.getState().setTables([]);

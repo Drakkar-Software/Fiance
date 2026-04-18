@@ -1,8 +1,32 @@
 import { Platform } from "react-native";
 import { useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
-import { getStarfishClient } from "@/lib/starfish";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
+import { getStarfishClient } from "@/lib/starfish";
 import { pullEntitlements } from "@drakkar.software/starfish-client";
+
+const OPTIMISTIC_GRACE_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Returns true if the user has a server-verified premium entitlement
+ * OR a local optimistic purchase record still within the 24-hour grace window.
+ * Use this reactive hook in components; for non-reactive checks use isPremiumSync.
+ */
+export function useIsPremiumReal(): boolean {
+  const features = useEntitlementsStore((s) => s.features);
+  const record = useOptimisticPurchaseStore((s) => s.record);
+  if (features.includes("paid-premium")) return true;
+  if (record && Date.now() - record.purchasedAt < OPTIMISTIC_GRACE_MS) return true;
+  return false;
+}
+
+/** Non-reactive snapshot — use outside of components (e.g. guards, lib code). */
+export function isPremiumSync(): boolean {
+  const features = useEntitlementsStore.getState().features;
+  const record = useOptimisticPurchaseStore.getState().record;
+  if (features.includes("paid-premium")) return true;
+  if (record && Date.now() - record.purchasedAt < OPTIMISTIC_GRACE_MS) return true;
+  return false;
+}
 
 export const PREMIUM_SKU = "com.fiance.app.premium.lifetime";
 
@@ -43,14 +67,16 @@ export async function purchasePremium(userId: string): Promise<void> {
   });
 }
 
+export async function refreshEntitlements(userId: string): Promise<void> {
+  const sfClient = getStarfishClient();
+  if (!sfClient || !userId) return;
+  const features = await pullEntitlements(sfClient, userId).catch(() => null);
+  if (features && features.length > 0) useEntitlementsStore.getState().setFeatures(features);
+}
+
 export async function restorePurchases(userId: string): Promise<void> {
   if (Platform.OS === "web") return;
-  const sfClient = getStarfishClient();
-  if (!sfClient) return;
-  const features = await pullEntitlements(sfClient, userId).catch(() => null);
-  if (features && features.length > 0) {
-    useEntitlementsStore.getState().setFeatures(features);
-  }
+  await refreshEntitlements(userId);
 }
 
 export function setupPurchaseListeners(userId: string): (() => void) | undefined {

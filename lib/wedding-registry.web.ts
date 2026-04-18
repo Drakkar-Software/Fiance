@@ -6,6 +6,7 @@
 import * as Crypto from "expo-crypto";
 import { secureGet, secureSet } from "./secure-store";
 import { resolveServerUrl } from "./server";
+import { purgeStorage } from "./kv-storage";
 
 const REGISTRY_KEY = "wedding_registry";
 
@@ -68,13 +69,14 @@ export async function createWeddingEntry(
 
 export async function deleteWeddingEntry(id: string): Promise<void> {
   const registry = await loadRegistry();
+  const entry = registry.weddings.find((w) => w.id === id);
   const wasActive = registry.activeWeddingId === id;
   registry.weddings = registry.weddings.filter((w) => w.id !== id);
   if (wasActive) {
     registry.activeWeddingId = registry.weddings[0]?.id ?? null;
   }
   await saveRegistry(registry);
-  // No SQLite file to delete on web
+  if (entry) purgeStorage(entry.dbFileName);
 }
 
 export async function setActiveWeddingEntry(id: string): Promise<void> {

@@ -131,6 +131,82 @@ describe("resolveJoinAction", () => {
   });
 });
 
+// ─── _layout.tsx routing guard logic ─────────────────────────────────────────
+//
+// Mirrors the isOnboardingLike / redirect / spinner guards in app/_layout.tsx.
+// A regression here means a user without a wedding clicking a /join?t=... link
+// would be bounced to /onboarding and never see the join form.
+
+function isOnboardingLike(segment: string | undefined): boolean {
+  return segment === "onboarding" || segment === "join";
+}
+
+function shouldRedirectToOnboarding(
+  isLoaded: boolean,
+  isPublicPage: boolean,
+  segment: string | undefined,
+  hasWedding: boolean
+): boolean {
+  if (!isLoaded || isPublicPage || isOnboardingLike(segment)) return false;
+  return !hasWedding;
+}
+
+function shouldShowLoadingSpinner(hasWedding: boolean, segment: string | undefined): boolean {
+  return !hasWedding && !isOnboardingLike(segment);
+}
+
+describe("routing guards — /join deep link", () => {
+  it("isOnboardingLike is true for 'join'", () => {
+    expect(isOnboardingLike("join")).toBe(true);
+  });
+
+  it("isOnboardingLike is true for 'onboarding'", () => {
+    expect(isOnboardingLike("onboarding")).toBe(true);
+  });
+
+  it("isOnboardingLike is false for app routes", () => {
+    expect(isOnboardingLike("(tabs)")).toBe(false);
+    expect(isOnboardingLike("wedding")).toBe(false);
+    expect(isOnboardingLike(undefined)).toBe(false);
+  });
+
+  it("does NOT redirect to onboarding when segment is 'join' and no wedding", () => {
+    expect(shouldRedirectToOnboarding(true, false, "join", false)).toBe(false);
+  });
+
+  it("does NOT redirect to onboarding when segment is 'onboarding' and no wedding", () => {
+    expect(shouldRedirectToOnboarding(true, false, "onboarding", false)).toBe(false);
+  });
+
+  it("DOES redirect to onboarding when on a regular route with no wedding", () => {
+    expect(shouldRedirectToOnboarding(true, false, "(tabs)", false)).toBe(true);
+  });
+
+  it("does NOT redirect when registry is loaded and wedding exists", () => {
+    expect(shouldRedirectToOnboarding(true, false, "(tabs)", true)).toBe(false);
+  });
+
+  it("does NOT redirect before registry is loaded", () => {
+    expect(shouldRedirectToOnboarding(false, false, "(tabs)", false)).toBe(false);
+  });
+
+  it("does NOT show spinner when segment is 'join' and no wedding", () => {
+    expect(shouldShowLoadingSpinner(false, "join")).toBe(false);
+  });
+
+  it("does NOT show spinner when segment is 'onboarding' and no wedding", () => {
+    expect(shouldShowLoadingSpinner(false, "onboarding")).toBe(false);
+  });
+
+  it("DOES show spinner on regular route with no wedding (redirect in flight)", () => {
+    expect(shouldShowLoadingSpinner(false, "(tabs)")).toBe(true);
+  });
+
+  it("does NOT show spinner when wedding exists", () => {
+    expect(shouldShowLoadingSpinner(true, "(tabs)")).toBe(false);
+  });
+});
+
 // ─── resolveJoinScreen ───────────────────────────────────────────────────────
 
 describe("resolveJoinScreen", () => {

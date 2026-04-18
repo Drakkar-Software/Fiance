@@ -3,12 +3,8 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Cloud, Users, Globe, BadgeCheck } from "lucide-react-native";
-import { useIsPremium } from "@/lib/premium";
-import { purchasePremium, restorePurchases, fetchPremiumProduct } from "@/lib/iap";
+import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduct, refreshEntitlements } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
-import { getStarfishClient } from "@/lib/starfish";
-import { pullEntitlements } from "@drakkar.software/starfish-client";
-import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { resolveServerConfig } from "@/lib/server";
 
@@ -23,7 +19,7 @@ const BENEFITS = [
 
 export default function PremiumScreen() {
   const { t } = useTranslation("settings");
-  const premium = useIsPremium();
+  const premium = useIsPremiumReal();
   const [state, setState] = useState<PurchaseState>("idle");
   const [price, setPrice] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>("");
@@ -56,11 +52,7 @@ export default function PremiumScreen() {
     try {
       await purchasePremium(userId);
       setState("unlocking");
-      const sfClient = getStarfishClient();
-      if (sfClient) {
-        const features = await pullEntitlements(sfClient, userId).catch(() => null);
-        if (features && features.length > 0) useEntitlementsStore.getState().setFeatures(features);
-      }
+      await refreshEntitlements(userId);
       setState("success");
       setTimeout(() => setState("idle"), 2000);
     } catch {
@@ -140,6 +132,10 @@ export default function PremiumScreen() {
             >
               <Text className="text-white font-semibold text-base">{ctaLabel}</Text>
             </Pressable>
+
+            <Text className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1 mb-1 leading-5 px-2">
+              {t("premiumBetaNote")}
+            </Text>
 
             {Platform.OS !== "web" && (
               <Pressable

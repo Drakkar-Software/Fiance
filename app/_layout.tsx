@@ -57,13 +57,17 @@ function AppContent() {
   // (marketing) routes are web-only; on native they should fall through to the app
   const isPublicPage = segments[0] === "wedding" || (Platform.OS === "web" && segments[0] === "(marketing)");
 
-  // Redirect to /onboarding when no wedding — skip if already there to avoid loop
+  // /join is handled like /onboarding: it must render even when the user has
+  // no wedding yet, because that's exactly when the invite link deep-links in.
+  const isOnboardingLike = segments[0] === "onboarding" || segments[0] === "join";
+
+  // Redirect to /onboarding when no wedding — skip on onboarding/join routes.
   useEffect(() => {
-    if (!isLoaded || isPublicPage || segments[0] === "onboarding") return;
+    if (!isLoaded || isPublicPage || isOnboardingLike) return;
     if (!registry || registry.weddings.length === 0) {
       router.replace("/onboarding" as any);
     }
-  }, [isLoaded, isPublicPage, registry?.weddings.length]);
+  }, [isLoaded, isPublicPage, isOnboardingLike, registry?.weddings.length]);
 
   // Navigate to /home after onboarding completes. Fired in a useEffect so it runs
   // after (tabs)/_layout re-renders and mounts DatabaseProvider, guaranteeing the
@@ -89,7 +93,7 @@ function AppContent() {
   // Prevents a one-frame flash of the empty dashboard on first load when there
   // is no wedding yet and the useEffect hasn't fired yet.
   const hasWedding = isLoaded && !!registry?.weddings.length;
-  if (!hasWedding && segments[0] !== "onboarding") {
+  if (!hasWedding && !isOnboardingLike) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
