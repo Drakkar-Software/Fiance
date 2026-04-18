@@ -14,7 +14,7 @@
     "@drakkar.software/doubloon-starfish": "0.3.0",
     "@drakkar.software/starfish-client": "^1.18.0",
     "@drakkar.software/starfish-server": "1.18.0",
-    "hono": "4.12.12",
+    "hono": "4.12.14",
     "stripe": "^17.0.0"
   },
   "devDependencies": {
