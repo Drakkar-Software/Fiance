@@ -41,7 +41,7 @@ export default function PremiumScreen() {
   const handlePurchase = useCallback(async () => {
     if (Platform.OS === "web") {
       try {
-        redirectToCheckout(userId);
+        redirectToCheckout(userId, activeEntry?.id);
       } catch {
         setState("error");
         setTimeout(() => setState("idle"), 3000);

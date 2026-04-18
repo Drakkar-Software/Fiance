@@ -15,11 +15,12 @@ interface PaywallSheetProps {
   visible: boolean;
   onClose: () => void;
   userId: string;
+  weddingId?: string;
 }
 
 type SheetState = "idle" | "loading" | "unlocking" | "success" | "error";
 
-export function PaywallSheet({ visible, onClose, userId }: PaywallSheetProps) {
+export function PaywallSheet({ visible, onClose, userId, weddingId }: PaywallSheetProps) {
   const { t } = useTranslation("settings");
   const ref = useRef<BottomSheetModal>(null);
   const [state, setState] = useState<SheetState>("idle");
@@ -47,7 +48,7 @@ export function PaywallSheet({ visible, onClose, userId }: PaywallSheetProps) {
 
   const handlePurchase = useCallback(async () => {
     if (Platform.OS === "web") {
-      redirectToCheckout(userId);
+      redirectToCheckout(userId, weddingId);
       return;
     }
     setState("loading");

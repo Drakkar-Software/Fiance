@@ -6,10 +6,11 @@ import { pullEntitlements } from "@drakkar.software/starfish-client";
 // Set this to the Stripe Payment Link URL (created once in Stripe dashboard)
 const STRIPE_PAYMENT_LINK_URL = process.env.EXPO_PUBLIC_STRIPE_PAYMENT_LINK_URL ?? "";
 
-export function redirectToCheckout(userId: string): void {
+export function redirectToCheckout(userId: string, weddingId?: string): void {
   if (typeof window === "undefined") return;
   const url = new URL(STRIPE_PAYMENT_LINK_URL);
-  url.searchParams.set("client_reference_id", userId);
+  const clientRef = weddingId ? `${userId}_${weddingId}` : userId;
+  url.searchParams.set("client_reference_id", clientRef);
   url.searchParams.set("success_url", `${window.location.origin}${window.location.pathname}?status=success&client_reference_id=${userId}`);
   window.location.href = url.toString();
 }

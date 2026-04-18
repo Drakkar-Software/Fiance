@@ -596,6 +596,7 @@ export default function SettingsScreen() {
       visible={showPaywall}
       onClose={() => setShowPaywall(false)}
       userId={starfishUserId}
+      weddingId={activeEntry?.id}
     />
     </>
   );
