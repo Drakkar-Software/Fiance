@@ -10,6 +10,7 @@ import { QRScannerScreen } from "@/components/QRScannerScreen";
 import { analytics } from "@/lib/analytics";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { PageHeader } from "@/components/PageHeader";
 
 type Mode = "choose" | "create" | "join";
 
@@ -150,9 +151,13 @@ function CreateWeddingForm({
           <ArrowLeft size={24} color="#9CA3AF" />
         </Pressable>
 
-        <Display size={28} italic style={{ marginBottom: 8 }}>
-          {t("onboarding.newWedding")}
-        </Display>
+        <PageHeader
+          eyebrow={t("onboarding.createEyebrow")}
+          title={t("onboarding.newWedding")}
+          tagline={t("onboarding.createTagline")}
+          titleSize={28}
+          style={{ paddingHorizontal: 0, paddingTop: 0, marginBottom: 8 }}
+        />
         <Text className="text-base text-mute mb-8">
           {t("onboarding.autoPassword")}
         </Text>
@@ -235,9 +240,13 @@ function JoinWeddingForm({
             <ArrowLeft size={24} color="#9CA3AF" />
           </Pressable>
 
-          <Display size={28} italic style={{ marginBottom: 8 }}>
-            {t("onboarding.joinTitle")}
-          </Display>
+          <PageHeader
+            eyebrow={t("onboarding.joinEyebrow")}
+            title={t("onboarding.joinTitle")}
+            tagline={t("onboarding.joinTagline")}
+            titleSize={28}
+            style={{ paddingHorizontal: 0, paddingTop: 0, marginBottom: 8 }}
+          />
 
           <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
             {t("onboarding.weddingNameLabel")}

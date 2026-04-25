@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { FaqItem } from "@/lib/public-page";
-import { SectionTitle } from "@/components/FormSection";
+import { PageHeader } from "@/components/PageHeader";
 import { Label } from "@/components/Label";
 
 export default function FaqScreen() {
@@ -54,9 +54,13 @@ export default function FaqScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-4 pt-4">
-        <SectionTitle>{t("faqTitle")}</SectionTitle>
-        <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
+      <PageHeader
+        eyebrow={t("faqTitle")}
+        title={`${faqItems.length} ${faqItems.length === 1 ? "question" : "questions"}`}
+        titleSize={22}
+      />
+      <View className="px-4 pt-2">
+        <Text className="text-sm text-mute leading-5 mb-3">
           {t("faqSubtitle")}
         </Text>
 

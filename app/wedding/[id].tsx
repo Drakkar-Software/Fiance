@@ -15,6 +15,7 @@ import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
+import { ScriptButton } from "@/components/ScriptButton";
 
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
   if (Platform.OS !== "web") return;
@@ -564,7 +565,8 @@ export default function WeddingPublicPage() {
 
                     {rsvpStatus && (
                       <>
-                        <Pressable
+                        <ScriptButton
+                          disabled={submitting}
                           onPress={async () => {
                             if (!rsvpStatus || submitting) return;
                             setSubmitting(true);
@@ -587,12 +589,10 @@ export default function WeddingPublicPage() {
                               setSubmitError(true);
                             }
                           }}
-                          className="bg-primary-500 rounded-xl py-3 items-center active:bg-primary-600"
+                          style={{ opacity: submitting ? 0.5 : 1 }}
                         >
-                          <Text className="text-white font-semibold text-base">
-                            {submitting ? "..." : t("rsvpSubmit")}
-                          </Text>
-                        </Pressable>
+                          {submitting ? "..." : t("rsvpSubmit")}
+                        </ScriptButton>
                         {submitError && (
                           <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
                         )}

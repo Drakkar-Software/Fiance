@@ -8,6 +8,7 @@ import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seal } from "@/components/Seal";
+import { PageHeader } from "@/components/PageHeader";
 import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduct, refreshEntitlements } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -100,13 +101,13 @@ export default function PremiumScreen() {
               <Seal label="✓" sublabel={t("premiumUnlocked").toLowerCase().split(" ")[0]} color="#6e7a4a" size={42} angle={-8} />
             </View>
           )}
-          <Label style={{ marginBottom: 4 }}>{t("common:tabs.settings")}</Label>
-          <Display size={52} italic color="#b96a4a">
-            49 €
-          </Display>
-          <Script size={20} color="#6e7a4a" style={{ marginTop: 4 }}>
-            {t("premiumOneTime", { defaultValue: "one-time" })}
-          </Script>
+          <PageHeader
+            eyebrow={t("premiumFeature", { defaultValue: "Premium" })}
+            title="49 €"
+            tagline={t("premiumOneTime", { defaultValue: "one-time" })}
+            titleSize={52}
+            style={{ paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }}
+          />
           <Text className="text-sm text-mute text-center leading-5 mt-3">
             {t("premiumPitch")}
           </Text>

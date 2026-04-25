@@ -25,6 +25,8 @@ import {
   DateRow,
 } from "@/components/FormSection";
 import { Display } from "@/components/Display";
+import { PageHeader } from "@/components/PageHeader";
+import { Postit } from "@/components/Postit";
 
 export default function PublicPageScreen() {
   const router = useRouter();
@@ -158,8 +160,13 @@ export default function PublicPageScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
+      <PageHeader
+        eyebrow={t("publicPageTitle")}
+        title={t("publicPageHeroTitle")}
+        titleSize={26}
+      />
       {/* Wedding info */}
-      <View className="px-4 pt-4">
+      <View className="px-4 pt-2">
         <SectionTitle>{t("publicPageInfo")}</SectionTitle>
         <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {t("publicPageInfoDesc")}
@@ -307,7 +314,10 @@ export default function PublicPageScreen() {
 
       {/* Preview + Share */}
       {activeEntry?.seedPhrase && (
-        <View className="px-4 mt-2 gap-2">
+        <View className="px-4 mt-2 gap-2" style={{ position: "relative" }}>
+          <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
+            {t("sharePublicPage")}
+          </Postit>
           <Pressable
             onPress={async () => {
               try {

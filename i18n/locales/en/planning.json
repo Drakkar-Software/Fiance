@@ -151,5 +151,7 @@
     "agendaReminderWithTime": "In 1 hour: {{title}} at {{time}}"
   },
   "overdueCount_one": "{{count}} overdue",
-  "overdueCount_other": "{{count}} overdue"
+  "overdueCount_other": "{{count}} overdue",
+  "eventEyebrow": "Appointment",
+  "dayOfEyebrow": "Day Of"
 }

@@ -35,6 +35,10 @@
   "noTableNeeded": "Pas de table",
   "onboarding": {
     "tagline": "Organisez votre mariage en toute simplicité",
+    "createEyebrow": "Nouveau mariage",
+    "createTagline": "votre histoire commence ici",
+    "joinEyebrow": "Rejoindre",
+    "joinTagline": "bienvenue dans l'équipe",
     "createWedding": "Créer un mariage",
     "joinWedding": "Rejoindre un mariage",
     "newWedding": "Nouveau mariage",
@@ -65,8 +69,14 @@
     "alreadyHaveWedding": "Vous avez déjà un mariage enregistré.",
     "confirmJoin": "Souhaitez-vous en rejoindre un nouveau{{name}} ?",
     "yesJoin": "Oui, rejoindre",
-    "noGoBack": "Non, revenir à l'accueil"
+    "noGoBack": "Non, revenir à l'accueil",
+    "eyebrow": "Jumeler un appareil",
+    "title": "Sur l'autre téléphone,",
+    "tagline": "scannez ce code",
+    "postit": "les codes expirent vite — par sécurité 🌿"
   },
+  "homeEyebrow": "Accueil",
+  "homeTagline": "jours",
   "syncSizeWarning": "Sauvegarde volumineuse ({{kb}} Ko / {{max}} Ko max)",
   "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — synchro bloquée"
 }

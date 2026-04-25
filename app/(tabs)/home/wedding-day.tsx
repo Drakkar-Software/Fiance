@@ -12,6 +12,7 @@ import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Label } from "@/components/Label";
+import { PageHeader } from "@/components/PageHeader";
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
@@ -70,19 +71,13 @@ export default function WeddingDayScreen() {
         <Script size={18} color="#e8c06a">{timeStr}</Script>
       </View>
 
-      <View style={{ marginTop: 10, paddingHorizontal: 20 }}>
-        {weddingDateLabel ? (
-          <>
-            <Display size={30} italic weight="400" color="#f4ecd8">
-              {weddingDateLabel.split(" ").slice(0, 2).join(" ")},
-            </Display>
-            <Display size={30} italic weight="400" color="#e8c06a">
-              {weddingDateLabel.split(" ").slice(2).join(" ")}
-            </Display>
-          </>
-        ) : (
-          <Display size={30} italic weight="400" color="#f4ecd8">{t("common:today")}</Display>
-        )}
+      <View style={{ marginTop: 10 }}>
+        <PageHeader
+          eyebrow={t("common:yourDay") || "Your day"}
+          title={weddingDateLabel || t("common:today")}
+          titleSize={28}
+          style={{ paddingHorizontal: 20, paddingTop: 0 }}
+        />
       </View>
 
       {/* Timeline */}

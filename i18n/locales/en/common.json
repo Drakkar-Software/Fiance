@@ -35,6 +35,10 @@
   "noTableNeeded": "No table",
   "onboarding": {
     "tagline": "Plan your wedding with ease",
+    "createEyebrow": "New wedding",
+    "createTagline": "your story starts here",
+    "joinEyebrow": "Join",
+    "joinTagline": "welcome to the team",
     "createWedding": "Create a wedding",
     "joinWedding": "Join a wedding",
     "newWedding": "New wedding",
@@ -65,8 +69,14 @@
     "alreadyHaveWedding": "You already have a registered wedding.",
     "confirmJoin": "Do you want to join a new one{{name}}?",
     "yesJoin": "Yes, join",
-    "noGoBack": "No, go back home"
+    "noGoBack": "No, go back home",
+    "eyebrow": "Pair a device",
+    "title": "On the other phone,",
+    "tagline": "scan this code",
+    "postit": "codes expire fast — for safety 🌿"
   },
+  "homeEyebrow": "Home",
+  "homeTagline": "days",
   "syncSizeWarning": "Backup is getting large ({{kb}} KB / {{max}} KB max)",
   "syncSizeExceeded": "Backup too large ({{kb}} KB) — sync blocked"
 }

@@ -125,5 +125,10 @@
   "tabPayments": "Payments",
   "noPayments": "No payments recorded",
   "deletePayment": "Delete this payment?",
-  "pageTagline": "of {{total}} booked"
+  "pageTagline": "of {{total}} booked",
+  "newKindTitle": "Choose a kind",
+  "newVendorEyebrow": "New vendor",
+  "kindCount_one": "{{count}} vendor",
+  "kindCount_other": "{{count}} vendors",
+  "compareEyebrow": "Compare"
 }

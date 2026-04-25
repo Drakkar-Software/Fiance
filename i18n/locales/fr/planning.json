@@ -151,5 +151,7 @@
     "agendaReminderWithTime": "Dans 1 heure : {{title}} à {{time}}"
   },
   "overdueCount_one": "{{count}} en retard",
-  "overdueCount_other": "{{count}} en retard"
+  "overdueCount_other": "{{count}} en retard",
+  "eventEyebrow": "Rendez-vous",
+  "dayOfEyebrow": "Jour J"
 }

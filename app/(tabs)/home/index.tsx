@@ -26,6 +26,7 @@ import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Label } from "@/components/Label";
 import { Sprig } from "@/components/Sprig";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -186,38 +187,39 @@ function DashboardScreen() {
         <View style={{ position: "absolute", top: topInset + 14, right: 58, opacity: 0.4, pointerEvents: "none" }}>
           <Sprig size={22} color="#fff" angle={16} />
         </View>
-        <Label color="rgba(255,255,255,0.6)" style={{ marginBottom: 4 }}>
-          {t("common:tabs.home")}
-        </Label>
-        <Script size={20} color="rgba(255,255,255,0.75)" weight="400">
-          {wedding?.partner1Name && wedding?.partner2Name
-            ? `${wedding.partner1Name} & ${wedding.partner2Name}`
-            : "Fiancé"}
-        </Script>
         {daysUntil != null && daysUntil >= 0 ? (
-          <View className="mt-3">
-            <View className="flex-row items-baseline">
-              <Display size={72} weight="300" color="#fff">
-                {daysUntil}
-              </Display>
-              <Text className="text-white/60 text-xl font-medium ml-2">
-                {t("days")}
-              </Text>
-            </View>
+          <>
+            <PageHeader
+              eyebrow={t("common:homeEyebrow")}
+              title={daysUntil}
+              tagline={t("common:homeTagline")}
+              titleSize={72}
+              style={{ paddingHorizontal: 0, paddingTop: 0 }}
+            />
             <Text className="text-white/60 text-sm mt-1">
               {weddingDate
                 ? format(weddingDate, "EEEE d MMMM yyyy", { locale: getDateLocale() })
                 : ""}
             </Text>
-          </View>
+          </>
         ) : daysUntil != null && daysUntil < 0 ? (
-          <Display size={32} italic color="#fff" style={{ marginTop: 12 }}>
-            {t("congratulations")}
-          </Display>
+          <>
+            <Label color="rgba(255,255,255,0.6)" style={{ marginBottom: 4 }}>
+              {t("common:tabs.home")}
+            </Label>
+            <Display size={32} italic color="#fff" style={{ marginTop: 12 }}>
+              {t("congratulations")}
+            </Display>
+          </>
         ) : (
-          <Display size={24} italic color="rgba(255,255,255,0.9)" style={{ marginTop: 12 }}>
-            {t("setYourDate")}
-          </Display>
+          <>
+            <Label color="rgba(255,255,255,0.6)" style={{ marginBottom: 4 }}>
+              {t("common:tabs.home")}
+            </Label>
+            <Display size={24} italic color="rgba(255,255,255,0.9)" style={{ marginTop: 12 }}>
+              {t("setYourDate")}
+            </Display>
+          </>
         )}
         {wedding?.venueName && (
           <View className="flex-row items-center mt-3 bg-white/10 self-start px-3 py-1.5 rounded-full">

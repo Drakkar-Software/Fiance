@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { PageHeader } from "@/components/PageHeader";
 import { Briefcase } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -24,8 +25,6 @@ export default function VendorTypeListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <Stack.Screen options={{ title: typeName }} />
-
       {vendors.length === 0 ? (
         <EmptyState
           icon={Briefcase}
@@ -41,6 +40,11 @@ export default function VendorTypeListScreen() {
         />
       ) : (
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+          <PageHeader
+            eyebrow={t(`types.${type}` as any)}
+            title={t("kindCount", { count: vendors.length })}
+            titleSize={44}
+          />
           {vendors.map((vendor) => (
             <Pressable
               key={vendor.id}

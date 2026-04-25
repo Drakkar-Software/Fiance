@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { Display } from "@/components/Display";
+import { PageHeader } from "@/components/PageHeader";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken } from "@/lib/identity";
 
@@ -108,9 +109,12 @@ function InvalidInvite() {
         <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900 items-center justify-center mb-5">
           <AlertCircle size={36} color="#EF4444" />
         </View>
-        <Display size={26} italic style={{ textAlign: "center" }}>
-          {t("onboarding.inviteFailed")}
-        </Display>
+        <PageHeader
+          eyebrow={t("join.eyebrow")}
+          title={t("onboarding.inviteFailed")}
+          titleSize={24}
+          style={{ paddingHorizontal: 0, paddingTop: 0 }}
+        />
       </View>
       <Pressable
         onPress={() => router.replace("/")}
@@ -143,9 +147,13 @@ function ConfirmJoin({
         <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
           <Heart size={36} color="#b96a4a" />
         </View>
-        <Display size={26} italic style={{ textAlign: "center" }}>
-          {t("join.newWedding")}
-        </Display>
+        <PageHeader
+          eyebrow={t("join.eyebrow")}
+          title={t("join.title")}
+          tagline={t("join.tagline")}
+          titleSize={26}
+          style={{ paddingHorizontal: 0, paddingTop: 0 }}
+        />
         <Text className="text-base text-mute mt-2 text-center">
           {t("join.alreadyHaveWedding")}{"\n"}
           {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}

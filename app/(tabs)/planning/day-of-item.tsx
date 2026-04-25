@@ -11,6 +11,7 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { DayOfItem } from "@/db/schema";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function DayOfItemScreen() {
   const { t } = useTranslation("planning");
@@ -91,6 +92,11 @@ export default function DayOfItemScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <PageHeader
+          eyebrow={t("dayOfEyebrow")}
+          title={title || t("newMoment")}
+          titleSize={22}
+        />
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("momentLabel")} value={title} onChangeText={setTitle} placeholder={t("churchPlaceholder")} />

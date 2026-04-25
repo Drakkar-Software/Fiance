@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Label } from "@/components/Label";
-import { useRouter, Stack } from "expo-router";
+import { useRouter } from "expo-router";
+import { PageHeader } from "@/components/PageHeader";
 import { useTranslation } from "react-i18next";
 import {
   VENDOR_TYPE_LABELS,
@@ -24,11 +25,15 @@ export default function NewVendorPickerScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <Stack.Screen options={{ title: "Nouveau prestataire" }} />
       <ScrollView
         className="flex-1 px-4 pt-4"
         showsVerticalScrollIndicator={false}
       >
+        <PageHeader
+          eyebrow={t("newVendorEyebrow")}
+          title={t("newKindTitle")}
+          titleSize={22}
+        />
         {Object.entries(BUDGET_CATEGORIES).map(([category, types]) => (
           <View key={category} className="mb-5">
             <Label size={10} color="#9CA3AF" style={{ marginBottom: 8, marginLeft: 4 }}>

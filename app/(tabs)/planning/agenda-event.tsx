@@ -12,6 +12,7 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import type { AgendaEvent } from "@/db/schema";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function AgendaEventScreen() {
   const { t } = useTranslation("planning");
@@ -84,6 +85,11 @@ export default function AgendaEventScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <PageHeader
+          eyebrow={t("eventEyebrow")}
+          title={title || t("newAppointment")}
+          titleSize={22}
+        />
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("titleLabel")} value={title} onChangeText={setTitle} placeholder={t("visitPlaceholder")} />

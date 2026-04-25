@@ -32,6 +32,8 @@ import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { parseLinks, serializeLinks, isValidUrl } from "@/lib/links";
 import type { Idea } from "@/db/schema";
+import { PageHeader } from "@/components/PageHeader";
+import { Postit } from "@/components/Postit";
 
 const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
 
@@ -154,21 +156,34 @@ export default function IdeaDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <PageHeader
+          eyebrow={t("collection")}
+          title={title || t("newIdea")}
+          tagline={t("idea", { count: ideas.length })}
+          titleSize={32}
+        />
         {/* Title & notes */}
         <SectionTitle>{t("information")}</SectionTitle>
-        <FormCard>
-          <InputRow label={t("title")} value={title} onChangeText={setTitle} />
-          <Text className="text-xs text-mute mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
-          <TextInput
-            className="text-base text-ink min-h-[60px]"
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t("notesPlaceholder")}
-            placeholderTextColor="#D0D0D8"
-            multiline
-            textAlignVertical="top"
-          />
-        </FormCard>
+        <View style={{ position: "relative" }}>
+          {notes ? (
+            <Postit angle={-1} size="sm" style={{ position: "absolute", top: -10, right: 8, zIndex: 10 }}>
+              {notes.slice(0, 30)}
+            </Postit>
+          ) : null}
+          <FormCard>
+            <InputRow label={t("title")} value={title} onChangeText={setTitle} />
+            <Text className="text-xs text-mute mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
+            <TextInput
+              className="text-base text-ink min-h-[60px]"
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t("notesPlaceholder")}
+              placeholderTextColor="#D0D0D8"
+              multiline
+              textAlignVertical="top"
+            />
+          </FormCard>
+        </View>
 
         {/* Tags */}
         <SectionTitle>{t("tags")}</SectionTitle>

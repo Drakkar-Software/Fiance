@@ -7,6 +7,8 @@ import { calculateCatererScore, calculateCatererTotal } from "@/lib/budget";
 import { PRICING_KEY_LABELS } from "@/db/types";
 import type { PricingKey } from "@/db/types";
 import { RatingStars } from "@/components/RatingStars";
+import { PageHeader } from "@/components/PageHeader";
+import { Postit } from "@/components/Postit";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Display } from "@/components/Display";
@@ -58,15 +60,25 @@ export default function CompareScreen() {
 
   return (
     <ScrollView className="flex-1 bg-accent-paper px-4 pt-4">
+      <PageHeader
+        eyebrow={t("compareEyebrow")}
+        title={`${t(`types.CATERER` as any)} · ${vendors.length}`}
+        titleSize={22}
+      />
       {/* Score cards */}
       <Display size={20} italic style={{ marginBottom: 12 }}>{t("scores")}</Display>
       {caterers
         .sort((a, b) => b.score - a.score)
         .map((c, idx) => (
-          <View
-            key={c.vendor.id}
-            className="bg-accent-card rounded-xl p-4 mb-3 border border-hair"
-          >
+          <View key={c.vendor.id} style={{ position: "relative" }}>
+            {idx === 0 && (
+              <Postit angle={6} size="sm" style={{ position: "absolute", top: -12, right: 8, zIndex: 10 }}>
+                our pick ✦
+              </Postit>
+            )}
+            <View
+              className="bg-accent-card rounded-xl p-4 mb-3 border border-hair"
+            >
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center">
                 {idx === 0 && (
@@ -88,6 +100,7 @@ export default function CompareScreen() {
                 <Display size={18} weight="500">{formatMoney(c.total)}</Display>
               </View>
               <RatingStars rating={c.vendor.rating || 0} size={16} />
+            </View>
             </View>
           </View>
         ))}

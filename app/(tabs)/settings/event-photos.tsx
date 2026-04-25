@@ -6,7 +6,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
 import { Camera, Plus, Trash2 } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";
-import { SectionTitle } from "@/components/FormSection";
+import { PageHeader } from "@/components/PageHeader";
 
 export interface EventPhoto {
   id: string;
@@ -67,9 +67,14 @@ export default function EventPhotosScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-4 pt-4">
-        <SectionTitle>{t("eventPhotosTitle")}</SectionTitle>
-        <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
+      <PageHeader
+        eyebrow={t("eventPhotosTitle")}
+        title={photos.length}
+        tagline={t("photosTagline")}
+        titleSize={44}
+      />
+      <View className="px-4 pt-2">
+        <Text className="text-sm text-mute leading-5 mb-3">
           {t("eventPhotosSubtitle")}
         </Text>
 

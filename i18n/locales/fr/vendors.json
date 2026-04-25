@@ -125,5 +125,10 @@
   "tabPayments": "Paiements",
   "noPayments": "Aucun paiement enregistré",
   "deletePayment": "Supprimer ce paiement ?",
-  "pageTagline": "sur {{total}} réservés"
+  "pageTagline": "sur {{total}} réservés",
+  "newKindTitle": "Choisissez un type",
+  "newVendorEyebrow": "Nouveau prestataire",
+  "kindCount_one": "{{count}} prestataire",
+  "kindCount_other": "{{count}} prestataires",
+  "compareEyebrow": "Comparer"
 }

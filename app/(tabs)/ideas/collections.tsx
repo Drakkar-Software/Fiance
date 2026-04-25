@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useIdeasStore } from "@/store/useIdeasStore";
+import { PageHeader } from "@/components/PageHeader";
 import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
@@ -42,6 +43,11 @@ export default function CollectionsScreen() {
   return (
     <View className="flex-1 bg-accent-paper">
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <PageHeader
+          eyebrow={t("collections")}
+          title={t("collectionCount", { count: collections.length })}
+          titleSize={22}
+        />
         {showAdd && (
           <View className="bg-accent-card rounded-xl p-4 mb-4">
             <Text className="text-base font-semibold text-ink mb-3">

@@ -9,6 +9,7 @@ import type { Gift as GiftType } from "@/db/schema";
 import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle, FormCard, InputRow, ChipSelect } from "@/components/FormSection";
 
 const CATEGORIES = ["maison", "voyage", "experience", "autre"] as const;
@@ -123,6 +124,12 @@ export default function GiftsScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
+      <PageHeader
+        eyebrow={t("giftRegistry")}
+        title={gifts.length}
+        tagline={t("giftsTagline")}
+        titleSize={26}
+      />
       {gifts.length === 0 ? (
         <EmptyState
           icon={Gift}
