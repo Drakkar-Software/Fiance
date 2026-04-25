@@ -139,10 +139,10 @@ export const RSVP_STATUS_LABELS: Record<RsvpStatus, string> = {
 };
 
 export const RSVP_STATUS_COLORS: Record<RsvpStatus, string> = {
-  PENDING: "#F59E0B",
-  ACCEPTED: "#10B981",
+  PENDING:  "#c9922f", // mustard
+  ACCEPTED: "#6e7a4a", // olive
   DECLINED: "#EF4444",
-  MAYBE: "#3B82F6",
+  MAYBE:    "#6b8aa3", // GP blue
 };
 
 export const VENDOR_STATUS_LABELS: Record<VendorStatus, string> = {
@@ -154,11 +154,11 @@ export const VENDOR_STATUS_LABELS: Record<VendorStatus, string> = {
 };
 
 export const VENDOR_STATUS_COLORS: Record<VendorStatus, string> = {
-  PROSPECT: "#9CA3AF",
-  QUOTE_RECEIVED: "#3B82F6",
-  NEGOTIATING: "#F59E0B",
-  BOOKED: "#10B981",
-  CANCELLED: "#EF4444",
+  PROSPECT:       "#8a8373", // mute
+  QUOTE_RECEIVED: "#6b8aa3", // GP blue
+  NEGOTIATING:    "#c9922f", // mustard
+  BOOKED:         "#6e7a4a", // olive
+  CANCELLED:      "#EF4444",
 };
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
@@ -174,9 +174,9 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
 };
 
 export const PRIORITY_COLORS: Record<Priority, string> = {
-  LOW: "#9CA3AF",
-  MEDIUM: "#3B82F6",
-  HIGH: "#F59E0B",
+  LOW:      "#8a8373", // mute
+  MEDIUM:   "#6b8aa3", // GP blue
+  HIGH:     "#c9922f", // mustard
   CRITICAL: "#EF4444",
 };
 

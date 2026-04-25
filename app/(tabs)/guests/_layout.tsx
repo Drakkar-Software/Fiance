@@ -47,6 +47,7 @@ export default function InvitesLayout() {
       <Stack.Screen name="tables" options={{ title: t("tablesPlanScreen") }} />
       <Stack.Screen name="accommodations" options={{ title: t("accommodations") }} />
       <Stack.Screen name="invitation-types" options={{ title: t("invitationTypesScreen") }} />
+      <Stack.Screen name="seating" options={{ headerShown: false }} />
     </Stack>
   );
 }

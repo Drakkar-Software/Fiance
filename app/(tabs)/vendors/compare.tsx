@@ -46,7 +46,7 @@ export default function CompareScreen() {
 
   if (caterers.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <View className="flex-1 items-center justify-center bg-accent-paper dark:bg-gray-950">
         <Text className="text-gray-500">
           {t("addAtLeast2")}
         </Text>
@@ -55,7 +55,7 @@ export default function CompareScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-950 px-4 pt-4">
+    <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950 px-4 pt-4">
       {/* Score cards */}
       <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">
         {t("scores")}
@@ -65,7 +65,7 @@ export default function CompareScreen() {
         .map((c, idx) => (
           <View
             key={c.vendor.id}
-            className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm"
+            className="bg-accent-card dark:bg-gray-900 rounded-xl p-4 mb-3 border border-hair"
           >
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center">
@@ -98,7 +98,7 @@ export default function CompareScreen() {
       <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3 mt-4">
         {t("detailByItem")}
       </Text>
-      <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-8">
+      <View className="bg-accent-card dark:bg-gray-900 rounded-xl p-4 mb-8 border border-hair">
         {/* Header row */}
         <View className="flex-row border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
           <Text className="flex-1 text-sm font-medium text-gray-500">

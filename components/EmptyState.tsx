@@ -5,8 +5,8 @@ import type { ComponentProps } from "react";
 type EmptyStateProps = ComponentProps<typeof SeahorseEmptyState>;
 
 export function EmptyState({
-  iconBgClassName = "bg-accent-blush",
-  iconColor = "#E8B4B8",
+  iconBgClassName = "bg-accent-clay-soft",
+  iconColor = "#b96a4a",
   ...props
 }: EmptyStateProps) {
   return (

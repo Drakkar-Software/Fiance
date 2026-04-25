@@ -9,6 +9,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { theme as GP } from "@/lib/theme";
 import type { InvitationTypeEntity } from "@/db/schema";
 
 function NeedsSleepingToggle({
@@ -33,8 +34,8 @@ function NeedsSleepingToggle({
         <Switch
           value={value}
           onValueChange={onChange}
-          trackColor={{ false: "#E5E7EB", true: "#FBCFE8" }}
-          thumbColor={value ? "#EC4899" : "#FFFFFF"}
+          trackColor={{ false: "#E5E7EB", true: GP.claySoft }}
+          thumbColor={value ? GP.clay : "#FFFFFF"}
         />
       </View>
       <Text className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-4">
@@ -105,7 +106,7 @@ export default function InvitationTypesScreen() {
   const needsSleepingDesc = t("needsSleepingDesc");
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       {invitationTypes.length === 0 && !showAdd ? (
         <EmptyState
           icon={Tag}
@@ -118,7 +119,7 @@ export default function InvitationTypesScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {/* Add form */}
           {showAdd && (
-            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newInvitationType")}
               </Text>
@@ -158,7 +159,7 @@ export default function InvitationTypesScreen() {
 
             if (editingId === type.id) {
               return (
-                <View key={type.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
+                <View key={type.id} className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
                   <Text className="text-sm text-gray-400 mb-2">{type.label}</Text>
                   <TextInput
                     className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2"
@@ -193,11 +194,11 @@ export default function InvitationTypesScreen() {
             }
 
             return (
-              <View key={type.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
+              <View key={type.id} className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
-                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
-                      <Tag size={15} color="#EC4899" />
+                    <View className="w-8 h-8 rounded-lg bg-accent-clay-soft dark:bg-primary-900 items-center justify-center mr-3">
+                      <Tag size={15} color={GP.clay} />
                     </View>
                     <View className="flex-1">
                       <Text className="text-base font-semibold text-gray-900 dark:text-white">{type.label}</Text>

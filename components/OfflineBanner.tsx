@@ -72,15 +72,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 999,
-    backgroundColor: "#374151",
+    backgroundColor: "#c9922f", // mustard — "warning" in Garden Press
     alignItems: "center",
     justifyContent: "flex-end",
     paddingBottom: 6,
   },
   text: {
-    color: "#F9FAFB",
+    color: "#fdfaf1", // card-cream on mustard
     fontSize: 12,
-    fontWeight: "500",
+    fontFamily: "Inter_500Medium",
     letterSpacing: 0.2,
   },
 });

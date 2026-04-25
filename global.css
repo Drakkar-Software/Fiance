@@ -13,45 +13,69 @@
 @source "./components/**/*.stories.{ts,tsx}";
 @source "./node_modules/@drakkar.software/seahorse/dist/**/*.js";
 
-/* Fiancé brand: accent palette (not in tailwind.config.js which TW4 ignores) */
+/* Garden Press design system — palette, fonts, tokens */
 @theme inline {
-  --color-accent-gold: #C9956B;
-  --color-accent-gold-light: #E8D5C0;
-  --color-accent-sage: #7B9A7B;
-  --color-accent-sage-light: #D5E5D0;
-  --color-accent-blush: #F2E0DA;
-  --color-accent-cream: #FBF7F2;
-  --color-accent-rose: #E8B4B8;
-  --color-accent-rose-light: #F5DDE0;
+  /* Core Garden Press accents */
+  --color-accent-clay:          #b96a4a;
+  --color-accent-clay-soft:     #efd9cd;
+  --color-accent-olive:         #6e7a4a;
+  --color-accent-olive-soft:    #dde3cc;
+  --color-accent-mustard:       #c9922f;
+  --color-accent-mustard-soft:  #f2e2bd;
+  --color-accent-paper:         #f2ece0;
+  --color-accent-card:          #fdfaf1;
+  --color-accent-postit:        #f5e6a8;
+  --color-accent-blue:          #6b8aa3;
+  --color-accent-blue-soft:     #d6e0e8;
+  --color-ink:                  #2a2418;
+  --color-ink-soft:             #4a4234;
+  --color-mute:                 #8a8373;
+  --color-hair:                 rgba(42,36,24,0.14);
+  --color-hair-strong:          rgba(42,36,24,0.24);
+
+  /* Deprecated aliases — kept so existing screens render until swept */
+  --color-accent-gold:          var(--color-accent-mustard);
+  --color-accent-gold-light:    var(--color-accent-mustard-soft);
+  --color-accent-sage:          var(--color-accent-olive);
+  --color-accent-sage-light:    var(--color-accent-olive-soft);
+  --color-accent-blush:         var(--color-accent-clay-soft);
+  --color-accent-cream:         var(--color-accent-paper);
+  --color-accent-rose:          var(--color-accent-clay);
+  --color-accent-rose-light:    var(--color-accent-clay-soft);
+
+  /* Garden Press type stack */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-script:  "Caveat", cursive;
+  --font-sans:    "Inter", -apple-system, system-ui, sans-serif;
 }
 
-/* Fiancé brand: override primary palette to pink */
+/* Garden Press primary palette — clay (warm rust-brown) */
 :root {
-  --color-primary-0: 255 245 251;
-  --color-primary-50: 253 242 248;
-  --color-primary-100: 252 231 243;
-  --color-primary-200: 251 207 232;
-  --color-primary-300: 249 168 212;
-  --color-primary-400: 244 114 182;
-  --color-primary-500: 236 72 153;
-  --color-primary-600: 219 39 119;
-  --color-primary-700: 190 24 93;
-  --color-primary-800: 157 23 77;
-  --color-primary-900: 131 24 67;
-  --color-primary-950: 80 7 36;
+  --color-primary-0:   251 244 239;
+  --color-primary-50:  248 233 224;
+  --color-primary-100: 240 213 197;
+  --color-primary-200: 230 184 158;
+  --color-primary-300: 216 152 121;
+  --color-primary-400: 199 124 92;
+  --color-primary-500: 185 106 74;
+  --color-primary-600: 161  87 60;
+  --color-primary-700: 132  68 47;
+  --color-primary-800: 104  53 37;
+  --color-primary-900:  79  39 27;
+  --color-primary-950:  48  22 16;
 }
 
 :root.dark {
-  --color-primary-0: 80 7 36;
-  --color-primary-50: 131 24 67;
-  --color-primary-100: 157 23 77;
-  --color-primary-200: 190 24 93;
-  --color-primary-300: 219 39 119;
-  --color-primary-400: 236 72 153;
-  --color-primary-500: 244 114 182;
-  --color-primary-600: 249 168 212;
-  --color-primary-700: 251 207 232;
-  --color-primary-800: 252 231 243;
-  --color-primary-900: 253 242 248;
-  --color-primary-950: 255 245 251;
+  --color-primary-0:    48  22 16;
+  --color-primary-50:   79  39 27;
+  --color-primary-100: 104  53 37;
+  --color-primary-200: 132  68 47;
+  --color-primary-300: 161  87 60;
+  --color-primary-400: 185 106 74;
+  --color-primary-500: 199 124 92;
+  --color-primary-600: 216 152 121;
+  --color-primary-700: 230 184 158;
+  --color-primary-800: 240 213 197;
+  --color-primary-900: 248 233 224;
+  --color-primary-950: 251 244 239;
 }

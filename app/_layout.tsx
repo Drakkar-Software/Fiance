@@ -1,6 +1,29 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";
+import { useFonts } from "expo-font";
+import {
+  Fraunces_300Light,
+  Fraunces_400Regular,
+  Fraunces_400Regular_Italic,
+  Fraunces_500Medium,
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+  // @ts-ignore — italic variants follow same naming pattern
+  Fraunces_500Medium_Italic,
+  Fraunces_600SemiBold_Italic,
+} from "@expo-google-fonts/fraunces";
+import {
+  Caveat_400Regular,
+  Caveat_500Medium,
+  Caveat_700Bold,
+} from "@expo-google-fonts/caveat";
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 import { Appearance, Platform, useColorScheme } from "react-native";
 
 // Apply dark class synchronously before React renders (prevents flash on web)
@@ -18,6 +41,7 @@ import { Stack, useSegments, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
+import { theme as GP } from "@/lib/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
@@ -129,6 +153,24 @@ const crashFallback = (
 );
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Fraunces_300Light,
+    Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Fraunces_500Medium,
+    Fraunces_500Medium_Italic,
+    Fraunces_600SemiBold,
+    Fraunces_600SemiBold_Italic,
+    Fraunces_700Bold,
+    Caveat_400Regular,
+    Caveat_500Medium,
+    Caveat_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
   const loadNotifications = useSettingsStore((s) => s.loadNotifications);
@@ -186,10 +228,10 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ForgeThemeProvider theme={{ colors: { primary: "#EC4899" } }}>
+        <ForgeThemeProvider theme={{ colors: { primary: GP.clay } }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
-          {locked === null || !analyticsReady ? (
+          {!fontsLoaded || locked === null || !analyticsReady ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" />
             </View>

@@ -136,7 +136,7 @@ export default function ExportImportScreen() {
   return (
     <>
       <ScrollView
-        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        className="flex-1 bg-accent-paper dark:bg-gray-950"
         showsVerticalScrollIndicator={false}
       >
         {/* PDF exports */}
@@ -144,22 +144,22 @@ export default function ExportImportScreen() {
           <SectionTitle>{t("pdfSection")}</SectionTitle>
           <FormCard>
             <ExportRow
-              icon={<FileText size={18} color="#EC4899" />}
+              icon={<FileText size={18} color="#b96a4a" />}
               label={t("exportGuestList")}
               onPress={() => handleExportPdf("guests")}
             />
             <ExportRow
-              icon={<FileText size={18} color="#EC4899" />}
+              icon={<FileText size={18} color="#b96a4a" />}
               label={t("exportBudget")}
               onPress={() => handleExportPdf("budget")}
             />
             <ExportRow
-              icon={<FileText size={18} color="#EC4899" />}
+              icon={<FileText size={18} color="#b96a4a" />}
               label={t("exportTimeline")}
               onPress={() => handleExportPdf("timeline")}
             />
             <ExportRow
-              icon={<FileText size={18} color="#EC4899" />}
+              icon={<FileText size={18} color="#b96a4a" />}
               label={t("exportVendors")}
               onPress={() => handleExportPdf("vendors")}
               last

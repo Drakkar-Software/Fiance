@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { theme as GP } from "@/lib/theme";
 import { Platform, View, useColorScheme } from "react-native";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -30,16 +31,16 @@ export default function TabLayout() {
   const tabs = (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#EC4899",
-        tabBarInactiveTintColor: isDark ? "#6B7280" : "#B0B0B8",
+        tabBarActiveTintColor: GP.clay,
+        tabBarInactiveTintColor: isDark ? GP.mute : "#a09585",
         tabBarStyle: !hasWedding ? { display: "none" } : {
-          backgroundColor: isDark ? "#111827" : "#FFFFFF",
-          borderTopColor: isDark ? "#1F2937" : "#F3F4F6",
+          backgroundColor: isDark ? GP.paperDark : GP.paper,
+          borderTopColor: isDark ? GP.hairStrong : GP.hair,
           borderTopWidth: 1,
           elevation: 0,
-          shadowColor: "#000",
+          shadowColor: GP.ink,
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.04,
+          shadowOpacity: 0.06,
           shadowRadius: 12,
           ...(Platform.OS === "ios" ? { paddingBottom: 0, height: 88 } : {}),
         },
@@ -47,13 +48,14 @@ export default function TabLayout() {
           fontSize: 11,
           fontWeight: "500",
           marginTop: -2,
+          fontFamily: "Inter_500Medium",
         },
         headerStyle: {
-          backgroundColor: isDark ? "#111827" : "#FFFFFF",
+          backgroundColor: isDark ? GP.paperDark : GP.paper,
         },
-        headerTintColor: isDark ? "#FFFFFF" : "#111827",
+        headerTintColor: isDark ? GP.inkDark : GP.ink,
         headerTitleStyle: {
-          fontWeight: "600",
+          fontFamily: "Fraunces_500Medium",
           fontSize: 17,
         },
       }}
@@ -171,9 +173,9 @@ function SyncSettingsIcon({ color, dotBorder }: { color: string; dotBorder: stri
   }, []);
 
   const dotColor =
-    syncStatus === "synced" ? "#10B981" :
+    syncStatus === "synced" ? GP.olive :
     syncStatus === "error" ? "#EF4444" :
-    syncStatus === "syncing" || syncStatus === "pending" ? "#F59E0B" :
+    syncStatus === "syncing" || syncStatus === "pending" ? GP.mustard :
     null;
 
   return (
