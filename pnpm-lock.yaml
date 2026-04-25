@@ -15,6 +15,9 @@ specifiers:
   '@drakkar.software/sunglasses-core': ^0.7.0
   '@drakkar.software/sunglasses-react-native': ^0.7.0
   '@drakkar.software/sunglasses-storage-async-storage': ^0.7.0
+  '@expo-google-fonts/caveat': ^0.3.0
+  '@expo-google-fonts/fraunces': ^0.3.0
+  '@expo-google-fonts/inter': ^0.3.0
   '@expo/html-elements': ^55.0.3
   '@expo/log-box': 55.0.10
   '@gorhom/bottom-sheet': ^5.2.9
@@ -101,6 +104,9 @@ dependencies:
   '@drakkar.software/sunglasses-core': 0.7.0
   '@drakkar.software/sunglasses-react-native': 0.7.0_a1f48b2da1e8069012cfbb8542a4bcdc
   '@drakkar.software/sunglasses-storage-async-storage': 0.7.0_a20128f7da3967792562aa04ed7a086d
+  '@expo-google-fonts/caveat': 0.3.0
+  '@expo-google-fonts/fraunces': 0.3.1
+  '@expo-google-fonts/inter': 0.3.0
   '@expo/html-elements': 55.0.3_508cc241f94123043423c9a0ef98e530
   '@expo/log-box': 55.0.10_4a4e258826428e0609ba6dd8832c630b
   '@gorhom/bottom-sheet': 5.2.9_ee9605653680c89ed372a50e860b4ce4
@@ -1704,6 +1710,18 @@ packages:
       '@eslint/core': 0.17.0
       levn: 0.4.1
     dev: true
+
+  /@expo-google-fonts/caveat/0.3.0:
+    resolution: {integrity: sha512-dI8MlGLq8Z1bCa5I4jdGxQfwzGuI0rw/9b+FdpY1YhRBAtDtQa+oAUOqvRvQrxs2TMIlJaPHkhtitxRXOW+vpg==}
+    dev: false
+
+  /@expo-google-fonts/fraunces/0.3.1:
+    resolution: {integrity: sha512-++IcwRvdnV/Qse4YcDnxTN2iOSTO5cpm0n6gXZUVQAu+c2YCm6A+3mY6u4N16o8mNcNdNas1yZ9la9EEqkMDSA==}
+    dev: false
+
+  /@expo-google-fonts/inter/0.3.0:
+    resolution: {integrity: sha512-x77HsdpizmZFNZ8nMd7hsNah/MyxhLmihZQEyIkB473jskBcXIpsyf+tVVLXvXEhtnpGx8zZ2XAe9u+i0qvIEw==}
+    dev: false
 
   /@expo-google-fonts/material-symbols/0.4.28:
     resolution: {integrity: sha512-59qFO6w4W/wUZ6VuYfN1wtgyk4zFJspbKOdHYISMeDa2H4apZKY0Ab7K5ouee+C+s3/VfAp6tLK7ov+PsENhKw==}

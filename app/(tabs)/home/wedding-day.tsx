@@ -119,9 +119,9 @@ export default function WeddingDayScreen() {
                     <Text style={[styles.itemTitle, isActive && { color: "#fff" }]}>
                       {item.title}
                     </Text>
-                    {item.note ? (
+                    {item.notes ? (
                       <Text style={[styles.itemNote, isActive && { opacity: 0.8 }]}>
-                        {item.note}
+                        {item.notes}
                       </Text>
                     ) : null}
                   </View>
