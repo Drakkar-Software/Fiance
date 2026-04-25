@@ -71,3 +71,16 @@ const manifest = {
 const manifestPath = path.join(__dirname, "..", "dist", "manifest.json");
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 console.log("manifest.json generated from translations into dist/manifest.json");
+
+// Cloudflare Pages excludes directories starting with "." from deployment.
+// Font TTFs land in dist/assets/node_modules/.pnpm/ — rename to drop the dot,
+// then prepend a rewrite rule so bundle requests still resolve correctly.
+const dotPnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", ".pnpm");
+const pnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", "pnpm");
+if (fs.existsSync(dotPnpmPath)) {
+  fs.renameSync(dotPnpmPath, pnpmPath);
+  const redirectsPath = path.join(__dirname, "..", "dist", "_redirects");
+  const existing = fs.readFileSync(redirectsPath, "utf8");
+  fs.writeFileSync(redirectsPath, "/assets/node_modules/.pnpm/* /assets/node_modules/pnpm/:splat 200\n" + existing);
+  console.log("Font assets: renamed .pnpm → pnpm, prepended rewrite rule to _redirects");
+}
