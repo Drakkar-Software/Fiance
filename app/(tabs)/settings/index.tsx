@@ -250,7 +250,6 @@ export default function SettingsScreen() {
             title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
             titleSize={28}
             style={{ paddingHorizontal: 0, paddingTop: 0 }}
-            safeAreaTop
           />
         </View>
         <Postit angle={-3} style={{ marginTop: 2 }}>{t("postit")}</Postit>

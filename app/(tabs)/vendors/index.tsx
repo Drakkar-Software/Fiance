@@ -60,7 +60,6 @@ export default function VendorsListScreen() {
         title={bookedVendors.length}
         tagline={t("pageTagline", { total: vendors.length })}
         titleSize={44}
-        safeAreaTop
       />
       {vendors.length > 0 && (
         <View className="px-4 pb-2">
