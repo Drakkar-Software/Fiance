@@ -106,7 +106,7 @@ export default function InvitationTypesScreen() {
   const needsSleepingDesc = t("needsSleepingDesc");
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       {invitationTypes.length === 0 && !showAdd ? (
         <EmptyState
           icon={Tag}
@@ -119,7 +119,7 @@ export default function InvitationTypesScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {/* Add form */}
           {showAdd && (
-            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newInvitationType")}
               </Text>
@@ -159,7 +159,7 @@ export default function InvitationTypesScreen() {
 
             if (editingId === type.id) {
               return (
-                <View key={type.id} className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
+                <View key={type.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
                   <Text className="text-sm text-gray-400 mb-2">{type.label}</Text>
                   <TextInput
                     className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2"
@@ -194,7 +194,7 @@ export default function InvitationTypesScreen() {
             }
 
             return (
-              <View key={type.id} className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
+              <View key={type.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
                     <View className="w-8 h-8 rounded-lg bg-accent-clay-soft dark:bg-primary-900 items-center justify-center mr-3">

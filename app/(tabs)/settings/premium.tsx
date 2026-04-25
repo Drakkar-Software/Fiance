@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Cloud, Users, Globe, BadgeCheck } from "lucide-react-native";
+import { Display } from "@/components/Display";
 import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduct, refreshEntitlements } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -82,7 +83,7 @@ export default function PremiumScreen() {
   })();
 
   return (
-    <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-accent-paper" showsVerticalScrollIndicator={false}>
       <View className="px-6 pt-8 pb-12">
 
         {/* Hero */}
@@ -90,9 +91,9 @@ export default function PremiumScreen() {
           <View className="w-20 h-20 rounded-3xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-4">
             <Sparkles size={36} color="#b96a4a" />
           </View>
-          <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
+          <Display size={26} italic style={{ textAlign: "center", marginBottom: 8 }}>
             {t("premiumTitle")}
-          </Text>
+          </Display>
           <Text className="text-base text-gray-500 dark:text-gray-400 text-center leading-6">
             {t("premiumPitch")}
           </Text>

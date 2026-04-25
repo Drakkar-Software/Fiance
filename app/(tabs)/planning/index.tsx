@@ -58,7 +58,7 @@ export default function PlanningScreen() {
   }, [params.aspect]);
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
         activeKey={aspect}
@@ -257,7 +257,7 @@ function PreparationView() {
             </Pressable>
             <Pressable
               onPress={handleGenerateTemplate}
-              className="bg-accent-card dark:bg-gray-900 border border-primary-300 dark:border-primary-700 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80"
+              className="bg-accent-card border border-primary-300 dark:border-primary-700 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80"
             >
               <Sparkles size={16} color="#b96a4a" />
               <Text className="text-primary-500 font-semibold text-sm">{t("generatePlanning")}</Text>
@@ -402,7 +402,7 @@ function AgendaView() {
                         params: { id: event.id },
                       })
                     }
-                    className={`bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+                    className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
                       isPast
                         ? "border-gray-100 dark:border-gray-800 opacity-60"
                         : "border-gray-100 dark:border-gray-800"
@@ -617,7 +617,7 @@ function DayOfTimelineCard({
       showConnector={showConnector}
       onPress={onPress}
     >
-      <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-medium text-gray-900 dark:text-white">
           {item.title}
         </Text>
@@ -669,7 +669,7 @@ function TaskCard({
   return (
     <Pressable
       onPress={onPress}
-      className={`bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+      className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
         isOverdue
           ? "border-red-200 dark:border-red-800"
           : "border-gray-100 dark:border-gray-800"

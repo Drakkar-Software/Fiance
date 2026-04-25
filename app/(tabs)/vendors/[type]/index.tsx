@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { formatMoney } from "@/components/MoneyDisplay";
+import { Display } from "@/components/Display";
 
 export default function VendorTypeListScreen() {
   const { t } = useTranslation("vendors");
@@ -68,9 +69,9 @@ export default function VendorTypeListScreen() {
                 />
               </View>
               {(vendor.basePrice != null && vendor.basePrice > 0) && (
-                <Text className="text-lg font-bold text-gray-900 dark:text-white mt-2">
+                <Display size={18} weight="500" style={{ marginTop: 8 }}>
                   {formatMoney(vendor.basePrice)}
-                </Text>
+                </Display>
               )}
             </Pressable>
           ))}

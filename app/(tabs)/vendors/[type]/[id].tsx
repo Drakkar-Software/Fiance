@@ -18,6 +18,7 @@ import { analytics } from "@/lib/analytics";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow, ChipSelect } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
+import { Display } from "@/components/Display";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { StatusSelector } from "@/components/StatusSelector";
 import type { Vendor, VendorPayment } from "@/db/schema";
@@ -346,7 +347,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       {/* Total */}
       <View className="bg-primary-50 dark:bg-primary-950 rounded-2xl p-4 mb-3 flex-row items-center justify-between border border-primary-100 dark:border-primary-900">
         <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">{t("totalPaid")}</Text>
-        <Text className="text-xl font-bold text-primary-500">{totalPaid.toFixed(2)} €</Text>
+        <Display size={22} weight="500" color="#b96a4a">{totalPaid.toFixed(2)} €</Display>
       </View>
 
       {/* Payments list */}

@@ -123,7 +123,7 @@ export default function IdeasScreen() {
     : null;
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <SearchBar
         value={search}
         onChangeText={setSearch}

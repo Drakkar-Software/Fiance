@@ -108,11 +108,11 @@ export default function BudgetScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-accent-paper dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
       {/* Global summary */}
-      <View className="bg-accent-card dark:bg-gray-900 mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             {t("globalBudget")}
@@ -187,7 +187,7 @@ export default function BudgetScreen() {
       </View>
 
       {/* Deposits summary */}
-      <View className="bg-accent-card dark:bg-gray-900 mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
           {t("deposits")}
         </Text>
@@ -314,7 +314,7 @@ export default function BudgetScreen() {
                 onPress={() =>
                   setExpandedCategory(isExpanded ? null : cat.categoryName)
                 }
-                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">

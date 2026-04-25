@@ -153,7 +153,7 @@ function DashboardScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-accent-paper dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
       {/* Header / Countdown */}
@@ -222,7 +222,7 @@ function DashboardScreen() {
       <View className="flex-row px-4 gap-2 -mt-5 mb-3">
         <Pressable
           onPress={() => router.push("/(tabs)/guests")}
-          className="flex-1 bg-accent-card dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
         >
           <Users size={18} color={GP.clay} />
           <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
@@ -231,7 +231,7 @@ function DashboardScreen() {
         </Pressable>
         <Pressable
           onPress={() => router.push("/(tabs)/planning")}
-          className="flex-1 bg-accent-card dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
         >
           <Calendar size={18} color="#F59E0B" />
           <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
@@ -240,7 +240,7 @@ function DashboardScreen() {
         </Pressable>
         <Pressable
           onPress={() => router.push("/(tabs)/budget")}
-          className="flex-1 bg-accent-card dark:bg-gray-900 rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
         >
           <PieChart size={18} color="#10B981" />
           <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
@@ -289,7 +289,7 @@ function DashboardScreen() {
         {canInstall && (
           <Pressable
             onPress={install}
-            className="bg-accent-card dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
           >
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
@@ -304,7 +304,7 @@ function DashboardScreen() {
 
         {/* PWA install banner — iOS Safari */}
         {isIosSafari && (
-          <View className="bg-accent-card dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center">
+          <View className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center">
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
             </View>
@@ -321,7 +321,7 @@ function DashboardScreen() {
         {/* Budget summary card */}
         <Pressable
           onPress={() => router.push("/(tabs)/budget")}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
@@ -370,10 +370,10 @@ function DashboardScreen() {
                 {t("guests")}
               </Text>
             </View>
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+            <Display size={36} weight="400">
               {counts.accepted}
-              <Text className="text-lg text-gray-300 font-normal">/{counts.total}</Text>
-            </Text>
+              <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>/{counts.total}</Text>
+            </Display>
             <Text className="text-xs text-gray-400 mt-1">{t("confirmed")}</Text>
             {counts.no_table_count > 0 && (
               <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
@@ -395,10 +395,10 @@ function DashboardScreen() {
                 {t("planning")}
               </Text>
             </View>
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+            <Display size={36} weight="400">
               {completionRate}
-              <Text className="text-lg text-gray-300 font-normal">%</Text>
-            </Text>
+              <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>%</Text>
+            </Display>
             <Text className="text-xs text-gray-400 mt-1">{t("completed")}</Text>
             {overdueTasks.length > 0 && (
               <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
@@ -415,7 +415,7 @@ function DashboardScreen() {
           <Pressable
             onPress={handleRsvpSync}
             disabled={syncing}
-            className="bg-accent-card dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
           >
             <View className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900 items-center justify-center mr-3">
               {syncing ? (
@@ -439,7 +439,7 @@ function DashboardScreen() {
         {/* Vendors summary */}
         <Pressable
           onPress={() => router.push("/(tabs)/vendors")}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center mb-3">
             <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
@@ -476,7 +476,7 @@ function DashboardScreen() {
         {/* Inspirations */}
         <Pressable
           onPress={() => router.push("/(tabs)/ideas")}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+          className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
         >
           <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center mr-3">
             <Sparkles size={20} color="#A855F7" />
@@ -491,7 +491,7 @@ function DashboardScreen() {
         {/* Next appointments */}
         <Pressable
           onPress={() => router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
@@ -511,9 +511,9 @@ function DashboardScreen() {
                   key={event.id}
                   left={
                     <>
-                      <Text className="text-lg font-bold text-primary-500">
+                      <Display size={20} weight="500" color="#b96a4a">
                         {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
-                      </Text>
+                      </Display>
                       <Text className="text-xs text-gray-400 capitalize">
                         {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                       </Text>
@@ -555,7 +555,7 @@ function DashboardScreen() {
         {/* Next tasks */}
         <Pressable
           onPress={() => router.push("/(tabs)/planning")}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
@@ -610,9 +610,9 @@ function StatPill({
 }) {
   return (
     <View className="flex-1 items-center">
-      <Text className="text-xl font-bold" style={{ color }}>
+      <Display size={22} weight="500" color={color}>
         {value}
-      </Text>
+      </Display>
       <Text className="text-[11px] text-gray-400 mt-0.5">{label}</Text>
     </View>
   );

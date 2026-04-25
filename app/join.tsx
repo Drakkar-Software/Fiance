@@ -3,6 +3,7 @@ import { View, Text, Pressable, ActivityIndicator } from "react-native-css/compo
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
+import { Display } from "@/components/Display";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken } from "@/lib/identity";
 
@@ -107,9 +108,9 @@ function InvalidInvite() {
         <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900 items-center justify-center mb-5">
           <AlertCircle size={36} color="#EF4444" />
         </View>
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+        <Display size={26} italic style={{ textAlign: "center" }}>
           {t("onboarding.inviteFailed")}
-        </Text>
+        </Display>
       </View>
       <Pressable
         onPress={() => router.replace("/")}
@@ -142,9 +143,9 @@ function ConfirmJoin({
         <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
           <Heart size={36} color="#b96a4a" />
         </View>
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+        <Display size={26} italic style={{ textAlign: "center" }}>
           {t("join.newWedding")}
-        </Text>
+        </Display>
         <Text className="text-base text-gray-400 mt-2 text-center">
           {t("join.alreadyHaveWedding")}{"\n"}
           {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}

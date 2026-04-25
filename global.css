@@ -78,4 +78,13 @@
   --color-primary-800: 240 213 197;
   --color-primary-900: 248 233 224;
   --color-primary-950: 251 244 239;
+
+  /* Garden Press warm dark surfaces */
+  --color-accent-paper:  #1a1510;
+  --color-accent-card:   #231e17;
+  --color-ink:           #f4ecd8;
+  --color-ink-soft:      #c8b89a;
+  --color-mute:          #9a9080;
+  --color-hair:          rgba(244,236,216,0.12);
+  --color-hair-strong:   rgba(244,236,216,0.22);
 }

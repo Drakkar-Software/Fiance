@@ -10,6 +10,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow } from "@/components/FormSection";
+import { Display } from "@/components/Display";
 import type { Accommodation } from "@/db/schema";
 
 type FormState = {
@@ -145,15 +146,15 @@ export default function AccommodationsScreen() {
           {totalRooms > 0 && (
             <View className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 mb-4 border border-gray-100 dark:border-gray-800 flex-row justify-around">
               <View className="items-center">
-                <Text className="text-lg font-bold text-gray-900 dark:text-white">{totalRooms}</Text>
+                <Display size={22} weight="400">{totalRooms}</Display>
                 <Text className="text-xs text-gray-400">{t("roomCount")}</Text>
               </View>
               <View className="items-center">
-                <Text className="text-lg font-bold text-primary-500">{assignedCount}</Text>
+                <Display size={22} weight="400" color="#b96a4a">{assignedCount}</Display>
                 <Text className="text-xs text-gray-400">{t("confirmed")}</Text>
               </View>
               <View className="items-center">
-                <Text className={`text-lg font-bold ${remaining < 0 ? "text-red-500" : remaining === 0 ? "text-amber-500" : "text-green-500"}`}>{remaining}</Text>
+                <Display size={22} weight="400" color={remaining < 0 ? "#EF4444" : remaining === 0 ? "#F59E0B" : "#10B981"}>{remaining}</Display>
                 <Text className="text-xs text-gray-400">{t("remaining")}</Text>
               </View>
             </View>

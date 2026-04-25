@@ -136,7 +136,7 @@ export default function ExportImportScreen() {
   return (
     <>
       <ScrollView
-        className="flex-1 bg-accent-paper dark:bg-gray-950"
+        className="flex-1 bg-accent-paper"
         showsVerticalScrollIndicator={false}
       >
         {/* PDF exports */}

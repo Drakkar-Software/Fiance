@@ -162,7 +162,7 @@ export default function GuestDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew

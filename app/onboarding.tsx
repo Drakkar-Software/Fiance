@@ -282,9 +282,9 @@ function JoinWeddingForm({
           <ArrowLeft size={24} color="#9CA3AF" />
         </Pressable>
 
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <Display size={28} italic style={{ marginBottom: 8 }}>
           {t("onboarding.joinTitle")}
-        </Text>
+        </Display>
 
         <Pressable
           onPress={() => setScanning(true)}

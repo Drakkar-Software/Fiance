@@ -50,7 +50,7 @@ export default function FaqScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-accent-paper dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-4">
@@ -62,7 +62,7 @@ export default function FaqScreen() {
         {faqItems.map((item, index) => (
           <View
             key={index}
-            className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+            className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center justify-between mb-2">
               <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -106,7 +106,7 @@ export default function FaqScreen() {
 
         <Pressable
           onPress={addItem}
-          className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
         >
           <Plus size={20} color="#9CA3AF" />
           <Text className="text-base font-medium text-gray-500 dark:text-gray-400 ml-2">

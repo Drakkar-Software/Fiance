@@ -9,6 +9,8 @@ import type { PricingKey } from "@/db/types";
 import { RatingStars } from "@/components/RatingStars";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { ProgressBar } from "@/components/ProgressBar";
+import { Display } from "@/components/Display";
+import { Label } from "@/components/Label";
 
 export default function CompareScreen() {
   const { t } = useTranslation("vendors");
@@ -46,7 +48,7 @@ export default function CompareScreen() {
 
   if (caterers.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center bg-accent-paper dark:bg-gray-950">
+      <View className="flex-1 items-center justify-center bg-accent-paper">
         <Text className="text-gray-500">
           {t("addAtLeast2")}
         </Text>
@@ -55,17 +57,15 @@ export default function CompareScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950 px-4 pt-4">
+    <ScrollView className="flex-1 bg-accent-paper px-4 pt-4">
       {/* Score cards */}
-      <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-        {t("scores")}
-      </Text>
+      <Display size={20} italic style={{ marginBottom: 12 }}>{t("scores")}</Display>
       {caterers
         .sort((a, b) => b.score - a.score)
         .map((c, idx) => (
           <View
             key={c.vendor.id}
-            className="bg-accent-card dark:bg-gray-900 rounded-xl p-4 mb-3 border border-hair"
+            className="bg-accent-card rounded-xl p-4 mb-3 border border-hair"
           >
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center">
@@ -76,18 +76,16 @@ export default function CompareScreen() {
                   {c.vendor.name}
                 </Text>
               </View>
-              <Text className="text-2xl font-bold text-primary-500">
+              <Display size={26} weight="500" color="#b96a4a">
                 {c.score}
-                <Text className="text-sm text-gray-400">/100</Text>
-              </Text>
+                <Text style={{ fontSize: 13, color: "#9CA3AF", fontFamily: "Inter_400Regular" }}>/100</Text>
+              </Display>
             </View>
             <ProgressBar value={c.score} max={100} showPercentage={false} />
             <View className="flex-row justify-between mt-3">
               <View>
                 <Text className="text-sm text-gray-500">{t("estimatedTotal")}</Text>
-                <Text className="text-lg font-bold text-gray-900 dark:text-white">
-                  {formatMoney(c.total)}
-                </Text>
+                <Display size={18} weight="500">{formatMoney(c.total)}</Display>
               </View>
               <RatingStars rating={c.vendor.rating || 0} size={16} />
             </View>
@@ -95,10 +93,8 @@ export default function CompareScreen() {
         ))}
 
       {/* Price comparison table */}
-      <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3 mt-4">
-        {t("detailByItem")}
-      </Text>
-      <View className="bg-accent-card dark:bg-gray-900 rounded-xl p-4 mb-8 border border-hair">
+      <Display size={20} italic style={{ marginBottom: 12, marginTop: 16 }}>{t("detailByItem")}</Display>
+      <View className="bg-accent-card rounded-xl p-4 mb-8 border border-hair">
         {/* Header row */}
         <View className="flex-row border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
           <Text className="flex-1 text-sm font-medium text-gray-500">

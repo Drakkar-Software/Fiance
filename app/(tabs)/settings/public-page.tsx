@@ -154,7 +154,7 @@ export default function PublicPageScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-accent-paper dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
       {/* Wedding info */}

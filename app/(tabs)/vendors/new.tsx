@@ -22,7 +22,7 @@ export default function NewVendorPickerScreen() {
   };
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen options={{ title: "Nouveau prestataire" }} />
       <ScrollView
         className="flex-1 px-4 pt-4"

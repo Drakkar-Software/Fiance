@@ -7,7 +7,7 @@ export default function CategoriesScreen() {
   const tasks = usePlanningStore((s) => s.tasks);
 
   return (
-    <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950 px-4 pt-4">
+    <ScrollView className="flex-1 bg-accent-paper px-4 pt-4">
       {categories.map((cat) => {
         const catTasks = tasks.filter((t) => t.categoryId === cat.id);
         const done = catTasks.filter((t) => t.status === "DONE").length;
@@ -15,7 +15,7 @@ export default function CategoriesScreen() {
         return (
           <View
             key={cat.id}
-            className="bg-accent-card dark:bg-gray-900 rounded-xl p-4 mb-3 border border-hair"
+            className="bg-accent-card rounded-xl p-4 mb-3 border border-hair"
           >
             <View className="flex-row items-center">
               <View

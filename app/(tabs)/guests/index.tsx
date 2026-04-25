@@ -34,7 +34,7 @@ export default function GuestsListScreen() {
   const [aspect, setAspect] = useState<InviteAspect>("guests");
 
   return (
-    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },
@@ -75,7 +75,7 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
           params: { id: guest.id },
         })
       }
-      className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
       <View className="flex-row items-center">
         <View className="mr-3">
@@ -233,7 +233,7 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "bg-primary-500 border-primary-500"
-                  : "bg-accent-card dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
@@ -256,7 +256,7 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
-                  : "bg-accent-card dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
@@ -386,7 +386,7 @@ function GroupsView() {
         >
           {/* Add group form */}
           {showAdd && (
-            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newGroup")}
               </Text>
@@ -422,7 +422,7 @@ function GroupsView() {
             return (
               <View
                 key={group.id}
-                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
               >
                 {/* Group header */}
                 <View className="flex-row items-center justify-between mb-2">
@@ -607,7 +607,7 @@ function TablesView() {
 
           {/* Add table form */}
           {showAdd && (
-            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newTable")}
               </Text>
@@ -653,7 +653,7 @@ function TablesView() {
             return (
               <View
                 key={table.id}
-                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
               >
                 {/* Table header */}
                 <View className="flex-row items-center justify-between mb-2">

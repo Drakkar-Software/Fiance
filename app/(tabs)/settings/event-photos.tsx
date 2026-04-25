@@ -64,7 +64,7 @@ export default function EventPhotosScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-accent-paper dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-4">
@@ -75,7 +75,7 @@ export default function EventPhotosScreen() {
 
         {photos.length === 0 ? (
           <>
-            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-8 mb-3 border border-gray-100 dark:border-gray-800 items-center">
+            <View className="bg-accent-card rounded-2xl p-8 mb-3 border border-gray-100 dark:border-gray-800 items-center">
               <Camera size={40} color="#D1D5DB" />
               <Text className="text-base font-medium text-gray-400 mt-3">
                 {t("eventPhotosEmpty")}
@@ -86,7 +86,7 @@ export default function EventPhotosScreen() {
             </View>
             <Pressable
               onPress={handleAdd}
-              className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
             >
               <Plus size={20} color="#9CA3AF" />
               <Text className="text-base font-medium text-gray-500 dark:text-gray-400 ml-2">
