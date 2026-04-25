@@ -24,6 +24,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { SearchBar } from "@/components/SearchBar";
+import { Avatar } from "@/components/Avatar";
 import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
@@ -77,11 +78,8 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
       className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
       <View className="flex-row items-center">
-        <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
-          <Text className="text-primary-500 font-bold text-sm">
-            {guest.firstName[0]}
-            {guest.lastName[0]}
-          </Text>
+        <View className="mr-3">
+          <Avatar ini={`${guest.firstName[0]}${guest.lastName[0]}`} size={40} />
         </View>
         <View className="flex-1">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">

@@ -36,6 +36,8 @@ import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
 import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
+import { Display } from "@/components/Display";
+import { Postit } from "@/components/Postit";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -233,8 +235,16 @@ export default function SettingsScreen() {
       className="flex-1 bg-accent-paper dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
+      {/* Page header */}
+      <View className="px-4 pt-5 pb-3 flex-row items-start">
+        <Display size={28} italic style={{ flex: 1 }}>
+          {t("title")}
+        </Display>
+        <Postit angle={-3} style={{ marginTop: 2 }}>{t("postit")}</Postit>
+      </View>
+
       {/* Premium */}
-      <View className="px-4 pt-4">
+      <View className="px-4 pt-2">
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
