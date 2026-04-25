@@ -363,8 +363,8 @@ function DashboardScreen() {
             className="flex-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center mr-2.5">
-                <Users size={16} color="#E8B4B8" />
+              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2.5">
+                <Users size={16} color="#b96a4a" />
               </View>
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">
                 {t("guests")}
