@@ -1,22 +1,24 @@
 import React from "react";
 import Svg, { Path, Ellipse } from "react-native-svg";
+import type { ViewStyle } from "react-native";
 import { theme as GP } from "@/lib/theme";
 
 type Props = {
   size?: number;
   color?: string;
   angle?: number;
+  style?: ViewStyle;
 };
 
 /** Leafy SVG sprig — decorative Garden Press motif (one per hero card). */
-export function Sprig({ size = 20, color, angle = 0 }: Props) {
+export function Sprig({ size = 20, color, angle = 0, style }: Props) {
   const c = color ?? GP.olive;
   return (
     <Svg
       width={size}
       height={size * 1.6}
       viewBox="0 0 20 32"
-      style={{ transform: [{ rotate: `${angle}deg` }] }}
+      style={[{ transform: [{ rotate: `${angle}deg` }] }, style]}
     >
       <Path d="M10 30 L10 6" stroke={c} strokeWidth="1" strokeLinecap="round" />
       <Path d="M10 22 Q 5 18, 3 13" fill="none" stroke={c} strokeWidth="1" />
