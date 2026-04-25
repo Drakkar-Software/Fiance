@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Label } from "@/components/Label";
 import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -30,9 +31,9 @@ export default function NewVendorPickerScreen() {
       >
         {Object.entries(BUDGET_CATEGORIES).map(([category, types]) => (
           <View key={category} className="mb-5">
-            <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+            <Label size={10} color="#9CA3AF" style={{ marginBottom: 8, marginLeft: 4 }}>
               {t(BUDGET_CATEGORY_LABELS[category])}
-            </Text>
+            </Label>
             <View className="flex-row flex-wrap" style={{ gap: 10 }}>
               {types.map((type) => {
                 const Icon = VENDOR_TYPE_ICONS[type];

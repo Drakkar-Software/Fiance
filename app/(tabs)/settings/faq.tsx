@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { FaqItem } from "@/lib/public-page";
 import { SectionTitle } from "@/components/FormSection";
+import { Label } from "@/components/Label";
 
 export default function FaqScreen() {
   const { t } = useTranslation("settings");
@@ -65,9 +66,9 @@ export default function FaqScreen() {
             className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <Label size={10} color="#9CA3AF">
                 {t("faqItemLabel", { index: index + 1 })}
-              </Text>
+              </Label>
               <Pressable
                 onPress={() => removeItem(index)}
                 className="w-8 h-8 items-center justify-center rounded-lg active:opacity-60"

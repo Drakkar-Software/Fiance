@@ -24,6 +24,7 @@ import {
   InputRow,
   DateRow,
 } from "@/components/FormSection";
+import { Display } from "@/components/Display";
 
 export default function PublicPageScreen() {
   const router = useRouter();
@@ -347,7 +348,7 @@ function PreviewTimelineCard({ item, idx, total, router, t }: {
 }) {
   return (
     <TimelineItem
-      left={<Text className="text-sm font-bold text-primary-500 mt-3.5">{item.time}</Text>}
+      left={<Display size={14} weight="500" color="#b96a4a" style={{ marginTop: 14 }}>{item.time}</Display>}
       showConnector={idx < total - 1}
       onPress={() => router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: item.id } })}
     >

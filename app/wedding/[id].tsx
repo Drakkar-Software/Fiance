@@ -263,7 +263,7 @@ export default function WeddingPublicPage() {
                       }
                       showConnector={idx < dateItems.length - 1}
                     >
-                      <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
+                      <View className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
                         <Text className="text-base font-semibold text-gray-900">
                           {item.title}
                         </Text>
@@ -314,8 +314,8 @@ export default function WeddingPublicPage() {
             {faq.map((item, index) => (
               <View
                 key={index}
-                className="bg-white rounded-2xl p-4 mb-3 shadow-sm"
-                style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+                className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm"
+                style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
               >
                 <Text className="text-base font-semibold text-gray-900">
                   {item.question}
@@ -348,8 +348,8 @@ export default function WeddingPublicPage() {
               <Pressable
                 key={gift.id}
                 onPress={gift.url ? () => Linking.openURL(gift.url!) : undefined}
-                className="bg-white rounded-2xl p-4 mb-3 shadow-sm"
-                style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+                className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm"
+                style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
               >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1">
@@ -387,7 +387,7 @@ export default function WeddingPublicPage() {
             </View>
 
             {submitted ? (
-              <View className="bg-white rounded-2xl p-6 items-center shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
+              <View className="bg-accent-card rounded-2xl p-6 items-center shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
                 <View className="w-16 h-16 rounded-full bg-green-50 items-center justify-center mb-3">
                   <CheckCircle2 size={40} color="#10B981" />
                 </View>
@@ -397,7 +397,7 @@ export default function WeddingPublicPage() {
                 </Text>
               </View>
             ) : (
-              <View className="bg-white rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
+              <View className="bg-accent-card rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
                 {!selectedGuest ? (
                   <>
                     <Text className="text-sm text-gray-500 mb-2">{t("rsvpSearch")}</Text>
@@ -611,8 +611,8 @@ export default function WeddingPublicPage() {
               </Display>
             </View>
             <View
-              className="bg-white rounded-2xl p-6 items-center shadow-sm"
-              style={{ shadowColor: "#E8B4B8", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+              className="bg-accent-card rounded-2xl p-6 items-center shadow-sm"
+              style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
             >
               <Camera size={40} color="#E8D5C0" />
               <Text className="text-sm text-gray-400 text-center mt-3 leading-5">
