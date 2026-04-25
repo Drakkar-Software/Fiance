@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   Users, AlertTriangle, LayoutGrid,
   Trash2, FolderOpen, Map as MapIcon,
+  BedDouble, Tag,
 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -26,24 +27,37 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
 import { PageHeader } from "@/components/PageHeader";
+import { StackMenu } from "@/components/StackMenu";
 import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
 
 export default function GuestsListScreen() {
   const { t } = useTranslation("guests");
+  const router = useRouter();
   const [aspect, setAspect] = useState<InviteAspect>("guests");
   const guests = useGuestsStore((s) => s.guests);
   const counts = useMemo(() => computeCounts(guests), [guests]);
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <PageHeader
-        eyebrow={t("common:tabs.guests")}
-        title={counts.total}
-        tagline={t("pageTagline")}
-        titleSize={48}
-      />
+      <View style={{ position: "relative" }}>
+        <PageHeader
+          eyebrow={t("common:tabs.guests")}
+          title={counts.total}
+          tagline={t("pageTagline")}
+          titleSize={48}
+          safeAreaTop
+        />
+        <View style={{ position: "absolute", top: 8, right: 8 }}>
+          <StackMenu
+            items={[
+              { label: t("accommodations"), icon: BedDouble, onPress: () => router.push("/(tabs)/guests/accommodations") },
+              { label: t("invitationTypesScreen"), icon: Tag, onPress: () => router.push("/(tabs)/guests/invitation-types") },
+            ]}
+          />
+        </View>
+      </View>
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },

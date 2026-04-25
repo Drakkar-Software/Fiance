@@ -72,6 +72,7 @@ export default function PlanningScreen() {
         title={t(`aspects.${aspect}`)}
         titleSize={22}
         right={overdueCount > 0 ? <Script size={16} color="#EF4444">{t("overdueCount", { count: overdueCount })}</Script> : undefined}
+        safeAreaTop
       />
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}

@@ -131,6 +131,7 @@ export default function IdeasScreen() {
         title={t("collectionCount", { count: collections.length })}
         titleSize={22}
         right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
+        safeAreaTop
       />
       <SearchBar
         value={search}
