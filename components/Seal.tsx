@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, type ViewStyle } from "react-native";
 import { theme as GP } from "@/lib/theme";
 
 type Props = {
@@ -9,14 +9,15 @@ type Props = {
   color?: string;
   bg?: string;
   angle?: number;
+  style?: ViewStyle;
 };
 
 /** Circular stamp badge — used for status (e.g. "✓ booked", "✨ seed"). */
-export function Seal({ label, sublabel, size = 44, color, bg, angle = -8 }: Props) {
+export function Seal({ label, sublabel, size = 44, color, bg, angle = -8, style }: Props) {
   const c = color ?? GP.olive;
   return (
     <View
-      style={{
+      style={[{
         width: size,
         height: size,
         borderRadius: size / 2,
@@ -26,7 +27,7 @@ export function Seal({ label, sublabel, size = 44, color, bg, angle = -8 }: Prop
         alignItems: "center",
         justifyContent: "center",
         transform: [{ rotate: `${angle}deg` }],
-      }}
+      }, style]}
     >
       <Text style={{ fontFamily: "Caveat_700Bold", fontSize: size * 0.34, color: c, lineHeight: size * 0.38 }}>
         {label}
