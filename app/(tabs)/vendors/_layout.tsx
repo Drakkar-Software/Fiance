@@ -1,11 +1,9 @@
 import React from "react";
 import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
-import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
 export default function VendorsLayout() {
-  const { t } = useTranslation("vendors");
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
@@ -17,11 +15,11 @@ export default function VendorsLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: t("common:tabs.vendors") }} />
-      <Stack.Screen name="new" options={{ title: t("newVendor") }} />
-      <Stack.Screen name="[type]/index" options={{ title: t("common:tabs.vendors") }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="new" options={{ title: "" }} />
+      <Stack.Screen name="[type]/index" options={{ title: "" }} />
       <Stack.Screen name="[type]/[id]" options={{ title: "" }} />
-      <Stack.Screen name="compare" options={{ title: t("compareCaterers") }} />
+      <Stack.Screen name="compare" options={{ title: "" }} />
     </Stack>
   );
 }
