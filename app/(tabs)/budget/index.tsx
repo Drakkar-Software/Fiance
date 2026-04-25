@@ -107,11 +107,11 @@ export default function BudgetScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      className="flex-1 bg-accent-paper dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
       {/* Global summary */}
-      <View className="bg-white dark:bg-gray-900 mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card dark:bg-gray-900 mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             {t("globalBudget")}
@@ -186,7 +186,7 @@ export default function BudgetScreen() {
       </View>
 
       {/* Deposits summary */}
-      <View className="bg-white dark:bg-gray-900 mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card dark:bg-gray-900 mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
           {t("deposits")}
         </Text>
@@ -215,7 +215,7 @@ export default function BudgetScreen() {
         className="mx-4 mt-3 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-2">
-          <Target size={17} color="#EC4899" />
+          <Target size={17} color="#b96a4a" />
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             {t("categoryTarget")}
           </Text>
@@ -266,7 +266,7 @@ export default function BudgetScreen() {
                     {formatMoney(spent)}
                   </Text>
                 )}
-                <View className="w-24 bg-gray-50 dark:bg-gray-800 rounded-lg px-2 py-1">
+                <View className="w-24 bg-accent-paper dark:bg-gray-800 rounded-lg px-2 py-1">
                   <TextInput
                     className="text-sm text-gray-900 dark:text-white text-right"
                     value={target ? target.toString() : ""}
@@ -313,7 +313,7 @@ export default function BudgetScreen() {
                 onPress={() =>
                   setExpandedCategory(isExpanded ? null : cat.categoryName)
                 }
-                className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
@@ -367,7 +367,7 @@ export default function BudgetScreen() {
                         params: { type: vendor.type, id: vendor.id },
                       })
                     }
-                    className="bg-gray-50 dark:bg-gray-800 mx-2 mt-1.5 rounded-xl p-3 active:opacity-80"
+                    className="bg-accent-paper dark:bg-gray-800 mx-2 mt-1.5 rounded-xl p-3 active:opacity-80"
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1">

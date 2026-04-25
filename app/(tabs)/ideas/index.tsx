@@ -46,7 +46,7 @@ const CATEGORY_COLORS: Record<IdeaCategory, string> = {
   TABLE_DECOR: "#84CC16",
   VENUE_DECOR: "#10B981",
   CEREMONY_DECOR: "#8B5CF6",
-  BOUQUET: "#EC4899",
+  BOUQUET: "#b96a4a",
   ATTIRE: "#F59E0B",
   CAKE: "#F97316",
   PHOTO_STYLE: "#6366F1",
@@ -123,7 +123,7 @@ export default function IdeasScreen() {
     : null;
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <SearchBar
         value={search}
         onChangeText={setSearch}
@@ -173,7 +173,7 @@ export default function IdeasScreen() {
             </Text>
             <ChevronDown
               size={14}
-              color={activeCategory ? "#EC4899" : "#9CA3AF"}
+              color={activeCategory ? "#b96a4a" : "#9CA3AF"}
             />
           </Pressable>
 
@@ -375,7 +375,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
           if (links.length === 0) return null;
           return (
             <View className="flex-row items-center mt-1.5">
-              <Link size={10} color="#EC4899" />
+              <Link size={10} color="#b96a4a" />
               <Text
                 className="text-[11px] text-primary-400 ml-1"
                 numberOfLines={1}

@@ -162,7 +162,7 @@ export default function GuestDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <Stack.Screen
         options={{
           title: isNew
@@ -212,7 +212,7 @@ export default function GuestDetailScreen() {
           >
             {companionId ? (
               <>
-                <UserPlus size={16} color="#EC4899" />
+                <UserPlus size={16} color="#b96a4a" />
                 <Text className="text-sm text-primary-500 font-medium ml-2 flex-1">
                   {(() => {
                     const c = guests.find((g) => g.id === companionId);
@@ -420,7 +420,7 @@ export default function GuestDetailScreen() {
             }}
             className="flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 mb-3 active:opacity-70"
           >
-            <Share2 size={16} color="#EC4899" />
+            <Share2 size={16} color="#b96a4a" />
             <Text className="text-sm font-semibold text-primary-500">{t("rsvpLink")}</Text>
           </Pressable>
         )}

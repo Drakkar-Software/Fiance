@@ -100,7 +100,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
         className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
-          <Link size={20} color="#EC4899" />
+          <Link size={20} color="#b96a4a" />
           <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
             {t("onboarding.joinWedding")}
           </Text>

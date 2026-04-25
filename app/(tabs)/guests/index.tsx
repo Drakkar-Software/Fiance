@@ -33,7 +33,7 @@ export default function GuestsListScreen() {
   const [aspect, setAspect] = useState<InviteAspect>("guests");
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },
@@ -74,7 +74,7 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
           params: { id: guest.id },
         })
       }
-      className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
       <View className="flex-row items-center">
         <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
@@ -235,7 +235,7 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "bg-primary-500 border-primary-500"
-                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card dark:bg-gray-900 border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
@@ -258,7 +258,7 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
-                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card dark:bg-gray-900 border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
@@ -388,7 +388,7 @@ function GroupsView() {
         >
           {/* Add group form */}
           {showAdd && (
-            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newGroup")}
               </Text>
@@ -424,7 +424,7 @@ function GroupsView() {
             return (
               <View
                 key={group.id}
-                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
               >
                 {/* Group header */}
                 <View className="flex-row items-center justify-between mb-2">
@@ -436,7 +436,7 @@ function GroupsView() {
                     className="flex-row items-center flex-1"
                   >
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
-                      <FolderOpen size={16} color="#EC4899" />
+                      <FolderOpen size={16} color="#b96a4a" />
                     </View>
                     {editingGroupId === group.id ? (
                       <TextInput
@@ -465,7 +465,7 @@ function GroupsView() {
                     )}
                   </Pressable>
                   <View className="flex-row items-center gap-2">
-                    <View className="px-2.5 py-1 rounded-full bg-gray-50 dark:bg-gray-800">
+                    <View className="px-2.5 py-1 rounded-full bg-accent-paper dark:bg-gray-800">
                       <Text className="text-xs font-semibold text-gray-500">
                         {groupGuests.length}
                       </Text>
@@ -486,7 +486,7 @@ function GroupsView() {
                       key={g.id}
                       className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
                     >
-                      <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                      <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
                         <Text className="text-xs font-bold text-gray-400">
                           {g.firstName[0]}
                           {g.lastName[0]}
@@ -602,14 +602,14 @@ function TablesView() {
               onPress={() => router.push("/(tabs)/guests/tables")}
               className="flex-row items-center justify-center gap-2 mb-4 py-2.5 rounded-xl bg-primary-50 dark:bg-primary-950 border border-primary-100 dark:border-primary-900 active:opacity-70"
             >
-              <MapIcon size={16} color="#EC4899" />
+              <MapIcon size={16} color="#b96a4a" />
               <Text className="text-sm font-semibold text-primary-500">{t("openPlanView")}</Text>
             </Pressable>
           )}
 
           {/* Add table form */}
           {showAdd && (
-            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                 {t("newTable")}
               </Text>
@@ -655,7 +655,7 @@ function TablesView() {
             return (
               <View
                 key={table.id}
-                className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
               >
                 {/* Table header */}
                 <View className="flex-row items-center justify-between mb-2">
@@ -667,7 +667,7 @@ function TablesView() {
                     className="flex-row items-center flex-1"
                   >
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
-                      <LayoutGrid size={16} color="#EC4899" />
+                      <LayoutGrid size={16} color="#b96a4a" />
                     </View>
                     {editingTableId === table.id ? (
                       <TextInput
@@ -700,7 +700,7 @@ function TablesView() {
                       className={`px-2.5 py-1 rounded-full ${
                         isFull
                           ? "bg-red-50 dark:bg-red-900"
-                          : "bg-gray-50 dark:bg-gray-800"
+                          : "bg-accent-paper dark:bg-gray-800"
                       }`}
                     >
                       <Text
@@ -728,7 +728,7 @@ function TablesView() {
                       key={g.id}
                       className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
                     >
-                      <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                      <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
                         <Text className="text-xs font-bold text-gray-400">
                           {g.firstName[0]}
                           {g.lastName[0]}

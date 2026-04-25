@@ -154,7 +154,7 @@ export default function PublicPageScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      className="flex-1 bg-accent-paper dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
       {/* Wedding info */}
@@ -188,7 +188,7 @@ export default function PublicPageScreen() {
               className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
             >
               <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
-                <Send size={18} color="#EC4899" />
+                <Send size={18} color="#b96a4a" />
               </View>
               <View className="flex-1">
                 <Text className="text-base font-medium text-gray-900 dark:text-white">
@@ -217,7 +217,7 @@ export default function PublicPageScreen() {
             </Pressable>
           </View>
         ) : (
-          <View className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
+          <View className="bg-accent-paper dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
             <Text className="text-sm text-gray-400">{t("syncRequiredRsvp")}</Text>
           </View>
         )}
@@ -294,7 +294,7 @@ export default function PublicPageScreen() {
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-accent-blush dark:bg-primary-900 items-center justify-center">
-              <Gift size={20} color="#EC4899" />
+              <Gift size={20} color="#b96a4a" />
             </View>
           }
           title={t("giftRegistry")}

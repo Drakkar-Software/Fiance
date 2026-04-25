@@ -92,7 +92,7 @@ function AutoJoin({
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-950 items-center justify-center">
-      <ActivityIndicator size="large" color="#EC4899" />
+      <ActivityIndicator size="large" color="#b96a4a" />
     </View>
   );
 }
@@ -116,7 +116,7 @@ function InvalidInvite() {
         className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
-          <ArrowLeft size={20} color="#EC4899" />
+          <ArrowLeft size={20} color="#b96a4a" />
           <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
             {t("join.noGoBack")}
           </Text>
@@ -140,7 +140,7 @@ function ConfirmJoin({
     <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
       <View className="items-center mb-10">
         <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
-          <Heart size={36} color="#EC4899" />
+          <Heart size={36} color="#b96a4a" />
         </View>
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
           {t("join.newWedding")}
@@ -168,7 +168,7 @@ function ConfirmJoin({
         className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
-          <ArrowLeft size={20} color="#EC4899" />
+          <ArrowLeft size={20} color="#b96a4a" />
           <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
             {t("join.noGoBack")}
           </Text>

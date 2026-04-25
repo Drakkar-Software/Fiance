@@ -22,7 +22,7 @@ export default function NewVendorPickerScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <Stack.Screen options={{ title: "Nouveau prestataire" }} />
       <ScrollView
         className="flex-1 px-4 pt-4"
@@ -44,7 +44,7 @@ export default function NewVendorPickerScreen() {
                     style={{ width: "47%" }}
                   >
                     <View className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-2">
-                      <Icon size={22} color="#EC4899" />
+                      <Icon size={22} color="#b96a4a" />
                     </View>
                     <Text
                       className="text-sm font-medium text-gray-900 dark:text-white text-center"

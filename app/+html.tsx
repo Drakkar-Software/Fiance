@@ -14,7 +14,7 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        <meta name="theme-color" content="#EC4899" />
+        <meta name="theme-color" content="#b96a4a" />
 
         {/* Primary SEO meta tags */}
         <title>{seo.title}</title>

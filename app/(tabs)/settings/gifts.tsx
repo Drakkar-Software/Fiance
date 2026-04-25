@@ -88,7 +88,7 @@ export default function GiftsScreen() {
 
   if (showForm) {
     return (
-      <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-950 px-4 pt-4">
+      <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950 px-4 pt-4">
         <SectionTitle>{editingId ? t("giftTitle") : t("addGift")}</SectionTitle>
         <FormCard>
           <InputRow label={t("giftTitle")} value={formTitle} onChangeText={setFormTitle} placeholder="Voyage de noces" />
@@ -122,7 +122,7 @@ export default function GiftsScreen() {
   const claimed = gifts.filter((g) => g.claimed);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       {gifts.length === 0 ? (
         <EmptyState
           icon={Gift}
@@ -179,7 +179,7 @@ function GiftRow({
   return (
     <Pressable
       onPress={onPress}
-      className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
       <View className="flex-row items-center">
         <View className="flex-1 mr-2">

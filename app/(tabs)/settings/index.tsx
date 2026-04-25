@@ -230,7 +230,7 @@ export default function SettingsScreen() {
   return (
     <>
     <ScrollView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      className="flex-1 bg-accent-paper dark:bg-gray-950"
       showsVerticalScrollIndicator={false}
     >
       {/* Premium */}
@@ -238,7 +238,7 @@ export default function SettingsScreen() {
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Sparkles size={20} color="#EC4899" />
+              <Sparkles size={20} color="#b96a4a" />
             </View>
           }
           title={premium ? t("premiumUnlocked") : t("premiumTitle")}
@@ -253,7 +253,7 @@ export default function SettingsScreen() {
         <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-              <Globe size={20} color="#EC4899" />
+              <Globe size={20} color="#b96a4a" />
             </View>
           }
           title={t("publicPageTitle")}
@@ -303,7 +303,7 @@ export default function SettingsScreen() {
           <IconCard
             icon={
               <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-                <Share2 size={20} color="#EC4899" />
+                <Share2 size={20} color="#b96a4a" />
               </View>
             }
             title={t("shareInviteLink")}
@@ -354,13 +354,13 @@ export default function SettingsScreen() {
                 <View
                   className="w-10 h-10 rounded-xl items-center justify-center mr-3"
                   style={{
-                    backgroundColor: isActive ? "#EC489915" : "#F3F4F6",
+                    backgroundColor: isActive ? "#b96a4a15" : "#F3F4F6",
                   }}
                 >
                   <Heart
                     size={20}
-                    color={isActive ? "#EC4899" : "#9CA3AF"}
-                    fill={isActive ? "#EC4899" : "transparent"}
+                    color={isActive ? "#b96a4a" : "#9CA3AF"}
+                    fill={isActive ? "#b96a4a" : "transparent"}
                   />
                 </View>
                 <View className="flex-1">
@@ -372,7 +372,7 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
                 {isActive && (
-                  <CheckCircle2 size={20} color="#EC4899" />
+                  <CheckCircle2 size={20} color="#b96a4a" />
                 )}
               </Pressable>
               <Pressable
@@ -394,7 +394,7 @@ export default function SettingsScreen() {
           onPress={() => setShowCreateConfirm(true)}
           className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
         >
-          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-gray-50 dark:bg-gray-800">
+          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper dark:bg-gray-800">
             <PlusCircle size={20} color="#9CA3AF" />
           </View>
           <View className="flex-1">
@@ -410,8 +410,8 @@ export default function SettingsScreen() {
         <SectionTitle>{t("security")}</SectionTitle>
         <ToggleCard
           icon={
-            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-              <Lock size={20} color={lockEnabled ? "#EC4899" : "#C0C0C8"} />
+            <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
+              <Lock size={20} color={lockEnabled ? "#b96a4a" : "#C0C0C8"} />
             </View>
           }
           title={t("appLock")}
@@ -427,8 +427,8 @@ export default function SettingsScreen() {
           <SectionTitle>{t("notifications")}</SectionTitle>
           <ToggleCard
             icon={
-              <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
-                <Bell size={20} color={notificationsEnabled ? "#EC4899" : "#C0C0C8"} />
+              <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
+                <Bell size={20} color={notificationsEnabled ? "#b96a4a" : "#C0C0C8"} />
               </View>
             }
             title={t("notificationsToggle")}
@@ -510,7 +510,7 @@ export default function SettingsScreen() {
         <SectionTitle>{t("analytics")}</SectionTitle>
         <ToggleCard
           icon={
-            <View className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 items-center justify-center">
+            <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
               <Text style={{ fontSize: 18 }}>📊</Text>
             </View>
           }

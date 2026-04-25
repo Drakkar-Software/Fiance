@@ -82,13 +82,13 @@ export default function PremiumScreen() {
   })();
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-950" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-accent-paper dark:bg-gray-950" showsVerticalScrollIndicator={false}>
       <View className="px-6 pt-8 pb-12">
 
         {/* Hero */}
         <View className="items-center mb-8">
           <View className="w-20 h-20 rounded-3xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-4">
-            <Sparkles size={36} color="#EC4899" />
+            <Sparkles size={36} color="#b96a4a" />
           </View>
           <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
             {t("premiumTitle")}
@@ -106,7 +106,7 @@ export default function PremiumScreen() {
               className={`flex-row items-center px-4 py-4 gap-3${i < BENEFITS.length - 1 ? " border-b border-gray-100 dark:border-gray-800" : ""}`}
             >
               <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
-                <Icon size={18} color="#EC4899" />
+                <Icon size={18} color="#b96a4a" />
               </View>
               <Text className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200">
                 {t(key)}

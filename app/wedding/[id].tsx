@@ -145,7 +145,7 @@ export default function WeddingPublicPage() {
           style={{ width: 64, height: 64, borderRadius: 16 }}
           resizeMode="contain"
         />
-        <ActivityIndicator size="small" color="#EC4899" className="mt-4" />
+        <ActivityIndicator size="small" color="#b96a4a" className="mt-4" />
         <Text className="text-sm text-gray-400 mt-2">{t("loading")}</Text>
       </View>
     );

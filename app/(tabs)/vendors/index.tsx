@@ -49,7 +49,7 @@ export default function VendorsListScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <SearchBar
         value={search}
         onChangeText={setSearch}
@@ -82,13 +82,13 @@ export default function VendorsListScreen() {
                   params: { type: vendor.type, id: vendor.id },
                 })
               }
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800 active:opacity-80"
+              className="bg-accent-card dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800 active:opacity-80"
             >
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
                   {(() => {
                     const Icon = VENDOR_TYPE_ICONS[vendor.type as VendorType] || Ellipsis;
-                    return <Icon size={18} color="#EC4899" />;
+                    return <Icon size={18} color="#b96a4a" />;
                   })()}
                 </View>
                 <View className="flex-1">

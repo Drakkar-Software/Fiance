@@ -56,7 +56,7 @@ export default function PlanningScreen() {
   }, [params.aspect]);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper dark:bg-gray-950">
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
         activeKey={aspect}
@@ -195,25 +195,25 @@ function PreparationView() {
               onPress={handleGenerateTemplate}
               className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
             >
-              <Sparkles size={14} color="#EC4899" />
+              <Sparkles size={14} color="#b96a4a" />
               <Text className="text-xs font-medium text-primary-500">{t("generate")}</Text>
             </Pressable>
             <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
               <Pressable
                 onPress={() => setViewMode("timeline")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "timeline" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
+                  viewMode === "timeline" ? "bg-accent-card dark:bg-gray-700" : ""
                 }`}
               >
-                <List size={16} color={viewMode === "timeline" ? "#EC4899" : "#9CA3AF"} />
+                <List size={16} color={viewMode === "timeline" ? "#b96a4a" : "#9CA3AF"} />
               </Pressable>
               <Pressable
                 onPress={() => setViewMode("kanban")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "kanban" ? "bg-white dark:bg-gray-700 shadow-sm" : ""
+                  viewMode === "kanban" ? "bg-accent-card dark:bg-gray-700" : ""
                 }`}
               >
-                <LayoutGrid size={16} color={viewMode === "kanban" ? "#EC4899" : "#9CA3AF"} />
+                <LayoutGrid size={16} color={viewMode === "kanban" ? "#b96a4a" : "#9CA3AF"} />
               </Pressable>
             </View>
           </View>
@@ -255,9 +255,9 @@ function PreparationView() {
             </Pressable>
             <Pressable
               onPress={handleGenerateTemplate}
-              className="bg-white dark:bg-gray-900 border border-primary-300 dark:border-primary-700 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80"
+              className="bg-accent-card dark:bg-gray-900 border border-primary-300 dark:border-primary-700 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80"
             >
-              <Sparkles size={16} color="#EC4899" />
+              <Sparkles size={16} color="#b96a4a" />
               <Text className="text-primary-500 font-semibold text-sm">{t("generatePlanning")}</Text>
             </Pressable>
           </View>
@@ -400,7 +400,7 @@ function AgendaView() {
                         params: { id: event.id },
                       })
                     }
-                    className={`bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+                    className={`bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
                       isPast
                         ? "border-gray-100 dark:border-gray-800 opacity-60"
                         : "border-gray-100 dark:border-gray-800"
@@ -524,7 +524,7 @@ function DayOfView() {
             onPress={handleShareTimeline}
             className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
           >
-            <Share2 size={14} color="#EC4899" />
+            <Share2 size={14} color="#b96a4a" />
             <Text className="text-xs font-medium text-primary-500">{t("shareTimeline")}</Text>
           </Pressable>
         ) : undefined}
@@ -615,7 +615,7 @@ function DayOfTimelineCard({
       showConnector={showConnector}
       onPress={onPress}
     >
-      <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-medium text-gray-900 dark:text-white">
           {item.title}
         </Text>
@@ -667,7 +667,7 @@ function TaskCard({
   return (
     <Pressable
       onPress={onPress}
-      className={`bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+      className={`bg-accent-card dark:bg-gray-900 rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
         isOverdue
           ? "border-red-200 dark:border-red-800"
           : "border-gray-100 dark:border-gray-800"

@@ -506,7 +506,7 @@ function CustomFieldRenderer({
               className="flex-row items-center py-2"
             >
               {isChecked ? (
-                <CheckSquare size={20} color="#EC4899" />
+                <CheckSquare size={20} color="#b96a4a" />
               ) : (
                 <Square size={20} color="#D1D5DB" />
               )}

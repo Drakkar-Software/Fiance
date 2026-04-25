@@ -129,7 +129,7 @@ export default function TaskDetailScreen() {
           options={STATUSES.map((s) => ({
             key: s,
             label: t(TASK_STATUS_LABELS[s]),
-            color: "#EC4899",
+            color: "#b96a4a",
           }))}
           activeKey={status}
           onSelect={(k) => setStatus(k as TaskStatus)}

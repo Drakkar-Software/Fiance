@@ -210,7 +210,7 @@ export default function AccommodationsScreen() {
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center flex-1">
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
-                      <Home size={16} color="#EC4899" />
+                      <Home size={16} color="#b96a4a" />
                     </View>
                     <Text className="text-base font-semibold text-gray-900 dark:text-white flex-1">{acc.name}</Text>
                   </View>
