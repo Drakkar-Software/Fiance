@@ -61,7 +61,7 @@ Create file under `app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab 
 
 ### Styling
 
-NativeWind v4 (Tailwind for React Native). Custom color palette defined in `tailwind.config.js` (primary pink, accent gold/sage/blush). Dark mode supported. Shared UI components in `components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect).
+NativeWind v5 / Tailwind v4. Tokens in `global.css` (`@theme inline`). Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `lib/theme.ts` exports hex literals for JS consumers. Shared UI components in `components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.
 
 ### CI/CD
 
