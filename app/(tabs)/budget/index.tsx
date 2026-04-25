@@ -17,6 +17,7 @@ import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
 import { StatusBadge } from "@/components/StatusBadge";
 import { InputRow, ChipSelect } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
+import { Display } from "@/components/Display";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
@@ -161,13 +162,13 @@ export default function BudgetScreen() {
           <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
             {t("remainingToPay")}
           </Text>
-          <Text
-            className={`text-xl font-bold ${
-              budget.remainingToPay >= 0 ? "text-emerald-500" : "text-red-500"
-            }`}
+          <Display
+            size={22}
+            weight="500"
+            color={budget.remainingToPay >= 0 ? "#10B981" : "#EF4444"}
           >
             {formatMoney(budget.remainingToPay)}
-          </Text>
+          </Display>
         </View>
         {budget.budgetTarget > 0 && (
           <View className="flex-row justify-between mt-2">

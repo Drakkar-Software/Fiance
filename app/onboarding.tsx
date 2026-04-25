@@ -8,6 +8,8 @@ import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { QRScannerScreen } from "@/components/QRScannerScreen";
 import { analytics } from "@/lib/analytics";
+import { Display } from "@/components/Display";
+import { Script } from "@/components/Script";
 
 type Mode = "choose" | "create" | "join";
 
@@ -75,12 +77,12 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
           style={{ width: 80, height: 80, borderRadius: 16, marginBottom: 20 }}
           resizeMode="contain"
         />
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+        <Display size={32} italic style={{ textAlign: "center" }}>
           Fiancé
-        </Text>
-        <Text className="text-base text-gray-400 mt-2 text-center">
+        </Display>
+        <Script size={16} color="#9CA3AF" weight="400" style={{ marginTop: 6, textAlign: "center" }}>
           {t("onboarding.tagline")}
-        </Text>
+        </Script>
       </View>
 
       <Pressable
@@ -148,9 +150,9 @@ function CreateWeddingForm({
           <ArrowLeft size={24} color="#9CA3AF" />
         </Pressable>
 
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <Display size={28} italic style={{ marginBottom: 8 }}>
           {t("onboarding.newWedding")}
-        </Text>
+        </Display>
         <Text className="text-base text-gray-400 mb-8">
           {t("onboarding.autoPassword")}
         </Text>
@@ -233,9 +235,9 @@ function JoinWeddingForm({
             <ArrowLeft size={24} color="#9CA3AF" />
           </Pressable>
 
-          <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <Display size={28} italic style={{ marginBottom: 8 }}>
             {t("onboarding.joinTitle")}
-          </Text>
+          </Display>
 
           <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
             {t("onboarding.weddingNameLabel")}

@@ -22,6 +22,8 @@ import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 import { analytics } from "@/lib/analytics";
 import { theme as GP } from "@/lib/theme";
+import { Display } from "@/components/Display";
+import { Script } from "@/components/Script";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -176,17 +178,17 @@ function DashboardScreen() {
             <Settings size={22} color="rgba(255,255,255,0.85)" />
           </Pressable>
         </View>
-        <Text className="text-white/70 text-sm font-medium tracking-wide">
+        <Script size={20} color="rgba(255,255,255,0.75)" weight="400">
           {wedding?.partner1Name && wedding?.partner2Name
             ? `${wedding.partner1Name} & ${wedding.partner2Name}`
             : "Fiancé"}
-        </Text>
+        </Script>
         {daysUntil != null && daysUntil >= 0 ? (
           <View className="mt-3">
             <View className="flex-row items-baseline">
-              <Text className="text-white text-6xl font-bold">
+              <Display size={72} weight="300" color="#fff">
                 {daysUntil}
-              </Text>
+              </Display>
               <Text className="text-white/60 text-xl font-medium ml-2">
                 {t("days")}
               </Text>
@@ -198,13 +200,13 @@ function DashboardScreen() {
             </Text>
           </View>
         ) : daysUntil != null && daysUntil < 0 ? (
-          <Text className="text-white text-3xl font-bold mt-3">
+          <Display size={32} italic color="#fff" style={{ marginTop: 12 }}>
             {t("congratulations")}
-          </Text>
+          </Display>
         ) : (
-          <Text className="text-white/90 text-xl font-semibold mt-3">
+          <Display size={24} italic color="rgba(255,255,255,0.9)" style={{ marginTop: 12 }}>
             {t("setYourDate")}
-          </Text>
+          </Display>
         )}
         {wedding?.venueName && (
           <View className="flex-row items-center mt-3 bg-white/10 self-start px-3 py-1.5 rounded-full">
