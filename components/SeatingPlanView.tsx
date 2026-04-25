@@ -126,7 +126,7 @@ function DraggableTable({
               ? "bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-700"
               : isSelected
               ? "bg-primary-50 dark:bg-primary-950 border-primary-400"
-              : "bg-white dark:bg-gray-800 border-hair dark:border-hair"
+              : "bg-accent-card border-hair dark:border-hair"
           }`}
         >
           <Text
@@ -180,7 +180,7 @@ export function PlanView({ tables, guests, updateTable }: Props) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{ width: CANVAS_W, height: CANVAS_H }}
-            className="bg-gray-100 dark:bg-gray-900 m-4 rounded-2xl overflow-hidden"
+            className="bg-accent-paper m-4 rounded-2xl overflow-hidden"
           >
             {/* Grid dots */}
             {Array.from({ length: 8 }).map((_, row) =>
@@ -195,7 +195,7 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                     height: 4,
                     borderRadius: 2,
                   }}
-                  className="bg-gray-200 dark:bg-gray-700"
+                  className="bg-hair"
                 />
               )),
             )}
@@ -242,8 +242,8 @@ export function PlanView({ tables, guests, updateTable }: Props) {
         handleComponent={() => null}
       >
         <BottomSheetView>
-          <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
-            <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
+          <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
+            <View className="w-10 h-1 rounded-full bg-hair self-center mb-4" />
 
             {selectedTable && (
               <>
@@ -282,7 +282,7 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                                 ? "bg-red-100 dark:bg-red-900"
                                 : guest.rsvpStatus === "MAYBE"
                                 ? "bg-yellow-100 dark:bg-yellow-900"
-                                : "bg-gray-100 dark:bg-gray-800"
+                                : "bg-accent-paper"
                             }`}
                           >
                             <Text

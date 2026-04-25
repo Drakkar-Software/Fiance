@@ -184,7 +184,7 @@ export default function IdeasScreen() {
                 setCategoryFilter("ALL");
                 setShowCategoryPicker(false);
               }}
-              className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 items-center justify-center"
+              className="w-9 h-9 rounded-xl bg-accent-paper items-center justify-center"
             >
               <X size={16} color="#9CA3AF" />
             </Pressable>

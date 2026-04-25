@@ -30,7 +30,7 @@ export function QRScannerScreen({ onScanned, onClose }: QRScannerScreenProps) {
 
   if (!permission.granted) {
     return (
-      <View style={StyleSheet.absoluteFill} className="bg-gray-950 items-center justify-center px-8">
+      <View style={StyleSheet.absoluteFill} className="bg-ink items-center justify-center px-8">
         <Pressable onPress={onClose} className="absolute top-14 left-5 p-2">
           <X size={24} color="#fff" />
         </Pressable>

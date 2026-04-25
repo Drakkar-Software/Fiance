@@ -170,7 +170,7 @@ export default function AccommodationsScreen() {
                   <Pressable onPress={handleAdd} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
                     <Text className="text-white font-semibold text-sm">{t("common:create")}</Text>
                   </Pressable>
-                  <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
+                  <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
                     <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                   </Pressable>
                 </View>
@@ -196,7 +196,7 @@ export default function AccommodationsScreen() {
                       <Pressable onPress={handleSaveEdit} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
                         <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
                       </Pressable>
-                      <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
+                      <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
                         <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                       </Pressable>
                     </View>
@@ -260,7 +260,7 @@ export default function AccommodationsScreen() {
                 )}
                 {isExpanded && accGuests.map((g) => (
                   <View key={g.id} className="flex-row items-center py-2 border-t border-hair">
-                    <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
+                    <View className="w-7 h-7 rounded-lg bg-accent-paper items-center justify-center mr-2">
                       <Text className="text-xs font-bold text-mute">
                         {g.firstName[0]}{g.lastName[0]}
                       </Text>

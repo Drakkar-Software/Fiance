@@ -147,7 +147,7 @@ export default function VendorDetailScreen() {
       />
 
       {/* Tab bar */}
-      <View className="flex-row mx-4 mt-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+      <View className="flex-row mx-4 mt-3 bg-accent-paper rounded-xl p-1">
         {(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as ("infos" | "tarif" | "paiements")[]).map((tab) => {
           const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments" } as const;
           return (
@@ -410,7 +410,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
             </Pressable>
             <Pressable
               onPress={() => setShowAdd(false)}
-              className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+              className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
             >
               <Text className="text-mute text-sm">{t("common:cancel")}</Text>
             </Pressable>

@@ -102,8 +102,8 @@ export function PaywallSheet({ visible, onClose, userId, weddingId }: PaywallShe
       handleComponent={() => null}
     >
       <BottomSheetView>
-        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10">
-          <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-5" />
+        <View className="bg-accent-card rounded-t-3xl px-6 pt-6 pb-10">
+          <View className="w-10 h-1 rounded-full bg-hair self-center mb-5" />
 
           <View className="items-center mb-4">
             <View className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-3">

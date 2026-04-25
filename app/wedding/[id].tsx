@@ -487,7 +487,7 @@ export default function WeddingPublicPage() {
                           if (!companion) return null;
                           return (
                             <>
-                              <View className="h-px bg-gray-100 mb-4" />
+                              <View className="h-px bg-accent-paper mb-4" />
                               <Text className="text-sm font-semibold text-ink mb-1">
                                 {t("plusOneLabel", { name: `${companion.firstName} ${companion.lastName}` })}
                               </Text>
@@ -533,19 +533,19 @@ export default function WeddingPublicPage() {
                         })()}
 
                         {/* Children count */}
-                        <View className="h-px bg-gray-100 mb-4" />
+                        <View className="h-px bg-accent-paper mb-4" />
                         <Text className="text-sm text-mute mb-2">{t("childrenLabel")}</Text>
                         <View className="flex-row items-center gap-3 mb-4">
                           <Pressable
                             onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-                            className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                            className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
                           >
                             <Text className="text-lg text-mute">−</Text>
                           </Pressable>
                           <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
                           <Pressable
                             onPress={() => setChildrenCount(childrenCount + 1)}
-                            className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                            className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
                           >
                             <Text className="text-lg text-mute">+</Text>
                           </Pressable>

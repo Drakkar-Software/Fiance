@@ -246,7 +246,7 @@ function GuestsView() {
             </Pressable>
           );
         })}
-        <View className="w-px bg-gray-200 dark:bg-gray-700 my-1" />
+        <View className="w-px bg-hair my-1" />
         {typeTabs.map((tab) => {
           const isActive = tab.key === typeFilter;
           return (
@@ -407,7 +407,7 @@ function GroupsView() {
                 </Pressable>
                 <Pressable
                   onPress={() => setShowAdd(false)}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                  className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
                 >
                   <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
@@ -463,7 +463,7 @@ function GroupsView() {
                     )}
                   </Pressable>
                   <View className="flex-row items-center gap-2">
-                    <View className="px-2.5 py-1 rounded-full bg-accent-paper dark:bg-gray-800">
+                    <View className="px-2.5 py-1 rounded-full bg-accent-paper">
                       <Text className="text-xs font-semibold text-mute">
                         {groupGuests.length}
                       </Text>
@@ -484,7 +484,7 @@ function GroupsView() {
                       key={g.id}
                       className="flex-row items-center py-2 border-t border-hair"
                     >
-                      <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
+                      <View className="w-7 h-7 rounded-lg bg-accent-paper items-center justify-center mr-2">
                         <Text className="text-xs font-bold text-mute">
                           {g.firstName[0]}
                           {g.lastName[0]}
@@ -636,7 +636,7 @@ function TablesView() {
                 </Pressable>
                 <Pressable
                   onPress={() => setShowAdd(false)}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                  className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
                 >
                   <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
@@ -698,7 +698,7 @@ function TablesView() {
                       className={`px-2.5 py-1 rounded-full ${
                         isFull
                           ? "bg-red-50 dark:bg-red-900"
-                          : "bg-accent-paper dark:bg-gray-800"
+                          : "bg-accent-paper"
                       }`}
                     >
                       <Text
@@ -726,7 +726,7 @@ function TablesView() {
                       key={g.id}
                       className="flex-row items-center py-2 border-t border-hair"
                     >
-                      <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
+                      <View className="w-7 h-7 rounded-lg bg-accent-paper items-center justify-center mr-2">
                         <Text className="text-xs font-bold text-mute">
                           {g.firstName[0]}
                           {g.lastName[0]}

@@ -267,7 +267,7 @@ export default function BudgetScreen() {
                     {formatMoney(spent)}
                   </Text>
                 )}
-                <View className="w-24 bg-accent-paper dark:bg-gray-800 rounded-lg px-2 py-1">
+                <View className="w-24 bg-accent-paper rounded-lg px-2 py-1">
                   <TextInput
                     className="text-sm text-ink text-right"
                     value={target ? target.toString() : ""}
@@ -368,7 +368,7 @@ export default function BudgetScreen() {
                         params: { type: vendor.type, id: vendor.id },
                       })
                     }
-                    className="bg-accent-paper dark:bg-gray-800 mx-2 mt-1.5 rounded-xl p-3 active:opacity-80"
+                    className="bg-accent-paper mx-2 mt-1.5 rounded-xl p-3 active:opacity-80"
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1">

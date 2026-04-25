@@ -109,7 +109,7 @@ export default function GiftsScreen() {
           </Pressable>
           <Pressable
             onPress={() => setShowForm(false)}
-            className="flex-1 bg-gray-100 dark:bg-gray-800 py-3 rounded-xl items-center"
+            className="flex-1 bg-accent-paper py-3 rounded-xl items-center"
           >
             <Text className="text-mute">{t("cancel")}</Text>
           </Pressable>

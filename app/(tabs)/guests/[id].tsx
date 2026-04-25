@@ -242,14 +242,14 @@ export default function GuestDetailScreen() {
             <View className="flex-row items-center gap-3">
               <Pressable
                 onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+                className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
               >
                 <Text className="text-lg text-mute">−</Text>
               </Pressable>
               <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
               <Pressable
                 onPress={() => setChildrenCount(childrenCount + 1)}
-                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+                className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
               >
                 <Text className="text-lg text-mute">+</Text>
               </Pressable>

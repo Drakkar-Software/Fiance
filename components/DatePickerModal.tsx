@@ -110,8 +110,8 @@ export function DatePickerModal({
       handleComponent={() => null}
     >
       <BottomSheetView>
-        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
-          <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
+        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
+          <View className="w-10 h-1 rounded-full bg-hair self-center mb-4" />
 
           {/* Month navigation */}
           <View className="flex-row items-center justify-between mb-3">
@@ -196,7 +196,7 @@ export function DatePickerModal({
             </Pressable>
             <Pressable
               onPress={handleClear}
-              className="flex-1 py-3 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
+              className="flex-1 py-3 rounded-2xl items-center bg-accent-paper active:opacity-80"
             >
               <Text className="text-ink-soft font-medium text-sm">
                 {t("clear")}

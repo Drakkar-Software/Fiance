@@ -75,7 +75,7 @@ export default function TablesScreen() {
             </Pressable>
             <Pressable
               onPress={() => setShowAdd(false)}
-              className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+              className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
             >
               <Text className="text-mute text-sm">
                 {t("common:cancel")}

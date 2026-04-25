@@ -145,7 +145,7 @@ export default function InvitationTypesScreen() {
                 </Pressable>
                 <Pressable
                   onPress={resetForm}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                  className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
                 >
                   <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
@@ -184,7 +184,7 @@ export default function InvitationTypesScreen() {
                     </Pressable>
                     <Pressable
                       onPress={resetForm}
-                      className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
+                      className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
                     >
                       <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                     </Pressable>
@@ -212,7 +212,7 @@ export default function InvitationTypesScreen() {
                   </View>
                   <View className="flex-row items-center gap-1">
                     {guestCount > 0 && (
-                      <View className="px-2.5 py-1 rounded-full bg-gray-50 dark:bg-gray-800 mr-1">
+                      <View className="px-2.5 py-1 rounded-full bg-accent-paper mr-1">
                         <Text className="text-xs font-semibold text-mute">{guestCount}</Text>
                       </View>
                     )}

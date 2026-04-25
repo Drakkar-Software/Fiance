@@ -49,8 +49,8 @@ export function InviteQRSheet({ visible, onClose, inviteUrl }: InviteQRSheetProp
       handleComponent={() => null}
     >
       <BottomSheetView>
-        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10">
-          <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-5" />
+        <View className="bg-accent-card rounded-t-3xl px-6 pt-6 pb-10">
+          <View className="w-10 h-1 rounded-full bg-hair self-center mb-5" />
           <Text className="text-xl font-bold text-ink mb-1">
             {t("shareInviteLink")}
           </Text>

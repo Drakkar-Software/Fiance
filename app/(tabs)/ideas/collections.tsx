@@ -71,7 +71,7 @@ export default function CollectionsScreen() {
               </Pressable>
               <Pressable
                 onPress={() => setShowAdd(false)}
-                className="flex-1 bg-gray-100 dark:bg-gray-800 py-2 rounded-lg items-center"
+                className="flex-1 bg-accent-paper py-2 rounded-lg items-center"
               >
                 <Text className="text-mute">{t("common:cancel")}</Text>
               </Pressable>

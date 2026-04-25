@@ -73,15 +73,15 @@ export function CompanionPickerModal({
       handleComponent={() => null}
     >
       <BottomSheetView>
-        <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
-          <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
+        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
+          <View className="w-10 h-1 rounded-full bg-hair self-center mb-4" />
 
           <Text className="text-lg font-bold text-ink mb-3">
             {t("companionLabel")}
           </Text>
 
           {/* Search */}
-          <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2 mb-3">
+          <View className="flex-row items-center bg-accent-paper rounded-xl px-3 py-2 mb-3">
             <Search size={16} color="#9CA3AF" />
             <TextInput
               className="flex-1 ml-2 text-base text-ink"
@@ -102,7 +102,7 @@ export function CompanionPickerModal({
                 className={`flex-row items-center px-3 py-3 rounded-xl mb-1 ${
                   selected === g.id
                     ? "bg-primary-50 dark:bg-primary-950"
-                    : "active:bg-gray-50 dark:active:bg-gray-800"
+                    : "active:bg-accent-paper dark:active:bg-accent-card"
                 }`}
               >
                 <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
@@ -139,7 +139,7 @@ export function CompanionPickerModal({
             </Pressable>
             <Pressable
               onPress={onClose}
-              className="flex-1 py-3.5 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
+              className="flex-1 py-3.5 rounded-2xl items-center bg-accent-paper active:opacity-80"
             >
               <Text className="text-ink-soft font-medium text-base">
                 {t("common:cancel")}

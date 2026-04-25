@@ -218,7 +218,7 @@ export default function PublicPageScreen() {
             </Pressable>
           </View>
         ) : (
-          <View className="bg-accent-paper dark:bg-gray-800 rounded-2xl p-4 border border-hair dark:border-hair">
+          <View className="bg-accent-paper rounded-2xl p-4 border border-hair dark:border-hair">
             <Text className="text-sm text-mute">{t("syncRequiredRsvp")}</Text>
           </View>
         )}

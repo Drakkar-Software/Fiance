@@ -43,14 +43,14 @@ export function StackMenu({ items }: StackMenuProps) {
           onPress={() => setOpen(false)}
         >
           {/* Menu card — top-right of screen, aligned under header */}
-          <View className="absolute top-14 right-4 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]">
+          <View className="absolute top-14 right-4 bg-accent-card rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]">
             {items.map((item, index) => {
               const Icon = item.icon;
               return (
                 <Pressable
                   key={index}
                   onPress={() => handleItem(item.onPress)}
-                  className={`flex-row items-center px-4 py-3.5 active:bg-gray-50 dark:active:bg-gray-800 ${
+                  className={`flex-row items-center px-4 py-3.5 active:bg-accent-paper dark:active:bg-accent-card ${
                     index > 0 ? "border-t border-hair" : ""
                   }`}
                 >

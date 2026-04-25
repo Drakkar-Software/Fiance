@@ -404,7 +404,7 @@ export default function SettingsScreen() {
           onPress={() => setShowCreateConfirm(true)}
           className="bg-accent-card rounded-2xl p-4 mb-2 border border-dashed border-hair dark:border-hair flex-row items-center active:opacity-80"
         >
-          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper dark:bg-gray-800">
+          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper">
             <PlusCircle size={20} color="#9CA3AF" />
           </View>
           <View className="flex-1">
@@ -420,7 +420,7 @@ export default function SettingsScreen() {
         <SectionTitle>{t("security")}</SectionTitle>
         <ToggleCard
           icon={
-            <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
+            <View className="w-10 h-10 rounded-xl bg-accent-paper items-center justify-center">
               <Lock size={20} color={lockEnabled ? "#b96a4a" : "#C0C0C8"} />
             </View>
           }
@@ -437,7 +437,7 @@ export default function SettingsScreen() {
           <SectionTitle>{t("notifications")}</SectionTitle>
           <ToggleCard
             icon={
-              <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
+              <View className="w-10 h-10 rounded-xl bg-accent-paper items-center justify-center">
                 <Bell size={20} color={notificationsEnabled ? "#b96a4a" : "#C0C0C8"} />
               </View>
             }
@@ -520,7 +520,7 @@ export default function SettingsScreen() {
         <SectionTitle>{t("analytics")}</SectionTitle>
         <ToggleCard
           icon={
-            <View className="w-10 h-10 rounded-xl bg-accent-paper dark:bg-gray-800 items-center justify-center">
+            <View className="w-10 h-10 rounded-xl bg-accent-paper items-center justify-center">
               <Text style={{ fontSize: 18 }}>📊</Text>
             </View>
           }

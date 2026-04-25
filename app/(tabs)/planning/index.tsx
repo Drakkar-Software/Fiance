@@ -200,11 +200,11 @@ function PreparationView() {
               <Sparkles size={14} color="#b96a4a" />
               <Text className="text-xs font-medium text-primary-500">{t("generate")}</Text>
             </Pressable>
-            <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+            <View className="flex-row bg-accent-paper rounded-lg p-0.5">
               <Pressable
                 onPress={() => setViewMode("timeline")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "timeline" ? "bg-accent-card dark:bg-gray-700" : ""
+                  viewMode === "timeline" ? "bg-accent-card" : ""
                 }`}
               >
                 <List size={16} color={viewMode === "timeline" ? "#b96a4a" : "#9CA3AF"} />
@@ -212,7 +212,7 @@ function PreparationView() {
               <Pressable
                 onPress={() => setViewMode("kanban")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "kanban" ? "bg-accent-card dark:bg-gray-700" : ""
+                  viewMode === "kanban" ? "bg-accent-card" : ""
                 }`}
               >
                 <LayoutGrid size={16} color={viewMode === "kanban" ? "#b96a4a" : "#9CA3AF"} />
