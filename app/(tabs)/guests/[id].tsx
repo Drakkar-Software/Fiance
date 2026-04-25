@@ -167,9 +167,7 @@ export default function GuestDetailScreen() {
     <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
-          title: isNew
-            ? t("newGuest")
-            : `${firstName} ${lastName}`.trim() || t("guest"),
+          headerTitle: () => null,
           headerRight: () => (
             <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
@@ -177,18 +175,16 @@ export default function GuestDetailScreen() {
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {!isNew && (
-          <View className="flex-row items-center mb-4" style={{ overflow: "visible" }}>
-            <View style={{ flex: 1 }}>
-              <PageHeader
-                eyebrow={t("guest")}
-                title={firstName || t("guest")}
-                tagline={lastName || undefined}
-                titleSize={26}
-                style={{ paddingHorizontal: 0, paddingTop: 0 }}
-              />
-            </View>
+          <View style={{ position: "relative", marginBottom: 16, overflow: "visible" }}>
+            <PageHeader
+              eyebrow={t("guest")}
+              title={firstName || t("guest")}
+              tagline={lastName || undefined}
+              titleSize={26}
+              style={{ paddingHorizontal: 0, paddingTop: 0 }}
+            />
             {rsvpStatus === "ACCEPTED" && (
-              <Seal label="✓" sublabel={t("confirmed").toLowerCase()} color="#6e7a4a" size={40} angle={-8} />
+              <Seal label="✓" sublabel={t("confirmed").toLowerCase()} color="#6e7a4a" size={40} angle={-8} style={{ position: "absolute", top: -8, right: 8 }} />
             )}
           </View>
         )}

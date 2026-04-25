@@ -141,7 +141,7 @@ export default function VendorDetailScreen() {
     <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
-          title: isNew ? t("new", { type: typeName }) : name || typeName,
+          headerTitle: () => null,
           headerRight: () => (
             <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
@@ -170,18 +170,16 @@ export default function VendorDetailScreen() {
         {activeTab === "infos" && (
           <>
             {!isNew && (
-              <View className="flex-row items-center mb-2" style={{ overflow: "visible" }}>
-                <View style={{ flex: 1 }}>
-                  <PageHeader
-                    eyebrow={typeName}
-                    title={name || typeName}
-                    tagline={contactName || undefined}
-                    titleSize={28}
-                    style={{ paddingHorizontal: 0, paddingTop: 0 }}
-                  />
-                </View>
+              <View style={{ position: "relative", marginBottom: 8, overflow: "visible" }}>
+                <PageHeader
+                  eyebrow={typeName}
+                  title={name || typeName}
+                  tagline={contactName || undefined}
+                  titleSize={28}
+                  style={{ paddingHorizontal: 0, paddingTop: 0 }}
+                />
                 {status === "BOOKED" && (
-                  <Seal label="✓" sublabel={t("status.BOOKED").toLowerCase()} color="#6e7a4a" size={42} angle={-6} />
+                  <Seal label="✓" sublabel={t("status.BOOKED").toLowerCase()} color="#6e7a4a" size={42} angle={-6} style={{ position: "absolute", top: -12, right: 8 }} />
                 )}
               </View>
             )}

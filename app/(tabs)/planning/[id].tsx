@@ -118,7 +118,7 @@ export default function TaskDetailScreen() {
     <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
-          title: isNew ? t("newTask") : title || t("task"),
+          headerTitle: () => null,
           headerRight: () => (
             <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),
@@ -133,17 +133,15 @@ export default function TaskDetailScreen() {
           const isDone = status === "DONE";
           const isUrgent = !isDone && dueDays !== null && dueDays <= 7;
           return (
-            <View className="flex-row items-center mb-2" style={{ overflow: "visible" }}>
-              <View style={{ flex: 1 }}>
-                <PageHeader
-                  eyebrow={categoryLabel}
-                  title={title || t("task")}
-                  titleSize={24}
-                  style={{ paddingHorizontal: 0, paddingTop: 0 }}
-                />
-              </View>
-              {isDone && <Seal label="✓" sublabel={t("status.DONE")} color="#6e7a4a" size={40} angle={-8} />}
-              {isUrgent && <Seal label="!" sublabel={`${dueDays}j`} color="#b96a4a" size={40} angle={-8} />}
+            <View style={{ position: "relative", marginBottom: 8, overflow: "visible" }}>
+              <PageHeader
+                eyebrow={categoryLabel}
+                title={title || t("task")}
+                titleSize={24}
+                style={{ paddingHorizontal: 0, paddingTop: 0 }}
+              />
+              {isDone && <Seal label="✓" sublabel={t("status.DONE")} color="#6e7a4a" size={40} angle={-8} style={{ position: "absolute", top: -8, right: 8 }} />}
+              {isUrgent && <Seal label="!" sublabel={`${dueDays}j`} color="#b96a4a" size={40} angle={-8} style={{ position: "absolute", top: -8, right: 8 }} />}
             </View>
           );
         })()}

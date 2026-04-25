@@ -140,7 +140,7 @@ export default function IdeaDetailScreen() {
     <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
-          title: isNew ? t("newIdea") : title || t("idea"),
+          headerTitle: () => null,
           headerRight: () => (
             <View className="flex-row items-center gap-3 mr-2">
               <Pressable onPress={() => setIsFavorite(!isFavorite)}>
