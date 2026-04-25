@@ -249,6 +249,7 @@ export default function SettingsScreen() {
             eyebrow={t("common:tabs.settings")}
             title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
             titleSize={28}
+            safeAreaTop
             style={{ paddingHorizontal: 0, paddingTop: 0 }}
           />
         </View>

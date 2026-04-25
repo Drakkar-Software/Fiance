@@ -130,6 +130,7 @@ export default function IdeasScreen() {
         eyebrow={t("common:tabs.ideas")}
         title={t("collectionCount", { count: collections.length })}
         titleSize={22}
+        safeAreaTop
         right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
       />
       <SearchBar
