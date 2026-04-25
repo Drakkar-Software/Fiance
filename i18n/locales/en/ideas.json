@@ -45,5 +45,9 @@
   "deleteCollection": "Delete this collection?",
   "deleteCollectionMsg": "Associated ideas will not be deleted but will be unlinked.",
   "nameRequired": "Name is required",
-  "noTitle": "Untitled"
+  "noTitle": "Untitled",
+  "pageTagline_one": "{{count}} saved",
+  "pageTagline_other": "{{count}} saved",
+  "collectionCount_one": "{{count}} collection",
+  "collectionCount_other": "{{count}} collections"
 }

@@ -21,6 +21,8 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { Display } from "@/components/Display";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { StatusSelector } from "@/components/StatusSelector";
+import { PageHeader } from "@/components/PageHeader";
+import { Seal } from "@/components/Seal";
 import type { Vendor, VendorPayment } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
@@ -167,6 +169,22 @@ export default function VendorDetailScreen() {
       <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false}>
         {activeTab === "infos" && (
           <>
+            {!isNew && (
+              <View className="flex-row items-center mb-2" style={{ overflow: "visible" }}>
+                <View style={{ flex: 1 }}>
+                  <PageHeader
+                    eyebrow={typeName}
+                    title={name || typeName}
+                    tagline={contactName || undefined}
+                    titleSize={28}
+                    style={{ paddingHorizontal: 0, paddingTop: 0 }}
+                  />
+                </View>
+                {status === "BOOKED" && (
+                  <Seal label="✓" sublabel={t("status.BOOKED").toLowerCase()} color="#6e7a4a" size={42} angle={-6} />
+                )}
+              </View>
+            )}
             <SectionTitle>{t("statusLabel")}</SectionTitle>
             <StatusSelector
               options={STATUS_OPTIONS.map((s) => ({

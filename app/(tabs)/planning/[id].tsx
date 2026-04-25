@@ -20,6 +20,8 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
+import { PageHeader } from "@/components/PageHeader";
+import { Seal } from "@/components/Seal";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "DONE"];
@@ -123,6 +125,28 @@ export default function TaskDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        {!isNew && (() => {
+          const categoryLabel = categories.find((c) => c.id === categoryId)?.name || "";
+          const dueDays = existing?.dueDate
+            ? Math.ceil((new Date(existing.dueDate).getTime() - Date.now()) / 86400000)
+            : null;
+          const isDone = status === "DONE";
+          const isUrgent = !isDone && dueDays !== null && dueDays <= 7;
+          return (
+            <View className="flex-row items-center mb-2" style={{ overflow: "visible" }}>
+              <View style={{ flex: 1 }}>
+                <PageHeader
+                  eyebrow={categoryLabel}
+                  title={title || t("task")}
+                  titleSize={24}
+                  style={{ paddingHorizontal: 0, paddingTop: 0 }}
+                />
+              </View>
+              {isDone && <Seal label="✓" sublabel={t("status.DONE")} color="#6e7a4a" size={40} angle={-8} />}
+              {isUrgent && <Seal label="!" sublabel={`${dueDays}j`} color="#b96a4a" size={40} angle={-8} />}
+            </View>
+          );
+        })()}
         {/* Status */}
         <SectionTitle>{t("vendors:statusLabel")}</SectionTitle>
         <StatusSelector

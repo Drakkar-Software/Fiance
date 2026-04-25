@@ -42,6 +42,7 @@
   "premiumFeature": "Premium feature",
   "premiumSyncMsg": "Sync and sharing require a premium subscription.",
   "premiumTitle": "Fiancé Premium",
+  "premiumOneTime": "lifetime access",
   "premiumPitch": "Encrypted sync, partner sharing, full public page. One-time lifetime purchase.",
   "premiumCta": "Unlock Premium — {{price}}",
   "premiumCtaWeb": "Upgrade to Premium",

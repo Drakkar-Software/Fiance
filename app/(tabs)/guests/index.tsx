@@ -25,6 +25,7 @@ import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
+import { PageHeader } from "@/components/PageHeader";
 import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
@@ -32,9 +33,17 @@ type InviteAspect = "guests" | "groups" | "tables";
 export default function GuestsListScreen() {
   const { t } = useTranslation("guests");
   const [aspect, setAspect] = useState<InviteAspect>("guests");
+  const guests = useGuestsStore((s) => s.guests);
+  const counts = useMemo(() => computeCounts(guests), [guests]);
 
   return (
     <View className="flex-1 bg-accent-paper">
+      <PageHeader
+        eyebrow={t("common:tabs.guests")}
+        title={counts.total}
+        tagline={t("pageTagline")}
+        titleSize={48}
+      />
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },

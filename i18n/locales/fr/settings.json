@@ -42,6 +42,7 @@
   "premiumFeature": "Fonctionnalité premium",
   "premiumSyncMsg": "La synchronisation et le partage nécessitent un abonnement premium.",
   "premiumTitle": "Fiancé Premium",
+  "premiumOneTime": "accès à vie",
   "premiumPitch": "Synchronisation chiffrée, partage avec votre partenaire, page publique complète. Un achat unique, à vie.",
   "premiumCta": "Débloquer Premium — {{price}}",
   "premiumCtaWeb": "Passer à Premium",

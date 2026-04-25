@@ -124,5 +124,6 @@
   "tabPricing": "Pricing",
   "tabPayments": "Payments",
   "noPayments": "No payments recorded",
-  "deletePayment": "Delete this payment?"
+  "deletePayment": "Delete this payment?",
+  "pageTagline": "of {{total}} booked"
 }

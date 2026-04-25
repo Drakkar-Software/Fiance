@@ -130,5 +130,6 @@
   "needsSleeping": "Nécessite un hébergement",
   "needsSleepingDesc": "Activez si les invités de ce type ont généralement besoin d'une chambre. Aide à identifier les invités sans hébergement assigné.",
   "manageMenu": "Gérer",
-  "guestsWithType": "{{count}} invité(s)"
+  "guestsWithType": "{{count}} invité(s)",
+  "pageTagline": "personnes qu'on aime"
 }

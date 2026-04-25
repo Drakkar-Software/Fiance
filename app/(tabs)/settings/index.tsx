@@ -38,6 +38,8 @@ import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
 import { Display } from "@/components/Display";
 import { Postit } from "@/components/Postit";
+import { Label } from "@/components/Label";
+import { useWeddingStore } from "@/store/useWeddingStore";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -85,6 +87,10 @@ export default function SettingsScreen() {
     update();
     return sf.subscribe(update);
   }, [syncEnabled, t]);
+
+  const wedding = useWeddingStore((s) => s.wedding);
+  const partner1 = wedding?.partner1Name || "";
+  const partner2 = wedding?.partner2Name || "";
 
   const analyticsClient = useSunglasses();
   const [analyticsConsented, setAnalyticsConsented] = useState(
@@ -237,9 +243,12 @@ export default function SettingsScreen() {
     >
       {/* Page header */}
       <View className="px-4 pt-5 pb-3 flex-row items-start">
-        <Display size={28} italic style={{ flex: 1 }}>
-          {t("title")}
-        </Display>
+        <View style={{ flex: 1 }}>
+          <Label>{t("common:tabs.settings")}</Label>
+          <Display size={28} italic>
+            {partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
+          </Display>
+        </View>
         <Postit angle={-3} style={{ marginTop: 2 }}>{t("postit")}</Postit>
       </View>
 

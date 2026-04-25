@@ -35,6 +35,8 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
+import { PageHeader } from "@/components/PageHeader";
+import { Seal } from "@/components/Seal";
 import type { Guest } from "@/db/schema";
 
 const RSVP_STATUSES: RsvpStatus[] = ["PENDING", "ACCEPTED", "DECLINED", "MAYBE"];
@@ -174,6 +176,22 @@ export default function GuestDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        {!isNew && (
+          <View className="flex-row items-center mb-4" style={{ overflow: "visible" }}>
+            <View style={{ flex: 1 }}>
+              <PageHeader
+                eyebrow={t("guest")}
+                title={firstName || t("guest")}
+                tagline={lastName || undefined}
+                titleSize={26}
+                style={{ paddingHorizontal: 0, paddingTop: 0 }}
+              />
+            </View>
+            {rsvpStatus === "ACCEPTED" && (
+              <Seal label="✓" sublabel={t("confirmed").toLowerCase()} color="#6e7a4a" size={40} angle={-8} />
+            )}
+          </View>
+        )}
         {/* Personal info */}
         <SectionTitle>{t("personalInfo")}</SectionTitle>
         <FormCard>

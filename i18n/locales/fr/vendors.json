@@ -124,5 +124,6 @@
   "tabPricing": "Tarif",
   "tabPayments": "Paiements",
   "noPayments": "Aucun paiement enregistré",
-  "deletePayment": "Supprimer ce paiement ?"
+  "deletePayment": "Supprimer ce paiement ?",
+  "pageTagline": "sur {{total}} réservés"
 }

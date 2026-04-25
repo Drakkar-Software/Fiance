@@ -149,5 +149,7 @@
     "taskReminder": "Reminder: {{title}}",
     "agendaReminder": "Today: {{title}}",
     "agendaReminderWithTime": "In 1 hour: {{title}} at {{time}}"
-  }
+  },
+  "overdueCount_one": "{{count}} overdue",
+  "overdueCount_other": "{{count}} overdue"
 }

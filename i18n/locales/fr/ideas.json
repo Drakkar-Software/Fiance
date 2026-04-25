@@ -45,5 +45,9 @@
   "deleteCollection": "Supprimer cette collection ?",
   "deleteCollectionMsg": "Les idées associées ne seront pas supprimées mais seront désassociées.",
   "nameRequired": "Le nom est obligatoire",
-  "noTitle": "Sans titre"
+  "noTitle": "Sans titre",
+  "pageTagline_one": "{{count}} sauvegardée",
+  "pageTagline_other": "{{count}} sauvegardées",
+  "collectionCount_one": "{{count}} collection",
+  "collectionCount_other": "{{count}} collections"
 }

@@ -24,6 +24,8 @@ import { analytics } from "@/lib/analytics";
 import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { Label } from "@/components/Label";
+import { Sprig } from "@/components/Sprig";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -181,6 +183,12 @@ function DashboardScreen() {
             <Settings size={22} color="rgba(255,255,255,0.85)" />
           </Pressable>
         </View>
+        <View style={{ position: "absolute", top: topInset + 14, right: 58, opacity: 0.4, pointerEvents: "none" }}>
+          <Sprig size={22} color="#fff" angle={16} />
+        </View>
+        <Label color="rgba(255,255,255,0.6)" style={{ marginBottom: 4 }}>
+          {t("common:tabs.home")}
+        </Label>
         <Script size={20} color="rgba(255,255,255,0.75)" weight="400">
           {wedding?.partner1Name && wedding?.partner2Name
             ? `${wedding.partner1Name} & ${wedding.partner2Name}`

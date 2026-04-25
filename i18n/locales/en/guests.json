@@ -130,5 +130,6 @@
   "needsSleeping": "Needs accommodation",
   "needsSleepingDesc": "Enable if guests of this type generally need a room. Helps track guests without an assigned accommodation.",
   "manageMenu": "Manage",
-  "guestsWithType": "{{count}} guest(s)"
+  "guestsWithType": "{{count}} guest(s)",
+  "pageTagline": "people we love"
 }

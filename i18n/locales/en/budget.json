@@ -60,5 +60,6 @@
     "card": "Card",
     "other": "Other"
   },
-  "totalPaid": "Total paid"
+  "totalPaid": "Total paid",
+  "pageTagline": "€ spent"
 }

@@ -14,6 +14,7 @@ import { TimelineItem } from "@/components/TimelineItem";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
+import { Sprig } from "@/components/Sprig";
 
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
   if (Platform.OS !== "web") return;
@@ -183,10 +184,18 @@ export default function WeddingPublicPage() {
           />
 
           {coupleNames ? (
-            <View className="items-center mt-5">
-              <Label size={10} color="#c9922f" style={{ marginBottom: 8 }}>
-                {t("weddingOf")}
-              </Label>
+            <View className="items-center mt-5" style={{ overflow: "visible" }}>
+              <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4 }}>
+                <View style={{ transform: [{ rotate: "-18deg" }], marginRight: 8, marginTop: 4, opacity: 0.7 }}>
+                  <Sprig size={16} color="#c9922f" angle={0} />
+                </View>
+                <Label size={10} color="#c9922f">
+                  {t("withJoy")}
+                </Label>
+                <View style={{ transform: [{ rotate: "18deg" }, { scaleX: -1 }], marginLeft: 8, marginTop: 4, opacity: 0.7 }}>
+                  <Sprig size={16} color="#c9922f" angle={0} />
+                </View>
+              </View>
               <Display size={36} italic style={{ textAlign: "center" }}>
                 {coupleNames}
               </Display>

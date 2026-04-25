@@ -4,6 +4,10 @@ import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Cloud, Users, Globe, BadgeCheck } from "lucide-react-native";
 import { Display } from "@/components/Display";
+import { Label } from "@/components/Label";
+import { Script } from "@/components/Script";
+import { Sprig } from "@/components/Sprig";
+import { Seal } from "@/components/Seal";
 import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduct, refreshEntitlements } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -87,14 +91,23 @@ export default function PremiumScreen() {
       <View className="px-6 pt-8 pb-12">
 
         {/* Hero */}
-        <View className="items-center mb-8">
-          <View className="w-20 h-20 rounded-3xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-4">
-            <Sparkles size={36} color="#b96a4a" />
+        <View className="bg-accent-card rounded-2xl p-6 mb-8 border border-hair items-center" style={{ overflow: "visible" }}>
+          <View style={{ position: "absolute", top: -10, right: 14 }}>
+            <Sprig size={20} angle={14} />
           </View>
-          <Display size={26} italic style={{ textAlign: "center", marginBottom: 8 }}>
-            {t("premiumTitle")}
+          {premium && (
+            <View style={{ position: "absolute", top: -12, left: 14 }}>
+              <Seal label="✓" sublabel={t("premiumUnlocked").toLowerCase().split(" ")[0]} color="#6e7a4a" size={42} angle={-8} />
+            </View>
+          )}
+          <Label style={{ marginBottom: 4 }}>{t("common:tabs.settings")}</Label>
+          <Display size={52} italic color="#b96a4a">
+            49 €
           </Display>
-          <Text className="text-base text-mute text-center leading-6">
+          <Script size={20} color="#6e7a4a" style={{ marginTop: 4 }}>
+            {t("premiumOneTime", { defaultValue: "one-time" })}
+          </Script>
+          <Text className="text-sm text-mute text-center leading-5 mt-3">
             {t("premiumPitch")}
           </Text>
         </View>

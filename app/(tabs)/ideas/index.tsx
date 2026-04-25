@@ -27,6 +27,8 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { SearchBar } from "@/components/SearchBar";
 import { parseLinks } from "@/lib/links";
+import { PageHeader } from "@/components/PageHeader";
+import { Script } from "@/components/Script";
 
 // ─── Category metadata ──────────────────────────────────────────────────────
 
@@ -124,11 +126,17 @@ export default function IdeasScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
+      <PageHeader
+        eyebrow={t("common:tabs.ideas")}
+        title={t("collectionCount", { count: collections.length })}
+        titleSize={22}
+        right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
+      />
       <SearchBar
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchIdea")}
-        className="px-4 pt-4 pb-2"
+        className="px-4 pt-2 pb-2"
         right={
           <Pressable
             onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}

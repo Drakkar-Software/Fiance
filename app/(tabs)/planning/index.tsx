@@ -26,6 +26,8 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { Label } from "@/components/Label";
 import { Display } from "@/components/Display";
 import { TimelineItem } from "@/components/TimelineItem";
+import { PageHeader } from "@/components/PageHeader";
+import { Script } from "@/components/Script";
 import {
   generateDefaultCategories,
   generateTemplateTasks,
@@ -51,6 +53,12 @@ export default function PlanningScreen() {
     : "preparation";
   const [aspect, setAspect] = useState<PlanningAspect>(initialAspect);
 
+  const tasks = usePlanningStore((s) => s.tasks);
+  const overdueCount = useMemo(
+    () => tasks.filter((t) => t.status !== "DONE" && t.dueDate && new Date(t.dueDate) < new Date()).length,
+    [tasks]
+  );
+
   React.useEffect(() => {
     if (ASPECTS.includes(params.aspect as PlanningAspect)) {
       setAspect(params.aspect as PlanningAspect);
@@ -59,6 +67,12 @@ export default function PlanningScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
+      <PageHeader
+        eyebrow={t("common:tabs.planning")}
+        title={t(`aspects.${aspect}`)}
+        titleSize={22}
+        right={overdueCount > 0 ? <Script size={16} color="#EF4444">{t("overdueCount", { count: overdueCount })}</Script> : undefined}
+      />
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
         activeKey={aspect}

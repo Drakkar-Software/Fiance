@@ -18,6 +18,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { InputRow, ChipSelect } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
 import { Display } from "@/components/Display";
+import { PageHeader } from "@/components/PageHeader";
+import { Sprig } from "@/components/Sprig";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
@@ -111,8 +113,18 @@ export default function BudgetScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
+      <PageHeader
+        eyebrow={t("common:tabs.budget")}
+        title={formatMoney(budget.totalEngaged)}
+        tagline={t("pageTagline")}
+        titleSize={44}
+      />
+
       {/* Global summary */}
-      <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-hair">
+      <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-hair" style={{ overflow: "visible" }}>
+        <View style={{ position: "absolute", top: -10, right: 14 }}>
+          <Sprig size={20} color="#c9922f" angle={12} />
+        </View>
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-base font-semibold text-ink">
             {t("globalBudget")}

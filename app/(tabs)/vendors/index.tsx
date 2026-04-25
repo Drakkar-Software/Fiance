@@ -13,6 +13,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { FilterTabs } from "@/components/FilterTabs";
 import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
+import { PageHeader } from "@/components/PageHeader";
+import { ProgressBar } from "@/components/ProgressBar";
 
 const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
 
@@ -22,6 +24,9 @@ export default function VendorsListScreen() {
   const vendors = useVendorsStore((s) => s.vendors);
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
+
+  const bookedVendors = vendors.filter((v) => v.status === "BOOKED");
+  const bookedPct = vendors.length > 0 ? Math.round((bookedVendors.length / vendors.length) * 100) : 0;
 
   const filteredVendors = vendors.filter((v) => {
     if (activeType !== "ALL" && v.type !== activeType) return false;
@@ -50,11 +55,22 @@ export default function VendorsListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
+      <PageHeader
+        eyebrow={t("common:tabs.vendors")}
+        title={bookedVendors.length}
+        tagline={t("pageTagline", { total: vendors.length })}
+        titleSize={44}
+      />
+      {vendors.length > 0 && (
+        <View className="px-4 pb-2">
+          <ProgressBar value={bookedVendors.length} max={vendors.length} />
+        </View>
+      )}
       <SearchBar
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchVendor")}
-        className="px-4 pt-4"
+        className="px-4 pt-2"
       />
 
       {/* Type filter tabs */}
