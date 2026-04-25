@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -25,7 +25,6 @@ import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
-import { PageHeader } from "@/components/PageHeader";
 import type { Guest } from "@/db/schema";
 
 type InviteAspect = "guests" | "groups" | "tables";
@@ -39,14 +38,7 @@ export default function GuestsListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      {Platform.OS === 'web' && (
-        <PageHeader
-          eyebrow={t("common:tabs.guests")}
-          title={counts.total}
-          tagline={t("pageTagline")}
-          titleSize={48}
-        />
-      )}
+
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },

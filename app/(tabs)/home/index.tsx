@@ -193,6 +193,7 @@ function DashboardScreen() {
               eyebrow={t("common:homeEyebrow")}
               title={daysUntil}
               tagline={t("common:homeTagline")}
+              taglineColor="rgba(255,255,255,0.75)"
               titleSize={72}
               style={{ paddingHorizontal: 0, paddingTop: 0 }}
             />
