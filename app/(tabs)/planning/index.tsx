@@ -71,7 +71,6 @@ export default function PlanningScreen() {
         eyebrow={t("common:tabs.planning")}
         title={t(`aspects.${aspect}`)}
         titleSize={22}
-        safeAreaTop
         right={overdueCount > 0 ? <Script size={16} color="#EF4444">{t("overdueCount", { count: overdueCount })}</Script> : undefined}
       />
       <SegmentedControl

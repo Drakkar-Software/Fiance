@@ -167,7 +167,7 @@ export default function GuestDetailScreen() {
     <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
-          headerTitle: () => null,
+          title: firstName || lastName ? `${firstName} ${lastName}`.trim() : "",
           headerRight: () => (
             <SaveHeaderButton label={t("common:save")} enabled={canSave} onPress={handleSave} />
           ),

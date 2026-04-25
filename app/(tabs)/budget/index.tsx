@@ -118,7 +118,6 @@ export default function BudgetScreen() {
         title={formatMoney(budget.totalEngaged)}
         tagline={t("pageTagline")}
         titleSize={44}
-        safeAreaTop
       />
 
       {/* Global summary */}
