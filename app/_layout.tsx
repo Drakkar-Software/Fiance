@@ -153,23 +153,28 @@ const crashFallback = (
 );
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    Fraunces_300Light,
-    Fraunces_400Regular,
-    Fraunces_400Regular_Italic,
-    Fraunces_500Medium,
-    Fraunces_500Medium_Italic,
-    Fraunces_600SemiBold,
-    Fraunces_600SemiBold_Italic,
-    Fraunces_700Bold,
-    Caveat_400Regular,
-    Caveat_500Medium,
-    Caveat_700Bold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
+  // On web, fonts are loaded via Google Fonts <link> in +html.tsx — skip TTF bundling
+  const [fontsLoaded] = useFonts(
+    Platform.OS === "web"
+      ? {}
+      : {
+          Fraunces_300Light,
+          Fraunces_400Regular,
+          Fraunces_400Regular_Italic,
+          Fraunces_500Medium,
+          Fraunces_500Medium_Italic,
+          Fraunces_600SemiBold,
+          Fraunces_600SemiBold_Italic,
+          Fraunces_700Bold,
+          Caveat_400Regular,
+          Caveat_500Medium,
+          Caveat_700Bold,
+          Inter_400Regular,
+          Inter_500Medium,
+          Inter_600SemiBold,
+          Inter_700Bold,
+        }
+  );
 
   const loadRegistry = useWeddingRegistryStore((s) => s.load);
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
