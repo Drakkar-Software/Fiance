@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
+import { Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChevronUp, ChevronDown, Target } from "lucide-react-native";
@@ -113,12 +114,14 @@ export default function BudgetScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
-      <PageHeader
-        eyebrow={t("common:tabs.budget")}
-        title={formatMoney(budget.totalEngaged)}
-        tagline={t("pageTagline")}
-        titleSize={44}
-      />
+      {Platform.OS === 'web' && (
+        <PageHeader
+          eyebrow={t("common:tabs.budget")}
+          title={formatMoney(budget.totalEngaged)}
+          tagline={t("pageTagline")}
+          titleSize={44}
+        />
+      )}
 
       {/* Global summary */}
       <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-hair" style={{ overflow: "visible" }}>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Briefcase, Ellipsis } from "lucide-react-native";
@@ -55,12 +56,14 @@ export default function VendorsListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <PageHeader
-        eyebrow={t("common:tabs.vendors")}
-        title={bookedVendors.length}
-        tagline={t("pageTagline", { total: vendors.length })}
-        titleSize={44}
-      />
+      {Platform.OS === 'web' && (
+        <PageHeader
+          eyebrow={t("common:tabs.vendors")}
+          title={bookedVendors.length}
+          tagline={t("pageTagline", { total: vendors.length })}
+          titleSize={44}
+        />
+      )}
       {vendors.length > 0 && (
         <View className="px-4 pb-2">
           <ProgressBar value={bookedVendors.length} max={vendors.length} />

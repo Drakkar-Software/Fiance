@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -39,12 +39,14 @@ export default function GuestsListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <PageHeader
-        eyebrow={t("common:tabs.guests")}
-        title={counts.total}
-        tagline={t("pageTagline")}
-        titleSize={48}
-      />
+      {Platform.OS === 'web' && (
+        <PageHeader
+          eyebrow={t("common:tabs.guests")}
+          title={counts.total}
+          tagline={t("pageTagline")}
+          titleSize={48}
+        />
+      )}
       <SegmentedControl
         segments={[
           { key: "guests", label: t("common:tabs.guests") },

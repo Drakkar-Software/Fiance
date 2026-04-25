@@ -245,12 +245,14 @@ export default function SettingsScreen() {
       {/* Page header */}
       <View className="px-4 pt-5 pb-3 flex-row items-start">
         <View style={{ flex: 1 }}>
-          <PageHeader
-            eyebrow={t("common:tabs.settings")}
-            title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
-            titleSize={28}
-            style={{ paddingHorizontal: 0, paddingTop: 0 }}
-          />
+          {Platform.OS === 'web' && (
+            <PageHeader
+              eyebrow={t("common:tabs.settings")}
+              title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
+              titleSize={28}
+              style={{ paddingHorizontal: 0, paddingTop: 0 }}
+            />
+          )}
         </View>
         <Postit angle={-3} style={{ marginTop: 2 }}>{t("postit")}</Postit>
       </View>

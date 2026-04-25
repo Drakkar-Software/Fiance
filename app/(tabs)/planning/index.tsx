@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert, Share } from "react-native";
+import { Alert, Platform, Share } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -67,12 +67,14 @@ export default function PlanningScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <PageHeader
-        eyebrow={t("common:tabs.planning")}
-        title={t(`aspects.${aspect}`)}
-        titleSize={22}
-        right={overdueCount > 0 ? <Script size={16} color="#EF4444">{t("overdueCount", { count: overdueCount })}</Script> : undefined}
-      />
+      {Platform.OS === 'web' && (
+        <PageHeader
+          eyebrow={t("common:tabs.planning")}
+          title={t(`aspects.${aspect}`)}
+          titleSize={22}
+          right={overdueCount > 0 ? <Script size={16} color="#EF4444">{t("overdueCount", { count: overdueCount })}</Script> : undefined}
+        />
+      )}
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
         activeKey={aspect}

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { FlatList, useWindowDimensions } from "react-native";
+import { FlatList, Platform, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -126,12 +126,14 @@ export default function IdeasScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
-      <PageHeader
-        eyebrow={t("common:tabs.ideas")}
-        title={t("collectionCount", { count: collections.length })}
-        titleSize={22}
-        right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
-      />
+      {Platform.OS === 'web' && (
+        <PageHeader
+          eyebrow={t("common:tabs.ideas")}
+          title={t("collectionCount", { count: collections.length })}
+          titleSize={22}
+          right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
+        />
+      )}
       <SearchBar
         value={search}
         onChangeText={setSearch}
