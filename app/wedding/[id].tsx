@@ -11,6 +11,9 @@ import { printPublicSchedule } from "@/lib/print-schedule";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
 import { resolveServerUrl } from "@/lib/server";
 import { TimelineItem } from "@/components/TimelineItem";
+import { Display } from "@/components/Display";
+import { Label } from "@/components/Label";
+import { Script } from "@/components/Script";
 
 function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
   if (Platform.OS !== "web") return;
@@ -181,12 +184,12 @@ export default function WeddingPublicPage() {
 
           {coupleNames ? (
             <View className="items-center mt-5">
-              <Text className="text-xs uppercase tracking-[3px] text-accent-gold font-medium mb-2">
+              <Label size={10} color="#c9922f" style={{ marginBottom: 8 }}>
                 {t("weddingOf")}
-              </Text>
-              <Text className="text-3xl font-bold text-gray-900 text-center leading-tight">
+              </Label>
+              <Display size={36} italic style={{ textAlign: "center" }}>
                 {coupleNames}
-              </Text>
+              </Display>
             </View>
           ) : null}
 
@@ -227,9 +230,9 @@ export default function WeddingPublicPage() {
           <View className="mt-2 pb-4">
             <View className="flex-row items-center gap-2 px-5 mb-4">
               <Clock size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900 flex-1">
+              <Display size={20} italic style={{ flex: 1 }}>
                 {t("timeline")}
-              </Text>
+              </Display>
               <Pressable
                 onPress={handlePrintSchedule}
                 className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/60 active:opacity-70"
@@ -254,9 +257,9 @@ export default function WeddingPublicPage() {
                     <TimelineItem
                       key={item.id}
                       left={
-                        <Text className="text-sm font-bold text-accent-gold mt-3.5">
+                        <Display size={14} weight="500" color="#c9922f" style={{ marginTop: 14 }}>
                           {item.time}
-                        </Text>
+                        </Display>
                       }
                       showConnector={idx < dateItems.length - 1}
                     >
@@ -303,9 +306,9 @@ export default function WeddingPublicPage() {
 
             <View className="flex-row items-center gap-2 px-1 mb-4">
               <HelpCircle size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900">
+              <Display size={20} italic>
                 {t("faq")}
-              </Text>
+              </Display>
             </View>
 
             {faq.map((item, index) => (
@@ -336,9 +339,9 @@ export default function WeddingPublicPage() {
 
             <View className="flex-row items-center gap-2 px-1 mb-4">
               <Gift size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900">
+              <Display size={20} italic>
                 {t("giftRegistry")}
-              </Text>
+              </Display>
             </View>
 
             {publicGifts.map((gift) => (
@@ -380,7 +383,7 @@ export default function WeddingPublicPage() {
 
             <View className="flex-row items-center gap-2 px-1 mb-4">
               <Calendar size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900">{t("rsvp")}</Text>
+              <Display size={20} italic>{t("rsvp")}</Display>
             </View>
 
             {submitted ? (
@@ -388,7 +391,7 @@ export default function WeddingPublicPage() {
                 <View className="w-16 h-16 rounded-full bg-green-50 items-center justify-center mb-3">
                   <CheckCircle2 size={40} color="#10B981" />
                 </View>
-                <Text className="text-lg font-bold text-gray-900 text-center">{t("rsvpSuccess")}</Text>
+                <Display size={20} italic style={{ textAlign: "center" }}>{t("rsvpSuccess")}</Display>
                 <Text className="text-sm text-gray-400 mt-1 text-center">
                   {selectedGuest?.firstName} {selectedGuest?.lastName}
                 </Text>
@@ -603,9 +606,9 @@ export default function WeddingPublicPage() {
             </View>
             <View className="flex-row items-center gap-2 px-1 mb-4">
               <Camera size={18} color="#C9956B" />
-              <Text className="text-lg font-bold text-gray-900">
+              <Display size={20} italic>
                 {t("eventPhotos")}
-              </Text>
+              </Display>
             </View>
             <View
               className="bg-white rounded-2xl p-6 items-center shadow-sm"
