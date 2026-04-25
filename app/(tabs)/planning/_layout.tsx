@@ -15,11 +15,11 @@ export default function PlanningLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Planning" }} />
-      <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="[id]" options={{ title: "" }} />
       <Stack.Screen name="categories" options={{ title: "Catégories" }} />
-      <Stack.Screen name="agenda-event" options={{ title: "Rendez-vous" }} />
-      <Stack.Screen name="day-of-item" options={{ title: "Jour J" }} />
+      <Stack.Screen name="agenda-event" options={{ title: "" }} />
+      <Stack.Screen name="day-of-item" options={{ title: "" }} />
     </Stack>
   );
 }

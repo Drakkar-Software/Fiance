@@ -15,9 +15,9 @@ export default function IdeesLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Idées & Déco" }} />
-      <Stack.Screen name="[id]" options={{ title: "Idée" }} />
-      <Stack.Screen name="collections" options={{ title: "Collections" }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="[id]" options={{ title: "" }} />
+      <Stack.Screen name="collections" options={{ title: "" }} />
     </Stack>
   );
 }

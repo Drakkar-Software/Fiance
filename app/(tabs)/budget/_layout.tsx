@@ -15,7 +15,7 @@ export default function BudgetLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Budget" }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
 }
