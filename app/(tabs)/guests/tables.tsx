@@ -9,6 +9,8 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { PlanView } from "@/components/SeatingPlanView";
+import { PageHeader } from "@/components/PageHeader";
+import { Script } from "@/components/Script";
 
 export default function TablesScreen() {
   const { t } = useTranslation("guests");
@@ -94,11 +96,19 @@ export default function TablesScreen() {
           onAction={() => setShowAdd(true)}
         />
       ) : (
-        <PlanView
-          tables={tables}
-          guests={guests}
-          updateTable={(id, updates) => useGuestsStore.getState().updateTable(id, updates)}
-        />
+        <>
+          <PageHeader
+            eyebrow={t("seatingTitle")}
+            title={`${tables.length} / ${tables.reduce((s, tbl) => s + (tbl.capacity ?? 0), 0)}`}
+            titleSize={22}
+            right={<Script size={14} color="#c9922f">auto-fit</Script>}
+          />
+          <PlanView
+            tables={tables}
+            guests={guests}
+            updateTable={(id, updates) => useGuestsStore.getState().updateTable(id, updates)}
+          />
+        </>
       )}
 
       <FAB onPress={() => setShowAdd(true)} />

@@ -8,6 +8,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { PlanView } from "@/components/SeatingPlanView";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { PageHeader } from "@/components/PageHeader";
 import { theme as GP } from "@/lib/theme";
 
 export default function SeatingScreen() {
@@ -27,6 +28,14 @@ export default function SeatingScreen() {
         <Display size={20} italic>{t("seatingPlan")}</Display>
         <View style={{ width: 60 }} />
       </View>
+
+      {/* Page header */}
+      <PageHeader
+        eyebrow={t("seatingTitle")}
+        title={`${tables.length} / ${tables.reduce((s, tbl) => s + (tbl.capacity ?? 0), 0)}`}
+        titleSize={22}
+        right={<Script size={14} color="#c9922f">auto-fit</Script>}
+      />
 
       {/* Seating plan canvas */}
       <View style={{ flex: 1 }}>

@@ -11,6 +11,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow } from "@/components/FormSection";
 import { Display } from "@/components/Display";
+import { PageHeader } from "@/components/PageHeader";
+import { Sprig } from "@/components/Sprig";
 import type { Accommodation } from "@/db/schema";
 
 type FormState = {
@@ -142,8 +144,22 @@ export default function AccommodationsScreen() {
         />
       ) : (
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+          <PageHeader
+            eyebrow={t("accommodations")}
+            title={assignedCount}
+            tagline={t("accommodationsTagline", { total: totalRooms })}
+            titleSize={48}
+          />
+
           {/* Summary banner */}
           {totalRooms > 0 && (
+            <View style={{ position: "relative" }}>
+              <Sprig
+                size={52}
+                color="#6e7a4a"
+                angle={12}
+                style={{ position: "absolute", top: -10, right: 14, zIndex: 1 }}
+              />
             <View className="bg-accent-card rounded-2xl px-4 py-3 mb-4 border border-hair flex-row justify-around">
               <View className="items-center">
                 <Display size={22} weight="400">{totalRooms}</Display>
@@ -157,6 +173,7 @@ export default function AccommodationsScreen() {
                 <Display size={22} weight="400" color={remaining < 0 ? "#EF4444" : remaining === 0 ? "#F59E0B" : "#10B981"}>{remaining}</Display>
                 <Text className="text-xs text-mute">{t("remaining")}</Text>
               </View>
+            </View>
             </View>
           )}
 
