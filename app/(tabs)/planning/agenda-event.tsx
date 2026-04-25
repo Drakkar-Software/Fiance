@@ -74,7 +74,7 @@ export default function AgendaEventScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew ? t("newAppointment") : title || t("appointment"),

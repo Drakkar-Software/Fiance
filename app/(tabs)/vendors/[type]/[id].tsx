@@ -136,7 +136,7 @@ export default function VendorDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew ? t("new", { type: typeName }) : name || typeName,
@@ -154,7 +154,7 @@ export default function VendorDetailScreen() {
             <Pressable
               key={tab}
               onPress={() => setActiveTab(tab)}
-              className={`flex-1 py-2 rounded-lg items-center ${activeTab === tab ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+              className={`flex-1 py-2 rounded-lg items-center ${activeTab === tab ? "bg-accent-card shadow-sm" : ""}`}
             >
               <Text className={`text-sm font-medium ${activeTab === tab ? "text-primary-500" : "text-gray-400"}`}>
                 {t(tabKeys[tab])}
@@ -354,7 +354,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       {payments.map((p) => (
         <View
           key={p.id}
-          className="bg-white dark:bg-gray-900 rounded-xl p-3.5 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center"
+          className="bg-accent-card rounded-xl p-3.5 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center"
         >
           <View className="flex-1">
             <Text className="text-base font-semibold text-gray-900 dark:text-white">

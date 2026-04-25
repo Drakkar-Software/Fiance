@@ -131,7 +131,7 @@ export default function AccommodationsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       {accommodations.length === 0 && !showAdd ? (
         <EmptyState
           icon={Home}
@@ -144,7 +144,7 @@ export default function AccommodationsScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {/* Summary banner */}
           {totalRooms > 0 && (
-            <View className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 mb-4 border border-gray-100 dark:border-gray-800 flex-row justify-around">
+            <View className="bg-accent-card rounded-2xl px-4 py-3 mb-4 border border-gray-100 dark:border-gray-800 flex-row justify-around">
               <View className="items-center">
                 <Display size={22} weight="400">{totalRooms}</Display>
                 <Text className="text-xs text-gray-400">{t("roomCount")}</Text>
@@ -162,7 +162,7 @@ export default function AccommodationsScreen() {
 
           {/* Add form */}
           {showAdd && (
-            <View className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
+            <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
               <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{t("newAccommodation")}</Text>
               <FormCard>
                 {formFields}
@@ -188,7 +188,7 @@ export default function AccommodationsScreen() {
 
             if (editingId === acc.id) {
               return (
-                <View key={acc.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
+                <View key={acc.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
                   <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{acc.name}</Text>
                   <FormCard>
                     {formFields}
@@ -206,7 +206,7 @@ export default function AccommodationsScreen() {
             }
 
             return (
-              <View key={acc.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
+              <View key={acc.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
                 {/* Header row */}
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center flex-1">

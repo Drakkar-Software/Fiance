@@ -41,10 +41,10 @@ export default function TablesScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       {/* Add table form */}
       {showAdd && (
-        <View className="mx-4 mt-4 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
+        <View className="mx-4 mt-4 bg-accent-card rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
           <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
             {t("newTable")}
           </Text>

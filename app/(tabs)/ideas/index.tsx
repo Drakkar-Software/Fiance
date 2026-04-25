@@ -152,7 +152,7 @@ export default function IdeasScreen() {
             className={`flex-row items-center px-3.5 py-2 rounded-xl border ${
               activeCategory
                 ? "border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                : "border-gray-200 dark:border-gray-700 bg-accent-card"
             }`}
           >
             {activeCategory && (
@@ -209,7 +209,7 @@ export default function IdeasScreen() {
                   className={`px-3 py-1.5 rounded-full border ${
                     collectionFilter === c.id
                       ? "bg-primary-500 border-primary-500"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                      : "bg-accent-card border-gray-200 dark:border-gray-700"
                   }`}
                 >
                   <Text
@@ -232,7 +232,7 @@ export default function IdeasScreen() {
       {/* Category picker grid */}
       {showCategoryPicker && (
         <View className="px-4 pb-3">
-          <View className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-3">
+          <View className="bg-accent-card rounded-2xl border border-gray-100 dark:border-gray-800 p-3">
             <View className="flex-row flex-wrap" style={{ gap: 8 }}>
               {CATEGORIES.map((cat) => {
                 const Icon = CATEGORY_ICONS[cat];
@@ -336,7 +336,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
     >
       <View className="p-3">
         {/* Title + favorite */}

@@ -360,7 +360,7 @@ function DashboardScreen() {
         <View className="flex-row gap-3 mb-3">
           <Pressable
             onPress={() => router.push("/(tabs)/guests")}
-            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+            className="flex-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-pink-900 items-center justify-center mr-2.5">
@@ -385,7 +385,7 @@ function DashboardScreen() {
           </Pressable>
           <Pressable
             onPress={() => router.push("/(tabs)/planning")}
-            className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+            className="flex-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">

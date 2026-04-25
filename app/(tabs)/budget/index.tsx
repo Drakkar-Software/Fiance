@@ -213,7 +213,7 @@ export default function BudgetScreen() {
       {/* Category targets */}
       <Pressable
         onPress={() => setShowTargets((v) => !v)}
-        className="mx-4 mt-3 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center justify-between"
+        className="mx-4 mt-3 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-2">
           <Target size={17} color="#b96a4a" />
@@ -225,7 +225,7 @@ export default function BudgetScreen() {
       </Pressable>
 
       {showTargets && (
-        <View className="mx-4 mt-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
+        <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
           {/* Template picker */}
           {budget.budgetTarget > 0 && (
             <View className="mb-4">
@@ -419,7 +419,7 @@ export default function BudgetScreen() {
               .map((c) => (
                 <View
                   key={c.categoryName}
-                  className="px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-full"
+                  className="px-3 py-1.5 bg-accent-card border border-gray-100 dark:border-gray-800 rounded-full"
                 >
                   <Text className="text-sm text-gray-400">
                     {t(BUDGET_CATEGORY_LABELS[c.categoryName])}
@@ -446,7 +446,7 @@ export default function BudgetScreen() {
             return (
               <View
                 key={idx}
-                className={`bg-white dark:bg-gray-900 rounded-xl p-3.5 mb-2 border active:opacity-80 ${
+                className={`bg-accent-card rounded-xl p-3.5 mb-2 border active:opacity-80 ${
                   isUrgent
                     ? "border-red-200 dark:border-red-800"
                     : "border-gray-100 dark:border-gray-800"

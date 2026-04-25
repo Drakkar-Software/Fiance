@@ -23,7 +23,7 @@ export default function VendorTypeListScreen() {
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen options={{ title: typeName }} />
 
       {vendors.length === 0 ? (
@@ -50,7 +50,7 @@ export default function VendorTypeListScreen() {
                   params: { type: vendor.type, id: vendor.id },
                 })
               }
-              className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm active:opacity-80"
+              className="bg-accent-card rounded-xl p-4 mb-3 shadow-sm active:opacity-80"
             >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1">

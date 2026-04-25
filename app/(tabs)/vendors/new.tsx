@@ -40,7 +40,7 @@ export default function NewVendorPickerScreen() {
                   <Pressable
                     key={type}
                     onPress={() => handleSelect(type)}
-                    className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 active:opacity-80 items-center justify-center"
+                    className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 active:opacity-80 items-center justify-center"
                     style={{ width: "47%" }}
                   >
                     <View className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-2">

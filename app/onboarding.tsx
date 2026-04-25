@@ -70,7 +70,7 @@ export default function OnboardingScreen() {
 function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
   const { t } = useTranslation("common");
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
+    <View className="flex-1 bg-accent-paper justify-center px-6">
       <View className="items-center mb-10">
         <Image
           source={require("@/assets/icon.png")}
@@ -99,7 +99,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
 
       <Pressable
         onPress={() => onSelect("join")}
-        className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
           <Link size={20} color="#b96a4a" />
@@ -139,7 +139,7 @@ function CreateWeddingForm({
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      className="flex-1 bg-accent-paper"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
@@ -161,7 +161,7 @@ function CreateWeddingForm({
           {t("onboarding.weddingNameLabel")}
         </Text>
         <TextInput
-          className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
+          className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
           placeholder={t("onboarding.weddingNamePlaceholder")}
           placeholderTextColor="#C0C0C8"
           value={label}
@@ -224,7 +224,7 @@ function JoinWeddingForm({
   if (initialPassword) {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        className="flex-1 bg-accent-paper"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
@@ -243,7 +243,7 @@ function JoinWeddingForm({
             {t("onboarding.weddingNameLabel")}
           </Text>
           <TextInput
-            className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
+            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
             placeholder={t("onboarding.weddingNamePlaceholder")}
             placeholderTextColor="#C0C0C8"
             value={label}
@@ -273,7 +273,7 @@ function JoinWeddingForm({
 
   // Manual path: scan QR code
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <ScrollView
         className="flex-1 px-6"
         contentContainerStyle={{ justifyContent: "center", flexGrow: 1 }}

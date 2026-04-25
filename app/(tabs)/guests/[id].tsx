@@ -207,7 +207,7 @@ export default function GuestDetailScreen() {
             className={`px-3.5 py-2.5 rounded-xl border flex-row items-center ${
               companionId
                 ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
-                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-gray-200 dark:border-gray-700"
             }`}
           >
             {companionId ? (

@@ -119,7 +119,7 @@ export default function EventPhotosScreen() {
               <Pressable
                 onPress={handleAdd}
                 style={{ width: photoSize, height: photoSize }}
-                className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 items-center justify-center bg-white dark:bg-gray-900 active:opacity-70"
+                className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 items-center justify-center bg-accent-card active:opacity-70"
               >
                 <Plus size={24} color="#9CA3AF" />
               </Pressable>

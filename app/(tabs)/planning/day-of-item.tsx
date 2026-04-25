@@ -81,7 +81,7 @@ export default function DayOfItemScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew ? t("newMoment") : title || t("dayOf"),

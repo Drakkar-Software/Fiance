@@ -135,7 +135,7 @@ export default function IdeaDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew ? t("newIdea") : title || t("idea"),
@@ -261,7 +261,7 @@ export default function IdeaDetailScreen() {
                 className={`flex-row items-center px-3 py-2 rounded-xl border ${
                   isActive
                     ? "border-primary-300 dark:border-primary-700"
-                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                    : "border-gray-200 dark:border-gray-700 bg-accent-card"
                 }`}
                 style={isActive ? { backgroundColor: color + "15" } : {}}
               >

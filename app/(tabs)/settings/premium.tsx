@@ -100,7 +100,7 @@ export default function PremiumScreen() {
         </View>
 
         {/* Benefits */}
-        <View className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden mb-6">
+        <View className="bg-accent-card rounded-2xl overflow-hidden mb-6">
           {BENEFITS.map(({ key, icon: Icon }, i) => (
             <View
               key={key}

@@ -185,7 +185,7 @@ export default function PublicPageScreen() {
             </Text>
             <Pressable
               onPress={publishingRoster ? undefined : handlePublishRoster}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
             >
               <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
                 <Send size={18} color="#b96a4a" />
@@ -201,7 +201,7 @@ export default function PublicPageScreen() {
             </Pressable>
             <Pressable
               onPress={syncingRsvp ? undefined : handleSyncRsvp}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-80"
             >
               <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
                 <RefreshCw size={18} color="#10B981" />
@@ -247,7 +247,7 @@ export default function PublicPageScreen() {
             )}
           </View>
         ) : (
-          <View className="bg-white dark:bg-gray-900 rounded-2xl p-5 mb-3 border border-gray-100 dark:border-gray-800 items-center">
+          <View className="bg-accent-card rounded-2xl p-5 mb-3 border border-gray-100 dark:border-gray-800 items-center">
             <Clock size={32} color="#D1D5DB" />
             <Text className="text-sm text-gray-400 text-center mt-2">
               {t("timelinePreviewEmpty")}
@@ -318,7 +318,7 @@ export default function PublicPageScreen() {
                 }
               } catch {}
             }}
-            className="bg-white dark:bg-gray-900 rounded-2xl py-3.5 flex-row items-center justify-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+            className="bg-accent-card rounded-2xl py-3.5 flex-row items-center justify-center border border-gray-200 dark:border-gray-700 active:opacity-80"
           >
             <Eye size={18} color="#6B7280" />
             <Text className="text-gray-600 dark:text-gray-300 font-medium text-base ml-2">
@@ -351,7 +351,7 @@ function PreviewTimelineCard({ item, idx, total, router, t }: {
       showConnector={idx < total - 1}
       onPress={() => router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: item.id } })}
     >
-      <View className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
         <Text className="text-base font-medium text-gray-900 dark:text-white">{item.title}</Text>
         {item.endTime && (
           <Text className="text-xs text-gray-400 mt-0.5">{t("timelineUntil", { time: item.endTime })}</Text>

@@ -92,7 +92,7 @@ function AutoJoin({
   useEffect(() => { onJoin(name, password, memberId); }, []);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950 items-center justify-center">
+    <View className="flex-1 bg-accent-paper items-center justify-center">
       <ActivityIndicator size="large" color="#b96a4a" />
     </View>
   );
@@ -103,7 +103,7 @@ function InvalidInvite() {
   const router = useRouter();
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
+    <View className="flex-1 bg-accent-paper justify-center px-6">
       <View className="items-center mb-10">
         <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900 items-center justify-center mb-5">
           <AlertCircle size={36} color="#EF4444" />
@@ -114,7 +114,7 @@ function InvalidInvite() {
       </View>
       <Pressable
         onPress={() => router.replace("/")}
-        className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
           <ArrowLeft size={20} color="#b96a4a" />
@@ -138,7 +138,7 @@ function ConfirmJoin({
   const router = useRouter();
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950 justify-center px-6">
+    <View className="flex-1 bg-accent-paper justify-center px-6">
       <View className="items-center mb-10">
         <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
           <Heart size={36} color="#b96a4a" />
@@ -166,7 +166,7 @@ function ConfirmJoin({
 
       <Pressable
         onPress={() => router.replace("/")}
-        className="bg-white dark:bg-gray-900 rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
       >
         <View className="flex-row items-center">
           <ArrowLeft size={20} color="#b96a4a" />

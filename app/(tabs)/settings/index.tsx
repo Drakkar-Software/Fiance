@@ -345,7 +345,7 @@ export default function SettingsScreen() {
           return (
             <View
               key={w.id}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border flex-row items-center ${
+              className={`bg-accent-card rounded-2xl p-4 mb-2 border flex-row items-center ${
                 isActive
                   ? "border-primary-300 dark:border-primary-700"
                   : "border-gray-100 dark:border-gray-800"
@@ -402,7 +402,7 @@ export default function SettingsScreen() {
         })}
         <Pressable
           onPress={() => setShowCreateConfirm(true)}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
+          className="bg-accent-card rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
         >
           <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper dark:bg-gray-800">
             <PlusCircle size={20} color="#9CA3AF" />
@@ -458,7 +458,7 @@ export default function SettingsScreen() {
             className={`flex-1 py-3 rounded-2xl items-center border ${
               language === "fr"
                 ? "bg-primary-500 border-primary-500"
-                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-gray-200 dark:border-gray-700"
             }`}
           >
             <Text className={`text-base font-medium ${language === "fr" ? "text-white" : "text-gray-500"}`}>
@@ -470,7 +470,7 @@ export default function SettingsScreen() {
             className={`flex-1 py-3 rounded-2xl items-center border ${
               language === "en"
                 ? "bg-primary-500 border-primary-500"
-                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-gray-200 dark:border-gray-700"
             }`}
           >
             <Text className={`text-base font-medium ${language === "en" ? "text-white" : "text-gray-500"}`}>
@@ -491,7 +491,7 @@ export default function SettingsScreen() {
               className={`flex-1 py-3 rounded-2xl items-center border ${
                 colorScheme === scheme
                   ? "bg-primary-500 border-primary-500"
-                  : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-gray-200 dark:border-gray-700"
               }`}
             >
               <Text
@@ -534,7 +534,7 @@ export default function SettingsScreen() {
       {/* About */}
       <View className="px-4 mt-4 mb-8">
         <SectionTitle>{t("about")}</SectionTitle>
-        <View className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+        <View className="bg-accent-card rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
           <Text className="text-base font-semibold text-gray-900 dark:text-white">
             Fiancé
           </Text>

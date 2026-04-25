@@ -40,10 +40,10 @@ export default function CollectionsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {showAdd && (
-          <View className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-4">
+          <View className="bg-accent-card rounded-xl p-4 mb-4">
             <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
               {t("newCollection")}
             </Text>
@@ -84,7 +84,7 @@ export default function CollectionsScreen() {
           return (
             <View
               key={col.id}
-              className="bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 shadow-sm"
+              className="bg-accent-card rounded-xl p-4 mb-3 shadow-sm"
             >
               <View className="flex-row items-center justify-between">
                 <View className="flex-1">

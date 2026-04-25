@@ -113,7 +113,7 @@ export default function TaskDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
+    <View className="flex-1 bg-accent-paper">
       <Stack.Screen
         options={{
           title: isNew ? t("newTask") : title || t("task"),
@@ -168,7 +168,7 @@ export default function TaskDetailScreen() {
               key={p}
               onPress={() => setPriority(p)}
               className={`px-3 py-2 rounded-full flex-1 items-center border ${
-                priority === p ? "border-transparent" : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                priority === p ? "border-transparent" : "border-gray-200 dark:border-gray-700 bg-accent-card"
               }`}
               style={
                 priority === p
