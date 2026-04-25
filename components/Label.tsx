@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, type TextStyle } from "react-native";
+import { Platform, Text, type TextStyle } from "react-native";
 import { theme as GP } from "@/lib/theme";
 
 type Props = {
@@ -14,7 +14,8 @@ export function Label({ children, size = 9, color, style }: Props) {
     <Text
       style={[
         {
-          fontFamily: "Inter_600SemiBold",
+          fontFamily: Platform.OS === "web" ? "Inter" : "Inter_600SemiBold",
+          fontWeight: Platform.OS === "web" ? "600" : undefined,
           fontSize: size,
           letterSpacing: 0.18 * size,
           textTransform: "uppercase",

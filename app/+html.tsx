@@ -85,6 +85,14 @@ export default function Root({ children }: PropsWithChildren) {
           }}
         />
 
+        {/* Garden Press typefaces via Google Fonts — avoids TTF bundling on web */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Caveat:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap"
+        />
+
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/assets/favicon.png" />
         <link rel="apple-touch-icon" href="/assets/icon.png" />
