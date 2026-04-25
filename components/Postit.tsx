@@ -15,6 +15,7 @@ export function Postit({ children, angle = -2, color, size = "md", style }: Prop
   const isSm = size === "sm";
   return (
     <View
+      pointerEvents="none"
       style={[
         {
           backgroundColor: color ?? GP.postit,

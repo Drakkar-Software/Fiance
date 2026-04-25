@@ -9,9 +9,11 @@ type Props = {
   weight?: "300" | "400" | "500" | "600" | "700";
   color?: string;
   style?: TextStyle;
+  numberOfLines?: number;
+  adjustsFontSizeToFit?: boolean;
 };
 
-export function Display({ children, size = 28, italic = false, weight = "400", color, style }: Props) {
+export function Display({ children, size = 28, italic = false, weight = "400", color, style, numberOfLines, adjustsFontSizeToFit }: Props) {
   const fontMap: Record<string, string> = {
     "300": italic ? "Fraunces_300Light" : "Fraunces_300Light",
     "400": italic ? "Fraunces_400Regular_Italic" : "Fraunces_400Regular",
@@ -21,6 +23,8 @@ export function Display({ children, size = 28, italic = false, weight = "400", c
   };
   return (
     <Text
+      numberOfLines={numberOfLines}
+      adjustsFontSizeToFit={adjustsFontSizeToFit}
       style={[
         {
           fontFamily: fontMap[weight],
