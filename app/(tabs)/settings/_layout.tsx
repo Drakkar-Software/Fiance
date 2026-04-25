@@ -17,13 +17,13 @@ export default function SettingsLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="public-page" options={{ title: "" }} />
-      <Stack.Screen name="event-photos" options={{ title: "" }} />
-      <Stack.Screen name="faq" options={{ title: "" }} />
-      <Stack.Screen name="gifts" options={{ title: "" }} />
+      <Stack.Screen name="index" options={{ title: t("settingsTitle") }} />
+      <Stack.Screen name="public-page" options={{ title: t("publicPageTitle") }} />
+      <Stack.Screen name="event-photos" options={{ title: t("eventPhotosTitle") }} />
+      <Stack.Screen name="faq" options={{ title: t("configureFaq") }} />
+      <Stack.Screen name="gifts" options={{ title: t("giftRegistry") }} />
       <Stack.Screen name="export-import" options={{ title: t("exportImportTitle") }} />
-      <Stack.Screen name="premium" options={{ title: "" }} />
+      <Stack.Screen name="premium" options={{ title: t("premiumTitle") }} />
     </Stack>
   );
 }
