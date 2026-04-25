@@ -138,19 +138,19 @@ export default function TaskDetailScreen() {
         {/* Title & description */}
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
-          <View className="border-b border-gray-50 dark:border-gray-800 pb-3 mb-3">
-            <Text className="text-xs text-gray-400 mb-1 font-medium">{t("titleLabel")}</Text>
+          <View className="border-b border-hair pb-3 mb-3">
+            <Text className="text-xs text-mute mb-1 font-medium">{t("titleLabel")}</Text>
             <TextInput
-              className="text-base text-gray-900 dark:text-white"
+              className="text-base text-ink"
               value={title}
               onChangeText={setTitle}
               placeholder={t("taskTitlePlaceholder")}
               placeholderTextColor="#D0D0D8"
             />
           </View>
-          <Text className="text-xs text-gray-400 mb-1 font-medium">{t("description")}</Text>
+          <Text className="text-xs text-mute mb-1 font-medium">{t("description")}</Text>
           <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[60px]"
+            className="text-base text-ink min-h-[60px]"
             value={description}
             onChangeText={setDescription}
             placeholder={t("descriptionPlaceholder")}
@@ -168,7 +168,7 @@ export default function TaskDetailScreen() {
               key={p}
               onPress={() => setPriority(p)}
               className={`px-3 py-2 rounded-full flex-1 items-center border ${
-                priority === p ? "border-transparent" : "border-gray-200 dark:border-gray-700 bg-accent-card"
+                priority === p ? "border-transparent" : "border-hair bg-accent-card"
               }`}
               style={
                 priority === p
@@ -208,18 +208,18 @@ export default function TaskDetailScreen() {
         <FormCard>
           <View className="flex-row items-center">
             <TextInput
-              className="text-base text-gray-900 dark:text-white w-16 text-center border-b border-gray-200 dark:border-gray-700"
+              className="text-base text-ink w-16 text-center border-b border-hair"
               value={monthsBefore}
               onChangeText={setMonthsBefore}
               keyboardType="numeric"
               placeholder="—"
               placeholderTextColor="#D0D0D8"
             />
-            <Text className="text-base text-gray-500 dark:text-gray-400 ml-2">
+            <Text className="text-base text-mute ml-2">
               {t("monthsBeforeWedding")}
             </Text>
           </View>
-          <Text className="text-xs text-gray-400 mt-2">
+          <Text className="text-xs text-mute mt-2">
             {t("negativeValue")}
           </Text>
         </FormCard>
@@ -254,7 +254,7 @@ export default function TaskDetailScreen() {
         <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[80px]"
+            className="text-base text-ink min-h-[80px]"
             placeholder={t("freeNotes")}
             placeholderTextColor="#D0D0D8"
             value={notes}

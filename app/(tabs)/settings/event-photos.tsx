@@ -69,27 +69,27 @@ export default function EventPhotosScreen() {
     >
       <View className="px-4 pt-4">
         <SectionTitle>{t("eventPhotosTitle")}</SectionTitle>
-        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+        <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {t("eventPhotosSubtitle")}
         </Text>
 
         {photos.length === 0 ? (
           <>
-            <View className="bg-accent-card rounded-2xl p-8 mb-3 border border-gray-100 dark:border-gray-800 items-center">
+            <View className="bg-accent-card rounded-2xl p-8 mb-3 border border-hair items-center">
               <Camera size={40} color="#D1D5DB" />
-              <Text className="text-base font-medium text-gray-400 mt-3">
+              <Text className="text-base font-medium text-mute mt-3">
                 {t("eventPhotosEmpty")}
               </Text>
-              <Text className="text-sm text-gray-400 text-center mt-1 leading-5">
+              <Text className="text-sm text-mute text-center mt-1 leading-5">
                 {t("eventPhotosEmptyDesc")}
               </Text>
             </View>
             <Pressable
               onPress={handleAdd}
-              className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-hair dark:border-hair flex-row items-center justify-center active:opacity-80"
             >
               <Plus size={20} color="#9CA3AF" />
-              <Text className="text-base font-medium text-gray-500 dark:text-gray-400 ml-2">
+              <Text className="text-base font-medium text-mute ml-2">
                 {t("eventPhotosAdd")}
               </Text>
             </Pressable>
@@ -119,7 +119,7 @@ export default function EventPhotosScreen() {
               <Pressable
                 onPress={handleAdd}
                 style={{ width: photoSize, height: photoSize }}
-                className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 items-center justify-center bg-accent-card active:opacity-70"
+                className="rounded-xl border border-dashed border-hair dark:border-hair items-center justify-center bg-accent-card active:opacity-70"
               >
                 <Plus size={24} color="#9CA3AF" />
               </Pressable>

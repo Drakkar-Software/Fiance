@@ -156,7 +156,7 @@ export default function VendorDetailScreen() {
               onPress={() => setActiveTab(tab)}
               className={`flex-1 py-2 rounded-lg items-center ${activeTab === tab ? "bg-accent-card shadow-sm" : ""}`}
             >
-              <Text className={`text-sm font-medium ${activeTab === tab ? "text-primary-500" : "text-gray-400"}`}>
+              <Text className={`text-sm font-medium ${activeTab === tab ? "text-primary-500" : "text-mute"}`}>
                 {t(tabKeys[tab])}
               </Text>
             </Pressable>
@@ -206,7 +206,7 @@ export default function VendorDetailScreen() {
             <SectionTitle>{t("notesLabel")}</SectionTitle>
             <FormCard>
               <TextInput
-                className="text-base text-gray-900 dark:text-white min-h-[80px]"
+                className="text-base text-ink min-h-[80px]"
                 placeholder={t("notesPlaceholder")}
                 placeholderTextColor="#D0D0D8"
                 value={notes}
@@ -346,7 +346,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
     <View>
       {/* Total */}
       <View className="bg-primary-50 dark:bg-primary-950 rounded-2xl p-4 mb-3 flex-row items-center justify-between border border-primary-100 dark:border-primary-900">
-        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">{t("totalPaid")}</Text>
+        <Text className="text-sm font-medium text-mute">{t("totalPaid")}</Text>
         <Display size={22} weight="500" color="#b96a4a">{totalPaid.toFixed(2)} €</Display>
       </View>
 
@@ -354,18 +354,18 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       {payments.map((p) => (
         <View
           key={p.id}
-          className="bg-accent-card rounded-xl p-3.5 mb-2 border border-gray-100 dark:border-gray-800 flex-row items-center"
+          className="bg-accent-card rounded-xl p-3.5 mb-2 border border-hair flex-row items-center"
         >
           <View className="flex-1">
-            <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            <Text className="text-base font-semibold text-ink">
               {p.amount.toFixed(2)} €
             </Text>
-            <Text className="text-xs text-gray-400 mt-0.5">
+            <Text className="text-xs text-mute mt-0.5">
               {p.paidDate}
               {p.method ? ` · ${t(`paymentMethods.${p.method}`)}` : ""}
             </Text>
             {p.label && (
-              <Text className="text-xs text-gray-500 mt-0.5">{p.label}</Text>
+              <Text className="text-xs text-mute mt-0.5">{p.label}</Text>
             )}
           </View>
           <Pressable
@@ -378,7 +378,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       ))}
 
       {payments.length === 0 && !showAdd && (
-        <Text className="text-sm text-gray-400 mb-3">{tV("noPayments")}</Text>
+        <Text className="text-sm text-mute mb-3">{tV("noPayments")}</Text>
       )}
 
       {/* Add form */}
@@ -391,7 +391,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
             keyboardType="numeric"
           />
           <DateRow label={t("paymentDate")} value={paidDate} onChange={setPaidDate} />
-          <Text className="text-xs text-gray-400 mb-2 mt-3 font-medium">{t("paymentMethod")}</Text>
+          <Text className="text-xs text-mute mb-2 mt-3 font-medium">{t("paymentMethod")}</Text>
           <ChipSelect
             options={PAYMENT_METHODS as unknown as string[]}
             value={method}
@@ -412,7 +412,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
               onPress={() => setShowAdd(false)}
               className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
             >
-              <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+              <Text className="text-mute text-sm">{t("common:cancel")}</Text>
             </Pressable>
           </View>
         </FormCard>
@@ -489,7 +489,7 @@ function CustomFieldRenderer({
     const selected: string[] = Array.isArray(value) ? value : [];
     return (
       <View>
-        <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+        <Text className="text-sm font-medium text-mute mb-2">
           {section.label}
         </Text>
         {section.options.map((opt) => {
@@ -511,7 +511,7 @@ function CustomFieldRenderer({
               ) : (
                 <Square size={20} color="#D1D5DB" />
               )}
-              <Text className="text-sm text-gray-700 dark:text-gray-300 ml-2.5">
+              <Text className="text-sm text-ink-soft ml-2.5">
                 {t(opt)}
               </Text>
             </Pressable>

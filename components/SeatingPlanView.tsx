@@ -126,16 +126,16 @@ function DraggableTable({
               ? "bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-700"
               : isSelected
               ? "bg-primary-50 dark:bg-primary-950 border-primary-400"
-              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600"
+              : "bg-white dark:bg-gray-800 border-hair dark:border-hair"
           }`}
         >
           <Text
-            className="text-xs font-bold text-gray-700 dark:text-gray-200 text-center px-1"
+            className="text-xs font-bold text-ink-soft dark:text-mute text-center px-1"
             numberOfLines={1}
           >
             {table.name}
           </Text>
-          <Text className={`text-xs font-semibold mt-0.5 ${isFull ? "text-red-500" : "text-gray-400"}`}>
+          <Text className={`text-xs font-semibold mt-0.5 ${isFull ? "text-red-500" : "text-mute"}`}>
             {filled}/{capacity}
           </Text>
         </View>
@@ -247,30 +247,30 @@ export function PlanView({ tables, guests, updateTable }: Props) {
 
             {selectedTable && (
               <>
-                <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                <Text className="text-lg font-bold text-ink">
                   {selectedTable.name}
                 </Text>
-                <Text className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <Text className="text-sm text-mute mb-4">
                   {selectedGuests.length} / {selectedTable.capacity ?? "∞"}
                 </Text>
 
                 <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
                   {selectedGuests.length === 0 ? (
-                    <Text className="text-center text-gray-400 py-6">
+                    <Text className="text-center text-mute py-6">
                       {t("noGuestsAssigned")}
                     </Text>
                   ) : (
                     selectedGuests.map((guest) => (
                       <View
                         key={guest.id}
-                        className="flex-row items-center py-2.5 border-b border-gray-50 dark:border-gray-800"
+                        className="flex-row items-center py-2.5 border-b border-hair"
                       >
                         <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
                           <Text className="text-primary-500 font-bold text-xs">
                             {guest.firstName[0]}{guest.lastName[0]}
                           </Text>
                         </View>
-                        <Text className="flex-1 text-base text-gray-900 dark:text-white">
+                        <Text className="flex-1 text-base text-ink">
                           {guest.firstName} {guest.lastName}
                         </Text>
                         {guest.rsvpStatus && (
@@ -293,7 +293,7 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                                   ? "text-red-700 dark:text-red-300"
                                   : guest.rsvpStatus === "MAYBE"
                                   ? "text-yellow-700 dark:text-yellow-300"
-                                  : "text-gray-600 dark:text-gray-400"
+                                  : "text-mute"
                               }`}
                             >
                               {t(`rsvp.${guest.rsvpStatus}`)}

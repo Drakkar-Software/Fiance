@@ -144,18 +144,18 @@ export default function AccommodationsScreen() {
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           {/* Summary banner */}
           {totalRooms > 0 && (
-            <View className="bg-accent-card rounded-2xl px-4 py-3 mb-4 border border-gray-100 dark:border-gray-800 flex-row justify-around">
+            <View className="bg-accent-card rounded-2xl px-4 py-3 mb-4 border border-hair flex-row justify-around">
               <View className="items-center">
                 <Display size={22} weight="400">{totalRooms}</Display>
-                <Text className="text-xs text-gray-400">{t("roomCount")}</Text>
+                <Text className="text-xs text-mute">{t("roomCount")}</Text>
               </View>
               <View className="items-center">
                 <Display size={22} weight="400" color="#b96a4a">{assignedCount}</Display>
-                <Text className="text-xs text-gray-400">{t("confirmed")}</Text>
+                <Text className="text-xs text-mute">{t("confirmed")}</Text>
               </View>
               <View className="items-center">
                 <Display size={22} weight="400" color={remaining < 0 ? "#EF4444" : remaining === 0 ? "#F59E0B" : "#10B981"}>{remaining}</Display>
-                <Text className="text-xs text-gray-400">{t("remaining")}</Text>
+                <Text className="text-xs text-mute">{t("remaining")}</Text>
               </View>
             </View>
           )}
@@ -163,7 +163,7 @@ export default function AccommodationsScreen() {
           {/* Add form */}
           {showAdd && (
             <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{t("newAccommodation")}</Text>
+              <Text className="text-base font-semibold text-ink mb-3">{t("newAccommodation")}</Text>
               <FormCard>
                 {formFields}
                 <View className="flex-row gap-2 mt-2">
@@ -171,7 +171,7 @@ export default function AccommodationsScreen() {
                     <Text className="text-white font-semibold text-sm">{t("common:create")}</Text>
                   </Pressable>
                   <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
-                    <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                    <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                   </Pressable>
                 </View>
               </FormCard>
@@ -189,7 +189,7 @@ export default function AccommodationsScreen() {
             if (editingId === acc.id) {
               return (
                 <View key={acc.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
-                  <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">{acc.name}</Text>
+                  <Text className="text-base font-semibold text-ink mb-3">{acc.name}</Text>
                   <FormCard>
                     {formFields}
                     <View className="flex-row gap-2 mt-2">
@@ -197,7 +197,7 @@ export default function AccommodationsScreen() {
                         <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
                       </Pressable>
                       <Pressable onPress={resetForm} className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center">
-                        <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                        <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                       </Pressable>
                     </View>
                   </FormCard>
@@ -206,14 +206,14 @@ export default function AccommodationsScreen() {
             }
 
             return (
-              <View key={acc.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
+              <View key={acc.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-hair">
                 {/* Header row */}
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center flex-1">
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
                       <Home size={16} color="#b96a4a" />
                     </View>
-                    <Text className="text-base font-semibold text-gray-900 dark:text-white flex-1">{acc.name}</Text>
+                    <Text className="text-base font-semibold text-ink flex-1">{acc.name}</Text>
                   </View>
                   <View className="flex-row items-center gap-1">
                     <View className={`px-2 py-0.5 rounded-full mr-1 ${isOver ? "bg-red-100" : isFull ? "bg-amber-100" : "bg-green-50"}`}>
@@ -231,11 +231,11 @@ export default function AccommodationsScreen() {
                 </View>
 
                 {acc.address && (
-                  <Text className="text-xs text-gray-400 mt-1 ml-10">{acc.address}</Text>
+                  <Text className="text-xs text-mute mt-1 ml-10">{acc.address}</Text>
                 )}
 
                 {acc.pricePerNight != null && (
-                  <Text className="text-xs text-gray-500 mt-1 ml-10">{acc.pricePerNight}€ {t("pricePerNight").toLowerCase()}</Text>
+                  <Text className="text-xs text-mute mt-1 ml-10">{acc.pricePerNight}€ {t("pricePerNight").toLowerCase()}</Text>
                 )}
 
                 {/* Collapsible guest list */}
@@ -247,9 +247,9 @@ export default function AccommodationsScreen() {
                       else next.add(acc.id);
                       return next;
                     })}
-                    className="flex-row items-center justify-between mt-3 pt-2.5 border-t border-gray-50 dark:border-gray-800"
+                    className="flex-row items-center justify-between mt-3 pt-2.5 border-t border-hair"
                   >
-                    <Text className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <Text className="text-xs font-medium text-mute">
                       {t("guestsWithType", { count: guestCount })}
                     </Text>
                     {isExpanded
@@ -259,17 +259,17 @@ export default function AccommodationsScreen() {
                   </Pressable>
                 )}
                 {isExpanded && accGuests.map((g) => (
-                  <View key={g.id} className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800">
+                  <View key={g.id} className="flex-row items-center py-2 border-t border-hair">
                     <View className="w-7 h-7 rounded-lg bg-gray-50 dark:bg-gray-800 items-center justify-center mr-2">
-                      <Text className="text-xs font-bold text-gray-400">
+                      <Text className="text-xs font-bold text-mute">
                         {g.firstName[0]}{g.lastName[0]}
                       </Text>
                     </View>
-                    <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                    <Text className="text-sm text-ink-soft flex-1">
                       {g.firstName} {g.lastName}
                     </Text>
                     {g.roomNumber && (
-                      <Text className="text-xs text-gray-400">#{g.roomNumber}</Text>
+                      <Text className="text-xs text-mute">#{g.roomNumber}</Text>
                     )}
                   </View>
                 ))}

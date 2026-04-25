@@ -76,7 +76,7 @@ export function CompanionPickerModal({
         <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-5 pt-5 pb-8">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
 
-          <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+          <Text className="text-lg font-bold text-ink mb-3">
             {t("companionLabel")}
           </Text>
 
@@ -84,7 +84,7 @@ export function CompanionPickerModal({
           <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2 mb-3">
             <Search size={16} color="#9CA3AF" />
             <TextInput
-              className="flex-1 ml-2 text-base text-gray-900 dark:text-white"
+              className="flex-1 ml-2 text-base text-ink"
               placeholder={t("searchCompanion")}
               placeholderTextColor="#9CA3AF"
               value={search}
@@ -111,14 +111,14 @@ export function CompanionPickerModal({
                     {g.lastName[0]}
                   </Text>
                 </View>
-                <Text className="flex-1 text-base text-gray-900 dark:text-white">
+                <Text className="flex-1 text-base text-ink">
                   {g.firstName} {g.lastName}
                 </Text>
                 {selected === g.id && <Check size={18} color="#EC4899" />}
               </Pressable>
             ))}
             {filteredGuests.length === 0 && (
-              <Text className="text-center text-gray-400 py-6">
+              <Text className="text-center text-mute py-6">
                 {t("noGuests")}
               </Text>
             )}
@@ -141,7 +141,7 @@ export function CompanionPickerModal({
               onPress={onClose}
               className="flex-1 py-3.5 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
             >
-              <Text className="text-gray-700 dark:text-gray-300 font-medium text-base">
+              <Text className="text-ink-soft font-medium text-base">
                 {t("common:cancel")}
               </Text>
             </Pressable>

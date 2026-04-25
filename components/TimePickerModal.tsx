@@ -108,7 +108,7 @@ export function TimePickerModal({
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-4" />
 
           {/* Current selection */}
-          <Text className="text-center text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <Text className="text-center text-3xl font-bold text-ink mb-4">
             {selectedHour}:{selectedMinute}
           </Text>
 
@@ -116,7 +116,7 @@ export function TimePickerModal({
           <View className="flex-row gap-4" style={{ height: ITEM_HEIGHT * 5 }}>
             {/* Hours */}
             <View className="flex-1">
-              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-2">
+              <Text className="text-xs font-semibold text-mute uppercase tracking-wider text-center mb-2">
                 {t("hours")}
               </Text>
               <ScrollView
@@ -138,7 +138,7 @@ export function TimePickerModal({
                       className={`text-lg ${
                         selectedHour === h
                           ? "text-white font-semibold"
-                          : "text-gray-700 dark:text-gray-300"
+                          : "text-ink-soft"
                       }`}
                     >
                       {h}
@@ -149,13 +149,13 @@ export function TimePickerModal({
             </View>
 
             {/* Separator */}
-            <Text className="text-2xl font-bold text-gray-300 dark:text-gray-600 self-center">
+            <Text className="text-2xl font-bold text-mute dark:text-mute self-center">
               :
             </Text>
 
             {/* Minutes */}
             <View className="flex-1">
-              <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-2">
+              <Text className="text-xs font-semibold text-mute uppercase tracking-wider text-center mb-2">
                 {t("minutes")}
               </Text>
               <ScrollView
@@ -177,7 +177,7 @@ export function TimePickerModal({
                       className={`text-lg ${
                         selectedMinute === m
                           ? "text-white font-semibold"
-                          : "text-gray-700 dark:text-gray-300"
+                          : "text-ink-soft"
                       }`}
                     >
                       {m}
@@ -202,7 +202,7 @@ export function TimePickerModal({
               onPress={handleClear}
               className="flex-1 py-3 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
             >
-              <Text className="text-gray-700 dark:text-gray-300 font-medium text-sm">
+              <Text className="text-ink-soft font-medium text-sm">
                 {t("clear")}
               </Text>
             </Pressable>

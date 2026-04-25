@@ -82,7 +82,7 @@ export default function VendorsListScreen() {
                   params: { type: vendor.type, id: vendor.id },
                 })
               }
-              className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800 active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-hair active:opacity-80"
             >
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
@@ -92,10 +92,10 @@ export default function VendorsListScreen() {
                   })()}
                 </View>
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                  <Text className="text-base font-semibold text-ink">
                     {vendor.name}
                   </Text>
-                  <Text className="text-sm text-gray-400 mt-0.5">
+                  <Text className="text-sm text-mute mt-0.5">
                     {t(VENDOR_TYPE_LABELS[vendor.type as VendorType])}
                     {vendor.contactName ? ` · ${vendor.contactName}` : ""}
                   </Text>
@@ -106,7 +106,7 @@ export default function VendorsListScreen() {
                     color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
                   />
                   {(vendor.basePrice != null && vendor.basePrice > 0) && (
-                    <Text className="text-sm font-semibold text-gray-900 dark:text-white mt-1.5">
+                    <Text className="text-sm font-semibold text-ink mt-1.5">
                       {formatMoney(vendor.basePrice)}
                     </Text>
                   )}

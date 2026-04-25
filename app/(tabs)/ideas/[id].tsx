@@ -158,9 +158,9 @@ export default function IdeaDetailScreen() {
         <SectionTitle>{t("information")}</SectionTitle>
         <FormCard>
           <InputRow label={t("title")} value={title} onChangeText={setTitle} />
-          <Text className="text-xs text-gray-400 mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
+          <Text className="text-xs text-mute mb-1 mt-3 font-medium">{t("notesLabel")}</Text>
           <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[60px]"
+            className="text-base text-ink min-h-[60px]"
             value={notes}
             onChangeText={setNotes}
             placeholder={t("notesPlaceholder")}
@@ -174,7 +174,7 @@ export default function IdeaDetailScreen() {
         <SectionTitle>{t("tags")}</SectionTitle>
         <FormCard>
           <TextInput
-            className="text-base text-gray-900 dark:text-white"
+            className="text-base text-ink"
             value={tagsInput}
             onChangeText={setTagsInput}
             placeholder={t("tagsPlaceholder")}
@@ -189,7 +189,7 @@ export default function IdeaDetailScreen() {
             <View key={link.id} className="flex-row items-center mb-2">
               <LinkIcon size={14} color="#b96a4a" className="mr-2" />
               <TextInput
-                className="flex-1 text-base text-gray-900 dark:text-white mx-2"
+                className="flex-1 text-base text-ink mx-2"
                 value={link.value}
                 onChangeText={(text) => {
                   setLinks((prev) =>
@@ -261,7 +261,7 @@ export default function IdeaDetailScreen() {
                 className={`flex-row items-center px-3 py-2 rounded-xl border ${
                   isActive
                     ? "border-primary-300 dark:border-primary-700"
-                    : "border-gray-200 dark:border-gray-700 bg-accent-card"
+                    : "border-hair bg-accent-card"
                 }`}
                 style={isActive ? { backgroundColor: color + "15" } : {}}
               >

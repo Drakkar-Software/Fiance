@@ -276,7 +276,7 @@ export default function SettingsScreen() {
       {/* Sauvegarde et partage */}
       <View className="px-4">
         <SectionTitle>{t("backupAndSharing")}</SectionTitle>
-        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+        <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {!premium ? t("premiumSyncMsg") : syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
         </Text>
         <ToggleCard
@@ -348,7 +348,7 @@ export default function SettingsScreen() {
               className={`bg-accent-card rounded-2xl p-4 mb-2 border flex-row items-center ${
                 isActive
                   ? "border-primary-300 dark:border-primary-700"
-                  : "border-gray-100 dark:border-gray-800"
+                  : "border-hair"
               }`}
             >
               <Pressable
@@ -374,10 +374,10 @@ export default function SettingsScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  <Text className="text-base font-medium text-ink">
                     {w.label}
                   </Text>
-                  <Text className="text-xs text-gray-400 mt-0.5">
+                  <Text className="text-xs text-mute mt-0.5">
                     {isActive ? t("activeWedding") : t("tapToSwitch")}
                   </Text>
                 </View>
@@ -402,13 +402,13 @@ export default function SettingsScreen() {
         })}
         <Pressable
           onPress={() => setShowCreateConfirm(true)}
-          className="bg-accent-card rounded-2xl p-4 mb-2 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center active:opacity-80"
+          className="bg-accent-card rounded-2xl p-4 mb-2 border border-dashed border-hair dark:border-hair flex-row items-center active:opacity-80"
         >
           <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper dark:bg-gray-800">
             <PlusCircle size={20} color="#9CA3AF" />
           </View>
           <View className="flex-1">
-            <Text className="text-base font-medium text-gray-500 dark:text-gray-400">
+            <Text className="text-base font-medium text-mute">
               {t("createNewWedding")}
             </Text>
           </View>
@@ -458,10 +458,10 @@ export default function SettingsScreen() {
             className={`flex-1 py-3 rounded-2xl items-center border ${
               language === "fr"
                 ? "bg-primary-500 border-primary-500"
-                : "bg-accent-card border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-hair"
             }`}
           >
-            <Text className={`text-base font-medium ${language === "fr" ? "text-white" : "text-gray-500"}`}>
+            <Text className={`text-base font-medium ${language === "fr" ? "text-white" : "text-mute"}`}>
               Français
             </Text>
           </Pressable>
@@ -470,10 +470,10 @@ export default function SettingsScreen() {
             className={`flex-1 py-3 rounded-2xl items-center border ${
               language === "en"
                 ? "bg-primary-500 border-primary-500"
-                : "bg-accent-card border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-hair"
             }`}
           >
-            <Text className={`text-base font-medium ${language === "en" ? "text-white" : "text-gray-500"}`}>
+            <Text className={`text-base font-medium ${language === "en" ? "text-white" : "text-mute"}`}>
               English
             </Text>
           </Pressable>
@@ -491,12 +491,12 @@ export default function SettingsScreen() {
               className={`flex-1 py-3 rounded-2xl items-center border ${
                 colorScheme === scheme
                   ? "bg-primary-500 border-primary-500"
-                  : "bg-accent-card border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-hair"
               }`}
             >
               <Text
                 className={`text-sm font-medium ${
-                  colorScheme === scheme ? "text-white" : "text-gray-500 dark:text-gray-400"
+                  colorScheme === scheme ? "text-white" : "text-mute"
                 }`}
               >
                 {t(`theme${scheme.charAt(0).toUpperCase()}${scheme.slice(1)}` as "themeSystem" | "themeLight" | "themeDark")}
@@ -534,14 +534,14 @@ export default function SettingsScreen() {
       {/* About */}
       <View className="px-4 mt-4 mb-8">
         <SectionTitle>{t("about")}</SectionTitle>
-        <View className="bg-accent-card rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+        <View className="bg-accent-card rounded-2xl p-5 border border-hair">
+          <Text className="text-base font-semibold text-ink">
             Fiancé
           </Text>
-          <Text className="text-sm text-gray-400 mt-1">
+          <Text className="text-sm text-mute mt-1">
             Version 1.0.0
           </Text>
-          <Text className="text-xs text-gray-400 mt-2">
+          <Text className="text-xs text-mute mt-2">
             {t("madeBy")}
           </Text>
         </View>

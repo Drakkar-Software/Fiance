@@ -43,7 +43,7 @@ export function StackMenu({ items }: StackMenuProps) {
           onPress={() => setOpen(false)}
         >
           {/* Menu card — top-right of screen, aligned under header */}
-          <View className="absolute top-14 right-4 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden min-w-[180px]">
+          <View className="absolute top-14 right-4 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]">
             {items.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -51,7 +51,7 @@ export function StackMenu({ items }: StackMenuProps) {
                   key={index}
                   onPress={() => handleItem(item.onPress)}
                   className={`flex-row items-center px-4 py-3.5 active:bg-gray-50 dark:active:bg-gray-800 ${
-                    index > 0 ? "border-t border-gray-50 dark:border-gray-800" : ""
+                    index > 0 ? "border-t border-hair" : ""
                   }`}
                 >
                   {Icon && (
@@ -59,7 +59,7 @@ export function StackMenu({ items }: StackMenuProps) {
                       <Icon size={16} color="#6B7280" />
                     </View>
                   )}
-                  <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <Text className="text-sm font-medium text-ink-soft">
                     {item.label}
                   </Text>
                 </Pressable>

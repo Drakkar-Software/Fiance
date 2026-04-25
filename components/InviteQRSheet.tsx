@@ -51,10 +51,10 @@ export function InviteQRSheet({ visible, onClose, inviteUrl }: InviteQRSheetProp
       <BottomSheetView>
         <View className="bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-6 pb-10">
           <View className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 self-center mb-5" />
-          <Text className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          <Text className="text-xl font-bold text-ink mb-1">
             {t("shareInviteLink")}
           </Text>
-          <Text className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+          <Text className="text-sm text-mute mb-6">
             {t("scanFromOtherDevice")}
           </Text>
 
@@ -66,7 +66,7 @@ export function InviteQRSheet({ visible, onClose, inviteUrl }: InviteQRSheetProp
 
           <Text
             selectable
-            className="text-xs text-gray-400 dark:text-gray-500 text-center mb-6 font-mono"
+            className="text-xs text-mute dark:text-mute text-center mb-6 font-mono"
             numberOfLines={2}
           >
             {inviteUrl}

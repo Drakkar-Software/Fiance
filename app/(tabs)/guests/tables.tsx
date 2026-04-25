@@ -45,11 +45,11 @@ export default function TablesScreen() {
       {/* Add table form */}
       {showAdd && (
         <View className="mx-4 mt-4 bg-accent-card rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
-          <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+          <Text className="text-base font-semibold text-ink mb-3">
             {t("newTable")}
           </Text>
           <TextInput
-            className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+            className="text-base text-ink border-b border-hair pb-2 mb-3"
             placeholder={t("tableName")}
             placeholderTextColor="#D0D0D8"
             value={newTableName}
@@ -57,7 +57,7 @@ export default function TablesScreen() {
             autoFocus
           />
           <TextInput
-            className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+            className="text-base text-ink border-b border-hair pb-2 mb-3"
             placeholder={t("capacity")}
             placeholderTextColor="#D0D0D8"
             value={newTableCapacity}
@@ -77,7 +77,7 @@ export default function TablesScreen() {
               onPress={() => setShowAdd(false)}
               className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
             >
-              <Text className="text-gray-500 dark:text-gray-400 text-sm">
+              <Text className="text-mute text-sm">
                 {t("common:cancel")}
               </Text>
             </Pressable>

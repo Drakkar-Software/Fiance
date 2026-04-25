@@ -49,7 +49,7 @@ export default function CompareScreen() {
   if (caterers.length === 0) {
     return (
       <View className="flex-1 items-center justify-center bg-accent-paper">
-        <Text className="text-gray-500">
+        <Text className="text-mute">
           {t("addAtLeast2")}
         </Text>
       </View>
@@ -72,7 +72,7 @@ export default function CompareScreen() {
                 {idx === 0 && (
                   <Trophy size={20} color="#F59E0B" />
                 )}
-                <Text className="text-base font-semibold text-gray-900 dark:text-white ml-1">
+                <Text className="text-base font-semibold text-ink ml-1">
                   {c.vendor.name}
                 </Text>
               </View>
@@ -84,7 +84,7 @@ export default function CompareScreen() {
             <ProgressBar value={c.score} max={100} showPercentage={false} />
             <View className="flex-row justify-between mt-3">
               <View>
-                <Text className="text-sm text-gray-500">{t("estimatedTotal")}</Text>
+                <Text className="text-sm text-mute">{t("estimatedTotal")}</Text>
                 <Display size={18} weight="500">{formatMoney(c.total)}</Display>
               </View>
               <RatingStars rating={c.vendor.rating || 0} size={16} />
@@ -96,14 +96,14 @@ export default function CompareScreen() {
       <Display size={20} italic style={{ marginBottom: 12, marginTop: 16 }}>{t("detailByItem")}</Display>
       <View className="bg-accent-card rounded-xl p-4 mb-8 border border-hair">
         {/* Header row */}
-        <View className="flex-row border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
-          <Text className="flex-1 text-sm font-medium text-gray-500">
+        <View className="flex-row border-b border-hair pb-2 mb-2">
+          <Text className="flex-1 text-sm font-medium text-mute">
             {t("item")}
           </Text>
           {caterers.map((c) => (
             <Text
               key={c.vendor.id}
-              className="w-24 text-sm font-medium text-gray-500 text-right"
+              className="w-24 text-sm font-medium text-mute text-right"
               numberOfLines={1}
             >
               {c.vendor.name}
@@ -115,9 +115,9 @@ export default function CompareScreen() {
         {pricingKeys.map((key) => (
           <View
             key={key}
-            className="flex-row py-2 border-b border-gray-50 dark:border-gray-800"
+            className="flex-row py-2 border-b border-hair"
           >
-            <Text className="flex-1 text-sm text-gray-700 dark:text-gray-300">
+            <Text className="flex-1 text-sm text-ink-soft">
               {t(PRICING_KEY_LABELS[key])}
             </Text>
             {caterers.map((c) => {
@@ -125,7 +125,7 @@ export default function CompareScreen() {
               return (
                 <Text
                   key={c.vendor.id}
-                  className="w-24 text-sm text-right text-gray-900 dark:text-white"
+                  className="w-24 text-sm text-right text-ink"
                 >
                   {pricing?.pricePerPerson
                     ? `${pricing.pricePerPerson.toFixed(0)} €/p`
@@ -138,7 +138,7 @@ export default function CompareScreen() {
 
         {/* Total row */}
         <View className="flex-row pt-3 mt-1">
-          <Text className="flex-1 text-sm font-bold text-gray-900 dark:text-white">
+          <Text className="flex-1 text-sm font-bold text-ink">
             TOTAL
           </Text>
           {caterers.map((c) => (

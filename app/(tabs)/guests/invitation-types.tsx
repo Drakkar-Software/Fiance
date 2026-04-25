@@ -27,7 +27,7 @@ function NeedsSleepingToggle({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Moon size={14} color="#6B7280" />
-          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Text className="text-sm font-medium text-ink-soft">
             {t("needsSleeping")}
           </Text>
         </View>
@@ -38,7 +38,7 @@ function NeedsSleepingToggle({
           thumbColor={value ? GP.clay : "#FFFFFF"}
         />
       </View>
-      <Text className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-4">
+      <Text className="text-xs text-mute dark:text-mute mt-1.5 leading-4">
         {description}
       </Text>
     </View>
@@ -120,11 +120,11 @@ export default function InvitationTypesScreen() {
           {/* Add form */}
           {showAdd && (
             <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+              <Text className="text-base font-semibold text-ink mb-3">
                 {t("newInvitationType")}
               </Text>
               <TextInput
-                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2"
+                className="text-base text-ink border-b border-hair pb-2"
                 placeholder={t("invitationTypeNamePlaceholder")}
                 placeholderTextColor="#D0D0D8"
                 value={newLabel}
@@ -147,7 +147,7 @@ export default function InvitationTypesScreen() {
                   onPress={resetForm}
                   className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
-                  <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                  <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -160,9 +160,9 @@ export default function InvitationTypesScreen() {
             if (editingId === type.id) {
               return (
                 <View key={type.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-primary-200 dark:border-primary-800">
-                  <Text className="text-sm text-gray-400 mb-2">{type.label}</Text>
+                  <Text className="text-sm text-mute mb-2">{type.label}</Text>
                   <TextInput
-                    className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2"
+                    className="text-base text-ink border-b border-hair pb-2"
                     placeholder={t("invitationTypeName")}
                     placeholderTextColor="#D0D0D8"
                     value={editingLabel}
@@ -186,7 +186,7 @@ export default function InvitationTypesScreen() {
                       onPress={resetForm}
                       className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                     >
-                      <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                      <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -194,18 +194,18 @@ export default function InvitationTypesScreen() {
             }
 
             return (
-              <View key={type.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800">
+              <View key={type.id} className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-hair">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
                     <View className="w-8 h-8 rounded-lg bg-accent-clay-soft dark:bg-primary-900 items-center justify-center mr-3">
                       <Tag size={15} color={GP.clay} />
                     </View>
                     <View className="flex-1">
-                      <Text className="text-base font-semibold text-gray-900 dark:text-white">{type.label}</Text>
+                      <Text className="text-base font-semibold text-ink">{type.label}</Text>
                       {type.needsSleeping && (
                         <View className="flex-row items-center gap-1 mt-0.5">
                           <Moon size={10} color="#9CA3AF" />
-                          <Text className="text-xs text-gray-400">{t("needsSleeping")}</Text>
+                          <Text className="text-xs text-mute">{t("needsSleeping")}</Text>
                         </View>
                       )}
                     </View>
@@ -213,7 +213,7 @@ export default function InvitationTypesScreen() {
                   <View className="flex-row items-center gap-1">
                     {guestCount > 0 && (
                       <View className="px-2.5 py-1 rounded-full bg-gray-50 dark:bg-gray-800 mr-1">
-                        <Text className="text-xs font-semibold text-gray-500">{guestCount}</Text>
+                        <Text className="text-xs font-semibold text-mute">{guestCount}</Text>
                       </View>
                     )}
                     <Pressable onPress={() => handleEdit(type)} className="w-8 h-8 items-center justify-center">

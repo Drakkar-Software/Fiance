@@ -109,10 +109,10 @@ export function PaywallSheet({ visible, onClose, userId, weddingId }: PaywallShe
             <View className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-3">
               <Sparkles size={28} color="#EC4899" />
             </View>
-            <Text className="text-xl font-bold text-gray-900 dark:text-white text-center">
+            <Text className="text-xl font-bold text-ink text-center">
               {t("premiumTitle")}
             </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400 text-center mt-2 leading-5">
+            <Text className="text-sm text-mute text-center mt-2 leading-5">
               {t("premiumPitch")}
             </Text>
           </View>
@@ -132,7 +132,7 @@ export function PaywallSheet({ visible, onClose, userId, weddingId }: PaywallShe
               disabled={state !== "idle"}
               className="items-center mt-3 py-2 active:opacity-60"
             >
-              <Text className="text-sm text-gray-400 dark:text-gray-500">{t("premiumRestore")}</Text>
+              <Text className="text-sm text-mute dark:text-mute">{t("premiumRestore")}</Text>
             </Pressable>
           )}
         </View>

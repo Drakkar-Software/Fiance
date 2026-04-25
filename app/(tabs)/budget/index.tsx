@@ -112,9 +112,9 @@ export default function BudgetScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* Global summary */}
-      <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+      <View className="bg-accent-card mx-4 mt-4 rounded-2xl p-5 border border-hair">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+          <Text className="text-base font-semibold text-ink">
             {t("globalBudget")}
           </Text>
           {budget.isEstimate && (
@@ -134,7 +134,7 @@ export default function BudgetScreen() {
           keyboardType="numeric"
         />
         <View className="mt-1 mb-3">
-          <Text className="text-xs text-gray-400 mb-2 font-medium">{t("currency")}</Text>
+          <Text className="text-xs text-mute mb-2 font-medium">{t("currency")}</Text>
           <ChipSelect
             options={["EUR", "USD"] as const}
             value={currency as "EUR" | "USD"}
@@ -143,11 +143,11 @@ export default function BudgetScreen() {
           />
         </View>
         <View className="flex-row justify-between mb-1.5">
-          <Text className="text-sm text-gray-400">{t("totalCommitted")}</Text>
+          <Text className="text-sm text-mute">{t("totalCommitted")}</Text>
           <MoneyDisplay amount={budget.totalEngaged} size="sm" />
         </View>
         <View className="flex-row justify-between mb-4">
-          <Text className="text-sm text-gray-400">{t("totalConfirmed")}</Text>
+          <Text className="text-sm text-mute">{t("totalConfirmed")}</Text>
           <MoneyDisplay amount={budget.totalConfirmed} size="sm" />
         </View>
 
@@ -158,8 +158,8 @@ export default function BudgetScreen() {
           showPercentage
         />
 
-        <View className="flex-row justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-          <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <View className="flex-row justify-between mt-4 pt-4 border-t border-hair">
+          <Text className="text-sm font-medium text-mute">
             {t("remainingToPay")}
           </Text>
           <Display
@@ -172,12 +172,12 @@ export default function BudgetScreen() {
         </View>
         {budget.budgetTarget > 0 && (
           <View className="flex-row justify-between mt-2">
-            <Text className="text-sm text-gray-400">
+            <Text className="text-sm text-mute">
               {t("remaining")}
             </Text>
             <Text
               className={`text-sm font-medium ${
-                budget.remaining >= 0 ? "text-gray-500" : "text-red-500"
+                budget.remaining >= 0 ? "text-mute" : "text-red-500"
               }`}
             >
               {formatMoney(budget.remaining)}
@@ -187,19 +187,19 @@ export default function BudgetScreen() {
       </View>
 
       {/* Deposits summary */}
-      <View className="bg-accent-card mx-4 mt-3 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-        <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+      <View className="bg-accent-card mx-4 mt-3 rounded-2xl p-5 border border-hair">
+        <Text className="text-base font-semibold text-ink mb-3">
           {t("deposits")}
         </Text>
         <View className="flex-row justify-between mb-2">
-          <Text className="text-sm text-gray-400">{t("paid")}</Text>
+          <Text className="text-sm text-mute">{t("paid")}</Text>
           <Text className="text-sm font-semibold text-emerald-500">
             {formatMoney(budget.depositsPaid)}
           </Text>
         </View>
         <View className="flex-row justify-between mb-3">
-          <Text className="text-sm text-gray-400">{t("totalExpected")}</Text>
-          <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+          <Text className="text-sm text-mute">{t("totalExpected")}</Text>
+          <Text className="text-sm font-semibold text-ink">
             {formatMoney(budget.depositsTotal)}
           </Text>
         </View>
@@ -213,11 +213,11 @@ export default function BudgetScreen() {
       {/* Category targets */}
       <Pressable
         onPress={() => setShowTargets((v) => !v)}
-        className="mx-4 mt-3 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex-row items-center justify-between"
+        className="mx-4 mt-3 bg-accent-card rounded-2xl p-4 border border-hair flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-2">
           <Target size={17} color="#b96a4a" />
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+          <Text className="text-base font-semibold text-ink">
             {t("categoryTarget")}
           </Text>
         </View>
@@ -225,11 +225,11 @@ export default function BudgetScreen() {
       </Pressable>
 
       {showTargets && (
-        <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
+        <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-hair">
           {/* Template picker */}
           {budget.budgetTarget > 0 && (
             <View className="mb-4">
-              <Text className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">
+              <Text className="text-xs text-mute font-medium mb-2 uppercase tracking-wider">
                 {t("useTemplate")}
               </Text>
               <View className="flex-row gap-2">
@@ -237,9 +237,9 @@ export default function BudgetScreen() {
                   <Pressable
                     key={key}
                     onPress={() => applyTemplate(key)}
-                    className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
+                    className="flex-1 py-3 rounded-xl border border-hair items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
                   >
-                    <Text className="text-xs font-medium text-gray-600 dark:text-gray-300 text-center">
+                    <Text className="text-xs font-medium text-mute dark:text-mute text-center">
                       {t(BUDGET_TEMPLATE_LABELS[key])}
                     </Text>
                   </Pressable>
@@ -257,19 +257,19 @@ export default function BudgetScreen() {
             return (
               <View
                 key={cat}
-                className={`flex-row items-center py-2.5 ${idx < Object.keys(BUDGET_CATEGORIES).length - 1 ? "border-b border-gray-50 dark:border-gray-800" : ""}`}
+                className={`flex-row items-center py-2.5 ${idx < Object.keys(BUDGET_CATEGORIES).length - 1 ? "border-b border-hair" : ""}`}
               >
-                <Text className="flex-1 text-sm text-gray-700 dark:text-gray-300">
+                <Text className="flex-1 text-sm text-ink-soft">
                   {t(BUDGET_CATEGORY_LABELS[cat])}
                 </Text>
                 {spent > 0 && (
-                  <Text className={`text-xs font-medium mr-2 ${isOver ? "text-red-500" : "text-gray-400"}`}>
+                  <Text className={`text-xs font-medium mr-2 ${isOver ? "text-red-500" : "text-mute"}`}>
                     {formatMoney(spent)}
                   </Text>
                 )}
                 <View className="w-24 bg-accent-paper dark:bg-gray-800 rounded-lg px-2 py-1">
                   <TextInput
-                    className="text-sm text-gray-900 dark:text-white text-right"
+                    className="text-sm text-ink text-right"
                     value={target ? target.toString() : ""}
                     onChangeText={(v) => setCategoryTarget(cat, v)}
                     placeholder="—"
@@ -292,7 +292,7 @@ export default function BudgetScreen() {
 
       {/* Categories breakdown */}
       <View className="px-4 mt-6 mb-3 flex-row items-center">
-        <Text className="text-base font-bold text-gray-900 dark:text-white">
+        <Text className="text-base font-bold text-ink">
           {t("byCategory")}
         </Text>
       </View>
@@ -314,14 +314,14 @@ export default function BudgetScreen() {
                 onPress={() =>
                   setExpandedCategory(isExpanded ? null : cat.categoryName)
                 }
-                className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 border border-hair"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="text-base font-medium text-gray-900 dark:text-white">
+                    <Text className="text-base font-medium text-ink">
                       {t(BUDGET_CATEGORY_LABELS[cat.categoryName])}
                     </Text>
-                    <Text className="text-xs text-gray-400 mt-0.5">
+                    <Text className="text-xs text-mute mt-0.5">
                       {t("vendor", { count: cat.vendors.length })}
                       {hasTarget
                         ? ` · ${formatMoney(cat.totalEngaged)} / ${formatMoney(cat.targetAmount!)}`
@@ -329,7 +329,7 @@ export default function BudgetScreen() {
                     </Text>
                   </View>
                   <View className="items-end mr-2">
-                    <Text className="text-base font-bold text-gray-900 dark:text-white">
+                    <Text className="text-base font-bold text-ink">
                       {formatMoney(cat.totalEngaged)}
                     </Text>
                     <Text className="text-xs text-emerald-500">
@@ -372,7 +372,7 @@ export default function BudgetScreen() {
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1">
-                        <Text className="text-sm font-medium text-gray-900 dark:text-white">
+                        <Text className="text-sm font-medium text-ink">
                           {vendor.name}
                         </Text>
                         <View className="flex-row items-center gap-2 mt-1">
@@ -410,7 +410,7 @@ export default function BudgetScreen() {
       {/* Empty categories */}
       {budget.categories.filter((c) => c.vendors.length === 0).length > 0 && (
         <View className="mx-4 mt-4 mb-2">
-          <Text className="text-xs text-gray-400 mb-2 uppercase tracking-wider">
+          <Text className="text-xs text-mute mb-2 uppercase tracking-wider">
             {t("noVendorCategories")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -419,9 +419,9 @@ export default function BudgetScreen() {
               .map((c) => (
                 <View
                   key={c.categoryName}
-                  className="px-3 py-1.5 bg-accent-card border border-gray-100 dark:border-gray-800 rounded-full"
+                  className="px-3 py-1.5 bg-accent-card border border-hair rounded-full"
                 >
-                  <Text className="text-sm text-gray-400">
+                  <Text className="text-sm text-mute">
                     {t(BUDGET_CATEGORY_LABELS[c.categoryName])}
                   </Text>
                 </View>
@@ -433,7 +433,7 @@ export default function BudgetScreen() {
       {/* Upcoming payments */}
       {upcomingPayments.length > 0 && (
         <View className="mx-4 mt-6 mb-4">
-          <Text className="text-base font-bold text-gray-900 dark:text-white mb-3">
+          <Text className="text-base font-bold text-ink mb-3">
             {t("upcomingPayments")}
           </Text>
           {upcomingPayments.slice(0, 10).map((payment, idx) => {
@@ -449,21 +449,21 @@ export default function BudgetScreen() {
                 className={`bg-accent-card rounded-xl p-3.5 mb-2 border active:opacity-80 ${
                   isUrgent
                     ? "border-red-200 dark:border-red-800"
-                    : "border-gray-100 dark:border-gray-800"
+                    : "border-hair"
                 }`}
                 style={isUrgent ? { borderLeftWidth: 3, borderLeftColor: "#EF4444" } : {}}
               >
                 <View className="flex-row justify-between items-center">
                   <View>
-                    <Text className="text-sm font-medium text-gray-900 dark:text-white">
+                    <Text className="text-sm font-medium text-ink">
                       {t(payment.type)} — {payment.vendorName}
                     </Text>
-                    <Text className="text-xs text-gray-400 mt-0.5">
+                    <Text className="text-xs text-mute mt-0.5">
                       {format(new Date(payment.dueDate), "dd/MM/yyyy")}
                       {days >= 0 ? ` · ${t("inDays", { days })}` : ` · ${t("pastDue")}`}
                     </Text>
                   </View>
-                  <Text className="text-base font-bold text-gray-900 dark:text-white">
+                  <Text className="text-base font-bold text-ink">
                     {formatMoney(payment.amount)}
                   </Text>
                 </View>

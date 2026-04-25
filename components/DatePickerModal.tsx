@@ -121,7 +121,7 @@ export function DatePickerModal({
             >
               <ChevronLeft size={20} color="#9CA3AF" />
             </Pressable>
-            <Text className="text-base font-semibold text-gray-900 dark:text-white capitalize">
+            <Text className="text-base font-semibold text-ink capitalize">
               {format(displayMonth, "MMMM yyyy", { locale })}
             </Text>
             <Pressable
@@ -136,7 +136,7 @@ export function DatePickerModal({
           <View className="flex-row mb-1">
             {dayHeaders.map((d, i) => (
               <View key={i} className="flex-1 items-center py-1">
-                <Text className="text-xs font-medium text-gray-400 uppercase">
+                <Text className="text-xs font-medium text-mute uppercase">
                   {d}
                 </Text>
               </View>
@@ -171,8 +171,8 @@ export function DatePickerModal({
                           selected
                             ? "text-white font-semibold"
                             : !inMonth
-                              ? "text-gray-300 dark:text-gray-600"
-                              : "text-gray-700 dark:text-gray-300"
+                              ? "text-mute dark:text-mute"
+                              : "text-ink-soft"
                         }`}
                       >
                         {format(day, "d")}
@@ -198,7 +198,7 @@ export function DatePickerModal({
               onPress={handleClear}
               className="flex-1 py-3 rounded-2xl items-center bg-gray-100 dark:bg-gray-800 active:opacity-80"
             >
-              <Text className="text-gray-700 dark:text-gray-300 font-medium text-sm">
+              <Text className="text-ink-soft font-medium text-sm">
                 {t("clear")}
               </Text>
             </Pressable>

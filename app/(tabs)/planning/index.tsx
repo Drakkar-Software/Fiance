@@ -240,10 +240,10 @@ function PreparationView() {
       {filteredTasks.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Calendar size={48} color="#D1D5DB" />
-          <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
+          <Text className="text-lg font-semibold text-ink mt-4">
             {t("noTasks")}
           </Text>
-          <Text className="text-sm text-gray-400 text-center mt-1">
+          <Text className="text-sm text-mute text-center mt-1">
             {t("addFirstTask")}
           </Text>
           <View className="flex-row gap-3 mt-5">
@@ -368,10 +368,10 @@ function AgendaView() {
       {events.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Calendar size={48} color="#D1D5DB" />
-          <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
+          <Text className="text-lg font-semibold text-ink mt-4">
             {t("noAppointments")}
           </Text>
-          <Text className="text-sm text-gray-400 text-center mt-1">
+          <Text className="text-sm text-mute text-center mt-1">
             {t("planYourVisits")}
           </Text>
           <Pressable
@@ -404,8 +404,8 @@ function AgendaView() {
                     }
                     className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
                       isPast
-                        ? "border-gray-100 dark:border-gray-800 opacity-60"
-                        : "border-gray-100 dark:border-gray-800"
+                        ? "border-hair opacity-60"
+                        : "border-hair"
                     }`}
                   >
                     <View className="flex-row items-start">
@@ -413,19 +413,19 @@ function AgendaView() {
                         <Display size={20} weight="500" color="#b96a4a">
                           {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
                         </Display>
-                        <Text className="text-xs text-gray-400 capitalize">
+                        <Text className="text-xs text-mute capitalize">
                           {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                         </Text>
                       </View>
                       <View className="flex-1">
-                        <Text className="text-base font-medium text-gray-900 dark:text-white">
+                        <Text className="text-base font-medium text-ink">
                           {event.title}
                         </Text>
                         <View className="flex-row items-center gap-3 mt-1 flex-wrap">
                           {event.time && (
                             <View className="flex-row items-center gap-1">
                               <Clock size={12} color="#9CA3AF" />
-                              <Text className="text-xs text-gray-400">
+                              <Text className="text-xs text-mute">
                                 {event.time}
                                 {event.endTime ? ` - ${event.endTime}` : ""}
                               </Text>
@@ -434,7 +434,7 @@ function AgendaView() {
                           {event.location && (
                             <View className="flex-row items-center gap-1">
                               <MapPin size={12} color="#9CA3AF" />
-                              <Text className="text-xs text-gray-400" numberOfLines={1}>
+                              <Text className="text-xs text-mute" numberOfLines={1}>
                                 {event.location}
                               </Text>
                             </View>
@@ -535,10 +535,10 @@ function DayOfView() {
       {items.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Clock size={48} color="#D1D5DB" />
-          <Text className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
+          <Text className="text-lg font-semibold text-ink mt-4">
             {t("noMoments")}
           </Text>
-          <Text className="text-sm text-gray-400 text-center mt-1">
+          <Text className="text-sm text-mute text-center mt-1">
             {t("buildYourDay")}
           </Text>
           <Pressable
@@ -617,12 +617,12 @@ function DayOfTimelineCard({
       showConnector={showConnector}
       onPress={onPress}
     >
-      <View className="bg-accent-card rounded-2xl p-3.5 mb-3 border border-gray-100 dark:border-gray-800">
-        <Text className="text-base font-medium text-gray-900 dark:text-white">
+      <View className="bg-accent-card rounded-2xl p-3.5 mb-3 border border-hair">
+        <Text className="text-base font-medium text-ink">
           {item.title}
         </Text>
         {item.endTime && (
-          <Text className="text-xs text-gray-400 mt-0.5">
+          <Text className="text-xs text-mute mt-0.5">
             {t("until", { time: item.endTime })}
           </Text>
         )}
@@ -630,13 +630,13 @@ function DayOfTimelineCard({
           {item.location && (
             <View className="flex-row items-center gap-1">
               <MapPin size={12} color="#9CA3AF" />
-              <Text className="text-xs text-gray-400">{item.location}</Text>
+              <Text className="text-xs text-mute">{item.location}</Text>
             </View>
           )}
           {item.responsible && (
             <View className="flex-row items-center gap-1">
               <User size={12} color="#9CA3AF" />
-              <Text className="text-xs text-gray-400">{item.responsible}</Text>
+              <Text className="text-xs text-mute">{item.responsible}</Text>
             </View>
           )}
         </View>
@@ -672,7 +672,7 @@ function TaskCard({
       className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
         isOverdue
           ? "border-red-200 dark:border-red-800"
-          : "border-gray-100 dark:border-gray-800"
+          : "border-hair"
       }`}
       style={isOverdue ? { borderLeftWidth: 3, borderLeftColor: "#EF4444" } : {}}
     >
@@ -688,8 +688,8 @@ function TaskCard({
           <Text
             className={`text-base ${
               isDone
-                ? "text-gray-400 line-through"
-                : "text-gray-900 dark:text-white font-medium"
+                ? "text-mute line-through"
+                : "text-ink font-medium"
             }`}
           >
             {task.title}
@@ -720,7 +720,7 @@ function TaskCard({
             {task.assignee && (
               <View className="flex-row items-center gap-1">
                 <User size={11} color="#9CA3AF" />
-                <Text className="text-xs text-gray-400">{task.assignee}</Text>
+                <Text className="text-xs text-mute">{task.assignee}</Text>
               </View>
             )}
           </View>

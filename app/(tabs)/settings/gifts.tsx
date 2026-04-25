@@ -96,7 +96,7 @@ export default function GiftsScreen() {
           <InputRow label={t("giftPrice")} value={formPrice} onChangeText={setFormPrice} keyboardType="numeric" placeholder="150" />
           <InputRow label={t("giftUrl")} value={formUrl} onChangeText={setFormUrl} placeholder="https://..." />
           <View className="py-3">
-            <Text className="text-xs text-gray-400 mb-2 font-medium">{t("giftCategory")}</Text>
+            <Text className="text-xs text-mute mb-2 font-medium">{t("giftCategory")}</Text>
             <ChipSelect options={[...CATEGORIES]} value={formCategory} onChange={setFormCategory} labels={CATEGORY_LABELS} />
           </View>
         </FormCard>
@@ -111,7 +111,7 @@ export default function GiftsScreen() {
             onPress={() => setShowForm(false)}
             className="flex-1 bg-gray-100 dark:bg-gray-800 py-3 rounded-xl items-center"
           >
-            <Text className="text-gray-500 dark:text-gray-400">{t("cancel")}</Text>
+            <Text className="text-mute">{t("cancel")}</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -179,13 +179,13 @@ function GiftRow({
   return (
     <Pressable
       onPress={onPress}
-      className="bg-accent-card rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card rounded-2xl p-4 mb-2 border border-hair active:opacity-80"
     >
       <View className="flex-row items-center">
         <View className="flex-1 mr-2">
           <Text
             className={`text-base font-medium ${
-              gift.claimed ? "text-gray-400 line-through" : "text-gray-900 dark:text-white"
+              gift.claimed ? "text-mute line-through" : "text-ink"
             }`}
           >
             {gift.title}
@@ -196,7 +196,7 @@ function GiftRow({
             </Text>
           )}
           {gift.description ? (
-            <Text className="text-sm text-gray-400 mt-0.5" numberOfLines={1}>{gift.description}</Text>
+            <Text className="text-sm text-mute mt-0.5" numberOfLines={1}>{gift.description}</Text>
           ) : null}
           {gift.claimed && gift.claimedByName ? (
             <Text className="text-xs text-emerald-500 font-medium mt-1">

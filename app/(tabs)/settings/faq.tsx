@@ -56,14 +56,14 @@ export default function FaqScreen() {
     >
       <View className="px-4 pt-4">
         <SectionTitle>{t("faqTitle")}</SectionTitle>
-        <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+        <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {t("faqSubtitle")}
         </Text>
 
         {faqItems.map((item, index) => (
           <View
             key={index}
-            className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+            className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
           >
             <View className="flex-row items-center justify-between mb-2">
               <Label size={10} color="#9CA3AF">
@@ -76,12 +76,12 @@ export default function FaqScreen() {
                 <Trash2 size={16} color="#EF4444" />
               </Pressable>
             </View>
-            <View className="border-b border-gray-50 dark:border-gray-800 pb-3 mb-3">
-              <Text className="text-xs text-gray-400 mb-1 font-medium">
+            <View className="border-b border-hair pb-3 mb-3">
+              <Text className="text-xs text-mute mb-1 font-medium">
                 {t("faqQuestion")}
               </Text>
               <TextInput
-                className="text-base text-gray-900 dark:text-white"
+                className="text-base text-ink"
                 value={item.question}
                 onChangeText={(text) => updateItem(index, { question: text })}
                 placeholder={t("faqQuestionPlaceholder")}
@@ -89,11 +89,11 @@ export default function FaqScreen() {
               />
             </View>
             <View>
-              <Text className="text-xs text-gray-400 mb-1 font-medium">
+              <Text className="text-xs text-mute mb-1 font-medium">
                 {t("faqAnswer")}
               </Text>
               <TextInput
-                className="text-base text-gray-900 dark:text-white"
+                className="text-base text-ink"
                 value={item.answer}
                 onChangeText={(text) => updateItem(index, { answer: text })}
                 placeholder={t("faqAnswerPlaceholder")}
@@ -107,10 +107,10 @@ export default function FaqScreen() {
 
         <Pressable
           onPress={addItem}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-gray-300 dark:border-gray-700 flex-row items-center justify-center active:opacity-80"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-hair dark:border-hair flex-row items-center justify-center active:opacity-80"
         >
           <Plus size={20} color="#9CA3AF" />
-          <Text className="text-base font-medium text-gray-500 dark:text-gray-400 ml-2">
+          <Text className="text-base font-medium text-mute ml-2">
             {t("faqAdd")}
           </Text>
         </Pressable>

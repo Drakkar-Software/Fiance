@@ -94,7 +94,7 @@ export default function PremiumScreen() {
           <Display size={26} italic style={{ textAlign: "center", marginBottom: 8 }}>
             {t("premiumTitle")}
           </Display>
-          <Text className="text-base text-gray-500 dark:text-gray-400 text-center leading-6">
+          <Text className="text-base text-mute text-center leading-6">
             {t("premiumPitch")}
           </Text>
         </View>
@@ -104,12 +104,12 @@ export default function PremiumScreen() {
           {BENEFITS.map(({ key, icon: Icon }, i) => (
             <View
               key={key}
-              className={`flex-row items-center px-4 py-4 gap-3${i < BENEFITS.length - 1 ? " border-b border-gray-100 dark:border-gray-800" : ""}`}
+              className={`flex-row items-center px-4 py-4 gap-3${i < BENEFITS.length - 1 ? " border-b border-hair" : ""}`}
             >
               <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
                 <Icon size={18} color="#b96a4a" />
               </View>
-              <Text className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+              <Text className="flex-1 text-sm font-medium text-ink">
                 {t(key)}
               </Text>
             </View>
@@ -134,7 +134,7 @@ export default function PremiumScreen() {
               <Text className="text-white font-semibold text-base">{ctaLabel}</Text>
             </Pressable>
 
-            <Text className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1 mb-1 leading-5 px-2">
+            <Text className="text-xs text-mute text-center mt-1 mb-1 leading-5 px-2">
               {t("premiumBetaNote")}
             </Text>
 
@@ -144,7 +144,7 @@ export default function PremiumScreen() {
                 disabled={state !== "idle"}
                 className="items-center py-2 active:opacity-60"
               >
-                <Text className="text-sm text-gray-400 dark:text-gray-500">{t("premiumRestore")}</Text>
+                <Text className="text-sm text-mute dark:text-mute">{t("premiumRestore")}</Text>
               </Pressable>
             )}
           </>

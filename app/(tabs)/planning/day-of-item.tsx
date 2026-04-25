@@ -105,7 +105,7 @@ export default function DayOfItemScreen() {
         <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[80px]"
+            className="text-base text-ink min-h-[80px]"
             placeholder={t("detailsPlaceholder")}
             placeholderTextColor="#D0D0D8"
             value={notes}

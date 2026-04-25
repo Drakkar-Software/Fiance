@@ -41,14 +41,14 @@ export default function NewVendorPickerScreen() {
                   <Pressable
                     key={type}
                     onPress={() => handleSelect(type)}
-                    className="bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800 active:opacity-80 items-center justify-center"
+                    className="bg-accent-card rounded-2xl p-4 border border-hair active:opacity-80 items-center justify-center"
                     style={{ width: "47%" }}
                   >
                     <View className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-2">
                       <Icon size={22} color="#b96a4a" />
                     </View>
                     <Text
-                      className="text-sm font-medium text-gray-900 dark:text-white text-center"
+                      className="text-sm font-medium text-ink text-center"
                       numberOfLines={2}
                     >
                       {t(VENDOR_TYPE_LABELS[type])}

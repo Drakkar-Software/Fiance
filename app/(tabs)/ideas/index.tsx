@@ -152,7 +152,7 @@ export default function IdeasScreen() {
             className={`flex-row items-center px-3.5 py-2 rounded-xl border ${
               activeCategory
                 ? "border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900"
-                : "border-gray-200 dark:border-gray-700 bg-accent-card"
+                : "border-hair bg-accent-card"
             }`}
           >
             {activeCategory && (
@@ -165,7 +165,7 @@ export default function IdeasScreen() {
               className={`text-sm font-medium mr-1 ${
                 activeCategory
                   ? "text-primary-600 dark:text-primary-300"
-                  : "text-gray-500"
+                  : "text-mute"
               }`}
               numberOfLines={1}
             >
@@ -209,14 +209,14 @@ export default function IdeasScreen() {
                   className={`px-3 py-1.5 rounded-full border ${
                     collectionFilter === c.id
                       ? "bg-primary-500 border-primary-500"
-                      : "bg-accent-card border-gray-200 dark:border-gray-700"
+                      : "bg-accent-card border-hair"
                   }`}
                 >
                   <Text
                     className={`text-xs font-medium ${
                       collectionFilter === c.id
                         ? "text-white"
-                        : "text-gray-500"
+                        : "text-mute"
                     }`}
                     numberOfLines={1}
                   >
@@ -232,7 +232,7 @@ export default function IdeasScreen() {
       {/* Category picker grid */}
       {showCategoryPicker && (
         <View className="px-4 pb-3">
-          <View className="bg-accent-card rounded-2xl border border-gray-100 dark:border-gray-800 p-3">
+          <View className="bg-accent-card rounded-2xl border border-hair p-3">
             <View className="flex-row flex-wrap" style={{ gap: 8 }}>
               {CATEGORIES.map((cat) => {
                 const Icon = CATEGORY_ICONS[cat];
@@ -250,7 +250,7 @@ export default function IdeasScreen() {
                     className={`flex-row items-center px-3 py-2 rounded-xl border ${
                       isActive
                         ? "border-primary-300 dark:border-primary-700"
-                        : "border-gray-100 dark:border-gray-800"
+                        : "border-hair"
                     }`}
                     style={
                       isActive
@@ -336,13 +336,13 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className="bg-accent-card rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card rounded-2xl overflow-hidden border border-hair active:opacity-80"
     >
       <View className="p-3">
         {/* Title + favorite */}
         <View className="flex-row items-start justify-between">
           <Text
-            className="text-sm font-semibold text-gray-900 dark:text-white flex-1 mr-1"
+            className="text-sm font-semibold text-ink flex-1 mr-1"
             numberOfLines={2}
           >
             {idea.title || t("noTitle")}
@@ -391,7 +391,7 @@ function IdeaCard({ idea, onPress }: { idea: Idea; onPress: () => void }) {
         {/* Tags */}
         {idea.tags && (
           <Text
-            className="text-[11px] text-gray-400 mt-1.5"
+            className="text-[11px] text-mute mt-1.5"
             numberOfLines={1}
           >
             {(JSON.parse(idea.tags) as string[]).slice(0, 3).join(" · ")}

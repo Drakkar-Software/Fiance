@@ -185,7 +185,7 @@ export default function GuestDetailScreen() {
 
           {groups.length > 0 && (
             <>
-              <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">{t("groupLabel")}</Text>
+              <Text className="text-xs text-mute mt-3 mb-2 font-medium">{t("groupLabel")}</Text>
               <HorizontalChipSelect
                 options={[
                   { key: "", label: t("none") },
@@ -199,7 +199,7 @@ export default function GuestDetailScreen() {
           )}
 
           {/* Companion picker */}
-          <Text className="text-xs text-gray-400 mt-3 mb-2 font-medium">
+          <Text className="text-xs text-mute mt-3 mb-2 font-medium">
             {t("companionLabel")}
           </Text>
           <Pressable
@@ -207,7 +207,7 @@ export default function GuestDetailScreen() {
             className={`px-3.5 py-2.5 rounded-xl border flex-row items-center ${
               companionId
                 ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
-                : "bg-accent-card border-gray-200 dark:border-gray-700"
+                : "bg-accent-card border-hair"
             }`}
           >
             {companionId ? (
@@ -231,27 +231,27 @@ export default function GuestDetailScreen() {
             ) : (
               <>
                 <UserPlus size={16} color="#9CA3AF" />
-                <Text className="text-sm text-gray-400 ml-2">
+                <Text className="text-sm text-mute ml-2">
                   {t("selectCompanion")}
                 </Text>
               </>
             )}
           </Pressable>
-          <View className="flex-row items-center justify-between py-3 border-b border-gray-50 dark:border-gray-800">
-            <Text className="text-base text-gray-700 dark:text-gray-300">{t("childrenLabel")}</Text>
+          <View className="flex-row items-center justify-between py-3 border-b border-hair">
+            <Text className="text-base text-ink-soft">{t("childrenLabel")}</Text>
             <View className="flex-row items-center gap-3">
               <Pressable
                 onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
                 className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
               >
-                <Text className="text-lg text-gray-500">−</Text>
+                <Text className="text-lg text-mute">−</Text>
               </Pressable>
-              <Text className="text-base font-semibold text-gray-900 dark:text-white w-6 text-center">{childrenCount}</Text>
+              <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
               <Pressable
                 onPress={() => setChildrenCount(childrenCount + 1)}
                 className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
               >
-                <Text className="text-lg text-gray-500">+</Text>
+                <Text className="text-lg text-mute">+</Text>
               </Pressable>
             </View>
           </View>
@@ -283,7 +283,7 @@ export default function GuestDetailScreen() {
             className="flex-row items-center gap-1.5 mb-4 active:opacity-60"
           >
             <Tag size={14} color="#9CA3AF" />
-            <Text className="text-xs text-gray-400 dark:text-gray-500">
+            <Text className="text-xs text-mute dark:text-mute">
               {t("noInvitationTypes")} —{" "}
               <Text className="text-primary-500 font-medium">{t("newInvitationType")}</Text>
             </Text>
@@ -333,7 +333,7 @@ export default function GuestDetailScreen() {
             className="flex-row items-center gap-1.5 mb-4 active:opacity-60"
           >
             <BedDouble size={14} color="#9CA3AF" />
-            <Text className="text-xs text-gray-400 dark:text-gray-500">
+            <Text className="text-xs text-mute dark:text-mute">
               {t("noAccommodations")} —{" "}
               <Text className="text-primary-500 font-medium">{t("newAccommodation")}</Text>
             </Text>
@@ -351,7 +351,7 @@ export default function GuestDetailScreen() {
           />
           {(diet === "ALLERGY" || diet === "VEGETARIAN" || diet === "VEGAN") && (
             <TextInput
-              className="text-base text-gray-900 dark:text-white pt-3 mt-3"
+              className="text-base text-ink pt-3 mt-3"
               placeholder={t("dietDetails")}
               placeholderTextColor="#D0D0D8"
               value={dietNotes}
@@ -384,7 +384,7 @@ export default function GuestDetailScreen() {
         <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>
           <TextInput
-            className="text-base text-gray-900 dark:text-white min-h-[80px]"
+            className="text-base text-ink min-h-[80px]"
             placeholder={t("freeNotes")}
             placeholderTextColor="#D0D0D8"
             value={notes}

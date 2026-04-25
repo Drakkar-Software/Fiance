@@ -22,10 +22,10 @@ export default function CategoriesScreen() {
                 className="w-4 h-4 rounded-full mr-3"
                 style={{ backgroundColor: cat.color || "#9CA3AF" }}
               />
-              <Text className="text-base font-semibold text-gray-900 dark:text-white flex-1">
+              <Text className="text-base font-semibold text-ink flex-1">
                 {cat.name}
               </Text>
-              <Text className="text-sm text-gray-500">
+              <Text className="text-sm text-mute">
                 {done}/{catTasks.length}
               </Text>
             </View>

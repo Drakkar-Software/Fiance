@@ -114,11 +114,11 @@ function InvalidInvite() {
       </View>
       <Pressable
         onPress={() => router.replace("/")}
-        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-hair active:opacity-80"
       >
         <View className="flex-row items-center">
           <ArrowLeft size={20} color="#b96a4a" />
-          <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
+          <Text className="text-ink font-semibold text-base ml-2">
             {t("join.noGoBack")}
           </Text>
         </View>
@@ -146,7 +146,7 @@ function ConfirmJoin({
         <Display size={26} italic style={{ textAlign: "center" }}>
           {t("join.newWedding")}
         </Display>
-        <Text className="text-base text-gray-400 mt-2 text-center">
+        <Text className="text-base text-mute mt-2 text-center">
           {t("join.alreadyHaveWedding")}{"\n"}
           {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}
         </Text>
@@ -166,11 +166,11 @@ function ConfirmJoin({
 
       <Pressable
         onPress={() => router.replace("/")}
-        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-hair active:opacity-80"
       >
         <View className="flex-row items-center">
           <ArrowLeft size={20} color="#b96a4a" />
-          <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
+          <Text className="text-ink font-semibold text-base ml-2">
             {t("join.noGoBack")}
           </Text>
         </View>

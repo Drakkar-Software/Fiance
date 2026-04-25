@@ -34,7 +34,7 @@ export function MoneyDisplay({
   return (
     <View className={`flex-row items-center gap-1 ${className}`}>
       <Text
-        className={`font-semibold text-gray-900 dark:text-white ${sizeClasses[size]}`}
+        className={`font-semibold text-ink ${sizeClasses[size]}`}
       >
         {formatMoney(amount, currency)}
       </Text>

@@ -118,7 +118,10 @@ function DashboardScreen() {
 
   useEffect(() => {
     analytics.capture("home_opened", { days_until: daysUntil ?? undefined });
-  }, []);
+    if (daysUntil === 0) {
+      router.replace("/(tabs)/home/wedding-day");
+    }
+  }, [daysUntil]);
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
@@ -222,28 +225,28 @@ function DashboardScreen() {
       <View className="flex-row px-4 gap-2 -mt-5 mb-3">
         <Pressable
           onPress={() => router.push("/(tabs)/guests")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
         >
           <Users size={18} color={GP.clay} />
-          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+          <Text className="text-xs font-medium text-ink-soft mt-1">
             {t("quickAddGuest")}
           </Text>
         </Pressable>
         <Pressable
           onPress={() => router.push("/(tabs)/planning")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
         >
           <Calendar size={18} color="#F59E0B" />
-          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+          <Text className="text-xs font-medium text-ink-soft mt-1">
             {t("quickAddTask")}
           </Text>
         </Pressable>
         <Pressable
           onPress={() => router.push("/(tabs)/budget")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-gray-100 dark:border-gray-800 active:opacity-70"
+          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
         >
           <PieChart size={18} color="#10B981" />
-          <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">
+          <Text className="text-xs font-medium text-ink-soft mt-1">
             {t("quickAddExpense")}
           </Text>
         </Pressable>
@@ -289,14 +292,14 @@ function DashboardScreen() {
         {canInstall && (
           <Pressable
             onPress={install}
-            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
           >
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("installApp")}</Text>
-              <Text className="text-xs text-gray-400 mt-0.5">{t("installAppDesc")}</Text>
+              <Text className="text-sm font-semibold text-ink">{t("installApp")}</Text>
+              <Text className="text-xs text-mute mt-0.5">{t("installAppDesc")}</Text>
             </View>
             <ChevronRight size={18} color="#C0C0C8" />
           </Pressable>
@@ -304,13 +307,13 @@ function DashboardScreen() {
 
         {/* PWA install banner — iOS Safari */}
         {isIosSafari && (
-          <View className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center">
+          <View className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center">
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("installApp")}</Text>
-              <Text className="text-xs text-gray-400 mt-0.5">{t("installIosSteps")}</Text>
+              <Text className="text-sm font-semibold text-ink">{t("installApp")}</Text>
+              <Text className="text-xs text-mute mt-0.5">{t("installIosSteps")}</Text>
             </View>
             <Pressable onPress={dismissIosBanner} className="p-1">
               <X size={18} color="#C0C0C8" />
@@ -321,24 +324,24 @@ function DashboardScreen() {
         {/* Budget summary card */}
         <Pressable
           onPress={() => router.push("/(tabs)/budget")}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <View className="w-8 h-8 rounded-full bg-accent-sage-light dark:bg-emerald-900 items-center justify-center mr-2.5">
                 <PieChart size={16} color="#7B9A7B" />
               </View>
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              <Text className="text-base font-semibold text-ink">
                 {t("budget")}
               </Text>
             </View>
-            <Text className="text-xs text-gray-400">
+            <Text className="text-xs text-mute">
               {t("booked", { count: bookedVendors.length })}
             </Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-sm text-gray-400">{t("committed")}</Text>
-            <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+            <Text className="text-sm text-mute">{t("committed")}</Text>
+            <Text className="text-sm font-semibold text-ink">
               {formatMoney(budget.totalEngaged)} /{" "}
               {formatMoney(budget.budgetTarget)}
             </Text>
@@ -360,13 +363,13 @@ function DashboardScreen() {
         <View className="flex-row gap-3 mb-3">
           <Pressable
             onPress={() => router.push("/(tabs)/guests")}
-            className="flex-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+            className="flex-1 bg-accent-card rounded-2xl p-4 border border-hair"
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2.5">
                 <Users size={16} color="#b96a4a" />
               </View>
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+              <Text className="text-sm font-semibold text-ink">
                 {t("guests")}
               </Text>
             </View>
@@ -374,7 +377,7 @@ function DashboardScreen() {
               {counts.accepted}
               <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>/{counts.total}</Text>
             </Display>
-            <Text className="text-xs text-gray-400 mt-1">{t("confirmed")}</Text>
+            <Text className="text-xs text-mute mt-1">{t("confirmed")}</Text>
             {counts.no_table_count > 0 && (
               <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
                 <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
@@ -385,13 +388,13 @@ function DashboardScreen() {
           </Pressable>
           <Pressable
             onPress={() => router.push("/(tabs)/planning")}
-            className="flex-1 bg-accent-card rounded-2xl p-4 border border-gray-100 dark:border-gray-800"
+            className="flex-1 bg-accent-card rounded-2xl p-4 border border-hair"
           >
             <View className="flex-row items-center mb-3">
               <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
                 <Calendar size={16} color="#C9956B" />
               </View>
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+              <Text className="text-sm font-semibold text-ink">
                 {t("planning")}
               </Text>
             </View>
@@ -399,7 +402,7 @@ function DashboardScreen() {
               {completionRate}
               <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>%</Text>
             </Display>
-            <Text className="text-xs text-gray-400 mt-1">{t("completed")}</Text>
+            <Text className="text-xs text-mute mt-1">{t("completed")}</Text>
             {overdueTasks.length > 0 && (
               <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
                 <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
@@ -415,7 +418,7 @@ function DashboardScreen() {
           <Pressable
             onPress={handleRsvpSync}
             disabled={syncing}
-            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
           >
             <View className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900 items-center justify-center mr-3">
               {syncing ? (
@@ -425,10 +428,10 @@ function DashboardScreen() {
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+              <Text className="text-sm font-semibold text-ink">
                 {t("rsvpSyncButton")}
               </Text>
-              <Text className="text-xs text-gray-400 leading-4 mt-0.5">
+              <Text className="text-xs text-mute leading-4 mt-0.5">
                 {t("rsvpSyncDesc")}
               </Text>
             </View>
@@ -439,13 +442,13 @@ function DashboardScreen() {
         {/* Vendors summary */}
         <Pressable
           onPress={() => router.push("/(tabs)/vendors")}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center mb-3">
             <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
               <Briefcase size={16} color={GP.clay} />
             </View>
-            <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            <Text className="text-base font-semibold text-ink">
               {t("vendors")}
             </Text>
           </View>
@@ -476,14 +479,14 @@ function DashboardScreen() {
         {/* Inspirations */}
         <Pressable
           onPress={() => router.push("/(tabs)/ideas")}
-          className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-gray-100 dark:border-gray-800 flex-row items-center active:opacity-70"
+          className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
         >
           <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center mr-3">
             <Sparkles size={20} color="#A855F7" />
           </View>
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-900 dark:text-white">{t("myInspirations")}</Text>
-            <Text className="text-xs text-gray-400 mt-0.5">{t("idea", { count: ideaCount })}</Text>
+            <Text className="text-sm font-semibold text-ink">{t("myInspirations")}</Text>
+            <Text className="text-xs text-mute mt-0.5">{t("idea", { count: ideaCount })}</Text>
           </View>
           <ChevronRight size={18} color="#C0C0C8" />
         </Pressable>
@@ -491,14 +494,14 @@ function DashboardScreen() {
         {/* Next appointments */}
         <Pressable
           onPress={() => router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
                 <Calendar size={16} color={GP.clay} />
               </View>
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              <Text className="text-base font-semibold text-ink">
                 {t("nextAppointments")}
               </Text>
             </View>
@@ -514,20 +517,20 @@ function DashboardScreen() {
                       <Display size={20} weight="500" color="#b96a4a">
                         {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
                       </Display>
-                      <Text className="text-xs text-gray-400 capitalize">
+                      <Text className="text-xs text-mute capitalize">
                         {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                       </Text>
                     </>
                   }
                 >
-                  <Text className="text-base font-medium text-gray-900 dark:text-white">
+                  <Text className="text-base font-medium text-ink">
                     {event.title}
                   </Text>
                   <View className="flex-row items-center gap-3 mt-1 flex-wrap">
                     {event.time && (
                       <View className="flex-row items-center gap-1">
                         <Clock size={12} color="#9CA3AF" />
-                        <Text className="text-xs text-gray-400">
+                        <Text className="text-xs text-mute">
                           {event.time}
                           {event.endTime ? ` - ${event.endTime}` : ""}
                         </Text>
@@ -536,7 +539,7 @@ function DashboardScreen() {
                     {event.location && (
                       <View className="flex-row items-center gap-1">
                         <MapPin size={12} color="#9CA3AF" />
-                        <Text className="text-xs text-gray-400" numberOfLines={1}>
+                        <Text className="text-xs text-mute" numberOfLines={1}>
                           {event.location}
                         </Text>
                       </View>
@@ -546,7 +549,7 @@ function DashboardScreen() {
               ))}
             </View>
           ) : (
-            <Text className="text-sm text-gray-400">
+            <Text className="text-sm text-mute">
               {t("noUpcomingAppointment")}
             </Text>
           )}
@@ -555,14 +558,14 @@ function DashboardScreen() {
         {/* Next tasks */}
         <Pressable
           onPress={() => router.push("/(tabs)/planning")}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-gray-100 dark:border-gray-800"
+          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
                 <Circle size={16} color="#C9956B" />
               </View>
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+              <Text className="text-base font-semibold text-ink">
                 {t("nextTasks")}
               </Text>
             </View>
@@ -574,11 +577,11 @@ function DashboardScreen() {
                 <View key={task.id} className="flex-row items-center">
                   <Circle size={16} color="#D1D5DB" />
                   <View className="flex-1 ml-3">
-                    <Text className="text-sm font-medium text-gray-900 dark:text-white" numberOfLines={1}>
+                    <Text className="text-sm font-medium text-ink" numberOfLines={1}>
                       {task.title}
                     </Text>
                     {task.dueDate && (
-                      <Text className="text-xs text-gray-400 mt-0.5">
+                      <Text className="text-xs text-mute mt-0.5">
                         {safeFormat(new Date(task.dueDate + "T00:00:00"), "d MMM", { locale: getDateLocale() })}
                       </Text>
                     )}
@@ -587,7 +590,7 @@ function DashboardScreen() {
               ))}
             </View>
           ) : (
-            <Text className="text-sm text-gray-400">
+            <Text className="text-sm text-mute">
               {t("noUpcomingTask")}
             </Text>
           )}
@@ -613,7 +616,7 @@ function StatPill({
       <Display size={22} weight="500" color={color}>
         {value}
       </Display>
-      <Text className="text-[11px] text-gray-400 mt-0.5">{label}</Text>
+      <Text className="text-[11px] text-mute mt-0.5">{label}</Text>
     </View>
   );
 }

@@ -188,7 +188,7 @@ export default function ExportImportScreen() {
         {/* JSON Backup */}
         <View className="px-4">
           <SectionTitle>{t("backupSection")}</SectionTitle>
-          <Text className="text-sm text-gray-500 dark:text-gray-400 leading-5 mb-3 -mt-1">
+          <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
             {t("backupSectionDesc")}
           </Text>
           <FormCard>
@@ -240,13 +240,13 @@ function ExportRow({
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-row items-center py-3.5 active:opacity-70 ${!last ? "border-b border-gray-50 dark:border-gray-800" : ""}`}
+      className={`flex-row items-center py-3.5 active:opacity-70 ${!last ? "border-b border-hair" : ""}`}
     >
       <View className="w-8 h-8 items-center justify-center mr-3">{icon}</View>
       <View className="flex-1">
-        <Text className="text-base text-gray-900 dark:text-white font-medium">{label}</Text>
+        <Text className="text-base text-ink font-medium">{label}</Text>
         {sublabel && (
-          <Text className="text-xs text-gray-400 mt-0.5">{sublabel}</Text>
+          <Text className="text-xs text-mute mt-0.5">{sublabel}</Text>
         )}
       </View>
       <ChevronRight size={16} color="#C0C0C8" />

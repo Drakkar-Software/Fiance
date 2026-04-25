@@ -34,7 +34,7 @@ export function SegmentedControl({ segments, activeKey, onSelect }: SegmentedCon
             >
               <Text
                 className={`text-sm font-medium ${
-                  isActive ? "text-primary-500" : "text-gray-500 dark:text-gray-400"
+                  isActive ? "text-primary-500" : "text-mute"
                 }`}
               >
                 {seg.label}

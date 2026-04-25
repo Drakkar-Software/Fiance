@@ -99,11 +99,11 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
 
       <Pressable
         onPress={() => onSelect("join")}
-        className="bg-accent-card rounded-2xl py-4 items-center border border-gray-200 dark:border-gray-700 active:opacity-80"
+        className="bg-accent-card rounded-2xl py-4 items-center border border-hair active:opacity-80"
       >
         <View className="flex-row items-center">
           <Link size={20} color="#b96a4a" />
-          <Text className="text-gray-900 dark:text-white font-semibold text-base ml-2">
+          <Text className="text-ink font-semibold text-base ml-2">
             {t("onboarding.joinWedding")}
           </Text>
         </View>
@@ -153,15 +153,15 @@ function CreateWeddingForm({
         <Display size={28} italic style={{ marginBottom: 8 }}>
           {t("onboarding.newWedding")}
         </Display>
-        <Text className="text-base text-gray-400 mb-8">
+        <Text className="text-base text-mute mb-8">
           {t("onboarding.autoPassword")}
         </Text>
 
-        <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
+        <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
           {t("onboarding.weddingNameLabel")}
         </Text>
         <TextInput
-          className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-8"
+          className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-8"
           placeholder={t("onboarding.weddingNamePlaceholder")}
           placeholderTextColor="#C0C0C8"
           value={label}
@@ -239,11 +239,11 @@ function JoinWeddingForm({
             {t("onboarding.joinTitle")}
           </Display>
 
-          <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
+          <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
             {t("onboarding.weddingNameLabel")}
           </Text>
           <TextInput
-            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4"
+            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-4"
             placeholder={t("onboarding.weddingNamePlaceholder")}
             placeholderTextColor="#C0C0C8"
             value={label}

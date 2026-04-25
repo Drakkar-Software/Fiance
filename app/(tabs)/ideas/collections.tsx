@@ -44,11 +44,11 @@ export default function CollectionsScreen() {
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         {showAdd && (
           <View className="bg-accent-card rounded-xl p-4 mb-4">
-            <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+            <Text className="text-base font-semibold text-ink mb-3">
               {t("newCollection")}
             </Text>
             <TextInput
-              className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+              className="text-base text-ink border-b border-hair pb-2 mb-3"
               placeholder={t("collectionName")}
               placeholderTextColor="#9CA3AF"
               value={newName}
@@ -56,7 +56,7 @@ export default function CollectionsScreen() {
               autoFocus
             />
             <TextInput
-              className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+              className="text-base text-ink border-b border-hair pb-2 mb-3"
               placeholder={t("collectionDesc")}
               placeholderTextColor="#9CA3AF"
               value={newDescription}
@@ -73,7 +73,7 @@ export default function CollectionsScreen() {
                 onPress={() => setShowAdd(false)}
                 className="flex-1 bg-gray-100 dark:bg-gray-800 py-2 rounded-lg items-center"
               >
-                <Text className="text-gray-600">{t("common:cancel")}</Text>
+                <Text className="text-mute">{t("common:cancel")}</Text>
               </Pressable>
             </View>
           </View>
@@ -88,15 +88,15 @@ export default function CollectionsScreen() {
             >
               <View className="flex-row items-center justify-between">
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                  <Text className="text-base font-semibold text-ink">
                     {col.name}
                   </Text>
                   {col.description && (
-                    <Text className="text-sm text-gray-500 mt-0.5">
+                    <Text className="text-sm text-mute mt-0.5">
                       {col.description}
                     </Text>
                   )}
-                  <Text className="text-sm text-gray-400 mt-1">
+                  <Text className="text-sm text-mute mt-1">
                     {t("idea", { count })}
                   </Text>
                 </View>

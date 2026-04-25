@@ -75,17 +75,17 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
           params: { id: guest.id },
         })
       }
-      className="bg-accent-card rounded-2xl p-4 mb-2 border border-gray-100 dark:border-gray-800 active:opacity-80"
+      className="bg-accent-card rounded-2xl p-4 mb-2 border border-hair active:opacity-80"
     >
       <View className="flex-row items-center">
         <View className="mr-3">
           <Avatar ini={`${guest.firstName[0]}${guest.lastName[0]}`} size={40} />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold text-gray-900 dark:text-white">
+          <Text className="text-base font-semibold text-ink">
             {guest.firstName} {guest.lastName}
           </Text>
-          <Text className="text-sm text-gray-400 mt-0.5">
+          <Text className="text-sm text-mute mt-0.5">
             {invitationTypeLabel}
             {(guest.childrenCount ?? 0) > 0 ? ` · ${guest.childrenCount} ${t("child")}` : ""}
             {guest.diet && guest.diet !== "STANDARD"
@@ -93,7 +93,7 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
               : ""}
           </Text>
           {companionName && (
-            <Text className="text-xs text-gray-400 mt-0.5">
+            <Text className="text-xs text-mute mt-0.5">
               {t("withCompanion", { name: companionName })}
             </Text>
           )}
@@ -233,12 +233,12 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "bg-primary-500 border-primary-500"
-                  : "bg-accent-card border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-hair"
               }`}
             >
               <Text
                 className={`text-sm font-medium ${
-                  isActive ? "text-white" : "text-gray-600 dark:text-gray-400"
+                  isActive ? "text-white" : "text-mute"
                 }`}
               >
                 {tab.label} ({tab.count})
@@ -256,14 +256,14 @@ function GuestsView() {
               className={`px-4 py-2 rounded-full border ${
                 isActive
                   ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
-                  : "bg-accent-card border-gray-200 dark:border-gray-700"
+                  : "bg-accent-card border-hair"
               }`}
             >
               <Text
                 className={`text-sm font-medium ${
                   isActive
                     ? "text-primary-500"
-                    : "text-gray-600 dark:text-gray-400"
+                    : "text-mute"
                 }`}
               >
                 {tab.label} ({tab.count})
@@ -387,11 +387,11 @@ function GroupsView() {
           {/* Add group form */}
           {showAdd && (
             <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+              <Text className="text-base font-semibold text-ink mb-3">
                 {t("newGroup")}
               </Text>
               <TextInput
-                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                className="text-base text-ink border-b border-hair pb-2 mb-3"
                 placeholder={t("groupName")}
                 placeholderTextColor="#D0D0D8"
                 value={newGroupName}
@@ -409,7 +409,7 @@ function GroupsView() {
                   onPress={() => setShowAdd(false)}
                   className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
-                  <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                  <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -422,7 +422,7 @@ function GroupsView() {
             return (
               <View
                 key={group.id}
-                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-hair"
               >
                 {/* Group header */}
                 <View className="flex-row items-center justify-between mb-2">
@@ -438,7 +438,7 @@ function GroupsView() {
                     </View>
                     {editingGroupId === group.id ? (
                       <TextInput
-                        className="text-base font-semibold text-gray-900 dark:text-white flex-1"
+                        className="text-base font-semibold text-ink flex-1"
                         value={editingName}
                         onChangeText={setEditingName}
                         onBlur={() => {
@@ -457,14 +457,14 @@ function GroupsView() {
                         selectTextOnFocus
                       />
                     ) : (
-                      <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                      <Text className="text-base font-semibold text-ink">
                         {group.name}
                       </Text>
                     )}
                   </Pressable>
                   <View className="flex-row items-center gap-2">
                     <View className="px-2.5 py-1 rounded-full bg-accent-paper dark:bg-gray-800">
-                      <Text className="text-xs font-semibold text-gray-500">
+                      <Text className="text-xs font-semibold text-mute">
                         {groupGuests.length}
                       </Text>
                     </View>
@@ -482,21 +482,21 @@ function GroupsView() {
                   groupGuests.map((g) => (
                     <View
                       key={g.id}
-                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
+                      className="flex-row items-center py-2 border-t border-hair"
                     >
                       <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
-                        <Text className="text-xs font-bold text-gray-400">
+                        <Text className="text-xs font-bold text-mute">
                           {g.firstName[0]}
                           {g.lastName[0]}
                         </Text>
                       </View>
-                      <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                      <Text className="text-sm text-ink-soft flex-1">
                         {g.firstName} {g.lastName}
                       </Text>
                     </View>
                   ))
                 ) : (
-                  <Text className="text-sm text-gray-400 mt-1">
+                  <Text className="text-sm text-mute mt-1">
                     {t("noGroupMembers")}
                   </Text>
                 )}
@@ -608,11 +608,11 @@ function TablesView() {
           {/* Add table form */}
           {showAdd && (
             <View className="bg-accent-card rounded-2xl p-4 mb-4 border border-primary-200 dark:border-primary-800">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+              <Text className="text-base font-semibold text-ink mb-3">
                 {t("newTable")}
               </Text>
               <TextInput
-                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                className="text-base text-ink border-b border-hair pb-2 mb-3"
                 placeholder={t("tableName")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableName}
@@ -620,7 +620,7 @@ function TablesView() {
                 autoFocus
               />
               <TextInput
-                className="text-base text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2 mb-3"
+                className="text-base text-ink border-b border-hair pb-2 mb-3"
                 placeholder={t("capacity")}
                 placeholderTextColor="#D0D0D8"
                 value={newTableCapacity}
@@ -638,7 +638,7 @@ function TablesView() {
                   onPress={() => setShowAdd(false)}
                   className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-xl items-center"
                 >
-                  <Text className="text-gray-500 dark:text-gray-400 text-sm">{t("common:cancel")}</Text>
+                  <Text className="text-mute text-sm">{t("common:cancel")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -653,7 +653,7 @@ function TablesView() {
             return (
               <View
                 key={table.id}
-                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-gray-100 dark:border-gray-800"
+                className="bg-accent-card rounded-2xl p-4 mb-2.5 border border-hair"
               >
                 {/* Table header */}
                 <View className="flex-row items-center justify-between mb-2">
@@ -669,7 +669,7 @@ function TablesView() {
                     </View>
                     {editingTableId === table.id ? (
                       <TextInput
-                        className="text-base font-semibold text-gray-900 dark:text-white flex-1"
+                        className="text-base font-semibold text-ink flex-1"
                         value={editingName}
                         onChangeText={setEditingName}
                         onBlur={() => {
@@ -688,7 +688,7 @@ function TablesView() {
                         selectTextOnFocus
                       />
                     ) : (
-                      <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                      <Text className="text-base font-semibold text-ink">
                         {table.name}
                       </Text>
                     )}
@@ -703,7 +703,7 @@ function TablesView() {
                     >
                       <Text
                         className={`text-xs font-semibold ${
-                          isFull ? "text-red-500" : "text-gray-500"
+                          isFull ? "text-red-500" : "text-mute"
                         }`}
                       >
                         {tableGuests.length}
@@ -724,15 +724,15 @@ function TablesView() {
                   tableGuests.map((g) => (
                     <View
                       key={g.id}
-                      className="flex-row items-center py-2 border-t border-gray-50 dark:border-gray-800"
+                      className="flex-row items-center py-2 border-t border-hair"
                     >
                       <View className="w-7 h-7 rounded-lg bg-accent-paper dark:bg-gray-800 items-center justify-center mr-2">
-                        <Text className="text-xs font-bold text-gray-400">
+                        <Text className="text-xs font-bold text-mute">
                           {g.firstName[0]}
                           {g.lastName[0]}
                         </Text>
                       </View>
-                      <Text className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                      <Text className="text-sm text-ink-soft flex-1">
                         {g.firstName} {g.lastName}
                       </Text>
                       {g.diet && g.diet !== "STANDARD" && (
@@ -743,7 +743,7 @@ function TablesView() {
                     </View>
                   ))
                 ) : (
-                  <Text className="text-sm text-gray-400 mt-1">
+                  <Text className="text-sm text-mute mt-1">
                     {t("noGuestsAssigned")}
                   </Text>
                 )}

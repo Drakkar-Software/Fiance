@@ -37,7 +37,7 @@ export function QRScannerScreen({ onScanned, onClose }: QRScannerScreenProps) {
         <Text className="text-white text-xl font-bold text-center mb-3">
           {t("onboarding.cameraPermissionTitle")}
         </Text>
-        <Text className="text-gray-400 text-center mb-8">
+        <Text className="text-mute text-center mb-8">
           {t("onboarding.cameraPermissionMessage")}
         </Text>
         <Pressable

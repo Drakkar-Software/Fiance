@@ -46,7 +46,7 @@ function LangSwitch() {
       className="flex-row items-center gap-1.5 self-end px-3 py-1.5 rounded-full bg-white/60 mr-4 mt-3"
     >
       <Globe size={13} color="#9CA3AF" />
-      <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+      <Text className="text-xs font-medium text-mute uppercase tracking-wide">
         {currentLang === "fr" ? "EN" : "FR"}
       </Text>
     </Pressable>
@@ -149,7 +149,7 @@ export default function WeddingPublicPage() {
           resizeMode="contain"
         />
         <ActivityIndicator size="small" color="#b96a4a" className="mt-4" />
-        <Text className="text-sm text-gray-400 mt-2">{t("loading")}</Text>
+        <Text className="text-sm text-mute mt-2">{t("loading")}</Text>
       </View>
     );
   }
@@ -163,7 +163,7 @@ export default function WeddingPublicPage() {
           style={{ width: 64, height: 64, borderRadius: 16, opacity: 0.4 }}
           resizeMode="contain"
         />
-        <Text className="text-base text-gray-400 text-center mt-4">{t("error")}</Text>
+        <Text className="text-base text-mute text-center mt-4">{t("error")}</Text>
       </View>
     );
   }
@@ -205,13 +205,13 @@ export default function WeddingPublicPage() {
           {about?.venueName && (
             <View className="flex-row items-center gap-1.5 mt-2">
               <MapPin size={13} color="#9CA3AF" />
-              <Text className="text-sm text-gray-400">{about?.venueName}</Text>
+              <Text className="text-sm text-mute">{about?.venueName}</Text>
             </View>
           )}
 
           {about?.description && (
             <View className="mt-5 bg-white/60 rounded-2xl px-5 py-4 max-w-md">
-              <Text className="text-sm text-gray-600 text-center leading-5 italic">
+              <Text className="text-sm text-mute text-center leading-5 italic">
                 {about?.description}
               </Text>
             </View>
@@ -264,11 +264,11 @@ export default function WeddingPublicPage() {
                       showConnector={idx < dateItems.length - 1}
                     >
                       <View className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
-                        <Text className="text-base font-semibold text-gray-900">
+                        <Text className="text-base font-semibold text-ink">
                           {item.title}
                         </Text>
                         {item.endTime && (
-                          <Text className="text-xs text-gray-400 mt-0.5">
+                          <Text className="text-xs text-mute mt-0.5">
                             {t("until", { time: item.endTime })}
                           </Text>
                         )}
@@ -290,7 +290,7 @@ export default function WeddingPublicPage() {
         {timeline.length === 0 && (
           <View className="items-center justify-center py-16 px-6">
             <Clock size={40} color="#E8D5C0" />
-            <Text className="text-sm text-gray-400 text-center mt-3">{t("noTimeline")}</Text>
+            <Text className="text-sm text-mute text-center mt-3">{t("noTimeline")}</Text>
           </View>
         )}
 
@@ -317,10 +317,10 @@ export default function WeddingPublicPage() {
                 className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm"
                 style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
               >
-                <Text className="text-base font-semibold text-gray-900">
+                <Text className="text-base font-semibold text-ink">
                   {item.question}
                 </Text>
-                <Text className="text-sm text-gray-500 mt-1.5 leading-5">
+                <Text className="text-sm text-mute mt-1.5 leading-5">
                   {item.answer}
                 </Text>
               </View>
@@ -353,9 +353,9 @@ export default function WeddingPublicPage() {
               >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-900">{gift.title}</Text>
+                    <Text className="text-base font-semibold text-ink">{gift.title}</Text>
                     {gift.description && (
-                      <Text className="text-sm text-gray-500 mt-1 leading-5">{gift.description}</Text>
+                      <Text className="text-sm text-mute mt-1 leading-5">{gift.description}</Text>
                     )}
                     {gift.price != null && (
                       <Text className="text-sm font-medium text-accent-gold mt-1.5">{gift.price} €</Text>
@@ -392,7 +392,7 @@ export default function WeddingPublicPage() {
                   <CheckCircle2 size={40} color="#10B981" />
                 </View>
                 <Display size={20} italic style={{ textAlign: "center" }}>{t("rsvpSuccess")}</Display>
-                <Text className="text-sm text-gray-400 mt-1 text-center">
+                <Text className="text-sm text-mute mt-1 text-center">
                   {selectedGuest?.firstName} {selectedGuest?.lastName}
                 </Text>
               </View>
@@ -400,9 +400,9 @@ export default function WeddingPublicPage() {
               <View className="bg-accent-card rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
                 {!selectedGuest ? (
                   <>
-                    <Text className="text-sm text-gray-500 mb-2">{t("rsvpSearch")}</Text>
+                    <Text className="text-sm text-mute mb-2">{t("rsvpSearch")}</Text>
                     <TextInput
-                      className="border border-gray-200 rounded-xl px-3 py-2.5 text-base text-gray-900 mb-3"
+                      className="border border-hair rounded-xl px-3 py-2.5 text-base text-ink mb-3"
                       placeholder={t("rsvpSearch")}
                       value={rsvpSearch}
                       onChangeText={setRsvpSearch}
@@ -419,9 +419,9 @@ export default function WeddingPublicPage() {
                             <Pressable
                               key={g.id}
                               onPress={() => setSelectedGuest(g)}
-                              className="py-2.5 border-b border-gray-50 active:opacity-60"
+                              className="py-2.5 border-b border-hair active:opacity-60"
                             >
-                              <Text className="text-base text-gray-900">
+                              <Text className="text-base text-ink">
                                 {g.firstName} {g.lastName}
                               </Text>
                             </Pressable>
@@ -432,17 +432,17 @@ export default function WeddingPublicPage() {
                 ) : (
                   <>
                     <View className="flex-row items-center justify-between mb-4">
-                      <Text className="text-base font-semibold text-gray-900">
+                      <Text className="text-base font-semibold text-ink">
                         {selectedGuest.firstName} {selectedGuest.lastName}
                       </Text>
                       {!(token && selectedGuest.rsvpToken === token) && (
                         <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
-                          <Text className="text-sm text-gray-400">{t("rsvpChange")}</Text>
+                          <Text className="text-sm text-mute">{t("rsvpChange")}</Text>
                         </Pressable>
                       )}
                     </View>
 
-                    <Text className="text-sm text-gray-500 mb-2">{t("rsvpAttendance")}</Text>
+                    <Text className="text-sm text-mute mb-2">{t("rsvpAttendance")}</Text>
                     <View className="flex-row gap-2 mb-4">
                       {(["ACCEPTED", "DECLINED", "MAYBE"] as const).map((s) => {
                         const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo"), MAYBE: t("rsvpMaybe") };
@@ -451,10 +451,10 @@ export default function WeddingPublicPage() {
                           <Pressable
                             key={s}
                             onPress={() => setRsvpStatus(s)}
-                            className={`flex-1 py-2.5 rounded-xl items-center border ${rsvpStatus === s ? "border-transparent" : "border-gray-200"}`}
+                            className={`flex-1 py-2.5 rounded-xl items-center border ${rsvpStatus === s ? "border-transparent" : "border-hair"}`}
                             style={rsvpStatus === s ? { backgroundColor: colors[s] } : undefined}
                           >
-                            <Text className={`text-sm font-semibold ${rsvpStatus === s ? "text-white" : "text-gray-500"}`}>
+                            <Text className={`text-sm font-semibold ${rsvpStatus === s ? "text-white" : "text-mute"}`}>
                               {labels[s]}
                             </Text>
                           </Pressable>
@@ -464,15 +464,15 @@ export default function WeddingPublicPage() {
 
                     {rsvpStatus === "ACCEPTED" && (
                       <>
-                        <Text className="text-sm text-gray-500 mb-2">{t("rsvpDiet")}</Text>
+                        <Text className="text-sm text-mute mb-2">{t("rsvpDiet")}</Text>
                         <View className="flex-row flex-wrap gap-2 mb-4">
                           {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
                             <Pressable
                               key={key}
                               onPress={() => setRsvpDiet(key)}
-                              className={`px-3 py-1.5 rounded-full border ${rsvpDiet === key ? "bg-primary-500 border-primary-500" : "border-gray-200 bg-white"}`}
+                              className={`px-3 py-1.5 rounded-full border ${rsvpDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
                             >
-                              <Text className={`text-sm ${rsvpDiet === key ? "text-white font-medium" : "text-gray-500"}`}>
+                              <Text className={`text-sm ${rsvpDiet === key ? "text-white font-medium" : "text-mute"}`}>
                                 {label}
                               </Text>
                             </Pressable>
@@ -488,10 +488,10 @@ export default function WeddingPublicPage() {
                           return (
                             <>
                               <View className="h-px bg-gray-100 mb-4" />
-                              <Text className="text-sm font-semibold text-gray-900 mb-1">
+                              <Text className="text-sm font-semibold text-ink mb-1">
                                 {t("plusOneLabel", { name: `${companion.firstName} ${companion.lastName}` })}
                               </Text>
-                              <Text className="text-sm text-gray-500 mb-2">{t("plusOneAttendance")}</Text>
+                              <Text className="text-sm text-mute mb-2">{t("plusOneAttendance")}</Text>
                               <View className="flex-row gap-2 mb-4">
                                 {(["ACCEPTED", "DECLINED"] as const).map((s) => {
                                   const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo") };
@@ -500,10 +500,10 @@ export default function WeddingPublicPage() {
                                     <Pressable
                                       key={s}
                                       onPress={() => setPlusOneStatus(s)}
-                                      className={`flex-1 py-2.5 rounded-xl items-center border ${plusOneStatus === s ? "border-transparent" : "border-gray-200"}`}
+                                      className={`flex-1 py-2.5 rounded-xl items-center border ${plusOneStatus === s ? "border-transparent" : "border-hair"}`}
                                       style={plusOneStatus === s ? { backgroundColor: colors[s] } : undefined}
                                     >
-                                      <Text className={`text-sm font-semibold ${plusOneStatus === s ? "text-white" : "text-gray-500"}`}>
+                                      <Text className={`text-sm font-semibold ${plusOneStatus === s ? "text-white" : "text-mute"}`}>
                                         {labels[s]}
                                       </Text>
                                     </Pressable>
@@ -512,15 +512,15 @@ export default function WeddingPublicPage() {
                               </View>
                               {plusOneStatus === "ACCEPTED" && (
                                 <>
-                                  <Text className="text-sm text-gray-500 mb-2">{t("plusOneDiet")}</Text>
+                                  <Text className="text-sm text-mute mb-2">{t("plusOneDiet")}</Text>
                                   <View className="flex-row flex-wrap gap-2 mb-4">
                                     {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
                                       <Pressable
                                         key={key}
                                         onPress={() => setPlusOneDiet(key)}
-                                        className={`px-3 py-1.5 rounded-full border ${plusOneDiet === key ? "bg-primary-500 border-primary-500" : "border-gray-200 bg-white"}`}
+                                        className={`px-3 py-1.5 rounded-full border ${plusOneDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
                                       >
-                                        <Text className={`text-sm ${plusOneDiet === key ? "text-white font-medium" : "text-gray-500"}`}>
+                                        <Text className={`text-sm ${plusOneDiet === key ? "text-white font-medium" : "text-mute"}`}>
                                           {label}
                                         </Text>
                                       </Pressable>
@@ -534,20 +534,20 @@ export default function WeddingPublicPage() {
 
                         {/* Children count */}
                         <View className="h-px bg-gray-100 mb-4" />
-                        <Text className="text-sm text-gray-500 mb-2">{t("childrenLabel")}</Text>
+                        <Text className="text-sm text-mute mb-2">{t("childrenLabel")}</Text>
                         <View className="flex-row items-center gap-3 mb-4">
                           <Pressable
                             onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
                             className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
                           >
-                            <Text className="text-lg text-gray-500">−</Text>
+                            <Text className="text-lg text-mute">−</Text>
                           </Pressable>
-                          <Text className="text-base font-semibold text-gray-900 w-6 text-center">{childrenCount}</Text>
+                          <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
                           <Pressable
                             onPress={() => setChildrenCount(childrenCount + 1)}
                             className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
                           >
-                            <Text className="text-lg text-gray-500">+</Text>
+                            <Text className="text-lg text-mute">+</Text>
                           </Pressable>
                         </View>
                       </>
@@ -615,7 +615,7 @@ export default function WeddingPublicPage() {
               style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
             >
               <Camera size={40} color="#E8D5C0" />
-              <Text className="text-sm text-gray-400 text-center mt-3 leading-5">
+              <Text className="text-sm text-mute text-center mt-3 leading-5">
                 {t("eventPhotosPlaceholder")}
               </Text>
             </View>
@@ -634,7 +634,7 @@ export default function WeddingPublicPage() {
             style={{ width: 28, height: 28, borderRadius: 6, opacity: 0.3 }}
             resizeMode="contain"
           />
-          <Text className="text-xs text-gray-300 mt-1">Fiancé</Text>
+          <Text className="text-xs text-mute mt-1">Fiancé</Text>
         </View>
         </View>
       </ScrollView>

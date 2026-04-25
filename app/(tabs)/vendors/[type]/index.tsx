@@ -54,11 +54,11 @@ export default function VendorTypeListScreen() {
             >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                  <Text className="text-base font-semibold text-ink">
                     {vendor.name}
                   </Text>
                   {vendor.contactName && (
-                    <Text className="text-sm text-gray-500 mt-1">
+                    <Text className="text-sm text-mute mt-1">
                       {vendor.contactName}
                     </Text>
                   )}
