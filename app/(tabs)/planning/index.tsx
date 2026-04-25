@@ -23,6 +23,8 @@ import { FAB } from "@/components/FAB";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { SectionHeader } from "@/components/SectionHeader";
+import { Label } from "@/components/Label";
+import { Display } from "@/components/Display";
 import { TimelineItem } from "@/components/TimelineItem";
 import {
   generateDefaultCategories,
@@ -294,9 +296,9 @@ function PreparationView() {
             const columnTasks = filteredTasks.filter((task) => task.status === status);
             return (
               <View key={status} className="w-72 mr-4">
-                <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <Label size={11} color="#9CA3AF" style={{ marginBottom: 8 }}>
                   {t(TASK_STATUS_LABELS[status])} ({columnTasks.length})
-                </Text>
+                </Label>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {columnTasks.map((task) => (
                     <TaskCard
@@ -408,9 +410,9 @@ function AgendaView() {
                   >
                     <View className="flex-row items-start">
                       <View className="w-14 items-center mr-3">
-                        <Text className="text-lg font-bold text-primary-500">
+                        <Display size={20} weight="500" color="#b96a4a">
                           {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
-                        </Text>
+                        </Display>
                         <Text className="text-xs text-gray-400 capitalize">
                           {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
                         </Text>
@@ -608,9 +610,9 @@ function DayOfTimelineCard({
   return (
     <TimelineItem
       left={
-        <Text className="text-sm font-bold text-primary-500 mt-3.5">
+        <Display size={14} weight="500" color="#b96a4a" style={{ marginTop: 14 }}>
           {item.time}
-        </Text>
+        </Display>
       }
       showConnector={showConnector}
       onPress={onPress}
