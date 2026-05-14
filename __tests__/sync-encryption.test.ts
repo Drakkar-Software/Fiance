@@ -16,6 +16,7 @@ import {
   SyncManager,
   ENCRYPTED_KEY,
   createEncryptor,
+  type PullResult,
 } from "@drakkar.software/starfish-client";
 import { createStarfishStore } from "@drakkar.software/starfish-client/zustand";
 
@@ -42,6 +43,10 @@ function makeMockClient(pullResponse: unknown, pushResponse = { hash: "abc", tim
     push: vi.fn().mockResolvedValue(pushResponse),
   } as unknown as StarfishClient;
 }
+
+// `StarfishClient.pull` is overloaded (append-only collections return `T[]`).
+// Cast to the plain document-pull signature so mock typings resolve correctly.
+type PullFn = (path: string, checkpoint?: number) => Promise<PullResult>;
 
 // ─── Encryptor round-trip ────────────────────────────────────────────────────
 
@@ -114,7 +119,7 @@ describe("SyncManager with encryption", () => {
     // Prime lastHash via a fake pull first
     const enc = createEncryptor(SECRET, SALT);
     const encrypted = await enc.encrypt(SAMPLE_DOC);
-    vi.mocked(client.pull).mockResolvedValueOnce({ data: encrypted, hash: "h1", timestamp: 100 });
+    vi.mocked(client.pull as PullFn).mockResolvedValueOnce({ data: encrypted, hash: "h1", timestamp: 100 });
     await manager.pull();
 
     vi.mocked(client.push).mockResolvedValueOnce({ hash: "h2", timestamp: 200 });
@@ -167,7 +172,7 @@ describe("SyncManager with encryption", () => {
     // Second pull — client will send ?checkpoint=100; server returns full doc again
     const updatedDoc = { ...SAMPLE_DOC, timestamp: "2026-02-01T00:00:00Z" };
     const encryptedV2 = await enc.encrypt(updatedDoc);
-    vi.mocked(client.pull).mockResolvedValueOnce({ data: encryptedV2, hash: "h2", timestamp: 200 });
+    vi.mocked(client.pull as PullFn).mockResolvedValueOnce({ data: encryptedV2, hash: "h2", timestamp: 200 });
 
     const result = await manager.pull();
     expect(result.data).toEqual(updatedDoc);

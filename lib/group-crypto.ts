@@ -54,7 +54,7 @@ async function pullKeyring(
   try {
     const result = await client.pull(`/pull/${KEYRING_COLLECTION}/${adminUserId}`, 0);
     const d = result.data;
-    if (!d || typeof (d as GroupKeyring).currentEpoch !== "number") return null;
+    if (!d || typeof (d as unknown as GroupKeyring).currentEpoch !== "number") return null;
     return d as unknown as GroupKeyring;
   } catch {
     return null;

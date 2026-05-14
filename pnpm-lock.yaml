@@ -7,8 +7,8 @@ specifiers:
   '@babel/core': ^7.29.0
   '@babel/runtime': ^7.29.2
   '@drakkar.software/seahorse': 0.7.2
-  '@drakkar.software/starfish-client': ^1.18.0
-  '@drakkar.software/starfish-protocol': ^1.18.0
+  '@drakkar.software/starfish-client': ^2.3.0
+  '@drakkar.software/starfish-protocol': ^2.3.0
   '@drakkar.software/sunglasses-adapter-console': ^0.7.0
   '@drakkar.software/sunglasses-adapter-sentry': ^0.7.0
   '@drakkar.software/sunglasses-adapter-starfish': ^0.7.0
@@ -96,8 +96,8 @@ specifiers:
 dependencies:
   '@babel/runtime': 7.29.2
   '@drakkar.software/seahorse': 0.7.2_292275f3664acba4999bd0f31927fdad
-  '@drakkar.software/starfish-client': 1.18.0_react@19.2.0+zustand@5.0.12
-  '@drakkar.software/starfish-protocol': 1.18.0
+  '@drakkar.software/starfish-client': 2.3.0_react@19.2.0+zustand@5.0.12
+  '@drakkar.software/starfish-protocol': 2.3.0
   '@drakkar.software/sunglasses-adapter-console': 0.7.0
   '@drakkar.software/sunglasses-adapter-sentry': 0.7.0_react@19.2.0
   '@drakkar.software/sunglasses-adapter-starfish': 0.7.0
@@ -1343,8 +1343,8 @@ packages:
       tailwind-merge: 3.5.0
     dev: false
 
-  /@drakkar.software/starfish-client/1.18.0_react@19.2.0+zustand@5.0.12:
-    resolution: {integrity: sha512-jtgJjest888ccKeRQAFrVV4Z32UEBG/zIJ09Jd1vng/49vZ7U4xbqB2tN8C0+vO7y6iGRISl5BNWY40MC6xIlw==}
+  /@drakkar.software/starfish-client/2.3.0_react@19.2.0+zustand@5.0.12:
+    resolution: {integrity: sha512-y2RsZmLrii22Vain41ocKvNrQ9u3UYLtGeuzAZy19LdQj3yLCtp7FUDmhDIzMFO8zOJ6aOIbITU/uaDLBqfb9w==}
     peerDependencies:
       '@legendapp/state': '>=2.0.0'
       immer: '>=9.0.0'
@@ -1360,14 +1360,14 @@ packages:
       zustand:
         optional: true
     dependencies:
-      '@drakkar.software/starfish-protocol': 1.18.0
+      '@drakkar.software/starfish-protocol': 2.3.0
       '@noble/curves': 2.2.0
       react: 19.2.0
       zustand: 5.0.12_f9d8fb1182447c3de6da3842e05f6d58
     dev: false
 
-  /@drakkar.software/starfish-protocol/1.18.0:
-    resolution: {integrity: sha512-jYXTiB6a6w+fBFG9hbejPx5fn7hKq9YjXo9Or1/mN8O2YU0WzYpmYLw7HbaxU15dashFPmjbmgaMA/tA8WLYSw==}
+  /@drakkar.software/starfish-protocol/2.3.0:
+    resolution: {integrity: sha512-lXJjsP7z3BFh1B/8ib6T0OP5oJsM5PmqSrs1iKNBZdIemskByYT8UZiLHDch/Xp3aKe6kTVmICUjXNwddVXKBQ==}
     dev: false
 
   /@drakkar.software/sunglasses-adapter-console/0.7.0:
