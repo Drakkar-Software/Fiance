@@ -20,7 +20,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 10
+          version: 6
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -28,8 +28,12 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Plain isolated install — pnpm 6 to match the lockfile's resolution.
+      # The previous `--config.node-linker=hoisted` (under pnpm 10) produced a
+      # bundle where gorhom bottom-sheet modals never presented on web, while a
+      # local isolated install built a working bundle from the same commit.
       - name: Install dependencies
-        run: pnpm install --config.node-linker=hoisted --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: pnpm test
