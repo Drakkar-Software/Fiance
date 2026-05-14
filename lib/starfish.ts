@@ -13,6 +13,7 @@ import {
   createUnionMerge,
   createDebouncedSync,
   fetchServerConfig,
+  configurePlatform,
   type Encryptor,
 } from "@drakkar.software/starfish-client";
 import { toast } from "@/lib/toast/sonner";
@@ -24,8 +25,31 @@ import {
 } from "@drakkar.software/starfish-client/zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { useStore } from "zustand";
+import { devtools } from "zustand/middleware";
 import { createBackupDocument, restoreFromBackup } from "./sync";
 import { getStorage } from "@/lib/kv-storage";
+
+// The default web base64 provider in starfish-protocol encodes with
+// `btoa(String.fromCharCode(...data))`. Spreading the full ciphertext byte
+// array into arguments overflows the call stack once an encrypted document
+// exceeds ~64-128KB ("Maximum call stack size exceeded" on push). Override
+// the web provider with a chunked encoder. Native keeps its own provider.
+if (Platform.OS === "web") {
+  configurePlatform({
+    base64: {
+      encode: (data: Uint8Array): string => {
+        let binary = "";
+        const CHUNK = 0x8000;
+        for (let i = 0; i < data.length; i += CHUNK) {
+          binary += String.fromCharCode(...data.subarray(i, i + CHUNK));
+        }
+        return btoa(binary);
+      },
+      decode: (encoded: string): Uint8Array =>
+        Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0)),
+    },
+  });
+}
 
 // Re-export Starfish React hooks for components
 export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/zustand";
@@ -102,7 +126,9 @@ export async function initStarfish(config: StarfishConfig, encryptor?: Encryptor
     name: "wedding-sync",
     syncManager,
     storage: false,
-    devtools: __DEV__,
+    devtools: __DEV__
+      ? (fn) => devtools(fn, { name: "wedding-sync" })
+      : (fn) => fn,
     onRemoteUpdate: (data) => {
       restoreFromBackup(data, getStorage());
       lastSyncTimestamp = new Date().toISOString();
