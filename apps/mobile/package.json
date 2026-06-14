@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
+    "@fiance/sdk": "workspace:*",
     "@drakkar.software/seahorse": "0.7.2",
     "@drakkar.software/starfish-client": "^2.3.0",
     "@drakkar.software/starfish-protocol": "^2.3.0",

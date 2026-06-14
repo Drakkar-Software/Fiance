@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, master]
     paths:
-      - "server/**"
+      - "apps/server/**"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: server
+        working-directory: apps/server
 
     steps:
       - name: Checkout repository
@@ -42,5 +42,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
-          workingDirectory: server
+          workingDirectory: apps/server
           command: deploy

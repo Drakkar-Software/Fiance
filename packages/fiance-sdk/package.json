@@ -4,10 +4,15 @@
   "description": "Headless business logic for the Fiancé wedding planner app.",
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.js",
+  "main": "./src/index.ts",
+  "source": "./src/index.ts",
+  "react-native": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
+      "react-native": "./src/index.ts",
+      "require": "./src/index.ts",
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
@@ -23,6 +28,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@drakkar.software/starfish-client": "^2.3.0",
     "@types/node": "^22.0.0",
     "tsup": "^8.3.0",
     "typescript": "~5.9.3",

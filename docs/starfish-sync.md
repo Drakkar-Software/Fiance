@@ -1,6 +1,6 @@
 # Starfish Sync — Architecture & Implementation
 
-Fiancé uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar.software/starfish-client` v1.3.2) for end-to-end encrypted cloud sync between devices. This document covers the full architecture: how the client is integrated, how data flows, how encryption works, and how conflicts are resolved.
+Fiancé uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar.software/starfish-client` v2.3.0) for end-to-end encrypted cloud sync between devices. This document covers the full architecture: how the client is integrated, how data flows, how encryption works, and how conflicts are resolved.
 
 ---
 
@@ -8,10 +8,10 @@ Fiancé uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar
 
 1. [High-Level Overview](#high-level-overview)
 2. [Starfish Client SDK](#starfish-client-sdk)
-3. [Integration Layer (`lib/starfish.ts`)](#integration-layer)
-4. [Identity & Key Derivation (`lib/identity.ts`)](#identity--key-derivation)
+3. [Integration Layer (`apps/mobile/lib/starfish.ts`)](#integration-layer)
+4. [Identity & Key Derivation (`apps/mobile/lib/identity.ts`)](#identity--key-derivation)
 5. [Encryption](#encryption)
-6. [Backup Document Format (`lib/sync.ts`)](#backup-document-format)
+6. [Backup Document Format (`packages/fiance-sdk/src/sync/backup.ts`)](#backup-document-format)
 7. [Push Flow](#push-flow)
 8. [Pull Flow](#pull-flow)
 9. [Conflict Resolution](#conflict-resolution)
@@ -134,7 +134,7 @@ Behavior:
 
 ## Integration Layer
 
-**File:** `lib/starfish.ts`
+**File:** `apps/mobile/lib/starfish.ts`
 
 This is the bridge between domain stores and the Starfish SDK.
 
@@ -194,7 +194,7 @@ Clears store, timers, and notifies listeners that sync is disabled. Called befor
 
 ## Identity & Key Derivation
 
-**File:** `lib/identity.ts`
+**File:** `apps/mobile/lib/identity.ts`
 
 ### Passphrase generation
 
@@ -294,7 +294,7 @@ The entire backup document is encrypted as a single blob. The server only sees `
 
 ## Backup Document Format
 
-**File:** `lib/sync.ts`
+**File:** `packages/fiance-sdk/src/sync/backup.ts`
 
 The backup document is a flat snapshot of all domain store state:
 
@@ -420,7 +420,7 @@ However, since Fiancé uses E2E encryption, incremental pulls always return the 
 
 ## Conflict Resolution
 
-**File:** `lib/starfish.ts` — `mergeBackups(local, remote)`
+**File:** `apps/mobile/lib/starfish.ts` — `mergeBackups(local, remote)`
 
 Conflicts occur when two devices push simultaneously. The server detects this via `baseHash` mismatch (the client's `lastHash` doesn't match the server's current hash).
 
@@ -753,21 +753,24 @@ The `hash` is a SHA-256 digest of the stable-stringified (sorted keys) encrypted
 
 | File | Role |
 |------|------|
-| `lib/starfish.ts` | Integration layer: init, notifySync, merge, retry fetch, sync status |
-| `lib/sync.ts` | Backup document creation, restoration, v1→v4 migration chain |
-| `lib/identity.ts` | Passphrase generation, auth/encryption key derivation, invite URLs |
-| `lib/crypto.ts` | Standalone AES-256-GCM utilities (not used by sync pipeline, requires Web Crypto API) |
-| `lib/persistence.ts` | SQLite write-through, hydration, bulk restore |
-| `app/_layout.tsx` | `SyncInitializer` component, background flush, foreground pull, network listeners |
-| `app/(tabs)/settings/index.tsx` | Sync toggle UI, derived sync status display, import/export |
-| `store/*.ts` | Domain stores — each mutation calls `notifySync()` |
-| `db/schema.ts` | 12 SQLite tables defining the data model |
+| `apps/mobile/lib/starfish.ts` | Integration layer: init, notifySync, merge, retry fetch, sync status |
+| `packages/fiance-sdk/src/sync/backup.ts` | Backup document creation, restoration, v1→v4 migration chain |
+| `packages/fiance-sdk/src/sync/rsvp.ts` | RSVP roster/inbox pure helpers (buildRsvpRoster, mergeSubmissions) |
+| `packages/fiance-sdk/src/sync/public-page.ts` | Public wedding page data serialization |
+| `apps/mobile/lib/identity.ts` | Passphrase generation, auth/encryption key derivation, invite URLs |
+| `apps/mobile/lib/crypto.ts` | Standalone AES-256-GCM utilities (not used by sync pipeline, requires Web Crypto API) |
+| `apps/mobile/lib/persistence.ts` | KV write-through, hydration, bulk restore |
+| `apps/mobile/app/_layout.tsx` | `SyncInitializer` component, background flush, foreground pull, network listeners |
+| `apps/mobile/app/(tabs)/settings/index.tsx` | Sync toggle UI, derived sync status display, import/export |
+| `apps/mobile/store/*.ts` | Domain stores — each mutation calls `notifySync()` |
+| `apps/mobile/db/schema.ts` | Type shim → re-exports entity types from `@fiance/sdk` |
+| `apps/server/starfish-config.ts` | Server-side collection config (8 collections, all `encryption: "none"`) |
 
 ---
 
 ## Network Resilience
 
-**File:** `lib/starfish.ts` — `createRetryFetch()`
+**File:** `apps/mobile/lib/starfish.ts` — `createRetryFetch()`
 
 The `StarfishClient` is initialized with a custom fetch wrapper that retries on **network-level errors** (DNS failures, connection resets, timeouts):
 
@@ -800,7 +803,7 @@ Both are logged to console. The push still proceeds (to avoid silently dropping 
 
 ## Sync Status
 
-**File:** `lib/starfish.ts` — `getSyncStatus()`
+**File:** `apps/mobile/lib/starfish.ts` — `getSyncStatus()`
 
 Derives a human-readable sync status from the Starfish store state:
 
@@ -817,7 +820,7 @@ Priority order (first match wins):
 
 ### Settings UI
 
-The settings screen (`app/(tabs)/settings/index.tsx`) subscribes reactively to the Starfish store and displays the derived status alongside the last sync timestamp:
+The settings screen (`apps/mobile/app/(tabs)/settings/index.tsx`) subscribes reactively to the Starfish store and displays the derived status alongside the last sync timestamp:
 
 ```
 Toutes les données sont synchronisées · Dernière synchro : 06/04/2026 14:32

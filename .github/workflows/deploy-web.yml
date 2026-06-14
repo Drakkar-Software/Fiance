@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 6
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -28,10 +28,6 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      # Plain isolated install — pnpm 6 to match the lockfile's resolution.
-      # The previous `--config.node-linker=hoisted` (under pnpm 10) produced a
-      # bundle where gorhom bottom-sheet modals never presented on web, while a
-      # local isolated install built a working bundle from the same commit.
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -39,12 +35,12 @@ jobs:
         run: pnpm test
 
       - name: Build web
-        run: pnpm build:web
+        run: pnpm --filter fiance build:web
         env:
           EXPO_PUBLIC_SYNC_URL: ${{ vars.EXPO_PUBLIC_SYNC_URL }}
 
       - name: Create 404.html for SPA routing
-        run: cp dist/index.html dist/404.html
+        run: cp apps/mobile/dist/index.html apps/mobile/dist/404.html
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -52,4 +48,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
-          command: pages deploy dist --project-name fiance
+          command: pages deploy apps/mobile/dist --project-name fiance

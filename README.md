@@ -110,15 +110,15 @@ An AES-256-GCM encryption key is generated automatically and stored in the devic
 
 ```bash
 # 1. Create local secrets file (gitignored)
-touch server/.dev.vars
+touch apps/server/.dev.vars
 
 # 2. Start the local Starfish server on port 8787
-#    R2 is simulated locally — data stored in server/.wrangler/state/
-npm run server:dev
+#    R2 is simulated locally — data stored in apps/server/.wrangler/state/
+cd apps/server && pnpm dev
 
 # 3. In a second terminal, point the app at localhost
-echo 'EXPO_PUBLIC_SYNC_URL=http://localhost:8787' > .env.local
-npm run web
+echo 'EXPO_PUBLIC_SYNC_URL=http://localhost:8787' > apps/mobile/.env.local
+pnpm --filter fiance run web
 ```
 
 > For iOS simulator or physical device, replace `localhost` with your machine's LAN IP (e.g. `http://192.168.1.x:8787`).
@@ -126,14 +126,14 @@ npm run web
 ### Production deploy
 
 ```bash
-cd server
+cd apps/server
 pnpm install
 wrangler deploy
 ```
 
 Create R2 bucket:
 ```bash
-wrangler r2 bucket create fiance-sync
+wrangler r2 bucket create wedding-os-sync
 ```
 
 Set production secrets:
@@ -143,48 +143,57 @@ wrangler secret put ENCRYPTION_SECRET
 
 ## Architecture
 
-### Data Flow: Zustand → SQLite → Starfish
+### Data Flow: Zustand → KV-store → Starfish
 
 ```
 ┌─────────────┐     write-through     ┌──────────────┐     encrypted sync     ┌──────────────┐
-│   Zustand    │ ──────────────────▶  │    SQLite     │ ─────────────────────▶ │   Starfish   │
-│   Stores     │ ◀──────────────────  │  (Drizzle)   │ ◀───────────────────── │   Server     │
+│   Zustand    │ ──────────────────▶  │   KV-store   │ ─────────────────────▶ │   Starfish   │
+│   Stores     │ ◀──────────────────  │  (expo-kv)   │ ◀───────────────────── │   Server     │
 └─────────────┘     hydrate on boot   └──────────────┘                        └──────────────┘
 ```
 
-1. **Zustand stores** (`store/`) — Runtime state for guests, vendors, planning, budget, and ideas
-2. **SQLite via Drizzle** (`db/schema.ts`) — 12 tables, all IDs are UUIDs
-3. **Starfish sync** (optional) — AES-256-GCM encrypted backups to a remote server
+1. **Zustand stores** (`apps/mobile/store/`) — Runtime state for guests, vendors, planning, budget, and ideas
+2. **KV-store** (`apps/mobile/db/schema.ts` — plain TS interfaces) — all IDs are UUIDs
+3. **Starfish sync** (optional) — AES-256-GCM encrypted backups to `apps/server/`
 
 ### Project Structure
 
 ```
-app/
-  (tabs)/
-    index.tsx              # Dashboard
-    guests/                # Guest list + table planner
-    planning/              # Task management
-    vendors/               # Vendor management
-    budget/                # Budget tracker
-    ideas/                 # Mood board
-    settings/              # App settings + sync config
-components/                # 29 shared UI components (with Storybook stories)
-db/
-  schema.ts                # Drizzle ORM schema (12 tables)
-  types.ts                 # Enums, labels, colors, icons
-  provider.tsx             # DB initialization + store hydration
-lib/
-  persistence.ts           # Store ↔ SQLite write-through
-  starfish.ts              # Starfish sync client
-  sync.ts                  # Backup document creation/restore
-  crypto.ts                # AES-256-GCM encryption
-  budget.ts                # Budget calculation logic
-  planning.ts              # Template task generation
-  identity.ts              # Device identity management
-store/                     # Zustand stores (5 domain + registry)
-i18n/                      # i18next config + FR/EN locale files
-.storybook/                # Storybook configuration
-__tests__/                 # Vitest test files
+apps/
+  mobile/                  # Expo app (iOS · Android · Web)
+    app/(tabs)/
+      index.tsx            # Dashboard
+      guests/              # Guest list + table planner
+      planning/            # Task management
+      vendors/             # Vendor management
+      budget/              # Budget tracker
+      ideas/               # Mood board
+      settings/            # App settings + sync config
+    components/            # Shared UI components (with Storybook stories)
+    db/
+      schema.ts            # Type shim → re-exports from @fiance/sdk
+      types.ts             # Type shim → re-exports from @fiance/sdk
+    lib/
+      persistence.ts       # Store ↔ KV write-through
+      starfish.ts          # Starfish sync client + notifySync
+      sync.ts              # Backup serialization (delegates to @fiance/sdk)
+      crypto.ts            # AES-256-GCM encryption
+      budget.ts            # Budget calculation logic
+      planning.ts          # Template task generation
+      identity.ts          # Device identity management
+    store/                 # Zustand stores (domain + registry)
+    i18n/                  # i18next config + FR/EN locale files
+    .storybook/            # Storybook configuration
+    __tests__/             # Vitest integration tests (RN mocks)
+  server/                  # Starfish sync server (Cloudflare Worker)
+    index.ts               # Hono router + Starfish/Doubloon middleware
+    starfish-config.ts     # Collection definitions + auth
+    doubloon.ts            # IAP receipt validation
+packages/
+  fiance-sdk/              # Pure headless business logic (@fiance/sdk)
+    src/
+      domain/              # Entity reducers: guests, budget, planning, vendor-config, registry
+      sync/                # Backup, RSVP, public-page, server-config helpers
 ```
 
 ## Development

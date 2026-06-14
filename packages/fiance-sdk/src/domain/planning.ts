@@ -120,7 +120,6 @@ export function generateTemplateTasks(
       monthsBefore: tmpl.monthsBefore,
       isSystem: true,
       vendorId: null,
-      assignee: null,
       reminderDaysBefore: null,
       completedAt: null,
       notes: null,

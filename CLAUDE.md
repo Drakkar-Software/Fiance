@@ -2,48 +2,72 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Monorepo layout
+
+This is a **pnpm workspace** with three packages:
+
+| Package | Path | Description |
+|---------|------|-------------|
+| `fiance` | `apps/mobile/` | Expo app (iOS · Android · Web) |
+| `fiance-sync` | `apps/server/` | Starfish sync server (Cloudflare Worker) |
+| `@fiance/sdk` | `packages/fiance-sdk/` | Pure headless business logic (no RN deps) |
+
 ## Commands
 
+Run from the **repo root** (pnpm delegates to the right workspace):
+
 ```bash
-pnpm install              # Install dependencies
-pnpm start                # Start Expo dev server
-pnpm run android          # Run on Android emulator
-pnpm run ios              # Run on iOS simulator
-pnpm run web              # Run in browser
-pnpm lint                 # ESLint
-pnpm build:web            # Export for Cloudflare Pages (output: dist/)
-pnpm test                 # Run tests (Vitest)
-pnpm test:watch           # Run tests in watch mode
-pnpm storybook            # Start Storybook dev server (localhost:6006)
-pnpm build-storybook      # Build static Storybook
+pnpm install                        # Install all workspace dependencies
+pnpm test                           # Run all tests (mobile + SDK)
+pnpm --filter fiance start          # Start Expo dev server
+pnpm --filter fiance run android    # Run on Android emulator
+pnpm --filter fiance run ios        # Run on iOS simulator
+pnpm --filter fiance run web        # Run in browser
+pnpm --filter fiance lint           # ESLint (mobile)
+pnpm --filter fiance build:web      # Export for Cloudflare Pages (output: apps/mobile/dist/)
+pnpm --filter fiance test:watch     # Watch mode (mobile tests)
+pnpm --filter fiance storybook      # Start Storybook dev server (localhost:6006)
 ```
 
-Tests use Vitest. Test files live in `__tests__/`. Pure business logic is tested directly; modules that depend on React Native are tested by replicating the logic in isolation.
+Tests use Vitest. Test files:
+- `apps/mobile/__tests__/` — integration tests that depend on RN mocks
+- `packages/fiance-sdk/src/**/*.test.ts` — pure-logic unit tests (no RN)
 
 ## Before committing and pushing
 
 Always run both commands and verify they succeed before committing:
 
 ```bash
-pnpm test       # all tests must pass
-pnpm build:web  # web export must succeed (catches Metro config errors, bundler issues)
+pnpm test                       # all tests must pass (mobile + SDK)
+pnpm --filter fiance build:web  # web export must succeed (catches Metro config errors, bundler issues)
 ```
 
 ## Architecture
 
-**Fiancé** is a privacy-first, offline-first wedding planning app. Single Expo (SDK 55) codebase targeting iOS, Android, and web. All user-facing text is in French.
+**Fiancé** is a privacy-first, offline-first wedding planning app built as a pnpm workspace monorepo. The Expo app (`apps/mobile/`) targets iOS, Android, and web. All user-facing text is in French.
 
 ### Routing
 
-File-based routing via Expo Router. Screens live in `app/(tabs)/` — each subdirectory is a feature tab (guests, vendors, planning, budget, ideas, settings). The root `app/_layout.tsx` wraps everything in a wedding registry provider.
+File-based routing via Expo Router. Screens live in `apps/mobile/app/(tabs)/` — each subdirectory is a feature tab (guests, vendors, planning, budget, ideas, settings). The root `apps/mobile/app/_layout.tsx` wraps everything in a wedding registry provider.
 
-### Data flow: Zustand → SQLite → Starfish
+### Data flow: Zustand → KV-store → Starfish
 
 Three-layer persistence:
 
-1. **Zustand stores** (`store/`) — runtime state; domain stores include `useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`, `useAccommodationsStore`, `useGiftsStore`, plus `useWeddingRegistryStore` for multi-wedding support.
-2. **SQLite via Drizzle** (`db/schema.ts`) — 15 tables, all IDs are UUIDs (except singleton `wedding` table with id=1). `lib/persistence.ts` handles hydration on boot and write-through on every mutation.
-3. **Starfish sync** (optional) — `lib/starfish.ts` and `lib/sync.ts` push AES-256-GCM encrypted backups to a remote server. Triggered via `notifySync()` after store mutations.
+1. **Zustand stores** (`apps/mobile/store/`) — runtime state; domain stores include `useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`, `useAccommodationsStore`, `useGiftsStore`, plus `useWeddingRegistryStore` for multi-wedding support.
+2. **KV-store** (`apps/mobile/db/schema.ts` — plain TS interfaces, no Drizzle ORM) — `apps/mobile/lib/persistence.ts` handles hydration on boot and write-through on every mutation via `lib/kv-storage.ts`.
+3. **Starfish sync** (optional) — `apps/mobile/lib/starfish.ts` and `packages/fiance-sdk/src/sync/backup.ts` push AES-256-GCM encrypted backups to `apps/server/`. Triggered via `notifySync()` after store mutations.
+
+### `@fiance/sdk` — pure headless SDK
+
+`packages/fiance-sdk/` contains pure TypeScript logic with no React Native dependencies:
+- `src/domain/` — entity reducers (guests, budget, planning, vendor-config, registry), schema, types
+- `src/sync/` — backup serialization/migration, public-page helpers, RSVP helpers, server-config
+- `src/analytics.ts`
+
+Import alias: `@fiance/sdk` (declared as `workspace:*` dep in `apps/mobile`; TypeScript resolves via tsconfig path alias; Metro resolves via the `react-native` export condition pointing to source).
+
+Currently `useGuestsStore` delegates to SDK reducers. Budget/planning/vendor-config/registry libs have SDK copies but the app still calls its own local copies — this is a known TODO.
 
 ### Starfish sync — encryption contract
 
@@ -53,17 +77,18 @@ The `wedding` collection uses **client-side AES-256-GCM encryption**. The server
 
 ### Adding a new store
 
-Create `store/useNewStore.ts` with Zustand `create()`. Add table to `db/schema.ts`. Wire hydration/write-through in `lib/persistence.ts` (`hydrateAllStores` and `clearAllStores`). Call `notifySync()` on mutations.
+Create `apps/mobile/store/useNewStore.ts` with Zustand `create()`. Add KV key to `apps/mobile/db/schema.ts`. Wire hydration/write-through in `apps/mobile/lib/persistence.ts` (`hydrateAllStores` and `clearAllStores`). Call `notifySync()` on mutations.
 
 ### Adding a new screen
 
-Create file under `app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab entry in `app/(tabs)/_layout.tsx` if it's a new tab.
+Create file under `apps/mobile/app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab entry in `apps/mobile/app/(tabs)/_layout.tsx` if it's a new tab.
 
 ### Styling
 
-NativeWind v5 / Tailwind v4. Tokens in `global.css` (`@theme inline`). Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `lib/theme.ts` exports hex literals for JS consumers. Shared UI components in `components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.
+NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`). Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `apps/mobile/lib/theme.ts` exports hex literals for JS consumers. Shared UI components in `apps/mobile/components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.
 
 ### CI/CD
 
-- **Web**: Push to main/master → `.github/workflows/deploy-web.yml` → Cloudflare Pages
-- **Android APK**: Push to main/master → `.github/workflows/build-apk.yml` → EAS Build → artifact upload
+- **Web**: Push to main/master → `.github/workflows/deploy-web.yml` → Cloudflare Pages (`apps/mobile/dist/`)
+- **Android APK**: Push to version tags → `.github/workflows/build-apk.yml` → EAS Build (runs from `apps/mobile/`) → artifact upload
+- **Sync server**: Push to main/master (paths: `apps/server/**`) → `.github/workflows/deploy-sync.yml` → Cloudflare Workers

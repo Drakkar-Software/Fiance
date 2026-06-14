@@ -17,6 +17,7 @@ config.resolver.nodeModulesPaths = [
 if (!config.resolver.unstable_conditionNames.includes('require'))
   config.resolver.unstable_conditionNames.unshift('require')
 
+const workspacePackagesRoot = path.resolve(workspaceRoot, 'packages')
 const originalResolveRequest = config.resolver.resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const resolve = originalResolveRequest ?? context.resolveRequest
@@ -34,6 +35,12 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // Fix @babel/runtime ESM crash on web.
   if (platform === 'web' && moduleName.startsWith('@babel/runtime/helpers/esm/'))
     return resolve(context, moduleName.replace('@babel/runtime/helpers/esm/', '@babel/runtime/helpers/'), platform)
+
+  // Workspace SDK packages (packages/*) use NodeNext-style .js extensions in
+  // source imports for ESM/tsup compatibility. Metro resolves directly from TS
+  // source so it can't find .js files — strip the extension to resolve to .ts.
+  if (moduleName.endsWith('.js') && context.originModulePath.startsWith(workspacePackagesRoot))
+    return resolve(context, moduleName.slice(0, -3), platform)
 
   return resolve(context, moduleName, platform)
 }
