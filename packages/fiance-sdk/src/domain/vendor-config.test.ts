@@ -1,22 +1,9 @@
 /**
  * Tests for lib/vendorTypeConfig.ts — vendor form configuration per type.
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
-// Mock lucide-react-native (imported by db/types.ts)
-vi.mock("lucide-react-native", () => {
-  const icon = () => null;
-  const icons = [
-    "UtensilsCrossed", "Building2", "Camera", "Video", "Music", "Flower2",
-    "ClipboardList", "User", "Scissors", "Car", "Bus", "Cake", "Aperture",
-    "Smile", "Mail", "Box", "Hotel", "Shirt", "ShieldCheck", "Ellipsis",
-  ];
-  const mock: Record<string, any> = {};
-  icons.forEach((name) => { mock[name] = icon; });
-  return mock;
-});
-
-import { getVendorTypeConfig } from "@/lib/vendorTypeConfig";
+import { getVendorTypeConfig } from './vendor-config.js';
 
 describe("getVendorTypeConfig", () => {
   it("returns caterer config with per-person pricing visible", () => {

@@ -2,30 +2,15 @@
  * Tests for lib/budget.ts — vendor cost calculations, caterer totals,
  * guest count resolution, and caterer scoring.
  */
-import { describe, it, expect, vi } from "vitest";
-
-// Mock the db/types import
-vi.mock("@/db/types", () => ({
-  PRICING_KEY_GUEST_SOURCE: {
-    cocktail: "cocktail_count",
-    dinner: "full_count",
-    drinks: "full_count",
-    "next-day": "both_days_count",
-    tableware: "full_count",
-    linen: "full_count",
-    vegetarian: "vegetarian_count",
-    child: "children_count",
-    service: "manual",
-  },
-}));
+import { describe, it, expect } from "vitest";
 
 import {
   getGuestCountForSource,
   calculateVendorTotal,
   calculateCatererTotal,
   calculateCatererScore,
-} from "@/lib/budget";
-import type { GuestCounts } from "@/store/useGuestsStore";
+} from './budget.js';
+import type { GuestCounts } from './guests.js';
 
 const baseCounts: GuestCounts = {
   total: 100,

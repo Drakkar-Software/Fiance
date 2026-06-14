@@ -3,7 +3,7 @@
  * Ensures schema changes don't silently break expected field presence.
  */
 import { describe, it, expect } from "vitest";
-import type { Wedding, Guest, DayOfItem, Task, Vendor, AgendaEvent } from "@/db/schema";
+import type { Wedding, Guest, DayOfItem, Task, Vendor, AgendaEvent } from './schema.js';
 
 // Helper: check that a value satisfies a TypeScript interface at runtime
 function checkShape<T>(obj: T): T { return obj; }

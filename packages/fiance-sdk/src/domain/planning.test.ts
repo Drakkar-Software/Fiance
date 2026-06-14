@@ -2,9 +2,9 @@
  * Tests for planning logic — due date recalculation relative to wedding date.
  * Uses the exported function from usePlanningStore (pure logic, no store).
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { addMonths } from "date-fns";
-import type { Task } from "@/db/schema";
+import type { Task } from './schema.js';
 
 // The recalculateDueDates function is pure logic — reimplement it here
 // to avoid importing the full store (which pulls in react-native).
