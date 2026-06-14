@@ -1,11 +1,31 @@
 {
   "name": "@fiance/sdk",
   "version": "0.1.0",
-  "private": false,
+  "description": "Headless business logic for the Fiancé wedding planner app.",
   "type": "module",
   "sideEffects": false,
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.4"
   }
 }
