@@ -3,9 +3,10 @@ const { withNativeWind } = require('nativewind/metro')
 const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 
 const projectRoot = __dirname
-const workspaceRoot = projectRoot
+const workspaceRoot = path.resolve(projectRoot, '../..')
 const config = getSentryExpoConfig(projectRoot)
 
+config.watchFolders = [workspaceRoot]
 config.resolver.unstable_enableSymlinks = true
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
@@ -27,7 +28,6 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return resolve(context, 'react/jsx-dev-runtime', platform)
 
   // react-native-css/components uses cssInterop which fails on web.
-  // On web NativeWind handles className via real CSS — bypass cssInterop.
   if (platform === 'web' && moduleName === 'react-native-css/components')
     return resolve(context, 'react-native', platform)
 

@@ -16,3 +16,12 @@ debug-storybook.log
 storybook-static/
 *.apk
 design-package/
+.DS_Store
+
+# Build artifacts
+build-*.apk
+.pnpm-debug.log
+# Workspace node_modules at sub-package level
+apps/mobile/node_modules
+apps/server/node_modules
+packages/*/node_modules

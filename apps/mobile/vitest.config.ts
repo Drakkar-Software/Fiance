@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "."),
+      "@fiance/sdk": path.resolve(__dirname, "../../packages/fiance-sdk/src/index.ts"),
     },
   },
 });
