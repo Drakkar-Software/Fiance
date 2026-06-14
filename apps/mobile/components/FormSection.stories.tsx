@@ -7,7 +7,7 @@ const meta: Meta = {
   title: "Components/FormSection",
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 400 }}>
         <Story />
       </div>

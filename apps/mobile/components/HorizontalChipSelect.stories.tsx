@@ -7,7 +7,7 @@ const meta: Meta<typeof HorizontalChipSelect> = {
   component: HorizontalChipSelect,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 400 }}>
         <Story />
       </div>

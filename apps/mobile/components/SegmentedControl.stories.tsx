@@ -7,7 +7,7 @@ const meta: Meta<typeof SegmentedControl> = {
   component: SegmentedControl,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 400 }}>
         <Story />
       </div>

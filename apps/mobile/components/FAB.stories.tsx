@@ -8,7 +8,7 @@ const meta: Meta<typeof FAB> = {
   component: FAB,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ position: "relative", height: 120, width: 120 }}>
         <Story />
       </div>

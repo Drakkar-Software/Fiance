@@ -9,7 +9,7 @@ const meta: Meta<typeof StatCard> = {
   component: StatCard,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 200 }}>
         <Story />
       </div>

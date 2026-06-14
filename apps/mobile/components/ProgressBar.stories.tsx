@@ -9,7 +9,7 @@ const meta: Meta<typeof ProgressBar> = {
     colorScheme: { control: "radio", options: ["default", "budget"] },
   },
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 300 }}>
         <Story />
       </div>

@@ -8,7 +8,7 @@ const meta: Meta<typeof CollapsibleSection> = {
   component: CollapsibleSection,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 380 }}>
         <Story />
       </div>

@@ -9,7 +9,7 @@ const meta: Meta<typeof SectionHeader> = {
   component: SectionHeader,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 400 }}>
         <Story />
       </div>

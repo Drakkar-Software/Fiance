@@ -46,12 +46,12 @@ export async function ensureConnection(): Promise<void> {
   await iap.initConnection();
 }
 
-export async function fetchPremiumProduct() {
+export async function fetchPremiumProduct(): Promise<{ localizedPrice?: string | null } | null> {
   if (Platform.OS === "web") return null;
   const iap = await getIAP();
   if (!iap) return null;
-  const products = await iap.getProducts([PREMIUM_SKU]);
-  return products[0] ?? null;
+  const products = await iap.fetchProducts({ skus: [PREMIUM_SKU] });
+  return (products?.[0] as { localizedPrice?: string | null } | undefined) ?? null;
 }
 
 export async function purchasePremium(userId: string): Promise<void> {
@@ -63,7 +63,7 @@ export async function purchasePremium(userId: string): Promise<void> {
       ios: { sku: PREMIUM_SKU, appAccountToken: userId },
       android: { skus: [PREMIUM_SKU], obfuscatedAccountId: userId },
     },
-    type: "inapp",
+    type: "in-app",
   });
 }
 

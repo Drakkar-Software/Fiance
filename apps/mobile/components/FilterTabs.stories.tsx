@@ -7,7 +7,7 @@ const meta: Meta<typeof FilterTabs> = {
   component: FilterTabs,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 400 }}>
         <Story />
       </div>

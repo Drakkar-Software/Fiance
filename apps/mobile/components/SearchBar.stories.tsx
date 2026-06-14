@@ -7,7 +7,7 @@ const meta: Meta<typeof SearchBar> = {
   component: SearchBar,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 350 }}>
         <Story />
       </div>

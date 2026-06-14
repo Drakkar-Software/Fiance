@@ -9,7 +9,7 @@ const meta: Meta<typeof ToggleCard> = {
   component: ToggleCard,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 380 }}>
         <Story />
       </div>

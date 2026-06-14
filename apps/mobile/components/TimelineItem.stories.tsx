@@ -10,7 +10,7 @@ const meta: Meta<typeof TimelineItem> = {
   component: TimelineItem,
   tags: ["autodocs"],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ width: 380 }}>
         <Story />
       </div>
