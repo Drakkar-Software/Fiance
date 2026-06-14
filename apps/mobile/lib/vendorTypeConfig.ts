@@ -1,5 +1,5 @@
-import type { VendorType } from "@/db/types";
-import { CATERER_SERVICES } from "@/db/types";
+import type { VendorType } from "@fiance/sdk";
+import { CATERER_SERVICES } from "@fiance/sdk";
 
 type FieldVisibility = "visible" | "hidden";
 

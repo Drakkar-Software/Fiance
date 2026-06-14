@@ -1,7 +1,7 @@
-import type { Vendor, QuotePricing } from "@/db/schema";
+import type { Vendor, QuotePricing } from "@fiance/sdk";
 import type { GuestCounts } from "@/store/useGuestsStore";
-import type { PppSource } from "@/db/types";
-import { PRICING_KEY_GUEST_SOURCE } from "@/db/types";
+import type { PppSource } from "@fiance/sdk";
+import { PRICING_KEY_GUEST_SOURCE } from "@fiance/sdk";
 
 /** Get guest count for a given ppp_source */
 export function getGuestCountForSource(

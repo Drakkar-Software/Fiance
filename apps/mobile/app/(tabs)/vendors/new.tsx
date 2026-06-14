@@ -6,11 +6,11 @@ import { PageHeader } from "@/components/PageHeader";
 import { useTranslation } from "react-i18next";
 import {
   VENDOR_TYPE_LABELS,
-  VENDOR_TYPE_ICONS,
   BUDGET_CATEGORIES,
   BUDGET_CATEGORY_LABELS,
 } from "@/db/types";
 import type { VendorType } from "@/db/types";
+import { VENDOR_TYPE_ICONS } from "@/lib/vendor-icons";
 
 export default function NewVendorPickerScreen() {
   const { t } = useTranslation("vendors");

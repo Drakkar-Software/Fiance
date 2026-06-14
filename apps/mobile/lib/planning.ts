@@ -1,6 +1,6 @@
 import { addMonths } from "date-fns";
 import * as Crypto from "expo-crypto";
-import type { Task, TaskCategory } from "@/db/schema";
+import type { Task, TaskCategory } from "@fiance/sdk";
 import i18n from "@/i18n";
 
 // ─── Default categories ─────────────────────────────────────────────────────

@@ -12,7 +12,7 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
-import { DEFAULT_INVITATION_TYPES } from "@/db/types";
+import { DEFAULT_INVITATION_TYPES } from "@fiance/sdk";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
 export interface BackupData {
