@@ -12,10 +12,10 @@ import {
 import { identitiesServerPlugin } from "@drakkar.software/starfish-identities";
 import { sharingServerPlugin } from "@drakkar.software/starfish-sharing";
 
+import { createSpacesRoleEnricher, createSpacesDirectoryServerPlugin } from "@drakkar.software/starfish-spaces";
 import { config as legacyConfig } from "./starfish-config";
 import { octospacesSyncConfig } from "./octospaces-config";
 import { fianceSyncConfig } from "./fiance-config";
-import { makeSpaceRoleEnricher } from "./space-role";
 import { createDoubloon, type DoubloonEnv } from "./doubloon";
 
 // ---------------------------------------------------------------------------
@@ -162,7 +162,8 @@ function getOctospacesSyncRouter(env: Env): Hono {
 
   const s = getStore(env);
   const roleResolver = getCapCertResolver();
-  const spaceEnricher = makeSpaceRoleEnricher(s);
+  // Official space role enricher replaces the hand-written space-role.ts.
+  const spaceEnricher = createSpacesRoleEnricher(s);
 
   _octospacesSyncRouter = createSyncRouter({
     store: s,
@@ -182,13 +183,22 @@ function getFianceSyncRouter(env: Env): Hono {
 
   const s = getStore(env);
   const roleResolver = getCapCertResolver();
-  const spaceEnricher = makeSpaceRoleEnricher(s);
+  const spaceEnricher = createSpacesRoleEnricher(s);
 
   _fianceSyncRouter = createSyncRouter({
     store: s,
     config: fianceSyncConfig,
     roleResolver,
     roleEnricher: spaceEnricher,
+    // Directory plugin: when a write lands on objindex, it projects public-access
+    // nodes to _index/objects/public (world-readable directory).
+    // R2ObjectStore exposes getString + put (not putString) — adapt inline.
+    plugins: [
+      createSpacesDirectoryServerPlugin({
+        getString: (k) => s.getString(k),
+        putString: (k, v) => s.put(k, v),
+      }),
+    ],
     cors: true,
     securityHeaders: true,
   });

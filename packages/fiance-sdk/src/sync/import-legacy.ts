@@ -17,11 +17,11 @@ import {
   readObjectTree,
   buildTree,
   getNodeAccess,
-  objDocPush,
   type Session,
   type ObjectNode,
-  randomId,
-} from '@drakkar.software/octospaces-sdk';
+} from '@drakkar.software/starfish-spaces';
+import { randomId } from '@drakkar.software/starfish-protocol';
+import { objDocPush } from './object-paths.js';
 import type { WeddingSnapshot } from './backup.js';
 import {
   weddingToNode,

@@ -1,37 +1,25 @@
 /**
  * Fiancé SDK configuration.
  *
- * Call `configureFiance(cfg, kv)` once at app boot (before any SDK call) to
- * set the sync server URL, namespace, and the KV adapter used for account-
- * scoped state (caps, profile cache, pull cache).
+ * Call `configureFiance(kv)` once at app boot (before any SDK call) to
+ * register the KV adapter used for account-scoped state (caps, profile
+ * cache, pull cache).
+ *
+ * Transport (baseUrl / namespace) is no longer global — it is injected
+ * per-call via the `clientOpts` argument to `deriveSession` / `buildSession`.
+ * See `apps/mobile/lib/server.ts` for how `clientOpts` is assembled.
  */
 
-import {
-  configureOctoSpaces,
-  configureKv,
-  type OctoSpacesConfig,
-  type KvAdapter,
-} from '@drakkar.software/octospaces-sdk';
+import { configureSpaces, type KvAdapter } from '@drakkar.software/starfish-spaces';
 
-export interface FianceConfig extends OctoSpacesConfig {
-  /** Fallback max bytes for a single document when /config is unreachable. */
-  weddingMaxBytes?: number;
-}
+export type { KvAdapter };
 
 /**
  * Initialise the Fiancé SDK.
  *
- * Namespaces:
- * - `syncNamespace: 'fiance'`       — content collections (spaces, objects, blobs…)
- * - `sharedSpacesNamespace: 'octospaces'` — shared registry (_spaces, _access, keyring…)
+ * @param kv - KV adapter with `{ getItem, setItem, removeItem }` methods.
+ *             On native this wraps MMKV; on web it wraps AsyncStorage.
  */
-export function configureFiance(cfg: FianceConfig, kv: KvAdapter): void {
-  configureOctoSpaces({
-    syncBase: cfg.syncBase,
-    syncNamespace: cfg.syncNamespace ?? 'fiance',
-    sharedSpacesNamespace: cfg.sharedSpacesNamespace ?? 'octospaces',
-    eventsUrl: cfg.eventsUrl,
-    onServerReachable: cfg.onServerReachable,
-  });
-  configureKv(kv);
+export function configureFiance(kv: KvAdapter): void {
+  configureSpaces({ kvAdapter: kv });
 }

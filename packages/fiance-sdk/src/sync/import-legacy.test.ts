@@ -31,7 +31,12 @@ let fakeContentStore: Record<string, unknown> = {};
 const pushedPaths: string[] = [];
 const pushedPayloads: Record<string, unknown>[] = [];
 
-vi.mock('@drakkar.software/octospaces-sdk', () => {
+// Mock the three modules that import-legacy.ts imports from.
+// starfish-spaces provides updateObjectIndex/readObjectTree/buildTree/getNodeAccess;
+// object-paths.ts provides objDocPush; starfish-protocol provides randomId.
+// We mock starfish-spaces here (the primary dep) and rely on vitest module graph
+// to intercept the other two via the imports in import-legacy.ts.
+vi.mock('@drakkar.software/starfish-spaces', () => {
   return {
     updateObjectIndex: vi.fn(
       async (
@@ -63,11 +68,17 @@ vi.mock('@drakkar.software/octospaces-sdk', () => {
       },
       isOwnerOpen: true,
     })),
-    objDocPush: vi.fn((spaceId: string, nodeId: string) => `push/${spaceId}/objdoc/${nodeId}`),
     buildTree: vi.fn((nodes: FakeNode[]) => nodes),
-    randomId: vi.fn(() => Math.random().toString(36).slice(2, 10)),
   };
 });
+
+vi.mock('@drakkar.software/starfish-protocol', () => ({
+  randomId: vi.fn(() => Math.random().toString(36).slice(2, 10)),
+}));
+
+vi.mock('../sync/object-paths.js', () => ({
+  objDocPush: vi.fn((spaceId: string, nodeId: string) => `push/${spaceId}/objdoc/${nodeId}`),
+}));
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -191,7 +202,7 @@ describe('importLegacyBackup', () => {
   });
 
   it('calls getNodeAccess for each content push (encryption path)', async () => {
-    const { getNodeAccess } = await import('@drakkar.software/octospaces-sdk');
+    const { getNodeAccess } = await import('@drakkar.software/starfish-spaces');
     const { importLegacyBackup } = await import('./import-legacy.js');
     await importLegacyBackup(fakeSession, fakeSpaceId, makeSnapshot());
     // getNodeAccess must be called once per node that gets a content push
@@ -217,10 +228,11 @@ describe('E2EE round-trip (ownerEnsureSpaceKeyring → write objdoc → read obj
   });
 
   it('encrypt then decrypt round-trips the original data', async () => {
-    const { getNodeAccess } = await import('@drakkar.software/octospaces-sdk');
+    const { getNodeAccess } = await import('@drakkar.software/starfish-spaces');
     const original = { greeting: 'Bonjour Alice', count: 42 };
 
-    const handle = await (getNodeAccess as ReturnType<typeof vi.fn>)(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handle = await (getNodeAccess as (...a: unknown[]) => Promise<any>)(
       fakeSpaceId,
       'node-roundtrip',
       { access: 'space', enc: true },
@@ -239,10 +251,11 @@ describe('E2EE round-trip (ownerEnsureSpaceKeyring → write objdoc → read obj
   });
 
   it('encrypted payload does not contain plaintext field values', async () => {
-    const { getNodeAccess } = await import('@drakkar.software/octospaces-sdk');
+    const { getNodeAccess } = await import('@drakkar.software/starfish-spaces');
     const secret = { secretKey: 'hunter2', userId: 'alice' };
 
-    const handle = await (getNodeAccess as ReturnType<typeof vi.fn>)(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handle = await (getNodeAccess as (...a: unknown[]) => Promise<any>)(
       fakeSpaceId,
       'node-e2ee',
       { access: 'space', enc: true },

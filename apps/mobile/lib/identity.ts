@@ -1,5 +1,5 @@
 /**
- * Identity & invite utilities for Fiancé — v3 (octospaces-sdk).
+ * Identity & invite utilities for Fiancé — v3 (starfish-spaces).
  *
  * v2 compat: `generatePassphrase`, `buildInviteUrl`, `decodeInviteToken`,
  * `parseInviteUrl` keep their signatures; `deriveAuthToken` and
@@ -50,15 +50,27 @@ export function isValidSeed(phrase: string): boolean {
 
 // ─── Session derivation ───────────────────────────────────────────────────────
 
+/** Strip a trailing `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/`. */
+function normalizeSyncBase(url: string): string {
+  return url.replace(/\/v1\/?$/, "");
+}
+
 /**
  * Derive a v3 Session from a seed phrase (space- or hyphen-separated).
- * This is the canonical way to authenticate with the v3 server.
+ * Requires a `serverUrl` to satisfy the per-call transport requirement of
+ * starfish-spaces.  Callers that only need the `userId` may pass any URL
+ * since the userId is purely crypto-derived from the keypair.
  */
 export async function deriveSessionFromPhrase(
   phrase: string,
+  serverUrl: string,
 ): Promise<{ session: Session; userId: string }> {
   const words = normalizePhrase(phrase).split(" ");
-  const session = await _deriveSession(words);
+  const session = await _deriveSession(
+    words,
+    { baseUrl: normalizeSyncBase(serverUrl), namespace: "fiance" },
+    { sharedNamespace: "octospaces" },
+  );
   return { session, userId: session.userId };
 }
 
@@ -85,7 +97,7 @@ export async function deriveAuthToken(_password: string): Promise<string> {
 
 /**
  * @deprecated Removed in v3. Client-side AES key derivation no longer needed —
- * encryption is handled by the space keyring via octospaces-sdk.
+ * encryption is handled by the space keyring via starfish-spaces.
  */
 export async function deriveEncryptionKey(
   _password: string,
@@ -104,7 +116,7 @@ export function buildWeddingPageUrl(userId: string): string {
   return Linking.createURL(`wedding/${userId}`);
 }
 
-// ─── Partner / guest invite (TODO B5: replace with octospaces space invite links) ───
+// ─── Partner / guest invite (TODO B5: replace with starfish-spaces space invite links) ───
 
 export interface InvitePayload {
   name: string;
@@ -117,7 +129,7 @@ export interface InvitePayload {
  * Build an invite deep-link URL.
  *
  * TODO(B5): Replace with `createSpaceInviteLink` / `encodeSpaceInviteLink`
- * from octospaces-sdk for the partner-sharing flow.
+ * from starfish-spaces for the partner-sharing flow.
  */
 export function buildInviteUrl(
   name: string,

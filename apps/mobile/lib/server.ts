@@ -1,5 +1,5 @@
 /**
- * Server credential helpers — v3 (octospaces-sdk).
+ * Server credential helpers — v3 (starfish-spaces).
  *
  * `ServerConfig` is kept for backward compatibility but `authToken` and
  * `encryptionKey` are deprecated stubs (Bearer auth and client-side key
@@ -48,14 +48,35 @@ export function resolveServerUrl(
   return url;
 }
 
+/** Strip a trailing `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/`. */
+function normalizeSyncBase(url: string): string {
+  return url.replace(/\/v1\/?$/, "");
+}
+
+/** Build the starfish-spaces ClientOpts from a resolved server URL. */
+function makeClientOpts(serverUrl: string) {
+  return { baseUrl: normalizeSyncBase(serverUrl), namespace: "fiance" as const };
+}
+
 // ─── v3 session helpers ───────────────────────────────────────────────────────
 
 /**
  * Derive the v3 userId (32-char hex from Ed25519 public key) from a seed phrase.
  * Accepts both v2 hyphenated and v3 space-separated phrases.
+ *
+ * Note: userId is purely crypto-derived from the keypair; the serverUrl is used
+ * only to satisfy the per-call transport requirement of deriveSession.
  */
-export async function deriveUserId(seedPhrase: string): Promise<string> {
-  const session = await deriveSession(normalizePhrase(seedPhrase).split(" "));
+export async function deriveUserId(
+  seedPhrase: string,
+  serverUrl?: string,
+): Promise<string> {
+  const baseUrl = serverUrl ? normalizeSyncBase(serverUrl) : "http://localhost";
+  const session = await deriveSession(
+    normalizePhrase(seedPhrase).split(" "),
+    { baseUrl, namespace: "fiance" },
+    { sharedNamespace: "octospaces" },
+  );
   return session.userId;
 }
 
@@ -69,7 +90,11 @@ export async function resolveSessionConfig(
   const seedPhrase = entry?.seedPhrase;
   const serverUrl = resolveServerUrl(entry);
   if (!seedPhrase || !serverUrl) return null;
-  const session = await deriveSession(normalizePhrase(seedPhrase).split(" "));
+  const session = await deriveSession(
+    normalizePhrase(seedPhrase).split(" "),
+    makeClientOpts(serverUrl),
+    { sharedNamespace: "octospaces" },
+  );
   return { serverUrl, session, userId: session.userId };
 }
 
@@ -87,8 +112,11 @@ export async function resolveServerConfig(
   const seedPhrase = entry?.seedPhrase;
   const serverUrl = resolveServerUrl(entry);
   if (!seedPhrase || !serverUrl) return null;
-  // Derive userId via v3 session (32-char hex).
-  const session = await deriveSession(normalizePhrase(seedPhrase).split(" "));
+  const session = await deriveSession(
+    normalizePhrase(seedPhrase).split(" "),
+    makeClientOpts(serverUrl),
+    { sharedNamespace: "octospaces" },
+  );
   return {
     serverUrl,
     userId: session.userId,

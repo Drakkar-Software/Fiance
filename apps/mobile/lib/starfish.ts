@@ -1,12 +1,12 @@
 /**
- * Starfish v3 / octospaces sync integration for Fiancé.
+ * starfish-spaces v3 sync integration for Fiancé.
  *
  * Provides the same public surface as the old v2 file so call-sites in
  * stores and screens don't need mass updates in one commit:
  *
  *   notifySync()            → dispatchDocChange('*') (triggers all registerPull listeners)
  *   getStarfishStore()      → returns a truthy object while sync is active (not a Zustand store)
- *   getStarfishClient()     → returns the active makeClient() StarfishClient
+ *   getStarfishClient()     → returns the active Session.contentClient
  *   onSyncStatusChange(fn)  → wraps onSseStatus for on/off subscription
  *   getSyncStatus()         → reads the last SSE connection state
  *   getLastSyncTimestamp()  → last successful push timestamp
@@ -22,19 +22,19 @@
  */
 
 import {
-  makeClient,
   dispatchDocChange,
   onSseStatus,
   emitSseStatus,
   clearLiveSyncBus,
   type Session,
-} from '@fiance/sdk';
+} from "@fiance/sdk";
 
 // ---------------------------------------------------------------------------
 // Module state
 // ---------------------------------------------------------------------------
 
 let _session: Session | null = null;
+let _baseUrl: string | null = null;
 let _spaceId: string | null = null;
 let _weddingNodeId: string | null = null;
 let _active = false;
@@ -56,7 +56,7 @@ export type SyncStatusValue = "synced" | "pending" | "syncing" | "error" | "offl
  * In v3, this signals all registerPull listeners to refresh their collection.
  */
 export function notifySync(): void {
-  dispatchDocChange('*');
+  dispatchDocChange("*");
 }
 
 /**
@@ -74,15 +74,15 @@ export function isSyncActive(): boolean {
 }
 
 /**
- * Returns a v3 StarfishClient scoped to the fiance namespace.
+ * Returns the active starfish-spaces content client.
+ * The Session already constructs it; no need to call makeSpaceClient separately.
  * Returns null before initSync() is called.
  *
  * @deprecated Callers that use pullEntitlements(sfClient, userId) have been
  * updated to use pullEntitlements(null, userId) from this module directly.
  */
 export function getStarfishClient(): object | null {
-  if (!_session) return null;
-  return makeClient(_session.contentCap, _session.keys.edPriv);
+  return _session?.contentClient ?? null;
 }
 
 /**
@@ -100,10 +100,10 @@ export function onSyncStatusChange(listener: (enabled: boolean) => void): () => 
 
 export function getSyncStatus(): { status: SyncStatusValue; message: string } | null {
   if (!_active) return null;
-  if (_lastUp === null) return { status: 'pending', message: 'pending' };
+  if (_lastUp === null) return { status: "pending", message: "pending" };
   return _lastUp
-    ? { status: 'synced', message: 'synced' }
-    : { status: 'offline', message: 'offline' };
+    ? { status: "synced", message: "synced" }
+    : { status: "offline", message: "offline" };
 }
 
 export function getLastSyncTimestamp(): string | null {
@@ -127,12 +127,12 @@ export async function pullEntitlements(
 ): Promise<string[]> {
   if (!_session) return [];
   try {
-    const client = makeClient(_session.contentCap, _session.keys.edPriv);
-    const result = await (client as unknown as { pull: (path: string, hash: number | null) => Promise<{ data: unknown }> })
-      .pull(`users/${userId}/entitlements`, null);
+    const result = await (_session.contentClient as unknown as {
+      pull: (path: string, hash: number | null) => Promise<{ data: unknown }>;
+    }).pull(`users/${userId}/entitlements`, null);
     const data = result?.data as Record<string, unknown> | null;
     const features = data?.features;
-    if (Array.isArray(features)) return features.filter((f): f is string => typeof f === 'string');
+    if (Array.isArray(features)) return features.filter((f): f is string => typeof f === "string");
     return [];
   } catch {
     return [];
@@ -158,6 +158,7 @@ export interface SyncInitConfig {
  */
 export async function initSync(cfg: SyncInitConfig): Promise<void> {
   _session = cfg.session;
+  _baseUrl = cfg.serverUrl.replace(/\/v1\/?$/, "");
   _spaceId = cfg.spaceId;
   _weddingNodeId = cfg.weddingNodeId;
   _active = true;
@@ -167,7 +168,7 @@ export async function initSync(cfg: SyncInitConfig): Promise<void> {
   emitSseStatus(true);
 
   // Dispatch so any early registerPull() listeners hydrate immediately.
-  dispatchDocChange('*');
+  dispatchDocChange("*");
 }
 
 /** Legacy alias kept for call-sites that import initStarfish. */
@@ -178,7 +179,7 @@ export async function initStarfish(
   // v2 callers pass an old ServerConfig; in v3 initSync() is the right entry point.
   // SyncInitializer in providers.tsx is being updated to call initSync() directly.
   // Until all callers are migrated, this is a safe no-op returning a sentinel.
-  console.warn('[starfish] initStarfish() is deprecated — use initSync() from lib/starfish');
+  console.warn("[starfish] initStarfish() is deprecated — use initSync() from lib/starfish");
   return { _v3stub: true };
 }
 
@@ -188,6 +189,7 @@ export async function initStarfish(
 export function teardownSync(): void {
   clearLiveSyncBus();
   _session = null;
+  _baseUrl = null;
   _spaceId = null;
   _weddingNodeId = null;
   _active = false;
@@ -211,7 +213,7 @@ export function subscribeSyncStatus(
   const current = getSyncStatus();
   if (current) setTimeout(() => callback(current.status), 0);
   return onSseStatus((up: boolean) => {
-    callback(up ? 'synced' : 'offline');
+    callback(up ? "synced" : "offline");
   });
 }
 
@@ -219,7 +221,7 @@ export function subscribeSyncStatus(
 export type SyncStatus = SyncStatusValue;
 
 // ---------------------------------------------------------------------------
-// Accessors for session / spaceId (used by stores in B3)
+// Accessors for session / spaceId / baseUrl (used by stores in B3 + P5)
 // ---------------------------------------------------------------------------
 
 export function getActiveSession(): Session | null {
@@ -232,4 +234,9 @@ export function getActiveSpaceId(): string | null {
 
 export function getActiveWeddingNodeId(): string | null {
   return _weddingNodeId;
+}
+
+/** Returns the normalized baseUrl (no trailing /v1) for the active sync session. */
+export function getActiveBaseUrl(): string | null {
+  return _baseUrl;
 }

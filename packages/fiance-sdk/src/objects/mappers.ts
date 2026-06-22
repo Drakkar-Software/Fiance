@@ -14,7 +14,7 @@
  * pass but will not appear in the index for uninvited readers.
  */
 
-import type { ObjectNode } from '@drakkar.software/octospaces-sdk';
+import type { ObjectNode } from '@drakkar.software/starfish-spaces';
 import { FIANCE_TYPES } from './object-types.js';
 import type {
   Wedding,

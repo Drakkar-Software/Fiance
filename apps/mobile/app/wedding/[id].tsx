@@ -95,7 +95,9 @@ export default function WeddingPublicPage() {
 
         if (linkToken) {
           // v3 path: session-less link-cap read.
-          const result = await readNodeWithLinkCap(linkToken) as { data?: unknown } | null;
+          const serverUrl = resolveServerUrl();
+          const baseUrl = serverUrl ? serverUrl.replace(/\/v1\/?$/, "") : "http://localhost";
+          const result = await readNodeWithLinkCap(linkToken, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
           if (result?.data) {
             const data = result.data as PublicWeddingPage;
             setPage(data);
@@ -610,7 +612,9 @@ export default function WeddingPublicPage() {
                             if (rsvpLinkToken) {
                               // v3: write via session-less link-cap.
                               try {
-                                await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>);
+                                const _serverUrl = resolveServerUrl();
+                                const _baseUrl = _serverUrl ? _serverUrl.replace(/\/v1\/?$/, "") : "http://localhost";
+                                await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>, { baseUrl: _baseUrl, namespace: "fiance" });
                                 ok = true;
                               } catch { ok = false; }
                             } else {

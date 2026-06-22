@@ -29,25 +29,24 @@ import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 // ---------------------------------------------------------------------------
 // Boot: configure the Fiancé SDK once per process lifetime.
-// The KV adapter bridges the seahorse MMKV/AsyncStorage store to the octospaces
-// KvAdapter interface { get, set, remove }.
+// The KV adapter bridges the seahorse MMKV/AsyncStorage store to the
+// starfish-spaces KvAdapter interface { getItem, setItem, removeItem }.
 // ---------------------------------------------------------------------------
 
 function makeKvAdapter() {
   return {
-    get: async (key: string): Promise<string | null> => {
+    getItem: async (key: string): Promise<string | null> => {
       const storage = getStorage();
       if (!storage) return null;
       // Synchronous MMKV read (native) or web-cache read (web)
-      const raw = storage.getItemSync?.(key) ?? null;
-      return raw;
+      return storage.getItemSync?.(key) ?? null;
     },
-    set: async (key: string, value: string): Promise<void> => {
+    setItem: async (key: string, value: string): Promise<void> => {
       const storage = getStorage();
       if (!storage) return;
       storage.setItemSync?.(key, value);
     },
-    remove: async (key: string): Promise<void> => {
+    removeItem: async (key: string): Promise<void> => {
       const storage = getStorage();
       if (!storage) return;
       storage.removeItemSync?.(key);
@@ -55,30 +54,40 @@ function makeKvAdapter() {
   };
 }
 
-/** Strip legacy `/v1` suffix — octospaces-sdk adds its own `/v1/${namespace}/` prefix. */
+/** Strip legacy `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/` prefix. */
 function normalizeSyncBase(url: string): string {
-  return url.replace(/\/v1\/?$/, '');
+  return url.replace(/\/v1\/?$/, "");
 }
 
 /** Call once at app boot (before any store access) to configure the fiance SDK. */
 export function configureOnBoot(): void {
-  const serverUrl = resolveServerUrl();
-  if (!serverUrl) return;
-  configureFiance(
-    {
-      syncBase: normalizeSyncBase(serverUrl),
-      syncNamespace: 'fiance',
-      sharedSpacesNamespace: 'octospaces',
-    },
-    makeKvAdapter(),
-  );
+  // Platform crypto: on native, install react-native-quick-crypto.
+  // Web/Node uses globalThis.crypto which is always available — no setup needed.
+  if (Platform.OS !== "web") {
+    // Dynamic require so Metro doesn't bundle this on web where quick-crypto is absent.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { configurePlatform } = require("@fiance/sdk") as {
+      configurePlatform: (cfg: { crypto: unknown; base64: { encode: (b: Uint8Array) => string; decode: (s: string) => Uint8Array } }) => void;
+    };
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const QuickCrypto = require("react-native-quick-crypto") as unknown;
+    configurePlatform({
+      crypto: QuickCrypto,
+      base64: {
+        encode: (data: Uint8Array) => Buffer.from(data).toString("base64"),
+        decode: (s: string) => new Uint8Array(Buffer.from(s, "base64")),
+      },
+    });
+  }
+
+  configureFiance(makeKvAdapter());
 }
 
 // ---------------------------------------------------------------------------
 // SyncInitializer — replaces v2 initStarfish + createMobileLifecycle
 // ---------------------------------------------------------------------------
 
-/** Initializes octospaces sync inside DatabaseProvider. */
+/** Initializes starfish-spaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
     if (isSyncActive()) teardownSync();
@@ -91,27 +100,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     let unregisterPush: (() => void) | null = null;
 
     (async () => {
-      // Configure the SDK before calling resolveSessionConfig — deriveSession
-      // requires configureOctoSpaces to have been called first.
-      const earlyUrl = resolveServerUrl(wedding) ?? resolveServerUrl();
-      if (earlyUrl) {
-        configureFiance(
-          { syncBase: normalizeSyncBase(earlyUrl), syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
-          makeKvAdapter(),
-        );
-      }
-
       const sessionConfig = await resolveSessionConfig(wedding);
       if (cancelled || !sessionConfig) return;
 
       const { session, userId, serverUrl } = sessionConfig;
       resolvedUserId = userId;
-
-      // Re-configure with confirmed server URL (no-op when same as earlyUrl).
-      configureFiance(
-        { syncBase: normalizeSyncBase(serverUrl), syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
-        makeKvAdapter(),
-      );
 
       // TODO(B3): load/create the space for this wedding.
       // For now, use a placeholder spaceId from the registry entry.
@@ -125,20 +118,20 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       // B3: hydrate stores from ObjectNode server data (boot pull).
       if (!cancelled) {
         const nodeCount = await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
-          console.warn('[providers] hydrateFromSpace failed:', err);
+          console.warn("[providers] hydrateFromSpace failed:", err);
           return -1;
         });
         // Auto-migrate legacy users: space is empty but local stores have data.
         // This happens on first launch after upgrading from Starfish 2.x.
         if (!cancelled && nodeCount === 0 && useWeddingStore.getState().wedding) {
           await pushSpaceSnapshot(session, spaceId, weddingNodeId).catch((err) => {
-            console.warn('[providers] auto-migrate push failed:', err);
+            console.warn("[providers] auto-migrate push failed:", err);
           });
         }
       }
 
       // B3: wire dispatchDocChange('*') → debounced server push.
-      unregisterPush = registerPull('*', () => { scheduleSyncPush(); });
+      unregisterPush = registerPull("*", () => { scheduleSyncPush(); });
 
       // B5: ensure the publicPage node exists in the space.
       if (!cancelled) {
@@ -146,7 +139,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       }
 
       const userData = await getAnalyticsCore()?.exportUserData();
-      starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
+      starfishAnalyticsAdapter.activate(normalizeSyncBase(serverUrl), userData?.anonymousId ?? "anonymous");
 
       // Pull entitlements using cap-cert.
       if (!cancelled) {

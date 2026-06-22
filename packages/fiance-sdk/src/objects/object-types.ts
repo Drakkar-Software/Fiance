@@ -6,7 +6,7 @@
  * Existing values must never be renamed — they are persisted in the index.
  */
 
-import type { ObjectType } from '@drakkar.software/octospaces-sdk';
+import type { ObjectType } from '@drakkar.software/starfish-spaces';
 
 export const FIANCE_TYPES = {
   // ─── 16 admin domain entities (access:'space', enc:true) ──────────────────
