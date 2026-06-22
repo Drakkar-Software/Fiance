@@ -13,6 +13,7 @@ import { identitiesServerPlugin } from "@drakkar.software/starfish-identities";
 import { sharingServerPlugin } from "@drakkar.software/starfish-sharing";
 
 import { createSpacesRoleEnricher, createSpacesDirectoryServerPlugin } from "@drakkar.software/starfish-spaces";
+import { CORS_ALLOW_HEADERS } from "@drakkar.software/starfish-protocol";
 import { config as legacyConfig } from "./starfish-config";
 import { octospacesSyncConfig } from "./octospaces-config";
 import { fianceSyncConfig } from "./fiance-config";
@@ -170,7 +171,7 @@ function getOctospacesSyncRouter(env: Env): Hono {
     config: octospacesSyncConfig,
     roleResolver,
     roleEnricher: spaceEnricher,
-    cors: true,
+    cors: { allowHeaders: [...CORS_ALLOW_HEADERS] },
     securityHeaders: true,
   });
 
@@ -199,7 +200,7 @@ function getFianceSyncRouter(env: Env): Hono {
         putString: (k, v) => s.put(k, v),
       }),
     ],
-    cors: true,
+    cors: { allowHeaders: [...CORS_ALLOW_HEADERS] },
     securityHeaders: true,
   });
 
@@ -217,7 +218,7 @@ function getLegacySyncRouter(env: Env): Hono {
     store: s,
     config: legacyConfig,
     roleResolver,
-    cors: true,
+    cors: { allowHeaders: [...CORS_ALLOW_HEADERS] },
     securityHeaders: true,
   });
 
