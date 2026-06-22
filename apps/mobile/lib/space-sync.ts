@@ -243,15 +243,16 @@ async function pullNodeContent(
   }
 }
 
+/** Returns the number of nodes pulled from the server (0 = space was empty). */
 export async function hydrateFromSpace(
   session: Session,
   spaceId: string,
   _weddingNodeId: string,
-): Promise<void> {
+): Promise<number> {
   _isHydrating = true;
   try {
     const nodes = await readObjectTree(session, spaceId);
-    if (!nodes.length) return;
+    if (!nodes.length) return 0;
 
     const byType = new Map<string, ObjectNode[]>();
     for (const n of nodes) {
@@ -319,6 +320,7 @@ export async function hydrateFromSpace(
     if (dayOfItemDocs.length) usePlanningStore.getState().setDayOfItems(dayOfItemDocs.map(dayOfItemFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setDayOfItems']>[0]);
     if (ideaCollectionDocs.length) useIdeasStore.getState().setCollections(ideaCollectionDocs.map(ideaCollectionFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setCollections']>[0]);
     if (ideaDocs.length) useIdeasStore.getState().setIdeas(ideaDocs.map(ideaFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setIdeas']>[0]);
+    return nodes.length;
   } finally {
     _isHydrating = false;
   }

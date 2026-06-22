@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot } from "@/lib/space-sync";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
@@ -109,9 +109,17 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 
       // B3: hydrate stores from ObjectNode server data (boot pull).
       if (!cancelled) {
-        await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
+        const nodeCount = await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
           console.warn('[providers] hydrateFromSpace failed:', err);
+          return -1;
         });
+        // Auto-migrate legacy users: space is empty but local stores have data.
+        // This happens on first launch after upgrading from Starfish 2.x.
+        if (!cancelled && nodeCount === 0 && useWeddingStore.getState().wedding) {
+          await pushSpaceSnapshot(session, spaceId, weddingNodeId).catch((err) => {
+            console.warn('[providers] auto-migrate push failed:', err);
+          });
+        }
       }
 
       // B3: wire dispatchDocChange('*') → debounced server push.
