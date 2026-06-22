@@ -22,6 +22,8 @@ export type DoubloonEnv = {
 
 function isValidUserId(address: string): boolean {
   if (!address || typeof address !== "string") return false;
+  // Accept v3 userIds (32-char hex from userIdFromEdPub) AND legacy v2 (16-char hex from authToken)
+  if (/^[0-9a-f]{32}$/i.test(address)) return true;
   if (/^[0-9a-f]{16}$/i.test(address)) return true;
   // Also accept standard Solana/EVM for forward-compat
   if (/^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{32,44}$/.test(address)) return true;
@@ -123,10 +125,11 @@ const GOOGLE_PRODUCT_SKU = "com.fiance.app.premium.lifetime";
 const PACKAGE_NAME = "com.fiance.app";
 
 export function createDoubloon(env: DoubloonEnv) {
+  // TODO(doubloon-v3): StarfishClient.auth removed in v3 — pending Doubloon migration to cap-cert.
   const adminClient = new StarfishClient({
     baseUrl: env.STARFISH_SELF_URL,
     auth: async () => ({ Authorization: `Bearer ${env.DOUBLOON_ADMIN_TOKEN}` }),
-  });
+  } as any);
 
   const destination = createStarfishDestination({
     client: adminClient,
@@ -158,14 +161,14 @@ export function createDoubloon(env: DoubloonEnv) {
           productResolver,
           walletResolver: directWalletResolver,
           walletValidator: isValidUserId,
-        }),
+        } as any),
         google: new GoogleBridge({
           packageName: PACKAGE_NAME,
           serviceAccountKey: env.GOOGLE_SERVICE_ACCOUNT_KEY,
           productResolver,
           walletResolver: googleWalletResolver,
           walletValidator: isValidUserId,
-        }),
+        } as any),
         stripe: new StripeBridge({
           webhookSecret: env.STRIPE_WEBHOOK_SECRET,
           productResolver,

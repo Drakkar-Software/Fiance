@@ -2,14 +2,20 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import {
   createSyncRouter,
+  createCapCertRoleResolver,
+  createInMemoryNonceCache,
+  createInMemoryRevocationStore,
   saveConfig,
-  createConsoleLogger,
-  createConsoleAuditLogger,
-  createEntitlementRoleEnricher,
   type ObjectStore,
   type AuthResult,
 } from "@drakkar.software/starfish-server";
-import { config } from "./starfish-config";
+import { identitiesServerPlugin } from "@drakkar.software/starfish-identities";
+import { sharingServerPlugin } from "@drakkar.software/starfish-sharing";
+
+import { config as legacyConfig } from "./starfish-config";
+import { octospacesSyncConfig } from "./octospaces-config";
+import { fianceSyncConfig } from "./fiance-config";
+import { makeSpaceRoleEnricher } from "./space-role";
 import { createDoubloon, type DoubloonEnv } from "./doubloon";
 
 // ---------------------------------------------------------------------------
@@ -90,26 +96,31 @@ class R2ObjectStore implements ObjectStore {
 
 type Env = DoubloonEnv & {
   BUCKET: R2Bucket;
-  ENCRYPTION_SECRET: string;
 };
 
 // ---------------------------------------------------------------------------
-// Auth
+// Auth resolvers
 // ---------------------------------------------------------------------------
 
-async function roleResolver(c: Context<{ Bindings: Env }>): Promise<AuthResult> {
-  const token = c.req.header("authorization") ?? "";
-  if (token.startsWith("Bearer ")) {
-    const authToken = token.slice("Bearer ".length);
-    // Admin token used by Doubloon to write entitlements
-    if (authToken === c.env.DOUBLOON_ADMIN_TOKEN) {
-      return { identity: "doubloon-admin", roles: ["admin"] };
+/**
+ * Legacy Bearer resolver — used ONLY for the Doubloon entitlements router
+ * until Doubloon is migrated to cap-cert auth.
+ *
+ * TODO(doubloon-v3): remove once Doubloon is migrated.
+ */
+function makeLegacyRoleResolver(env: Env) {
+  return async function legacyRoleResolver(
+    _c: Context,
+  ): Promise<AuthResult> {
+    const token = _c.req.header("authorization") ?? "";
+    if (token.startsWith("Bearer ")) {
+      const authToken = token.slice("Bearer ".length);
+      if (authToken === env.DOUBLOON_ADMIN_TOKEN) {
+        return { identity: "doubloon-admin", roles: ["admin"] };
+      }
     }
-    // Regular user token — identity from first 16 chars
-    const userId = authToken.slice(0, 16);
-    return { identity: userId, roles: ["user"] };
-  }
-  return { identity: "anonymous", roles: ["public"] };
+    return { identity: "anonymous", roles: [] };
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -118,53 +129,127 @@ async function roleResolver(c: Context<{ Bindings: Env }>): Promise<AuthResult> 
 
 const app = new Hono<{ Bindings: Env }>();
 
-let cachedRouter: Hono | null = null;
-let cachedDoubloon: ReturnType<typeof createDoubloon> | null = null;
+// Per-Worker singleton cache — built once per isolate lifetime.
+let _store: R2ObjectStore | null = null;
+let _capCertResolver: ReturnType<typeof createCapCertRoleResolver> | null = null;
+let _octospacesSyncRouter: Hono | null = null;
+let _fianceSyncRouter: Hono | null = null;
+let _legacySyncRouter: Hono | null = null;
+let _doubloon: ReturnType<typeof createDoubloon> | null = null;
 
-function getSyncRouter(env: Env): Hono {
-  if (cachedRouter) return cachedRouter;
+function getStore(env: Env): R2ObjectStore {
+  if (!_store) _store = new R2ObjectStore(env.BUCKET);
+  return _store;
+}
 
-  const store = new R2ObjectStore(env.BUCKET);
-  const entitlementEnricher = createEntitlementRoleEnricher({
-    store,
-    path: "users/{identity}/entitlements",
-    field: "features",
-    rolePrefix: "entitlement",
-    cacheTtlMs: 0, // no cache — instant post-purchase propagation
-  });
+function getCapCertResolver(): ReturnType<typeof createCapCertRoleResolver> {
+  if (!_capCertResolver) {
+    const nonceCache = createInMemoryNonceCache({ windowMs: 10 * 60_000, maxEntries: 100_000 });
+    const revocationStore = createInMemoryRevocationStore();
+    _capCertResolver = createCapCertRoleResolver({
+      nonceCache,
+      revocationStore,
+      allowAnonymous: true,
+      plugins: [identitiesServerPlugin, sharingServerPlugin],
+      maxBodyBytes: 11_534_336,
+    });
+  }
+  return _capCertResolver;
+}
 
-  cachedRouter = createSyncRouter({
-    store,
-    config,
+function getOctospacesSyncRouter(env: Env): Hono {
+  if (_octospacesSyncRouter) return _octospacesSyncRouter;
+
+  const s = getStore(env);
+  const roleResolver = getCapCertResolver();
+  const spaceEnricher = makeSpaceRoleEnricher(s);
+
+  _octospacesSyncRouter = createSyncRouter({
+    store: s,
+    config: octospacesSyncConfig,
     roleResolver,
-    encryptionSecret: env.ENCRYPTION_SECRET,
+    roleEnricher: spaceEnricher,
     cors: true,
     securityHeaders: true,
-    logger: createConsoleLogger(),
-    auditLogger: createConsoleAuditLogger(),
-    configEndpoint: { auth: "public" },
-    roleEnricher: entitlementEnricher,
   });
 
-  saveConfig(store, config).catch(() => {});
+  saveConfig(s, octospacesSyncConfig).catch(() => {});
+  return _octospacesSyncRouter;
+}
 
-  return cachedRouter;
+function getFianceSyncRouter(env: Env): Hono {
+  if (_fianceSyncRouter) return _fianceSyncRouter;
+
+  const s = getStore(env);
+  const roleResolver = getCapCertResolver();
+  const spaceEnricher = makeSpaceRoleEnricher(s);
+
+  _fianceSyncRouter = createSyncRouter({
+    store: s,
+    config: fianceSyncConfig,
+    roleResolver,
+    roleEnricher: spaceEnricher,
+    cors: true,
+    securityHeaders: true,
+  });
+
+  saveConfig(s, fianceSyncConfig).catch(() => {});
+  return _fianceSyncRouter;
+}
+
+function getLegacySyncRouter(env: Env): Hono {
+  if (_legacySyncRouter) return _legacySyncRouter;
+
+  const s = getStore(env);
+  const roleResolver = makeLegacyRoleResolver(env);
+
+  _legacySyncRouter = createSyncRouter({
+    store: s,
+    config: legacyConfig,
+    roleResolver,
+    cors: true,
+    securityHeaders: true,
+  });
+
+  return _legacySyncRouter;
 }
 
 function getDoubloon(env: Env): ReturnType<typeof createDoubloon> {
-  if (cachedDoubloon) return cachedDoubloon;
-  cachedDoubloon = createDoubloon(env);
-  return cachedDoubloon;
+  if (!_doubloon) _doubloon = createDoubloon(env);
+  return _doubloon;
 }
 
+// ---------------------------------------------------------------------------
+// Routing: fiance and octospaces are matched BEFORE the legacy catch-all
+// ---------------------------------------------------------------------------
+
+// Fiance content namespace — cap-cert + space-role enricher.
+app.all("/v1/fiance/*", (c) => {
+  const url = new URL(c.req.raw.url);
+  url.pathname = url.pathname.replace(/^\/v1\/fiance/, "") || "/";
+  return getFianceSyncRouter(c.env).fetch(new Request(url, c.req.raw), c.env, c.executionCtx);
+});
+
+// Shared octospaces registry namespace — cap-cert + space-role enricher.
+app.all("/v1/octospaces/*", (c) => {
+  const url = new URL(c.req.raw.url);
+  url.pathname = url.pathname.replace(/^\/v1\/octospaces/, "") || "/";
+  return getOctospacesSyncRouter(c.env).fetch(
+    new Request(url, c.req.raw),
+    c.env,
+    c.executionCtx,
+  );
+});
+
+// Legacy Bearer namespace — entitlements + analytics-events (Doubloon compat).
 app.all("/v1/*", (c) => {
   const url = new URL(c.req.raw.url);
   url.pathname = url.pathname.replace(/^\/v1/, "") || "/";
-  return getSyncRouter(c.env).fetch(new Request(url, c.req.raw), c.env, c.executionCtx);
+  return getLegacySyncRouter(c.env).fetch(new Request(url, c.req.raw), c.env, c.executionCtx);
 });
 
 // ---------------------------------------------------------------------------
-// Doubloon webhook routes
+// Doubloon webhook routes (HTTP, not Starfish sync)
 // ---------------------------------------------------------------------------
 
 async function handleDoubloonWebhook(c: Context<{ Bindings: Env }>) {

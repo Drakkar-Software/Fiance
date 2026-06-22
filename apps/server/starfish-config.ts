@@ -1,68 +1,25 @@
+/**
+ * LEGACY collection layout — Bearer-auth-only router.
+ *
+ * Only the collections that still need the legacy Bearer admin resolver:
+ *  - `entitlements` — written by Doubloon's StarfishClient via Bearer token
+ *  - `analytics-events` — public-write, never needed cap-cert
+ *
+ * All wedding-domain collections (wedding, wedding-page, rsvp-roster, etc.)
+ * are retired; data lives in the octospaces/fiance namespaces as ObjectNodes.
+ *
+ * TODO(doubloon-v3): once Doubloon is migrated to cap-cert auth, move
+ * `entitlements` to the fiance namespace and delete this file.
+ */
 import type { SyncConfig } from "@drakkar.software/starfish-server";
 
 export const config: SyncConfig = {
   version: 1,
   collections: [
     {
-      name: "wedding",
-      storagePath: "wedding/{identity}",
-      readRoles: ["self"],
-      writeRoles: ["self"],
-      encryption: "none",
-      maxBodyBytes: 1_048_576,
-      allowedMimeTypes: ["application/json"],
-    },
-    {
-      name: "wedding-page",
-      storagePath: "wedding-page/{identity}",
-      readRoles: ["public"],
-      writeRoles: ["self"],
-      encryption: "none",
-      maxBodyBytes: 524_288,
-      allowedMimeTypes: ["application/json"],
-    },
-    {
-      name: "rsvp-roster",
-      storagePath: "rsvp-roster/{identity}",
-      readRoles: ["public"],
-      writeRoles: ["self"],
-      encryption: "none",
-      maxBodyBytes: 524_288,
-      allowedMimeTypes: ["application/json"],
-    },
-    {
-      name: "rsvp-inbox",
-      storagePath: "rsvp-inbox/{identity}",
-      readRoles: ["self"],
-      writeRoles: ["public"],
-      encryption: "none",
-      maxBodyBytes: 65_536,
-      allowedMimeTypes: ["application/json"],
-      ttlMs: 30 * 24 * 60 * 60 * 1000, // 30 days
-    },
-    {
-      name: "gift-claims",
-      storagePath: "gift-claims/{identity}",
-      readRoles: ["self"],
-      writeRoles: ["public"],
-      encryption: "none",
-      maxBodyBytes: 16_384,
-      allowedMimeTypes: ["application/json"],
-      ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
-    },
-    {
-      name: "keyring",
-      storagePath: "keyring/{identity}",
-      readRoles: ["self"],
-      writeRoles: ["self"],
-      encryption: "none",
-      maxBodyBytes: 16_384,
-      allowedMimeTypes: ["application/json"],
-    },
-    {
       name: "entitlements",
       storagePath: "users/{identity}/entitlements",
-      readRoles: ["self"],
+      readRoles: ["admin"],
       writeRoles: ["admin"],
       encryption: "none",
       maxBodyBytes: 4_096,
@@ -76,8 +33,8 @@ export const config: SyncConfig = {
       encryption: "none",
       maxBodyBytes: 65_536,
       allowedMimeTypes: ["application/json"],
-      ttlMs: 90 * 24 * 60 * 60 * 1000, // 90 days
-      appendOnly: { persist: false },
+      ttlMs: 90 * 24 * 60 * 60 * 1000,
+      appendOnly: { type: "by_timestamp" },
     },
   ],
 };

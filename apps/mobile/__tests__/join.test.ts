@@ -81,17 +81,19 @@ describe("decodeInviteToken", () => {
     expect(decodeInviteToken(token)).toBeNull();
   });
 
-  it("round-trips through buildInviteUrl", () => {
+  it("round-trips through buildInviteUrl (fragment-based URL)", () => {
     const url = buildInviteUrl("Alice & Bob", "my-secret-pass");
-    const token = url.match(/t=([^&]+)/)![1];
-    const result = decodeInviteToken(token);
+    // v3: payload is in the URL fragment (#), not query param (?t=)
+    const fragment = url.includes("#") ? url.split("#")[1] : "";
+    expect(fragment).not.toBe("");
+    const result = decodeInviteToken(fragment);
     expect(result).toEqual({ name: "Alice & Bob", password: "my-secret-pass" });
   });
 
   it("handles special characters in wedding name", () => {
     const url = buildInviteUrl("Éloïse & François", "pass123");
-    const token = url.match(/t=([^&]+)/)![1];
-    expect(decodeInviteToken(token)?.name).toBe("Éloïse & François");
+    const fragment = url.includes("#") ? url.split("#")[1] : "";
+    expect(decodeInviteToken(fragment)?.name).toBe("Éloïse & François");
   });
 });
 

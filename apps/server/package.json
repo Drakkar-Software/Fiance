@@ -13,8 +13,11 @@
     "@drakkar.software/doubloon-core": "0.3.0",
     "@drakkar.software/doubloon-server": "0.3.0",
     "@drakkar.software/doubloon-starfish": "0.3.0",
-    "@drakkar.software/starfish-client": "^2.3.0",
-    "@drakkar.software/starfish-server": "2.3.0",
+    "@drakkar.software/starfish-client": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-identities": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-protocol": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-server": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-sharing": "3.0.0-alpha.30",
     "hono": "4.12.12",
     "stripe": "^17.0.0"
   },

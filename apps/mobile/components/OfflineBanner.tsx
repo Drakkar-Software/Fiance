@@ -3,8 +3,7 @@ import { StyleSheet, Text } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { getStarfishStore, onSyncStatusChange } from "@/lib/starfish";
-import { subscribeSyncStatus } from "@drakkar.software/starfish-client/zustand";
+import { getStarfishStore, onSyncStatusChange, subscribeSyncStatus } from "@/lib/starfish";
 
 const BANNER_HEIGHT = 36;
 

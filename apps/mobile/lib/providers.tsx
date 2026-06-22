@@ -1,14 +1,16 @@
 import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
-import { createMobileLifecycle } from "@drakkar.software/starfish-client";
-import NetInfo from "@react-native-community/netinfo";
-import { getStarfishStore, getStarfishClient, initStarfish, teardownStarfish } from "@/lib/starfish";
-import { pullEntitlements } from "@drakkar.software/starfish-client";
+import { configureFiance } from "@fiance/sdk";
+import { getStorage } from "@/lib/kv-storage";
+import {
+  initSync,
+  teardownSync,
+  pullEntitlements,
+  isSyncActive,
+} from "@/lib/starfish";
+import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { initPublicPageSync, teardownPublicPageSync, pullPublicPageSync, notifyPublicPageSync } from "@/lib/public-page";
-import { resolveServerConfig } from "@/lib/server";
-import { resolveGroupEncryptor } from "@/lib/group-crypto";
 import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
@@ -19,52 +21,102 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
-/** Initializes Starfish + public page sync inside DatabaseProvider */
+// ---------------------------------------------------------------------------
+// Boot: configure the Fiancé SDK once per process lifetime.
+// The KV adapter bridges the seahorse MMKV/AsyncStorage store to the octospaces
+// KvAdapter interface { get, set, remove }.
+// ---------------------------------------------------------------------------
+
+function makeKvAdapter() {
+  return {
+    get: async (key: string): Promise<string | null> => {
+      const storage = getStorage();
+      if (!storage) return null;
+      // Synchronous MMKV read (native) or web-cache read (web)
+      const raw = storage.getItemSync?.(key) ?? null;
+      return raw;
+    },
+    set: async (key: string, value: string): Promise<void> => {
+      const storage = getStorage();
+      if (!storage) return;
+      storage.setItemSync?.(key, value);
+    },
+    remove: async (key: string): Promise<void> => {
+      const storage = getStorage();
+      if (!storage) return;
+      storage.removeItemSync?.(key);
+    },
+  };
+}
+
+/** Call once at app boot (before any store access) to configure the fiance SDK. */
+export function configureOnBoot(): void {
+  const serverUrl = resolveServerUrl();
+  if (!serverUrl) return;
+  configureFiance(
+    {
+      syncBase: serverUrl,
+      syncNamespace: 'fiance',
+      sharedSpacesNamespace: 'octospaces',
+    },
+    makeKvAdapter(),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SyncInitializer — replaces v2 initStarfish + createMobileLifecycle
+// ---------------------------------------------------------------------------
+
+/** Initializes octospaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
-    if (getStarfishStore()) teardownStarfish();
-    teardownPublicPageSync();
+    if (isSyncActive()) teardownSync();
     starfishAnalyticsAdapter.deactivate();
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
 
     let cancelled = false;
     let resolvedUserId: string | null = null;
+
     (async () => {
-      const config = await resolveServerConfig(wedding);
-      if (cancelled || !config) return;
-      const encryptor = await resolveGroupEncryptor(wedding, config).catch(() => null);
+      const sessionConfig = await resolveSessionConfig(wedding);
+      if (cancelled || !sessionConfig) return;
+
+      const { session, userId, serverUrl } = sessionConfig;
+      resolvedUserId = userId;
+
+      // Configure the SDK with the resolved server URL (may differ per wedding).
+      configureFiance(
+        { syncBase: serverUrl, syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
+        makeKvAdapter(),
+      );
+
+      // TODO(B3): load/create the space for this wedding.
+      // For now, use a placeholder spaceId from the registry entry.
+      const spaceId = (wedding as unknown as Record<string, unknown>).spaceId as string ?? userId;
+
       if (cancelled) return;
-      await initStarfish(config, encryptor ?? undefined);
+      await initSync({ session, spaceId, serverUrl });
+
       const userData = await getAnalyticsCore()?.exportUserData();
-      starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
-      initPublicPageSync(config);
+      starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
 
-      // Pull entitlements from server — persisted to KV so the gate works on next cold start
-      resolvedUserId = config.userId;
-      const sfClient = getStarfishClient();
-      if (sfClient && !cancelled) {
-        const features = await pullEntitlements(sfClient, config.userId).catch(() => null);
-        if (!cancelled && features !== null) useEntitlementsStore.getState().setFeatures(features);
-      }
-
-      const sf = getStarfishStore();
-      if (sf && !cancelled) {
-        createMobileLifecycle(sf, { appState: AppState, netInfo: NetInfo });
-        try { await sf.getState().pull(); } catch { /* sync will retry */ }
-      }
+      // Pull entitlements using cap-cert.
       if (!cancelled) {
-        await pullPublicPageSync();
-        notifyPublicPageSync();
+        const features = await pullEntitlements(null, userId).catch(() => null);
+        if (!cancelled && features !== null) {
+          useEntitlementsStore.getState().setFeatures(features);
+        }
       }
     })();
 
+    // Re-pull entitlements on foreground.
     const foregroundSub = AppState.addEventListener("change", (state) => {
-      if (state !== "active") return;
-      const sfClient = getStarfishClient();
-      if (!sfClient || !resolvedUserId) return;
-      pullEntitlements(sfClient, resolvedUserId)
-        .then((features) => { if (features.length > 0) useEntitlementsStore.getState().setFeatures(features); })
+      if (state !== "active" || !resolvedUserId) return;
+      pullEntitlements(null, resolvedUserId)
+        .then((features) => {
+          if (features.length > 0) useEntitlementsStore.getState().setFeatures(features);
+        })
         .catch(() => {});
     });
 
@@ -75,7 +127,8 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     };
   }, [wedding.id]);
 
-  // Re-push public page when day-of items or wedding info change
+  // Re-push public page when day-of items or wedding info change.
+  // TODO(B5): wire to notifyPublicPageSync when public page uses node invites.
   useEffect(() => {
     let prevDayOfItems = usePlanningStore.getState().dayOfItems;
     let prevWedding = useWeddingStore.getState().wedding;
@@ -83,13 +136,13 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     const unsubPlanning = usePlanningStore.subscribe((state) => {
       if (state.dayOfItems !== prevDayOfItems) {
         prevDayOfItems = state.dayOfItems;
-        notifyPublicPageSync();
+        // notifyPublicPageSync() — re-enable in B5
       }
     });
     const unsubWedding = useWeddingStore.subscribe((state) => {
       if (state.wedding !== prevWedding) {
         prevWedding = state.wedding;
-        notifyPublicPageSync();
+        // notifyPublicPageSync() — re-enable in B5
       }
     });
     return () => { unsubPlanning(); unsubWedding(); };
@@ -98,15 +151,19 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
   return null;
 }
 
-/** Sets up IAP purchase listeners (mobile) or handles Stripe return (web) */
+// ---------------------------------------------------------------------------
+// IAPInitializer — IAP + Stripe (unchanged from v2, Doubloon not migrated yet)
+// ---------------------------------------------------------------------------
+
+/** Sets up IAP purchase listeners (mobile) or handles Stripe return (web). */
 export function IAPInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   const [starfishUserId, setStarfishUserId] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (!wedding.seedPhrase) return;
-    resolveServerConfig(wedding).then((config) => {
-      if (config) setStarfishUserId(config.userId);
-    }).catch(() => {});
+    resolveSessionConfig(wedding)
+      .then((cfg) => { if (cfg) setStarfishUserId(cfg.userId); })
+      .catch(() => {});
   }, [wedding.id, wedding.seedPhrase]);
 
   useEffect(() => {
@@ -122,7 +179,11 @@ export function IAPInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   return null;
 }
 
-/** Request permissions on boot and reschedule all notifications from current data */
+// ---------------------------------------------------------------------------
+// NotificationInitializer — unchanged
+// ---------------------------------------------------------------------------
+
+/** Request permissions on boot and reschedule all notifications. */
 export function NotificationInitializer() {
   useEffect(() => {
     (async () => {
