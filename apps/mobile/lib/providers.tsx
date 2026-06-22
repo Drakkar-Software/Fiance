@@ -86,13 +86,23 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     let unregisterPush: (() => void) | null = null;
 
     (async () => {
+      // Configure the SDK before calling resolveSessionConfig — deriveSession
+      // requires configureOctoSpaces to have been called first.
+      const earlyUrl = resolveServerUrl(wedding) ?? resolveServerUrl();
+      if (earlyUrl) {
+        configureFiance(
+          { syncBase: earlyUrl, syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
+          makeKvAdapter(),
+        );
+      }
+
       const sessionConfig = await resolveSessionConfig(wedding);
       if (cancelled || !sessionConfig) return;
 
       const { session, userId, serverUrl } = sessionConfig;
       resolvedUserId = userId;
 
-      // Configure the SDK with the resolved server URL (may differ per wedding).
+      // Re-configure with confirmed server URL (no-op when same as earlyUrl).
       configureFiance(
         { syncBase: serverUrl, syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
         makeKvAdapter(),

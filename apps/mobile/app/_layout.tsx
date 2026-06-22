@@ -56,6 +56,12 @@ import { SunglassesProvider, useSunglasses, useExpoRouterScreenTracking } from "
 import { SunglassesErrorBoundary, createSentryBeforeSend } from "@drakkar.software/sunglasses-adapter-sentry";
 import { initAnalytics, getAnalyticsCore } from "@/lib/analytics";
 import type { SunglassesCore } from "@drakkar.software/sunglasses-core";
+import { configureOnBoot } from "@/lib/providers";
+
+// Configure octospaces-sdk at module load so deriveSession/buildSession are
+// available before any screen renders (home, settings, public-page all call
+// resolveServerConfig which calls deriveSession).
+configureOnBoot();
 
 // Initialize Sentry at module load — before any components render.
 // beforeSend lazily accesses the analytics client once it's ready.
