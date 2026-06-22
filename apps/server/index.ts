@@ -5,6 +5,7 @@ import {
   createCapCertRoleResolver,
   createInMemoryNonceCache,
   createInMemoryRevocationStore,
+  defaultServerPlugin,
   saveConfig,
   type ObjectStore,
   type AuthResult,
@@ -151,7 +152,7 @@ function getCapCertResolver(): ReturnType<typeof createCapCertRoleResolver> {
       nonceCache,
       revocationStore,
       allowAnonymous: true,
-      plugins: [identitiesServerPlugin, sharingServerPlugin],
+      plugins: [defaultServerPlugin, identitiesServerPlugin, sharingServerPlugin],
       maxBodyBytes: 11_534_336,
     });
   }
