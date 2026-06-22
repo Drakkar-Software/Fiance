@@ -36,6 +36,7 @@ import {
 
 let _session: Session | null = null;
 let _spaceId: string | null = null;
+let _weddingNodeId: string | null = null;
 let _active = false;
 let _lastSyncTs: string | null = null;
 let _lastUp: boolean | null = null;
@@ -146,6 +147,8 @@ export interface SyncInitConfig {
   session: Session;
   spaceId: string;
   serverUrl: string;
+  /** The registry entry UUID used as the root wedding ObjectNode ID. */
+  weddingNodeId: string;
 }
 
 /**
@@ -156,6 +159,7 @@ export interface SyncInitConfig {
 export async function initSync(cfg: SyncInitConfig): Promise<void> {
   _session = cfg.session;
   _spaceId = cfg.spaceId;
+  _weddingNodeId = cfg.weddingNodeId;
   _active = true;
   _lastUp = true;
 
@@ -185,6 +189,7 @@ export function teardownSync(): void {
   clearLiveSyncBus();
   _session = null;
   _spaceId = null;
+  _weddingNodeId = null;
   _active = false;
   _lastUp = null;
   emitSseStatus(false);
@@ -223,4 +228,8 @@ export function getActiveSession(): Session | null {
 
 export function getActiveSpaceId(): string | null {
   return _spaceId;
+}
+
+export function getActiveWeddingNodeId(): string | null {
+  return _weddingNodeId;
 }

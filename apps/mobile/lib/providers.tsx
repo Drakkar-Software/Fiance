@@ -9,6 +9,8 @@ import {
   pullEntitlements,
   isSyncActive,
 } from "@/lib/starfish";
+import { registerPull } from "@fiance/sdk";
+import { hydrateFromSpace, scheduleSyncPush } from "@/lib/space-sync";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
@@ -77,6 +79,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 
     let cancelled = false;
     let resolvedUserId: string | null = null;
+    let unregisterPush: (() => void) | null = null;
 
     (async () => {
       const sessionConfig = await resolveSessionConfig(wedding);
@@ -94,9 +97,21 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       // TODO(B3): load/create the space for this wedding.
       // For now, use a placeholder spaceId from the registry entry.
       const spaceId = (wedding as unknown as Record<string, unknown>).spaceId as string ?? userId;
+      // The registry entry id is stable UUID — used as the root wedding ObjectNode id.
+      const weddingNodeId = wedding.id;
 
       if (cancelled) return;
-      await initSync({ session, spaceId, serverUrl });
+      await initSync({ session, spaceId, serverUrl, weddingNodeId });
+
+      // B3: hydrate stores from ObjectNode server data (boot pull).
+      if (!cancelled) {
+        await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
+          console.warn('[providers] hydrateFromSpace failed:', err);
+        });
+      }
+
+      // B3: wire dispatchDocChange('*') → debounced server push.
+      unregisterPush = registerPull('*', () => { scheduleSyncPush(); });
 
       const userData = await getAnalyticsCore()?.exportUserData();
       starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
@@ -123,6 +138,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     return () => {
       cancelled = true;
       foregroundSub.remove();
+      unregisterPush?.();
       starfishAnalyticsAdapter.deactivate();
     };
   }, [wedding.id]);
