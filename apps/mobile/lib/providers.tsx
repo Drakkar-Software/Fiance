@@ -55,13 +55,18 @@ function makeKvAdapter() {
   };
 }
 
+/** Strip legacy `/v1` suffix — octospaces-sdk adds its own `/v1/${namespace}/` prefix. */
+function normalizeSyncBase(url: string): string {
+  return url.replace(/\/v1\/?$/, '');
+}
+
 /** Call once at app boot (before any store access) to configure the fiance SDK. */
 export function configureOnBoot(): void {
   const serverUrl = resolveServerUrl();
   if (!serverUrl) return;
   configureFiance(
     {
-      syncBase: serverUrl,
+      syncBase: normalizeSyncBase(serverUrl),
       syncNamespace: 'fiance',
       sharedSpacesNamespace: 'octospaces',
     },
@@ -91,7 +96,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       const earlyUrl = resolveServerUrl(wedding) ?? resolveServerUrl();
       if (earlyUrl) {
         configureFiance(
-          { syncBase: earlyUrl, syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
+          { syncBase: normalizeSyncBase(earlyUrl), syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
           makeKvAdapter(),
         );
       }
@@ -104,7 +109,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 
       // Re-configure with confirmed server URL (no-op when same as earlyUrl).
       configureFiance(
-        { syncBase: serverUrl, syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
+        { syncBase: normalizeSyncBase(serverUrl), syncNamespace: 'fiance', sharedSpacesNamespace: 'octospaces' },
         makeKvAdapter(),
       );
 
