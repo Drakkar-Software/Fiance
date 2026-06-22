@@ -22,8 +22,8 @@
     "stripe": "^17.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260408.1",
+    "@cloudflare/workers-types": "4.20260621.1",
     "@types/node": "^22.0.0",
-    "wrangler": "4.81.0"
+    "wrangler": "4.103.0"
   }
 }
