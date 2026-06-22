@@ -11,7 +11,8 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { exportWedding, importWedding, importLegacyToSpace } from "@/lib/export-import";
-import { Archive } from "lucide-react-native";
+import { getActiveWeddingNodeId } from "@/lib/starfish";
+import { Archive, ArrowRightLeft } from "lucide-react-native";
 import {
   exportToPdf,
   buildGuestListHtml,
@@ -39,6 +40,8 @@ export default function ExportImportScreen() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
   const budgetSummary = useBudgetSummary();
+
+  const isLegacy = !!wedding && !getActiveWeddingNodeId();
 
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -212,6 +215,31 @@ export default function ExportImportScreen() {
             />
           </FormCard>
         </View>
+
+        {/* Migration wizard — visible when local data exists but Space is not yet active */}
+        {isLegacy && (
+          <View className="px-4">
+            <SectionTitle>{t("migrationSection")}</SectionTitle>
+            <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
+              {t("migrationSectionDesc")}
+            </Text>
+            <FormCard>
+              <ExportRow
+                icon={<Download size={18} color="#b96a4a" />}
+                label={exporting ? t("exporting") : t("migrationBackup")}
+                sublabel={t("migrationBackupDesc")}
+                onPress={handleExportJson}
+              />
+              <ExportRow
+                icon={<ArrowRightLeft size={18} color="#8B5CF6" />}
+                label={importingToSpace ? t("importing") : t("migrationImport")}
+                sublabel={t("migrationImportDesc")}
+                onPress={() => setShowImportToSpaceConfirm(true)}
+                last
+              />
+            </FormCard>
+          </View>
+        )}
 
         {/* JSON Backup */}
         <View className="px-4">
