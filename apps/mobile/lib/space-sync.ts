@@ -58,6 +58,7 @@ export function scheduleSyncPush(): void {
   if (_pushTimer) clearTimeout(_pushTimer);
   _pushTimer = setTimeout(async () => {
     _pushTimer = null;
+    if (_isHydrating) return; // re-check: hydration may have started after this timer was queued
     const session = getActiveSession();
     const spaceId = getActiveSpaceId();
     const weddingNodeId = getActiveWeddingNodeId();
@@ -66,6 +67,21 @@ export function scheduleSyncPush(): void {
       console.warn('[space-sync] push failed:', err);
     });
   }, 2000);
+}
+
+/**
+ * Cancel any pending debounced push and block future scheduling.
+ * Call before a legacy import so a stale timer cannot overwrite freshly pushed nodes.
+ * Pair with restoreSyncPush() in a finally block.
+ */
+export function suppressSyncPush(): void {
+  if (_pushTimer) { clearTimeout(_pushTimer); _pushTimer = null; }
+  _isHydrating = true;
+}
+
+/** Re-enable push scheduling after a legacy import. */
+export function restoreSyncPush(): void {
+  _isHydrating = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -212,9 +228,11 @@ export async function pushSpaceSnapshot(
   const { nodes, contentMap } = buildAllNodes(weddingNodeId);
   if (!nodes.length) return;
 
-  await updateObjectIndex(session, spaceId, (_prev, now) =>
-    nodes.map((n) => ({ ...n, updatedAt: now })),
-  );
+  await updateObjectIndex(session, spaceId, (prev, now) => {
+    const domainIds = new Set(nodes.map((n) => n.id));
+    const nonDomain = prev.filter((n) => !domainIds.has(n.id));
+    return [...nodes.map((n) => ({ ...n, updatedAt: now })), ...nonDomain];
+  });
 
   await Promise.allSettled(
     nodes.map((n) => {

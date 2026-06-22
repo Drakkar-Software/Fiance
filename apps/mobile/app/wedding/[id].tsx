@@ -96,7 +96,8 @@ export default function WeddingPublicPage() {
         if (linkToken) {
           // v3 path: session-less link-cap read.
           const serverUrl = resolveServerUrl();
-          const baseUrl = serverUrl ? serverUrl.replace(/\/v1\/?$/, "") : "http://localhost";
+          if (!serverUrl) { setError(true); return; }
+          const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
           const result = await readNodeWithLinkCap(linkToken, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
           if (result?.data) {
             const data = result.data as PublicWeddingPage;
@@ -611,12 +612,16 @@ export default function WeddingPublicPage() {
                             let ok = false;
                             if (rsvpLinkToken) {
                               // v3: write via session-less link-cap.
-                              try {
-                                const _serverUrl = resolveServerUrl();
-                                const _baseUrl = _serverUrl ? _serverUrl.replace(/\/v1\/?$/, "") : "http://localhost";
-                                await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>, { baseUrl: _baseUrl, namespace: "fiance" });
-                                ok = true;
-                              } catch { ok = false; }
+                              const _serverUrl = resolveServerUrl();
+                              if (!_serverUrl) {
+                                ok = false; // server URL not configured on this device
+                              } else {
+                                try {
+                                  const _baseUrl = _serverUrl.replace(/\/v1\/?$/, "");
+                                  await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>, { baseUrl: _baseUrl, namespace: "fiance" });
+                                  ok = true;
+                                } catch { ok = false; }
+                              }
                             } else {
                               // Legacy: no-op in v3.
                               const serverUrl = resolveServerUrl();

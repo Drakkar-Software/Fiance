@@ -3,13 +3,24 @@
  *
  * Usage (app-side, after the user picks a file):
  *   const snapshot = parseAndRestore(jsonString);  // from export-import-core
- *   const result   = await importLegacyBackup(session, spaceId, snapshot);
+ *   const result   = await importLegacyBackup(session, spaceId, snapshot, weddingNodeId);
  *
  * This is the "clean cut" path: no old-server pull, no identity bridging.
  * Couples export a backup from the old app then import it into their new space.
  *
- * The import is idempotent: if a node with a given legacyId already exists in
- * the index it is skipped (to allow retry on partial failure).
+ * ID scheme: entity.id is used as the node id for all non-wedding entities,
+ * matching the buildAllNodes invariant in space-sync.ts. The wedding root uses
+ * the passed weddingNodeId (the registry UUID), which must match the id used by
+ * buildAllNodes for the live-sync snapshot.
+ *
+ * Idempotency: a node is skipped when either (a) its meta.legacyId matches the
+ * entity id (previously imported via this function) or (b) a node with the same
+ * id already exists in the index (live-synced via buildAllNodes). This allows
+ * safe retries on partial failure and prevents duplicates.
+ *
+ * The `publicPage` and `rsvp` guest-surface nodes are NOT created here — those
+ * are minted by the owner from the Settings screen after import (they require
+ * per-guest invite links to be generated).
  */
 
 import {
@@ -20,7 +31,6 @@ import {
   type Session,
   type ObjectNode,
 } from '@drakkar.software/starfish-spaces';
-import { randomId } from '@drakkar.software/starfish-protocol';
 import { objDocPush } from './object-paths.js';
 import type { WeddingSnapshot } from './backup.js';
 import {
@@ -57,105 +67,125 @@ export interface ImportResult {
  *
  * All admin nodes (`access:'space', enc:true`) are batch-inserted into the
  * index in a single `updateObjectIndex` call, then their content docs are
- * pushed in parallel. The `publicPage` and `rsvp` guest-surface nodes are
- * NOT created here — those are minted by the owner from the Settings screen
- * after import (they require per-guest invite links to be generated).
+ * pushed in parallel, **encrypted** via the space keyring.
+ *
+ * @param weddingNodeId — The registry entry UUID that buildAllNodes uses as
+ *   the wedding root node id. Must match `getActiveWeddingNodeId()` at call site.
  */
 export async function importLegacyBackup(
   session: Session,
   spaceId: string,
   snapshot: WeddingSnapshot,
+  weddingNodeId: string,
 ): Promise<ImportResult> {
   const idMap: Record<string, string> = {};
   const warnings: string[] = [];
   const allDescriptors: NodeDescriptor[] = [];
+  const contentMap = new Map<string, unknown>();
 
-  // ── Read existing index to skip already-imported nodes ──────────────────
+  // ── Read existing index to skip already-present nodes ───────────────────
   const existingNodes = await readObjectTree(session, spaceId);
+  // Nodes created by a prior import have meta.legacyId = entity.id.
   const existingLegacyIds = new Set<string>(
     existingNodes.flatMap((n) =>
       typeof n.meta?.legacyId === 'string' ? [n.meta.legacyId] : [],
     ),
   );
+  // Nodes created by live-sync have node.id = entity.id (buildAllNodes invariant).
+  const existingNodeIds = new Set<string>(existingNodes.map((n) => n.id));
 
-  function alreadyImported(legacyId: string): boolean {
-    return existingLegacyIds.has(legacyId);
+  /** True when a node for this entity already exists (imported or live-synced). */
+  function alreadyImported(entityId: string): boolean {
+    return existingLegacyIds.has(entityId) || existingNodeIds.has(entityId);
   }
 
-  // ── Helper: assign a new nodeId and record old→new mapping ───────────────
-  function nextId(key: string, legacyId: string): string {
-    const id = randomId();
-    idMap[key] = id;
-    return id;
+  /**
+   * Record entity id as the node id for this key.
+   * After this fix: node.id === entity.id, matching buildAllNodes invariant.
+   */
+  function nextId(key: string, entityId: string): string {
+    idMap[key] = entityId;
+    return entityId;
+  }
+
+  /**
+   * Adds meta.legacyId to a descriptor so subsequent imports can identify and
+   * skip nodes that were created by a previous run of this function.
+   */
+  function withLegacyId(desc: NodeDescriptor, legacyId: string): NodeDescriptor {
+    return { ...desc, meta: { ...(desc.meta ?? {}), legacyId } };
   }
 
   // ── 1. Wedding root ──────────────────────────────────────────────────────
-  let weddingNodeId: string;
+  // The wedding root uses the passed registry UUID (weddingNodeId), NOT the
+  // entity's numeric id, to stay consistent with buildAllNodes in space-sync.ts.
   const existingWedding = existingNodes.find((n) => n.type === 'wedding');
+  const resolvedWeddingId = existingWedding?.id ?? weddingNodeId;
+  idMap['wedding'] = resolvedWeddingId;
   if (existingWedding) {
-    weddingNodeId = existingWedding.id;
     warnings.push('Wedding root node already exists; reusing existing node.');
   } else {
-    const id = nextId('wedding', 'wedding');
-    weddingNodeId = id;
-    allDescriptors.push(
-      weddingToNode(snapshot.wedding ?? { id: 0 } as never, id),
-    );
+    const desc = weddingToNode(snapshot.wedding ?? { id: 0 } as never, weddingNodeId);
+    allDescriptors.push(desc);
+    contentMap.set(weddingNodeId, snapshot.wedding ?? { id: 0 });
   }
 
   // ── 2. GuestGroups ───────────────────────────────────────────────────────
   for (const g of snapshot.guestGroups) {
     if (alreadyImported(g.id)) {
-      // Recover nodeId for FK resolution
-      const existing = existingNodes.find((n) => n.meta?.legacyId === g.id);
-      if (existing) idMap[`guestGroup:${g.id}`] = existing.id;
+      idMap[`guestGroup:${g.id}`] = g.id;
       continue;
     }
     const id = nextId(`guestGroup:${g.id}`, g.id);
-    allDescriptors.push(guestGroupToNode(g, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(guestGroupToNode(g, id, resolvedWeddingId), g.id));
+    contentMap.set(id, g);
   }
 
   // ── 3. Tables ────────────────────────────────────────────────────────────
   for (const t of snapshot.tables) {
     if (alreadyImported(t.id)) {
-      const existing = existingNodes.find((n) => n.meta?.legacyId === t.id);
-      if (existing) idMap[`table:${t.id}`] = existing.id;
+      idMap[`table:${t.id}`] = t.id;
       continue;
     }
     const id = nextId(`table:${t.id}`, t.id);
-    allDescriptors.push(tableToNode(t, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(tableToNode(t, id, resolvedWeddingId), t.id));
+    contentMap.set(id, t);
   }
 
   // ── 4. Accommodations ────────────────────────────────────────────────────
   for (const a of snapshot.accommodations) {
     if (alreadyImported(a.id)) {
-      const existing = existingNodes.find((n) => n.meta?.legacyId === a.id);
-      if (existing) idMap[`accommodation:${a.id}`] = existing.id;
+      idMap[`accommodation:${a.id}`] = a.id;
       continue;
     }
     const id = nextId(`accommodation:${a.id}`, a.id);
-    allDescriptors.push(accommodationToNode(a, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(accommodationToNode(a, id, resolvedWeddingId), a.id));
+    contentMap.set(id, a);
   }
 
   // ── 5. Vendors (then QuotePricings + VendorPayments as children) ─────────
   for (const v of snapshot.vendors) {
-    if (alreadyImported(v.id)) {
-      const existing = existingNodes.find((n) => n.meta?.legacyId === v.id);
-      if (existing) idMap[`vendor:${v.id}`] = existing.id;
-      continue;
+    if (!alreadyImported(v.id)) {
+      const vId = nextId(`vendor:${v.id}`, v.id);
+      allDescriptors.push(withLegacyId(vendorToNode(v, vId, resolvedWeddingId), v.id));
+      contentMap.set(vId, v);
+    } else {
+      idMap[`vendor:${v.id}`] = v.id;
     }
-    const vId = nextId(`vendor:${v.id}`, v.id);
-    allDescriptors.push(vendorToNode(v, vId, weddingNodeId));
 
+    // Always process children — the vendor may be live-synced while its quote/payment
+    // nodes are only in the legacy backup (common during a partial migration).
     for (const qp of snapshot.quotePricings.filter((q) => q.vendorId === v.id)) {
       if (alreadyImported(qp.id)) continue;
       const qId = nextId(`quotePricing:${qp.id}`, qp.id);
-      allDescriptors.push(quotePricingToNode(qp, qId, vId));
+      allDescriptors.push(withLegacyId(quotePricingToNode(qp, qId, v.id), qp.id));
+      contentMap.set(qId, qp);
     }
     for (const vp of snapshot.vendorPayments.filter((p) => p.vendorId === v.id)) {
       if (alreadyImported(vp.id)) continue;
       const pId = nextId(`vendorPayment:${vp.id}`, vp.id);
-      allDescriptors.push(vendorPaymentToNode(vp, pId, vId));
+      allDescriptors.push(withLegacyId(vendorPaymentToNode(vp, pId, v.id), vp.id));
+      contentMap.set(pId, vp);
     }
   }
 
@@ -163,74 +193,84 @@ export async function importLegacyBackup(
   for (const g of snapshot.gifts) {
     if (alreadyImported(g.id)) continue;
     const id = nextId(`gift:${g.id}`, g.id);
-    allDescriptors.push(giftToNode(g, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(giftToNode(g, id, resolvedWeddingId), g.id));
+    contentMap.set(id, g);
   }
 
   // ── 7. InvitationTypes ───────────────────────────────────────────────────
   for (const it of snapshot.invitationTypes) {
     if (alreadyImported(it.id)) continue;
     const id = nextId(`invitationType:${it.id}`, it.id);
-    allDescriptors.push(invitationTypeToNode(it, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(invitationTypeToNode(it, id, resolvedWeddingId), it.id));
+    contentMap.set(id, it);
   }
 
   // ── 8. TaskCategories + Tasks ────────────────────────────────────────────
   for (const tc of snapshot.taskCategories) {
-    if (alreadyImported(tc.id)) {
-      const existing = existingNodes.find((n) => n.meta?.legacyId === tc.id);
-      if (existing) idMap[`taskCategory:${tc.id}`] = existing.id;
-      continue;
+    if (!alreadyImported(tc.id)) {
+      const tcId = nextId(`taskCategory:${tc.id}`, tc.id);
+      allDescriptors.push(withLegacyId(taskCategoryToNode(tc, tcId, resolvedWeddingId), tc.id));
+      contentMap.set(tcId, tc);
+    } else {
+      idMap[`taskCategory:${tc.id}`] = tc.id;
     }
-    const tcId = nextId(`taskCategory:${tc.id}`, tc.id);
-    allDescriptors.push(taskCategoryToNode(tc, tcId, weddingNodeId));
 
+    // Always process tasks — category may be live-synced while tasks are still in the backup.
     for (const t of snapshot.tasks.filter((t) => t.categoryId === tc.id)) {
       if (alreadyImported(t.id)) continue;
       const tId = nextId(`task:${t.id}`, t.id);
-      allDescriptors.push(taskToNode(t, tId, tcId, idMap));
+      allDescriptors.push(withLegacyId(taskToNode(t, tId, tc.id, idMap), t.id));
+      contentMap.set(tId, t);
     }
   }
   // Tasks without a category
   for (const t of snapshot.tasks.filter((t) => !t.categoryId)) {
     if (alreadyImported(t.id)) continue;
     const tId = nextId(`task:${t.id}`, t.id);
-    allDescriptors.push(taskToNode(t, tId, weddingNodeId, idMap));
+    allDescriptors.push(withLegacyId(taskToNode(t, tId, resolvedWeddingId, idMap), t.id));
+    contentMap.set(tId, t);
   }
 
   // ── 9. AgendaEvents ──────────────────────────────────────────────────────
   for (const ae of snapshot.agendaEvents) {
     if (alreadyImported(ae.id)) continue;
     const id = nextId(`agendaEvent:${ae.id}`, ae.id);
-    allDescriptors.push(agendaEventToNode(ae, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(agendaEventToNode(ae, id, resolvedWeddingId), ae.id));
+    contentMap.set(id, ae);
   }
 
   // ── 10. DayOfItems ───────────────────────────────────────────────────────
   for (const d of snapshot.dayOfItems) {
     if (alreadyImported(d.id)) continue;
     const id = nextId(`dayOfItem:${d.id}`, d.id);
-    allDescriptors.push(dayOfItemToNode(d, id, weddingNodeId));
+    allDescriptors.push(withLegacyId(dayOfItemToNode(d, id, resolvedWeddingId), d.id));
+    contentMap.set(id, d);
   }
 
   // ── 11. IdeaCollections + Ideas ──────────────────────────────────────────
   for (const ic of snapshot.ideaCollections) {
-    if (alreadyImported(ic.id)) {
-      const existing = existingNodes.find((n) => n.meta?.legacyId === ic.id);
-      if (existing) idMap[`ideaCollection:${ic.id}`] = existing.id;
-      continue;
+    if (!alreadyImported(ic.id)) {
+      const icId = nextId(`ideaCollection:${ic.id}`, ic.id);
+      allDescriptors.push(withLegacyId(ideaCollectionToNode(ic, icId, resolvedWeddingId), ic.id));
+      contentMap.set(icId, ic);
+    } else {
+      idMap[`ideaCollection:${ic.id}`] = ic.id;
     }
-    const icId = nextId(`ideaCollection:${ic.id}`, ic.id);
-    allDescriptors.push(ideaCollectionToNode(ic, icId, weddingNodeId));
 
+    // Always process ideas — collection may be live-synced while ideas are still in the backup.
     for (const idea of snapshot.ideas.filter((i) => i.collectionId === ic.id)) {
       if (alreadyImported(idea.id)) continue;
       const iId = nextId(`idea:${idea.id}`, idea.id);
-      allDescriptors.push(ideaToNode(idea, iId, icId, idMap));
+      allDescriptors.push(withLegacyId(ideaToNode(idea, iId, ic.id, idMap), idea.id));
+      contentMap.set(iId, idea);
     }
   }
   // Ideas without a collection
   for (const idea of snapshot.ideas.filter((i) => !i.collectionId)) {
     if (alreadyImported(idea.id)) continue;
     const iId = nextId(`idea:${idea.id}`, idea.id);
-    allDescriptors.push(ideaToNode(idea, iId, weddingNodeId, idMap));
+    allDescriptors.push(withLegacyId(ideaToNode(idea, iId, resolvedWeddingId, idMap), idea.id));
+    contentMap.set(iId, idea);
   }
 
   // ── 12. Guests (after tables + accommodations are resolved in idMap) ──────
@@ -239,9 +279,10 @@ export async function importLegacyBackup(
     const groupNodeId =
       g.groupId && idMap[`guestGroup:${g.groupId}`]
         ? idMap[`guestGroup:${g.groupId}`]
-        : weddingNodeId;
+        : resolvedWeddingId;
     const gId = nextId(`guest:${g.id}`, g.id);
-    allDescriptors.push(guestToNode(g, gId, groupNodeId, idMap));
+    allDescriptors.push(withLegacyId(guestToNode(g, gId, groupNodeId, idMap), g.id));
+    contentMap.set(gId, g);
   }
 
   // ── Batch-write the index ─────────────────────────────────────────────────
@@ -266,81 +307,31 @@ export async function importLegacyBackup(
     });
   }
 
-  // ── Push content docs in parallel ────────────────────────────────────────
-  const contentPushes: Array<Promise<void>> = [];
-
-  async function pushDoc(nodeId: string, data: unknown): Promise<void> {
-    const handle = await getNodeAccess(spaceId, nodeId, { access: 'space', enc: true }, session);
-    await handle.client.push(objDocPush(spaceId, nodeId), data as Record<string, unknown>, null);
+  // ── Push content docs in parallel (E2EE encrypted via space keyring) ──────
+  //
+  // Critical: `client.push` sends plaintext — encryption is the caller's
+  // responsibility via `handle.encryptor.encrypt`. Pass the full NodeDescriptor
+  // (not hardcoded flags) so invite-access nodes get the right key material.
+  async function pushDoc(desc: NodeDescriptor, data: unknown): Promise<void> {
+    const handle = await getNodeAccess(spaceId, desc.id, desc, session, null);
+    const payload = handle.encryptor
+      ? await handle.encryptor.encrypt(data as Record<string, unknown>)
+      : (data as Record<string, unknown>);
+    await handle.client.push(objDocPush(spaceId, desc.id), payload, null);
   }
 
-  // Wedding
-  if (snapshot.wedding && idMap['wedding']) {
-    contentPushes.push(pushDoc(idMap['wedding'], snapshot.wedding));
-  }
+  const contentResults = await Promise.allSettled(
+    allDescriptors.map((desc) => {
+      const content = contentMap.get(desc.id);
+      return content !== undefined ? pushDoc(desc, content) : Promise.resolve();
+    }),
+  );
 
-  for (const g of snapshot.guestGroups) {
-    const nid = idMap[`guestGroup:${g.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, g));
+  for (const result of contentResults) {
+    if (result.status === 'rejected') {
+      warnings.push(`Content push failed: ${String(result.reason)}`);
+    }
   }
-  for (const t of snapshot.tables) {
-    const nid = idMap[`table:${t.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, t));
-  }
-  for (const a of snapshot.accommodations) {
-    const nid = idMap[`accommodation:${a.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, a));
-  }
-  for (const v of snapshot.vendors) {
-    const nid = idMap[`vendor:${v.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, v));
-  }
-  for (const qp of snapshot.quotePricings) {
-    const nid = idMap[`quotePricing:${qp.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, qp));
-  }
-  for (const vp of snapshot.vendorPayments) {
-    const nid = idMap[`vendorPayment:${vp.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, vp));
-  }
-  for (const g of snapshot.gifts) {
-    const nid = idMap[`gift:${g.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, g));
-  }
-  for (const it of snapshot.invitationTypes) {
-    const nid = idMap[`invitationType:${it.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, it));
-  }
-  for (const tc of snapshot.taskCategories) {
-    const nid = idMap[`taskCategory:${tc.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, tc));
-  }
-  for (const t of snapshot.tasks) {
-    const nid = idMap[`task:${t.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, t));
-  }
-  for (const ae of snapshot.agendaEvents) {
-    const nid = idMap[`agendaEvent:${ae.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, ae));
-  }
-  for (const d of snapshot.dayOfItems) {
-    const nid = idMap[`dayOfItem:${d.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, d));
-  }
-  for (const ic of snapshot.ideaCollections) {
-    const nid = idMap[`ideaCollection:${ic.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, ic));
-  }
-  for (const idea of snapshot.ideas) {
-    const nid = idMap[`idea:${idea.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, idea));
-  }
-  for (const g of snapshot.guests) {
-    const nid = idMap[`guest:${g.id}`];
-    if (nid) contentPushes.push(pushDoc(nid, g));
-  }
-
-  await Promise.all(contentPushes);
 
   // ── Verify FK integrity ───────────────────────────────────────────────────
   // buildTree silently reparents orphaned nodes to root; verify all expected

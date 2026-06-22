@@ -16,7 +16,8 @@ import { createBackupDocument, restoreFromBackup } from "./sync";
 import { notifySync } from "./starfish";
 import { getStorage } from "@/lib/kv-storage";
 import { parseAndRestore, importLegacyBackup, type ImportResult } from "@fiance/sdk";
-import { getActiveSession, getActiveSpaceId } from "@/lib/starfish";
+import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from "@/lib/starfish";
+import { hydrateFromSpace, pushSpaceSnapshot, suppressSyncPush, restoreSyncPush } from "@/lib/space-sync";
 
 export type ImportError = "invalid_json" | "invalid_backup";
 
@@ -87,7 +88,18 @@ export async function importWedding(): Promise<true | null | ImportError> {
   }
 
   restoreFromBackup(data, getStorage());
-  notifySync();
+  // Push to Space immediately so the restored data survives the next hydrateFromSpace.
+  // Without this, the debounced push races with boot hydration and may be overwritten.
+  const _session = getActiveSession();
+  const _spaceId = getActiveSpaceId();
+  const _weddingNodeId = getActiveWeddingNodeId();
+  if (_session && _spaceId && _weddingNodeId) {
+    await pushSpaceSnapshot(_session, _spaceId, _weddingNodeId).catch((err) => {
+      console.warn("[import-wedding] Space push failed:", err);
+    });
+  } else {
+    notifySync();
+  }
   return true;
 }
 
@@ -112,13 +124,23 @@ export async function importLegacyToSpace(): Promise<LegacyImportResult | null> 
 
   const session = getActiveSession();
   const spaceId = getActiveSpaceId();
-  if (!session || !spaceId) return { ok: false, error: "no_session" };
+  const weddingNodeId = getActiveWeddingNodeId();
+  if (!session || !spaceId || !weddingNodeId) return { ok: false, error: "no_session" };
 
+  // Block any debounced push from firing during the import window.
+  // A pending timer's replace-domain merge would overwrite the freshly pushed legacy nodes.
+  suppressSyncPush();
   try {
-    const result = await importLegacyBackup(session, spaceId, snapshot);
+    const result = await importLegacyBackup(session, spaceId, snapshot, weddingNodeId);
+    await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
+      console.warn("[import-to-space] post-import hydrate failed:", err);
+    });
     return { ok: true, result };
-  } catch {
+  } catch (err) {
+    console.warn("[import-to-space] importLegacyBackup failed:", err);
     return { ok: false, error: "push_failed" };
+  } finally {
+    restoreSyncPush();
   }
 }
 
