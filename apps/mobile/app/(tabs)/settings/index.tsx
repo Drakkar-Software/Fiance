@@ -146,7 +146,19 @@ export default function SettingsScreen() {
     starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
     analytics.capture("sync_enabled");
     setSyncEnabled(true);
-  }, [syncEnabled, activeEntry, premium]);
+
+    // If the user has local data that hasn't been pushed to Space yet, offer migration.
+    if (wedding) {
+      Alert.alert(
+        t("migrationDetectedTitle"),
+        t("migrationDetectedMsg"),
+        [
+          { text: t("migrationLater"), style: "cancel" },
+          { text: t("migrationNow"), onPress: () => router.push("/(tabs)/settings/export-import") },
+        ],
+      );
+    }
+  }, [syncEnabled, activeEntry, premium, wedding, router, t]);
 
   const [showInviteQR, setShowInviteQR] = useState(false);
   const [inviteUrl, setInviteUrl] = useState("");
