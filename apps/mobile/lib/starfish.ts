@@ -129,7 +129,7 @@ export async function pullEntitlements(
   try {
     const result = await (_session.contentClient as unknown as {
       pull: (path: string, hash: number | null) => Promise<{ data: unknown }>;
-    }).pull(`users/${userId}/entitlements`, null);
+    }).pull(`/pull/users/${userId}/entitlements`, null);
     const data = result?.data as Record<string, unknown> | null;
     const features = data?.features;
     if (Array.isArray(features)) return features.filter((f): f is string => typeof f === "string");

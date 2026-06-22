@@ -106,14 +106,44 @@ export const fianceSyncConfig: SyncConfig = {
     // Written by Doubloon's StarfishClient via the legacy Bearer router at the same
     // R2 key. Both routers share the same bucket so this collection picks up
     // whatever Doubloon wrote — no cross-namespace copy needed.
+    // readRoles: ["self"] lets the authenticated owner of the identity read their own
+    // entitlements without a special capability delegation (self = identity matches {identity}).
     // writeRoles is empty: the app never writes entitlements directly.
     {
       name: "entitlements",
       storagePath: "users/{identity}/entitlements",
-      readRoles: ["cap:read:entitlements"],
+      readRoles: ["self"],
       writeRoles: [],
       encryption: "none",
       maxBodyBytes: 4_096,
+      allowedMimeTypes: JSON_ONLY,
+    },
+
+    // ── Identity profile — mirrors octospaces layout, served here so the SDK's
+    // accountClient (fiance namespace) can read/write the profile without hitting the
+    // octospaces router. Both configs share the same R2 bucket, so the key is the same.
+    {
+      name: "profile",
+      storagePath: "user/{identity}/profile",
+      readRoles: ["public"],
+      writeRoles: ["device:root"],
+      encryption: "none",
+      maxBodyBytes: 65_536,
+      allowedMimeTypes: JSON_ONLY,
+    },
+
+    // ── Public object directory (server-maintained projection) ────────────────
+    // createSpacesDirectoryServerPlugin writes the world-readable directory doc to
+    // the raw R2 key "_index/objects/public" after every objindex write.
+    // This collection exposes that key for anonymous reads (no auth required).
+    // writeRoles is empty — only the server plugin writes here; there is no API push.
+    {
+      name: "objectindex",
+      storagePath: "_index/objects/{shard}",
+      readRoles: ["public"],
+      writeRoles: [],
+      encryption: "none",
+      maxBodyBytes: 262_144,
       allowedMimeTypes: JSON_ONLY,
     },
   ],

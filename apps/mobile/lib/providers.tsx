@@ -14,6 +14,7 @@ import {
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot } from "@/lib/space-sync";
+import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
@@ -106,9 +107,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       const { session, userId, serverUrl } = sessionConfig;
       resolvedUserId = userId;
 
-      // TODO(B3): load/create the space for this wedding.
-      // For now, use a placeholder spaceId from the registry entry.
-      const spaceId = (wedding as unknown as Record<string, unknown>).spaceId as string ?? userId;
+      // Provision the space if it doesn't exist yet (idempotent).
+      // Writes _access + objindex seed + _keyring (octospaces) then persists the sp- id.
+      const spaceId = await ensureSpaceProvisioned(session, wedding);
+      if (cancelled) return;
+
       // The registry entry id is stable UUID — used as the root wedding ObjectNode id.
       const weddingNodeId = wedding.id;
 
@@ -139,7 +142,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       }
 
       const userData = await getAnalyticsCore()?.exportUserData();
-      starfishAnalyticsAdapter.activate(normalizeSyncBase(serverUrl), userData?.anonymousId ?? "anonymous");
+      // Pass the full serverUrl (with /v1 suffix) — the analytics adapter appends
+      // /push/analytics/{id}/events, which the legacy router serves at /v1/push/...
+      starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
 
       // Pull entitlements using cap-cert.
       if (!cancelled) {

@@ -16,20 +16,20 @@
 
 /** Push path for an encrypted space-member content doc (collection: objdoc). */
 export function objDocPush(spaceId: string, nodeId: string): string {
-  return `push/spaces/${spaceId}/objects/docs/${nodeId}`;
+  return `/push/spaces/${spaceId}/objects/docs/${nodeId}`;
 }
 
 /** Pull path for an encrypted space-member content doc (collection: objdoc). */
 export function objDocPull(spaceId: string, nodeId: string): string {
-  return `pull/spaces/${spaceId}/objects/docs/${nodeId}`;
+  return `/pull/spaces/${spaceId}/objects/docs/${nodeId}`;
 }
 
 /** Push path for a cap-gated invite-node content doc (collection: objinv). */
 export function objInvPush(spaceId: string, nodeId: string): string {
-  return `push/spaces/${spaceId}/objects/n/${nodeId}/content`;
+  return `/push/spaces/${spaceId}/objects/n/${nodeId}/content`;
 }
 
 /** Pull path for a cap-gated invite-node content doc (collection: objinv). */
 export function objInvPull(spaceId: string, nodeId: string): string {
-  return `pull/spaces/${spaceId}/objects/n/${nodeId}/content`;
+  return `/pull/spaces/${spaceId}/objects/n/${nodeId}/content`;
 }

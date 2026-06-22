@@ -22,6 +22,8 @@ export interface WeddingRegistryEntry {
   memberId?: string;
   /** JSON-serialized GroupKeyring (set on admin device when first invite is created) */
   groupKeyring?: string;
+  /** Provisioned starfish-spaces space ID (sp-{id}) for this wedding's object tree. */
+  spaceId?: string;
 }
 
 export interface WeddingRegistry {
@@ -98,7 +100,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "memberId" | "groupKeyring">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "memberId" | "groupKeyring" | "spaceId">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);
