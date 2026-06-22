@@ -1,17 +1,37 @@
 /**
- * Public wedding page sync — STUBBED for octospaces v3 migration.
+ * Public wedding page — ObjectNode-based (v3).
  *
- * The v2 StarfishClient/SyncManager-based implementation is removed.
- * In B5 this will be replaced by:
- *  - A `publicPage` ObjectNode (access:'invite', enc:false) in the fiance namespace
- *  - `createNodeInviteLink` for guest access
- *  - `readNodeWithLinkCap` on the guest-page screen
+ * The `publicPage` node (access:'invite', enc:false) lives under the wedding node
+ * in the fiance space. Its content is pushed to `objinv` by the owner and read
+ * by guests via a node invite link (readNodeWithLinkCap).
  *
- * Exported types and `buildPublicPageDocument()` are kept unchanged.
- * Network functions are no-ops; `initPublicPageSync`, `notifyPublicPageSync`,
- * and `teardownPublicPageSync` are called from providers.tsx but do nothing yet.
+ * The node ID is derived deterministically: `pub-${weddingNodeId}`.
+ *
+ * Guest-facing URL: `encodeNodeInviteLink(origin, token)` puts the token in the
+ * URL fragment. The wedding page screen reads `id` as the base64url token and
+ * calls `decodeNodeInviteLink(id)` + `readNodeWithLinkCap(token)`.
  */
 
+import { Platform } from "react-native";
+import {
+  getNodeAccess,
+  objInvPush,
+  updateObjectIndex,
+  createNodeInviteLink,
+  encodeNodeInviteLink,
+  publicPageToNode,
+  type Session,
+  type ObjectNode,
+} from "@fiance/sdk";
+
+function getAppOrigin(): string {
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  // Deep-link scheme for native — avoids Linking.createURL which isn't
+  // available on all versions. The scheme is configured in app.json.
+  return "exp://";
+}
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
@@ -62,34 +82,136 @@ export interface FaqItem {
 }
 
 // ---------------------------------------------------------------------------
-// Network stubs — TODO(B5): replace with ObjectNode invite-cap reads/writes
+// Deterministic node ID helpers
 // ---------------------------------------------------------------------------
 
-/** @deprecated TODO(B5): initialise public page node invite. */
+/** Derive the `publicPage` ObjectNode ID from the wedding node ID. */
+export function publicPageNodeId(weddingNodeId: string): string {
+  return `pub-${weddingNodeId}`;
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: ensure the publicPage node exists in the space index
+// ---------------------------------------------------------------------------
+
+/**
+ * Create or verify the `publicPage` ObjectNode in the space index.
+ * Idempotent — safe to call on every sync init.
+ * Returns the pageNodeId.
+ */
+export async function ensurePublicPageNode(
+  session: Session,
+  spaceId: string,
+  weddingNodeId: string,
+): Promise<string> {
+  const pageNodeId = publicPageNodeId(weddingNodeId);
+  const desc = publicPageToNode(pageNodeId, weddingNodeId);
+
+  await updateObjectIndex(session, spaceId, (nodes, now) => {
+    const exists = nodes.some((n) => n.id === pageNodeId);
+    if (exists) return null; // nothing to change
+    const node: ObjectNode = {
+      id: desc.id,
+      type: desc.type,
+      parentId: desc.parentId,
+      order: nodes.length,
+      title: desc.title,
+      updatedAt: now,
+      contentKind: desc.contentKind,
+      access: desc.access,
+      enc: desc.enc,
+    };
+    return [...nodes, node];
+  });
+
+  return pageNodeId;
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: push page content to objinv
+// ---------------------------------------------------------------------------
+
+/** Push the current public page content to the `publicPage` ObjectNode's objinv. */
+export async function pushPublicPageContent(
+  session: Session,
+  spaceId: string,
+  pageNodeId: string,
+): Promise<void> {
+  const content = buildPublicPageDocument();
+  const handle = await getNodeAccess(
+    spaceId,
+    pageNodeId,
+    { access: "invite", enc: false },
+    session,
+    null,
+  );
+  await handle.client.push(
+    objInvPush(spaceId, pageNodeId),
+    content as unknown as Record<string, unknown>,
+    null,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: generate a guest-readable invite link for the page
+// ---------------------------------------------------------------------------
+
+/**
+ * Mint a read-only invite link for the `publicPage` node.
+ * Returns the full URL (origin/wedding/${fragment}) where fragment is the
+ * base64url NodeInviteLinkToken that the guest page screen decodes.
+ */
+export async function getPublicPageInviteLink(
+  session: Session,
+  spaceId: string,
+  pageNodeId: string,
+): Promise<string> {
+  const origin = getAppOrigin();
+  const { token } = await createNodeInviteLink(
+    session,
+    spaceId,
+    pageNodeId,
+    "Page mariage",
+    { enc: false },
+    false, // read-only
+    origin,
+  );
+  const encoded = encodeNodeInviteLink(origin, token);
+  // Extract the fragment (everything after '#') and use it as the path segment.
+  const fragment = encoded.includes("#") ? encoded.split("#")[1] : encoded;
+  return `${origin}/wedding/${fragment}`;
+}
+
+// ---------------------------------------------------------------------------
+// Legacy stubs (called from old providers.tsx paths — now no-ops)
+// ---------------------------------------------------------------------------
+
+/** @deprecated No-op in v3 — use ensurePublicPageNode + pushPublicPageContent. */
 export function initPublicPageSync(_config: {
   serverUrl: string;
   authToken: string;
   userId: string;
-}): void {
-  // no-op in v3 — will be replaced by createNode(publicPage) + createNodeInviteLink in B5
-}
+}): void {}
 
-/** @deprecated TODO(B5): pull from objinv node via cap-cert. */
-export async function pullPublicPageSync(): Promise<void> {
-  // no-op
-}
+/** @deprecated No-op in v3. */
+export async function pullPublicPageSync(): Promise<void> {}
 
-/** @deprecated TODO(B5): teardown node invite subscription. */
-export function teardownPublicPageSync(): void {
-  // no-op
-}
+/** @deprecated No-op in v3. */
+export function teardownPublicPageSync(): void {}
 
-/** @deprecated TODO(B5): push to objinv node via cap-cert. */
-export function notifyPublicPageSync(): void {
-  // no-op
-}
+/** @deprecated No-op in v3 — use pushPublicPageContent. */
+export function notifyPublicPageSync(): void {}
 
-/** @deprecated TODO(B5): read from objinv node via readNodeWithLinkCap. */
+/**
+ * Guest-side: fetch the public wedding page doc via a link-cap token.
+ *
+ * The `fragment` parameter is the base64url-encoded NodeInviteLinkToken from the
+ * URL path (e.g. `wedding/${fragment}`). Returns null on error or if the page
+ * hasn't been pushed yet.
+ *
+ * @deprecated Legacy (userId-based) path. Prefer the fragment-based path using
+ * decodeNodeInviteLink + readNodeWithLinkCap in the screen component.
+ */
 export async function fetchPublicPage(
   _serverUrl: string,
   _userId: string,
@@ -98,7 +220,7 @@ export async function fetchPublicPage(
 }
 
 // ---------------------------------------------------------------------------
-// Pure helpers — unchanged (used by B5 to build page content)
+// Pure helpers — unchanged
 // ---------------------------------------------------------------------------
 
 /** Collect public data from stores and build the page document. */

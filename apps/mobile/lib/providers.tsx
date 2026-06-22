@@ -8,10 +8,14 @@ import {
   teardownSync,
   pullEntitlements,
   isSyncActive,
+  getActiveSession,
+  getActiveSpaceId,
+  getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush } from "@/lib/space-sync";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
+import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
@@ -113,6 +117,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       // B3: wire dispatchDocChange('*') → debounced server push.
       unregisterPush = registerPull('*', () => { scheduleSyncPush(); });
 
+      // B5: ensure the publicPage node exists in the space.
+      if (!cancelled) {
+        await ensurePublicPageNode(session, spaceId, weddingNodeId).catch(() => {});
+      }
+
       const userData = await getAnalyticsCore()?.exportUserData();
       starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
 
@@ -143,22 +152,30 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     };
   }, [wedding.id]);
 
-  // Re-push public page when day-of items or wedding info change.
-  // TODO(B5): wire to notifyPublicPageSync when public page uses node invites.
+  // Re-push public page when day-of items or wedding info change (B5).
   useEffect(() => {
+    function pushPublicPageContentIfActive() {
+      const session = getActiveSession();
+      const spaceId = getActiveSpaceId();
+      const weddingNodeId = getActiveWeddingNodeId();
+      if (!session || !spaceId || !weddingNodeId) return;
+      const pageId = `pub-${weddingNodeId}`;
+      pushPublicPageContent(session, spaceId, pageId).catch(() => {});
+    }
+
     let prevDayOfItems = usePlanningStore.getState().dayOfItems;
     let prevWedding = useWeddingStore.getState().wedding;
 
     const unsubPlanning = usePlanningStore.subscribe((state) => {
       if (state.dayOfItems !== prevDayOfItems) {
         prevDayOfItems = state.dayOfItems;
-        // notifyPublicPageSync() — re-enable in B5
+        pushPublicPageContentIfActive();
       }
     });
     const unsubWedding = useWeddingStore.subscribe((state) => {
       if (state.wedding !== prevWedding) {
         prevWedding = state.wedding;
-        // notifyPublicPageSync() — re-enable in B5
+        pushPublicPageContentIfActive();
       }
     });
     return () => { unsubPlanning(); unsubWedding(); };

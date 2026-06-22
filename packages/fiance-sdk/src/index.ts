@@ -74,7 +74,8 @@ export {
   encodeNodeInviteLink, decodeNodeInviteLink,
   revokeNodeAccess,
   saveNodeInviteEntry, getNodeInviteEntry,
-  // TODO(B5/gap-2): readNodeWithLinkCap, writeNodeWithLinkCap — requires octospaces-sdk > 0.22.0
+  // Gap-2: session-less link-cap read/write (published in octospaces-sdk@0.22.1)
+  readNodeWithLinkCap, writeNodeWithLinkCap,
   // Object index
   updateObjectIndex, readObjectTree, seedSpaceObjectIndex, pushIndexSeed,
   // Object tree reducers

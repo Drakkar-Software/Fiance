@@ -67,6 +67,23 @@ vi.mock("@/store/useGuestsStore", () => ({
   },
 }));
 
+vi.mock("react-native", () => ({
+  Platform: { OS: "ios" },
+}));
+
+vi.mock("@/lib/public-page", () => ({
+  publicPageNodeId: (weddingNodeId: string) => `pub-${weddingNodeId}`,
+}));
+
+vi.mock("@fiance/sdk", () => ({
+  updateObjectIndex: vi.fn().mockResolvedValue(undefined),
+  getNodeAccess: vi.fn(),
+  objInvPush: vi.fn().mockReturnValue("/objinv/path"),
+  createNodeInviteLink: vi.fn().mockResolvedValue({ token: {}, link: "" }),
+  encodeNodeInviteLink: vi.fn().mockReturnValue("exp://#encoded-token"),
+  rsvpToNode: vi.fn().mockReturnValue({ id: "rsvp-g1", type: "rsvp", parentId: "pub-w1", title: "", access: "invite", enc: false, contentKind: "merge" }),
+}));
+
 vi.mock("expo-crypto", () => ({
   randomUUID: vi.fn().mockReturnValue("generated-uuid"),
 }));

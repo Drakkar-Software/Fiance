@@ -12,11 +12,23 @@
  */
 
 import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import * as Crypto from "expo-crypto";
 import { buildWeddingPageUrl } from "@/lib/identity";
 import { deriveUserId } from "@/lib/server";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
+import {
+  updateObjectIndex,
+  getNodeAccess,
+  objInvPush,
+  createNodeInviteLink,
+  encodeNodeInviteLink,
+  rsvpToNode,
+  type Session,
+  type ObjectNode,
+} from "@fiance/sdk";
+import { publicPageNodeId } from "@/lib/public-page";
 
 // ---------------------------------------------------------------------------
 // Types — unchanged
@@ -52,7 +64,10 @@ export interface RsvpSubmission {
 // Hooks — kept, but rsvpToken URLs are deprecated (will use invite links in B5)
 // ---------------------------------------------------------------------------
 
-/** @deprecated Will use per-guest invite links in B5. */
+/**
+ * Returns the RSVP invite link URL for a guest (v3 ObjectNode invite link).
+ * Falls back to legacy token URL if session/spaceId are not available.
+ */
 export function useGuestRsvpUrl(
   guestId: string | undefined,
   activeEntry: WeddingRegistryEntry | undefined,
@@ -62,18 +77,47 @@ export function useGuestRsvpUrl(
   useEffect(() => {
     if (!guestId || !activeEntry?.seedPhrase) return;
     let cancelled = false;
-    (async () => {
-      const userId = await deriveUserId(activeEntry.seedPhrase!);
-      if (cancelled) return;
-      const baseUrl = buildWeddingPageUrl(userId);
-      const { guests, updateGuest } = useGuestsStore.getState();
-      let token = guests.find((g) => g.id === guestId)?.rsvpToken;
-      if (!token) {
-        token = Crypto.randomUUID();
-        updateGuest(guestId, { rsvpToken: token });
+
+    // Try v3 invite link first (requires active session + spaceId).
+    import("@/lib/starfish").then(({ getActiveSession, getActiveSpaceId, getActiveWeddingNodeId }) => {
+      const session = getActiveSession();
+      const spaceId = getActiveSpaceId();
+      const weddingNodeId = getActiveWeddingNodeId();
+
+      if (session && spaceId && weddingNodeId && guestId && !cancelled) {
+        const guests = useGuestsStore.getState().guests;
+        const guest = guests.find((g) => g.id === guestId);
+        const guestName = guest ? `${guest.firstName} ${guest.lastName}`.trim() : guestId;
+        (async () => {
+          try {
+            const nodeId = await ensureRsvpNode(session, spaceId, weddingNodeId, guestId);
+            if (!cancelled) {
+              const link = await getRsvpInviteLink(session, spaceId, nodeId, guestName);
+              if (!cancelled) setUrl(link);
+            }
+          } catch {
+            // Fall through to legacy path
+          }
+        })();
+        return;
       }
-      if (!cancelled) setUrl(`${baseUrl}?token=${token}`);
-    })();
+
+      // Legacy fallback: token-based URL
+      if (!activeEntry?.seedPhrase) return;
+      (async () => {
+        const userId = await deriveUserId(activeEntry.seedPhrase!);
+        if (cancelled) return;
+        const baseUrl = buildWeddingPageUrl(userId);
+        const { guests, updateGuest } = useGuestsStore.getState();
+        let token = guests.find((g) => g.id === guestId)?.rsvpToken;
+        if (!token) {
+          token = Crypto.randomUUID();
+          updateGuest(guestId, { rsvpToken: token });
+        }
+        if (!cancelled) setUrl(`${baseUrl}?token=${token}`);
+      })();
+    }).catch(() => {});
+
     return () => { cancelled = true; };
   }, [guestId, activeEntry?.seedPhrase]);
 
@@ -133,6 +177,108 @@ export function applyRsvpSubmissions(submissions: RsvpSubmission[]): number {
     }
   }
   return applied;
+}
+
+// ---------------------------------------------------------------------------
+// B5: RSVP ObjectNode management (owner-side)
+// ---------------------------------------------------------------------------
+
+/** Derive the `rsvp` ObjectNode ID from the guest entity ID. */
+export function rsvpNodeId(guestId: string): string {
+  return `rsvp-${guestId}`;
+}
+
+/**
+ * Ensure the RSVP ObjectNode for a guest exists in the space index.
+ * Idempotent. Returns the rsvp nodeId.
+ */
+export async function ensureRsvpNode(
+  session: Session,
+  spaceId: string,
+  weddingNodeId: string,
+  guestId: string,
+): Promise<string> {
+  const nodeId = rsvpNodeId(guestId);
+  const pageNodeId = publicPageNodeId(weddingNodeId);
+  const desc = rsvpToNode(nodeId, pageNodeId, guestId);
+
+  await updateObjectIndex(session, spaceId, (nodes, now) => {
+    const exists = nodes.some((n) => n.id === nodeId);
+    if (exists) return null;
+    const node: ObjectNode = {
+      id: desc.id,
+      type: desc.type,
+      parentId: desc.parentId,
+      order: nodes.length,
+      title: desc.title,
+      updatedAt: now,
+      contentKind: desc.contentKind,
+      access: desc.access,
+      enc: desc.enc,
+      meta: desc.meta,
+    };
+    return [...nodes, node];
+  });
+
+  return nodeId;
+}
+
+/**
+ * Seed the RSVP node content with initial status so guests can read it.
+ * Called after `ensureRsvpNode` to publish the initial empty RSVP record.
+ */
+export async function seedRsvpNodeContent(
+  session: Session,
+  spaceId: string,
+  nodeId: string,
+  guestId: string,
+): Promise<void> {
+  const handle = await getNodeAccess(
+    spaceId,
+    nodeId,
+    { access: "invite", enc: false },
+    session,
+    null,
+  );
+  const initial = { guestId, rsvpStatus: null, submittedAt: null };
+  await handle.client.push(
+    objInvPush(spaceId, nodeId),
+    initial as unknown as Record<string, unknown>,
+    null,
+  );
+}
+
+/**
+ * Generate a write-capable invite link for a guest's RSVP node.
+ * Returns the full URL: `${appOrigin}/wedding/${fragment}` where fragment
+ * is the base64url-encoded NodeInviteLinkToken for the rsvp node.
+ */
+function getAppOrigin(): string {
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "exp://";
+}
+
+export async function getRsvpInviteLink(
+  session: Session,
+  spaceId: string,
+  rsvpNodeId: string,
+  guestName: string,
+): Promise<string> {
+  const origin = getAppOrigin();
+  const { token } = await createNodeInviteLink(
+    session,
+    spaceId,
+    rsvpNodeId,
+    guestName,
+    { enc: false },
+    true, // write-capable
+    origin,
+  );
+  const encoded = encodeNodeInviteLink(origin, token);
+  const fragment = encoded.includes("#") ? encoded.split("#")[1] : encoded;
+  return `${origin}/wedding/${fragment}`;
 }
 
 // ---------------------------------------------------------------------------

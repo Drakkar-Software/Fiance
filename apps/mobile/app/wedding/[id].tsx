@@ -10,6 +10,12 @@ import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
 import { printPublicSchedule } from "@/lib/print-schedule";
 import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
 import { resolveServerUrl } from "@/lib/server";
+import {
+  decodeNodeInviteLink,
+  readNodeWithLinkCap,
+  writeNodeWithLinkCap,
+  type NodeInviteLinkToken,
+} from "@fiance/sdk";
 import { TimelineItem } from "@/components/TimelineItem";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
@@ -72,32 +78,53 @@ export default function WeddingPublicPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  // v3: the decoded NodeInviteLinkToken if `id` is a base64url fragment (RSVP write cap).
+  const [rsvpLinkToken, setRsvpLinkToken] = useState<NodeInviteLinkToken | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    const serverUrl = resolveServerUrl();
-    if (!serverUrl) {
-      setError(true);
-      setLoading(false);
-      return;
-    }
     (async () => {
       try {
-        const [data, rosterData] = await Promise.all([
-          fetchPublicPage(serverUrl, id),
-          fetchRsvpRoster(serverUrl, id),
-        ]);
-        if (data) {
-          setPage(data);
-          setOgMeta(data, t);
-        } else {
-          setError(true);
+        // v3: `id` is the base64url NodeInviteLinkToken fragment from the URL path.
+        let linkToken: NodeInviteLinkToken | null = null;
+        try {
+          linkToken = decodeNodeInviteLink(id);
+        } catch {
+          // Not a v3 token — fall through to legacy path.
         }
-        if (rosterData?.guests) {
-          setRoster(rosterData.guests);
-          if (token) {
-            const match = rosterData.guests.find((g) => g.rsvpToken === token);
-            if (match) setSelectedGuest(match);
+
+        if (linkToken) {
+          // v3 path: session-less link-cap read.
+          const result = await readNodeWithLinkCap(linkToken) as { data?: unknown } | null;
+          if (result?.data) {
+            const data = result.data as PublicWeddingPage;
+            setPage(data);
+            setOgMeta(data, t);
+            // Store token only when it has write capability (RSVP node links).
+            if (linkToken.write) setRsvpLinkToken(linkToken);
+          } else {
+            setError(true);
+          }
+        } else {
+          // Legacy path: userId-based fetch (returns null since v2 server is gone).
+          const serverUrl = resolveServerUrl();
+          if (!serverUrl) { setError(true); return; }
+          const [data, rosterData] = await Promise.all([
+            fetchPublicPage(serverUrl, id),
+            fetchRsvpRoster(serverUrl, id),
+          ]);
+          if (data) {
+            setPage(data);
+            setOgMeta(data, t);
+          } else {
+            setError(true);
+          }
+          if (rosterData?.guests) {
+            setRoster(rosterData.guests);
+            if (token) {
+              const match = rosterData.guests.find((g) => g.rsvpToken === token);
+              if (match) setSelectedGuest(match);
+            }
           }
         }
       } catch {
@@ -570,9 +597,7 @@ export default function WeddingPublicPage() {
                           onPress={async () => {
                             if (!rsvpStatus || submitting) return;
                             setSubmitting(true);
-                            const serverUrl = resolveServerUrl();
-                            if (!serverUrl) { setSubmitting(false); return; }
-                            const ok = await submitRsvp(serverUrl, id!, {
+                            const submission = {
                               rsvpToken: selectedGuest.rsvpToken,
                               rsvpStatus,
                               diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
@@ -580,7 +605,21 @@ export default function WeddingPublicPage() {
                               plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
                               childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
                               submittedAt: new Date().toISOString(),
-                            });
+                            };
+                            let ok = false;
+                            if (rsvpLinkToken) {
+                              // v3: write via session-less link-cap.
+                              try {
+                                await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>);
+                                ok = true;
+                              } catch { ok = false; }
+                            } else {
+                              // Legacy: no-op in v3.
+                              const serverUrl = resolveServerUrl();
+                              if (serverUrl) {
+                                ok = await submitRsvp(serverUrl, id!, submission);
+                              }
+                            }
                             setSubmitting(false);
                             if (ok) {
                               setSubmitted(true);

@@ -15,6 +15,8 @@ import { getDocumentAsync } from "expo-document-picker";
 import { createBackupDocument, restoreFromBackup } from "./sync";
 import { notifySync } from "./starfish";
 import { getStorage } from "@/lib/kv-storage";
+import { parseAndRestore, importLegacyBackup, type ImportResult } from "@fiance/sdk";
+import { getActiveSession, getActiveSpaceId } from "@/lib/starfish";
 
 export type ImportError = "invalid_json" | "invalid_backup";
 
@@ -87,6 +89,37 @@ export async function importWedding(): Promise<true | null | ImportError> {
   restoreFromBackup(data, getStorage());
   notifySync();
   return true;
+}
+
+// ─── Import legacy backup → Space ───────────────────────────────────────────
+
+export type LegacyImportResult =
+  | { ok: true; result: ImportResult }
+  | { ok: false; error: "no_session" | "invalid_json" | "invalid_backup" | "push_failed" };
+
+/**
+ * Pick a v6 backup JSON, parse it, and push all entities into the active Space
+ * as ObjectNodes using `importLegacyBackup`. Does NOT restore local store state —
+ * the next `hydrateFromSpace` at login will pull the imported nodes.
+ */
+export async function importLegacyToSpace(): Promise<LegacyImportResult | null> {
+  const json = Platform.OS === "web" ? await importWeb() : await importNative();
+  if (!json) return null;
+
+  const snapshot = parseAndRestore(json);
+  if (snapshot === "invalid_json") return { ok: false, error: "invalid_json" };
+  if (snapshot === "invalid_backup") return { ok: false, error: "invalid_backup" };
+
+  const session = getActiveSession();
+  const spaceId = getActiveSpaceId();
+  if (!session || !spaceId) return { ok: false, error: "no_session" };
+
+  try {
+    const result = await importLegacyBackup(session, spaceId, snapshot);
+    return { ok: true, result };
+  } catch {
+    return { ok: false, error: "push_failed" };
+  }
 }
 
 function importWeb(): Promise<string | null> {
