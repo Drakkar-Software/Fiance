@@ -1,6 +1,6 @@
 {
   "name": "@fiance/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Headless business logic for the Fiancé wedding planner app.",
   "type": "module",
   "sideEffects": false,
@@ -24,11 +24,26 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@drakkar.software/octospaces-sdk": "alpha",
+    "@noble/curves": "^2.2.0",
+    "@noble/hashes": "^2.2.0",
+    "@scure/bip39": "^2.0.0",
     "date-fns": "^3.6.0",
     "zod": "^3.25.76"
   },
+  "peerDependencies": {
+    "@drakkar.software/starfish-client": ">=3.0.0-alpha.30",
+    "@drakkar.software/starfish-identities": ">=3.0.0-alpha.30",
+    "@drakkar.software/starfish-keyring": ">=3.0.0-alpha.30",
+    "@drakkar.software/starfish-protocol": ">=3.0.0-alpha.30",
+    "@drakkar.software/starfish-sharing": ">=3.0.0-alpha.30"
+  },
   "devDependencies": {
-    "@drakkar.software/starfish-client": "^2.3.0",
+    "@drakkar.software/starfish-client": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-identities": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-keyring": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-protocol": "3.0.0-alpha.30",
+    "@drakkar.software/starfish-sharing": "3.0.0-alpha.30",
     "@types/node": "^22.0.0",
     "tsup": "^8.3.0",
     "typescript": "~5.9.3",

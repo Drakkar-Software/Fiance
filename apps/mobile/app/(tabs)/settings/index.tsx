@@ -16,6 +16,7 @@ import {
   getLastSyncTimestamp,
   getSyncStatus,
   onSyncStatusChange,
+  subscribeSyncStatus,
 } from "@/lib/starfish";
 import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
@@ -86,7 +87,7 @@ export default function SettingsScreen() {
       }
     };
     update();
-    return sf.subscribe(update);
+    return subscribeSyncStatus(sf, () => update());
   }, [syncEnabled, t]);
 
   const wedding = useWeddingStore((s) => s.wedding);

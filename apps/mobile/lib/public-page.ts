@@ -1,12 +1,44 @@
 /**
- * Public wedding page sync — pushes public day-of items, about info, and FAQ
- * to an unauthenticated Starfish collection so guests can view the timeline.
+ * Public wedding page — ObjectNode-based (v3).
+ *
+ * The `publicPage` node (access:'invite', enc:false) lives under the wedding node
+ * in the fiance space. Its content is pushed to `objinv` by the owner and read
+ * by guests via a node invite link (readNodeWithLinkCap).
+ *
+ * The node ID is derived deterministically: `pub-${weddingNodeId}`.
+ *
+ * Guest-facing URL: `encodeNodeInviteLink(origin, token)` puts the token in the
+ * URL fragment. The wedding page screen reads `id` as the base64url token and
+ * calls `decodeNodeInviteLink(id)` + `readNodeWithLinkCap(token)`.
  */
 
-import { StarfishClient, SyncManager, createDedupFetch, createDebouncedPush } from "@drakkar.software/starfish-client";
+import { Platform } from "react-native";
+import {
+  getNodeAccess,
+  objInvPush,
+  updateObjectIndex,
+  createNodeInviteLink,
+  encodeNodeInviteLink,
+  publicPageToNode,
+  type Session,
+  type ObjectNode,
+} from "@fiance/sdk";
+
+function getAppOrigin(): string {
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  // Deep-link scheme for native — avoids Linking.createURL which isn't
+  // available on all versions. The scheme is configured in app.json.
+  return "exp://";
+}
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+
+// ---------------------------------------------------------------------------
+// Types — unchanged
+// ---------------------------------------------------------------------------
 
 export interface PublicDayOfItem {
   id: string;
@@ -49,53 +81,149 @@ export interface FaqItem {
   answer: string;
 }
 
-let syncManager: SyncManager | null = null;
-let debouncedNotify: (() => void) | null = null;
-let debouncedCancel: (() => void) | null = null;
+// ---------------------------------------------------------------------------
+// Deterministic node ID helpers
+// ---------------------------------------------------------------------------
 
-export function initPublicPageSync(config: {
+/** Derive the `publicPage` ObjectNode ID from the wedding node ID. */
+export function publicPageNodeId(weddingNodeId: string): string {
+  return `pub-${weddingNodeId}`;
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: ensure the publicPage node exists in the space index
+// ---------------------------------------------------------------------------
+
+/**
+ * Create or verify the `publicPage` ObjectNode in the space index.
+ * Idempotent — safe to call on every sync init.
+ * Returns the pageNodeId.
+ */
+export async function ensurePublicPageNode(
+  session: Session,
+  spaceId: string,
+  weddingNodeId: string,
+): Promise<string> {
+  const pageNodeId = publicPageNodeId(weddingNodeId);
+  const desc = publicPageToNode(pageNodeId, weddingNodeId);
+
+  await updateObjectIndex(session, spaceId, (nodes, now) => {
+    const exists = nodes.some((n) => n.id === pageNodeId);
+    if (exists) return null; // nothing to change
+    const node: ObjectNode = {
+      id: desc.id,
+      type: desc.type,
+      parentId: desc.parentId,
+      order: nodes.length,
+      title: desc.title,
+      updatedAt: now,
+      contentKind: desc.contentKind,
+      access: desc.access,
+      enc: desc.enc,
+    };
+    return [...nodes, node];
+  });
+
+  return pageNodeId;
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: push page content to objinv
+// ---------------------------------------------------------------------------
+
+/** Push the current public page content to the `publicPage` ObjectNode's objinv. */
+export async function pushPublicPageContent(
+  session: Session,
+  spaceId: string,
+  pageNodeId: string,
+): Promise<void> {
+  const content = buildPublicPageDocument();
+  const handle = await getNodeAccess(
+    spaceId,
+    pageNodeId,
+    { access: "invite", enc: false },
+    session,
+    null,
+  );
+  await handle.client.push(
+    objInvPush(spaceId, pageNodeId),
+    content as unknown as Record<string, unknown>,
+    null,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Owner-side: generate a guest-readable invite link for the page
+// ---------------------------------------------------------------------------
+
+/**
+ * Mint a read-only invite link for the `publicPage` node.
+ * Returns the full URL (origin/wedding/${fragment}) where fragment is the
+ * base64url NodeInviteLinkToken that the guest page screen decodes.
+ */
+export async function getPublicPageInviteLink(
+  session: Session,
+  spaceId: string,
+  pageNodeId: string,
+): Promise<string> {
+  const origin = getAppOrigin();
+  const { token } = await createNodeInviteLink(
+    session,
+    spaceId,
+    pageNodeId,
+    "Page mariage",
+    { enc: false },
+    false, // read-only
+    origin,
+  );
+  const encoded = encodeNodeInviteLink(origin, token);
+  // Extract the fragment (everything after '#') and use it as the path segment.
+  const fragment = encoded.includes("#") ? encoded.split("#")[1] : encoded;
+  return `${origin}/wedding/${fragment}`;
+}
+
+// ---------------------------------------------------------------------------
+// Legacy stubs (called from old providers.tsx paths — now no-ops)
+// ---------------------------------------------------------------------------
+
+/** @deprecated No-op in v3 — use ensurePublicPageNode + pushPublicPageContent. */
+export function initPublicPageSync(_config: {
   serverUrl: string;
   authToken: string;
   userId: string;
-}): void {
-  const client = new StarfishClient({
-    baseUrl: config.serverUrl,
-    auth: async () => ({ Authorization: `Bearer ${config.authToken}` }),
-  });
+}): void {}
 
-  syncManager = new SyncManager({
-    client,
-    pullPath: `/pull/wedding-page/${config.userId}`,
-    pushPath: `/push/wedding-page/${config.userId}`,
-    maxRetries: 2,
-  });
+/** @deprecated No-op in v3. */
+export async function pullPublicPageSync(): Promise<void> {}
 
-  const debounced = createDebouncedPush(syncManager, {
-    serialize: () => buildPublicPageDocument() as unknown as Record<string, unknown>,
-    onError: (err) => console.warn("[public-page] Push failed:", err),
-  });
-  debouncedNotify = debounced.notify;
-  debouncedCancel = debounced.cancel;
+/** @deprecated No-op in v3. */
+export function teardownPublicPageSync(): void {}
+
+/** @deprecated No-op in v3 — use pushPublicPageContent. */
+export function notifyPublicPageSync(): void {}
+
+/**
+ * Guest-side: fetch the public wedding page doc via a link-cap token.
+ *
+ * The `fragment` parameter is the base64url-encoded NodeInviteLinkToken from the
+ * URL path (e.g. `wedding/${fragment}`). Returns null on error or if the page
+ * hasn't been pushed yet.
+ *
+ * @deprecated Legacy (userId-based) path. Prefer the fragment-based path using
+ * decodeNodeInviteLink + readNodeWithLinkCap in the screen component.
+ */
+export async function fetchPublicPage(
+  _serverUrl: string,
+  _userId: string,
+): Promise<PublicWeddingPage | null> {
+  return null;
 }
 
-/** Pull the current public page to seed the baseHash for subsequent pushes */
-export async function pullPublicPageSync(): Promise<void> {
-  if (!syncManager) return;
-  try {
-    await syncManager.pull();
-  } catch {
-    // First pull may 404 if nothing has been pushed yet — that's fine
-  }
-}
+// ---------------------------------------------------------------------------
+// Pure helpers — unchanged
+// ---------------------------------------------------------------------------
 
-export function teardownPublicPageSync(): void {
-  debouncedCancel?.();
-  debouncedNotify = null;
-  debouncedCancel = null;
-  syncManager = null;
-}
-
-/** Collect public data from stores and build the page document */
+/** Collect public data from stores and build the page document. */
 export function buildPublicPageDocument(): PublicWeddingPage {
   const wedding = useWeddingStore.getState().wedding;
   const dayOfItems = usePlanningStore.getState().dayOfItems;
@@ -109,19 +237,15 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       return (a.time || "").localeCompare(b.time || "");
     })
     .map(({ id, title, date, time, endTime, location, sortOrder }) => ({
-      id,
-      title,
-      date,
-      time,
-      endTime,
-      location,
-      sortOrder,
+      id, title, date, time, endTime, location, sortOrder,
     }));
 
   const gifts = useGiftsStore.getState().gifts;
-  const publicGifts: PublicGift[] = gifts.map(({ id, title, description, price, url, imageUrl, category, claimed }) => ({
-    id, title, description, price, url, imageUrl, category, claimed: !!claimed,
-  }));
+  const publicGifts: PublicGift[] = gifts.map(
+    ({ id, title, description, price, url, imageUrl, category, claimed }) => ({
+      id, title, description, price, url, imageUrl, category, claimed: !!claimed,
+    }),
+  );
 
   return {
     version: 1,
@@ -134,32 +258,9 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       description: wedding?.description,
     },
     timeline: publicItems,
-    faq: wedding?.faq ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })() : [],
+    faq: wedding?.faq
+      ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })()
+      : [],
     gifts: publicGifts.length > 0 ? publicGifts : undefined,
   };
-}
-
-/** Debounced push of public page data to Starfish */
-export function notifyPublicPageSync(): void {
-  debouncedNotify?.();
-}
-
-/**
- * Fetch the public page for a given wedding userId.
- * No auth required — the collection has readRoles: ["public"].
- */
-export async function fetchPublicPage(
-  serverUrl: string,
-  userId: string,
-): Promise<PublicWeddingPage | null> {
-  try {
-    const client = new StarfishClient({ baseUrl: serverUrl, fetch: createDedupFetch() });
-    const result = await client.pull(`/pull/wedding-page/${userId}`);
-    if (result.data) {
-      return result.data as unknown as PublicWeddingPage;
-    }
-  } catch (err) {
-    console.warn("[public-page] Fetch failed:", err);
-  }
-  return null;
 }

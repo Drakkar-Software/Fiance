@@ -1,7 +1,6 @@
 import { useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
-import { getStarfishClient } from "@/lib/starfish";
+import { getStarfishClient, pullEntitlements } from "@/lib/starfish";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { pullEntitlements } from "@drakkar.software/starfish-client";
 
 // Set this to the Stripe Payment Link URL (created once in Stripe dashboard)
 const STRIPE_PAYMENT_LINK_URL = process.env.EXPO_PUBLIC_STRIPE_PAYMENT_LINK_URL ?? "";

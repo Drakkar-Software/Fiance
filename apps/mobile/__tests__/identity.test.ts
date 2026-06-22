@@ -1,28 +1,19 @@
 /**
  * Tests for lib/identity.ts — invite token encode/decode, passphrase generation,
  * and wedding page URL building.
+ *
+ * v3 migration notes:
+ * - generatePassphrase() now returns space-separated BIP-39 words (not hyphens).
+ * - deriveAuthToken() / deriveEncryptionKey() are deprecated stubs returning "".
+ * - buildInviteUrl() now encodes payload in URL fragment (#) via encodeLinkFragment.
+ * - Use parseInviteUrl() for full round-trip tests.
  */
 import { describe, it, expect, vi } from "vitest";
 
-// expo-linking is still needed for buildInviteUrl / buildWeddingPageUrl
 vi.mock("expo-linking", () => ({
-  createURL: (path: string, opts?: { queryParams?: Record<string, string> }) => {
-    const base = `fiance:///${path}`;
-    if (opts?.queryParams) {
-      const qs = Object.entries(opts.queryParams).map(([k, v]) => `${k}=${v}`).join("&");
-      return `${base}?${qs}`;
-    }
-    return base;
-  },
-  parse: (url: string) => {
-    const match = url.match(/\?(.+)$/);
-    if (!match) return { queryParams: {} };
-    const params: Record<string, string> = {};
-    match[1].split("&").forEach((pair) => {
-      const [k, v] = pair.split("=");
-      params[k] = v;
-    });
-    return { queryParams: params };
+  createURL: (path: string) => {
+    const p = path ? `/${path}` : "";
+    return `fiance:/${p}`;
   },
 }));
 
@@ -33,12 +24,13 @@ import {
   buildInviteUrl,
   buildWeddingPageUrl,
   decodeInviteToken,
+  parseInviteUrl,
 } from "@/lib/identity";
 
 describe("generatePassphrase", () => {
-  it("generates a 12-word passphrase separated by hyphens", () => {
+  it("generates a 12-word passphrase separated by spaces", () => {
     const phrase = generatePassphrase();
-    const words = phrase.split("-");
+    const words = phrase.split(" ");
     expect(words).toHaveLength(12);
     words.forEach((w) => expect(w.length).toBeGreaterThan(0));
   });
@@ -50,62 +42,45 @@ describe("generatePassphrase", () => {
   });
 });
 
-describe("deriveAuthToken", () => {
-  it("returns a 64-char hex string", async () => {
+describe("deriveAuthToken (deprecated stub)", () => {
+  it("returns empty string (deprecated — Bearer auth removed in v3)", async () => {
     const token = await deriveAuthToken("test-password");
-    expect(token).toMatch(/^[0-9a-f]{64}$/);
+    expect(token).toBe("");
   });
 
-  it("trims whitespace from password", async () => {
-    const a = await deriveAuthToken("  hello  ");
-    const b = await deriveAuthToken("hello");
-    expect(a).toBe(b);
-  });
-
-  it("different passwords produce different tokens", async () => {
+  it("always returns the same empty string regardless of input", async () => {
     const a = await deriveAuthToken("password-a");
     const b = await deriveAuthToken("password-b");
-    expect(a).not.toBe(b);
-  });
-
-  it("is deterministic", async () => {
-    const a = await deriveAuthToken("my-passphrase");
-    const b = await deriveAuthToken("my-passphrase");
     expect(a).toBe(b);
+    expect(a).toBe("");
   });
 });
 
-describe("deriveEncryptionKey", () => {
-  it("returns a 64-char hex string", async () => {
+describe("deriveEncryptionKey (deprecated stub)", () => {
+  it("returns empty string (deprecated — space keyring handles E2EE in v3)", async () => {
     const key = await deriveEncryptionKey("pass", "salt");
-    expect(key).toMatch(/^[0-9a-f]{64}$/);
-  });
-
-  it("is deterministic", async () => {
-    const a = await deriveEncryptionKey("pass", "userId");
-    const b = await deriveEncryptionKey("pass", "userId");
-    expect(a).toBe(b);
-  });
-
-  it("different passwords produce different keys", async () => {
-    const a = await deriveEncryptionKey("pass-a", "userId");
-    const b = await deriveEncryptionKey("pass-b", "userId");
-    expect(a).not.toBe(b);
+    expect(key).toBe("");
   });
 });
 
-describe("buildInviteUrl / decodeInviteToken", () => {
-  it("round-trips name and password through token", () => {
+describe("buildInviteUrl / decodeInviteToken / parseInviteUrl", () => {
+  it("round-trips name and password via parseInviteUrl", () => {
     const url = buildInviteUrl("Alice & Bob", "super-secret-phrase");
-    const match = url.match(/t=([^&]+)/);
-    expect(match).not.toBeNull();
-    const token = match![1];
-
-    const decoded = decodeInviteToken(token);
+    const decoded = parseInviteUrl(url);
     expect(decoded).toEqual({
       name: "Alice & Bob",
       password: "super-secret-phrase",
     });
+  });
+
+  it("round-trips through fragment decodeInviteToken", () => {
+    const url = buildInviteUrl("Test Name", "some-pass");
+    // Fragment is everything after '#'
+    const fragment = url.includes("#") ? url.split("#")[1] : "";
+    expect(fragment).not.toBe("");
+    const decoded = decodeInviteToken(fragment);
+    expect(decoded?.name).toBe("Test Name");
+    expect(decoded?.password).toBe("some-pass");
   });
 
   it("returns null for undefined token", () => {
@@ -122,8 +97,7 @@ describe("buildInviteUrl / decodeInviteToken", () => {
 
   it("handles special characters in name", () => {
     const url = buildInviteUrl("Éloïse & François", "pass");
-    const token = url.match(/t=([^&]+)/)![1];
-    const decoded = decodeInviteToken(token);
+    const decoded = parseInviteUrl(url);
     expect(decoded?.name).toBe("Éloïse & François");
   });
 });

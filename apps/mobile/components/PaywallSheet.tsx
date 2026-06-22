@@ -7,8 +7,7 @@ import { Sparkles } from "lucide-react-native";
 import { purchasePremium, restorePurchases, fetchPremiumProduct, PREMIUM_SKU } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";
 import { useWeddingStore } from "@/store/useWeddingStore";
-import { getStarfishClient } from "@/lib/starfish";
-import { pullEntitlements } from "@drakkar.software/starfish-client";
+import { getStarfishClient, pullEntitlements } from "@/lib/starfish";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 
 interface PaywallSheetProps {

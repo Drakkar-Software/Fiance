@@ -67,6 +67,23 @@ vi.mock("@/store/useGuestsStore", () => ({
   },
 }));
 
+vi.mock("react-native", () => ({
+  Platform: { OS: "ios" },
+}));
+
+vi.mock("@/lib/public-page", () => ({
+  publicPageNodeId: (weddingNodeId: string) => `pub-${weddingNodeId}`,
+}));
+
+vi.mock("@fiance/sdk", () => ({
+  updateObjectIndex: vi.fn().mockResolvedValue(undefined),
+  getNodeAccess: vi.fn(),
+  objInvPush: vi.fn().mockReturnValue("/objinv/path"),
+  createNodeInviteLink: vi.fn().mockResolvedValue({ token: {}, link: "" }),
+  encodeNodeInviteLink: vi.fn().mockReturnValue("exp://#encoded-token"),
+  rsvpToNode: vi.fn().mockReturnValue({ id: "rsvp-g1", type: "rsvp", parentId: "pub-w1", title: "", access: "invite", enc: false, contentKind: "merge" }),
+}));
+
 vi.mock("expo-crypto", () => ({
   randomUUID: vi.fn().mockReturnValue("generated-uuid"),
 }));
@@ -103,42 +120,16 @@ describe("fetchRsvpRoster", () => {
     mockSyncManagerPull.mockReset();
   });
 
-  it("uses client.pull() with the correct path", async () => {
-    mockPull.mockResolvedValue({ data: mockRoster });
-    await fetchRsvpRoster(SERVER, USER_ID);
-    expect(mockPull).toHaveBeenCalledWith(`/pull/rsvp-roster/${USER_ID}`);
+  // TODO(B5): these tests will be rewritten with readNodeWithLinkCap when the
+  // objinv node invite flow is implemented. For now the function is a stub.
+  it("returns null (B5 stub — not yet implemented in v3)", async () => {
+    const result = await fetchRsvpRoster(SERVER, USER_ID);
+    expect(result).toBeNull();
   });
 
-  it("does NOT use SyncManager.pull() (regression: would return null on fresh instance)", async () => {
-    mockPull.mockResolvedValue({ data: mockRoster });
+  it("does NOT use SyncManager.pull() (removed in v3)", async () => {
     await fetchRsvpRoster(SERVER, USER_ID);
     expect(mockSyncManagerPull).not.toHaveBeenCalled();
-  });
-
-  it("returns the roster from result.data", async () => {
-    mockPull.mockResolvedValue({ data: mockRoster });
-    const result = await fetchRsvpRoster(SERVER, USER_ID);
-    expect(result).toEqual(mockRoster);
-    expect(result?.guests).toHaveLength(1);
-    expect(result?.guests[0].firstName).toBe("Alice");
-  });
-
-  it("returns null when result.data is missing", async () => {
-    mockPull.mockResolvedValue({ data: null });
-    const result = await fetchRsvpRoster(SERVER, USER_ID);
-    expect(result).toBeNull();
-  });
-
-  it("returns null when result.data is undefined", async () => {
-    mockPull.mockResolvedValue({});
-    const result = await fetchRsvpRoster(SERVER, USER_ID);
-    expect(result).toBeNull();
-  });
-
-  it("returns null on network error", async () => {
-    mockPull.mockRejectedValue(new Error("Network error"));
-    const result = await fetchRsvpRoster(SERVER, USER_ID);
-    expect(result).toBeNull();
   });
 });
 
@@ -159,38 +150,16 @@ describe("submitRsvp", () => {
     mockSyncManagerUpdate.mockReset();
   });
 
-  it("uses SyncManager.update() to submit", async () => {
-    mockSyncManagerUpdate.mockResolvedValue({ hash: "h2", timestamp: 2 });
-    const result = await submitRsvp(SERVER, USER_ID, submission);
-    expect(result).toBe(true);
-    expect(mockSyncManagerUpdate).toHaveBeenCalledWith(expect.any(Function));
-  });
-
-  it("update modifier merges submission into existing array", async () => {
-    mockSyncManagerUpdate.mockImplementation(async (modifier: (c: Record<string, unknown>) => Record<string, unknown>) => {
-      const result = modifier({ submissions: [{ rsvpToken: "token-bob", rsvpStatus: "DECLINED", submittedAt: "old" }] });
-      expect(result.submissions).toHaveLength(2);
-      expect((result.submissions as any[])[0].rsvpToken).toBe("token-bob");
-      expect((result.submissions as any[])[1].rsvpToken).toBe("token-alice");
-      return { hash: "h", timestamp: 1 };
-    });
-    await submitRsvp(SERVER, USER_ID, submission);
-  });
-
-  it("update modifier replaces existing submission for same token", async () => {
-    mockSyncManagerUpdate.mockImplementation(async (modifier: (c: Record<string, unknown>) => Record<string, unknown>) => {
-      const result = modifier({ submissions: [{ rsvpToken: "token-alice", rsvpStatus: "MAYBE", submittedAt: "old" }] });
-      expect(result.submissions).toHaveLength(1);
-      expect((result.submissions as any[])[0].rsvpStatus).toBe("ACCEPTED");
-      return { hash: "h", timestamp: 1 };
-    });
-    await submitRsvp(SERVER, USER_ID, submission);
-  });
-
-  it("returns false on error", async () => {
-    mockSyncManagerUpdate.mockRejectedValue(new Error("Network error"));
+  // TODO(B5): these tests will be rewritten with writeNodeWithLinkCap when the
+  // per-guest RSVP node invite flow is implemented. For now the function is a stub.
+  it("returns false (B5 stub — not yet implemented in v3)", async () => {
     const result = await submitRsvp(SERVER, USER_ID, submission);
     expect(result).toBe(false);
+  });
+
+  it("does NOT use SyncManager.update() (removed in v3)", async () => {
+    await submitRsvp(SERVER, USER_ID, submission);
+    expect(mockSyncManagerUpdate).not.toHaveBeenCalled();
   });
 });
 

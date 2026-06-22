@@ -1,8 +1,7 @@
 import { Platform } from "react-native";
 import { useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { getStarfishClient } from "@/lib/starfish";
-import { pullEntitlements } from "@drakkar.software/starfish-client";
+import { getStarfishClient, pullEntitlements } from "@/lib/starfish";
 
 const OPTIMISTIC_GRACE_MS = 24 * 60 * 60 * 1000;
 

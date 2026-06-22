@@ -10,7 +10,8 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
-import { exportWedding, importWedding } from "@/lib/export-import";
+import { exportWedding, importWedding, importLegacyToSpace } from "@/lib/export-import";
+import { Archive } from "lucide-react-native";
 import {
   exportToPdf,
   buildGuestListHtml,
@@ -42,6 +43,8 @@ export default function ExportImportScreen() {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [importingToSpace, setImportingToSpace] = useState(false);
+  const [showImportToSpaceConfirm, setShowImportToSpaceConfirm] = useState(false);
 
   const handleExportJson = useCallback(async () => {
     setExporting(true);
@@ -76,6 +79,31 @@ export default function ExportImportScreen() {
       Alert.alert(t("common:error"), e.message);
     } finally {
       setImporting(false);
+    }
+  }, [t]);
+
+  const doImportToSpace = useCallback(async () => {
+    setShowImportToSpaceConfirm(false);
+    setImportingToSpace(true);
+    try {
+      const result = await importLegacyToSpace();
+      if (result === null) return; // cancelled
+      if (!result.ok) {
+        const msgKey = result.error === "no_session"
+          ? "importToSpaceNoSession"
+          : result.error === "push_failed"
+          ? "importToSpaceFailed"
+          : result.error === "invalid_json"
+          ? "invalidJson"
+          : "invalidBackup";
+        Alert.alert(t("common:error"), t(msgKey));
+      } else {
+        Alert.alert(t("importToSpaceSuccess"), t("importToSpaceSuccessMsg", { count: result.result.nodeCount }));
+      }
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e.message);
+    } finally {
+      setImportingToSpace(false);
     }
   }, [t]);
 
@@ -203,6 +231,12 @@ export default function ExportImportScreen() {
               label={importing ? t("importing") : t("importData")}
               sublabel={t("importDesc")}
               onPress={() => setShowImportConfirm(true)}
+            />
+            <ExportRow
+              icon={<Archive size={18} color="#8B5CF6" />}
+              label={importingToSpace ? t("importing") : t("importToSpace")}
+              sublabel={t("importToSpaceDesc")}
+              onPress={() => setShowImportToSpaceConfirm(true)}
               last
             />
           </FormCard>
@@ -219,6 +253,15 @@ export default function ExportImportScreen() {
         destructive
         onConfirm={doImport}
         onCancel={() => setShowImportConfirm(false)}
+      />
+
+      <ConfirmSheet
+        visible={showImportToSpaceConfirm}
+        title={t("importToSpaceConfirmTitle")}
+        message={t("importToSpaceConfirmMsg")}
+        confirmLabel={t("import")}
+        onConfirm={doImportToSpace}
+        onCancel={() => setShowImportToSpaceConfirm(false)}
       />
     </>
   );

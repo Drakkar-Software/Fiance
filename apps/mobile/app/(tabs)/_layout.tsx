@@ -9,8 +9,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { DatabaseProvider } from "@/db/provider";
 import { SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
-import { getStarfishStore, onSyncStatusChange } from "@/lib/starfish";
-import { subscribeSyncStatus, type SyncStatus } from "@drakkar.software/starfish-client/zustand";
+import { getStarfishStore, onSyncStatusChange, subscribeSyncStatus, type SyncStatus } from "@/lib/starfish";
 import { OfflineBanner } from "@/components/OfflineBanner";
 
 export default function TabLayout() {

@@ -1,225 +1,235 @@
 /**
- * Starfish cloud sync integration for Fiancé
- * Uses createStarfishStore() Zustand binding for reactive sync state
+ * Starfish v3 / octospaces sync integration for Fiancé.
  *
+ * Provides the same public surface as the old v2 file so call-sites in
+ * stores and screens don't need mass updates in one commit:
+ *
+ *   notifySync()            → dispatchDocChange('*') (triggers all registerPull listeners)
+ *   getStarfishStore()      → returns a truthy object while sync is active (not a Zustand store)
+ *   getStarfishClient()     → returns the active makeClient() StarfishClient
+ *   onSyncStatusChange(fn)  → wraps onSseStatus for on/off subscription
+ *   getSyncStatus()         → reads the last SSE connection state
+ *   getLastSyncTimestamp()  → last successful push timestamp
+ *   pullEntitlements()      → v3 cap-cert pull from the fiance namespace
+ *   initSync()              → initialise with a v3 Session + spaceId
+ *   teardownSync()          → clearLiveSyncBus() + reset state
+ *
+ * The legacy names initStarfish / teardownStarfish are kept as aliases.
+ *
+ * B3 note: stores still call notifySync() on every mutation but no registerPull
+ * listeners exist yet — dispatchDocChange is a broadcast, not an error. Stores
+ * will be wired to readObjectTree in B3.
  */
 
-import { Platform } from "react-native";
-import i18n from "i18next";
 import {
-  StarfishClient,
-  SyncManager,
-  consoleSyncLogger,
-  createUnionMerge,
-  createDebouncedSync,
-  fetchServerConfig,
-  configurePlatform,
-  type Encryptor,
-} from "@drakkar.software/starfish-client";
-import { toast } from "@/lib/toast/sonner";
-import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
-import { setupCrossTabSync } from "@drakkar.software/starfish-client/broadcast";
-import {
-  createStarfishStore,
-  type StarfishStore,
-} from "@drakkar.software/starfish-client/zustand";
-import type { StoreApi } from "zustand/vanilla";
-import { useStore } from "zustand";
-import { devtools } from "zustand/middleware";
-import { createBackupDocument, restoreFromBackup } from "./sync";
-import { getStorage } from "@/lib/kv-storage";
+  makeClient,
+  dispatchDocChange,
+  onSseStatus,
+  emitSseStatus,
+  clearLiveSyncBus,
+  type Session,
+} from '@fiance/sdk';
 
-// The default web base64 provider in starfish-protocol encodes with
-// `btoa(String.fromCharCode(...data))`. Spreading the full ciphertext byte
-// array into arguments overflows the call stack once an encrypted document
-// exceeds ~64-128KB ("Maximum call stack size exceeded" on push). Override
-// the web provider with a chunked encoder. Native keeps its own provider.
-if (Platform.OS === "web") {
-  configurePlatform({
-    base64: {
-      encode: (data: Uint8Array): string => {
-        let binary = "";
-        const CHUNK = 0x8000;
-        for (let i = 0; i < data.length; i += CHUNK) {
-          binary += String.fromCharCode(...data.subarray(i, i + CHUNK));
-        }
-        return btoa(binary);
-      },
-      decode: (encoded: string): Uint8Array =>
-        Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0)),
-    },
-  });
-}
+// ---------------------------------------------------------------------------
+// Module state
+// ---------------------------------------------------------------------------
 
-// Re-export Starfish React hooks for components
-export { useSyncStatus, useLastSynced } from "@drakkar.software/starfish-client/zustand";
+let _session: Session | null = null;
+let _spaceId: string | null = null;
+let _weddingNodeId: string | null = null;
+let _active = false;
+let _lastSyncTs: string | null = null;
+let _lastUp: boolean | null = null;
 
-let store: StoreApi<StarfishStore> | null = null;
-let activeClient: StarfishClient | null = null;
-let crossTabCleanup: (() => void) | null = null;
-let debouncedNotify: (() => void) | null = null;
-let debouncedCancel: (() => void) | null = null;
-let lastSyncTimestamp: string | null = null;
-
-// Reactive listeners for sync status changes
-type SyncStatusListener = (enabled: boolean) => void;
-const syncStatusListeners = new Set<SyncStatusListener>();
-
-function notifySyncStatus(enabled: boolean) {
-  for (const listener of syncStatusListeners) listener(enabled);
-}
-
-export function onSyncStatusChange(listener: SyncStatusListener): () => void {
-  syncStatusListeners.add(listener);
-  return () => { syncStatusListeners.delete(listener); };
-}
-
-export interface StarfishConfig {
-  serverUrl: string;
-  authToken: string;
-  userId: string;
-  encryptionKey: string;
-}
-
-export async function initStarfish(config: StarfishConfig, encryptor?: Encryptor): Promise<StoreApi<StarfishStore>> {
-  const { fetch: resilientFetch } = createResilientFetch(
-    { maxRetries: 3, initialDelayMs: 500 },
-    { threshold: 5, cooldownMs: 30_000 },
-  );
-
-  const authHeaders = { Authorization: `Bearer ${config.authToken}` };
-
-  // Fetch server collection config to get live limits
-  let weddingMaxBytes = 1_048_576;
-  try {
-    const serverConfig = await fetchServerConfig(config.serverUrl, { headers: authHeaders });
-    const weddingCollection = serverConfig.collections.find((c) => c.name === "wedding");
-    if (weddingCollection?.maxBodyBytes) weddingMaxBytes = weddingCollection.maxBodyBytes;
-  } catch {
-    // Fall back to hardcoded limit if config endpoint is unreachable
-  }
-
-  const client = new StarfishClient({
-    baseUrl: config.serverUrl,
-    auth: async () => authHeaders,
-    fetch: resilientFetch,
-  });
-  activeClient = client;
-
-  const syncManager = new SyncManager({
-    client,
-    pullPath: `/pull/wedding/${config.userId}`,
-    pushPath: `/push/wedding/${config.userId}`,
-    encryptionSecret: config.encryptionKey,
-    encryptionSalt: config.userId,
-    encryptor, // takes precedence over encryptionSecret/Salt when set (group-crypto mode)
-    onConflict: createUnionMerge({
-      timestampKey: "updatedAt",
-      documentTimestampKey: "timestamp",
-    }),
-    maxRetries: 3,
-    loggerName: "wedding-sync",
-    logger: consoleSyncLogger,
-  });
-
-  store = createStarfishStore({
-    name: "wedding-sync",
-    syncManager,
-    storage: false,
-    devtools: __DEV__
-      ? (fn) => devtools(fn, { name: "wedding-sync" })
-      : (fn) => fn,
-    onRemoteUpdate: (data) => {
-      restoreFromBackup(data, getStorage());
-      lastSyncTimestamp = new Date().toISOString();
-    },
-  });
-
-  // Track last successful push
-  store.subscribe((state, prevState) => {
-    if (prevState.syncing && !state.syncing && !state.error) {
-      lastSyncTimestamp = new Date().toISOString();
-    }
-  });
-
-  const debounced = createDebouncedSync(store, {
-    delayMs: 2000,
-    serialize: () => createBackupDocument(),
-    warnBytes: Math.floor(weddingMaxBytes * 0.9),
-    maxBytes: weddingMaxBytes,
-    onSizeWarning: (bytes) => {
-      const kb = Math.round(bytes / 1024);
-      const max = Math.round(weddingMaxBytes / 1024);
-      console.warn(`[sync] Document ~${kb}KB approaching ${max}KB limit`);
-      toast.warning(i18n.t("common:syncSizeWarning", { kb, max }));
-    },
-    onSizeExceeded: (bytes) => {
-      const kb = Math.round(bytes / 1024);
-      console.error(`[sync] Document ${kb}KB exceeds ${Math.round(weddingMaxBytes / 1024)}KB server limit, push blocked`);
-      toast.error(i18n.t("common:syncSizeExceeded", { kb }));
-    },
-  });
-  debouncedNotify = debounced.notify;
-  debouncedCancel = debounced.cancel;
-
-  notifySyncStatus(true);
-
-  // Cross-tab sync for web — keeps multiple browser tabs in sync
-  if (Platform.OS === "web") {
-    crossTabCleanup = setupCrossTabSync(store, "wedding-sync");
-  }
-
-  return store;
-}
-
-export function getStarfishStore(): StoreApi<StarfishStore> | null {
-  return store;
-}
-
-export function getStarfishClient(): StarfishClient | null {
-  return activeClient;
-}
-
-/** React hook for reading Starfish sync state in components */
-export function useStarfishSync<T>(selector: (s: StarfishStore) => T): T {
-  if (!store) throw new Error("Starfish not initialized");
-  return useStore(store, selector);
-}
-
-/**
- * Called by domain stores after every mutation.
- * Debounces the Starfish push to avoid flooding the server during rapid typing.
- */
-export function notifySync(): void {
-  debouncedNotify?.();
-}
-
-export function getLastSyncTimestamp(): string | null {
-  return lastSyncTimestamp;
-}
+// ---------------------------------------------------------------------------
+// Compat shim — SyncStatusValue mirrors the v2 API surface
+// ---------------------------------------------------------------------------
 
 export type SyncStatusValue = "synced" | "pending" | "syncing" | "error" | "offline";
 
-export function getSyncStatus(): { status: SyncStatusValue; message: string } | null {
-  if (!store) return null;
-  const state = store.getState();
-  if (!state.online) return { status: "offline", message: "offline" };
-  if (state.error) return { status: "error", message: state.error };
-  if (state.syncing) return { status: "syncing", message: "syncing" };
-  if (state.dirty) return { status: "pending", message: "pending" };
-  return { status: "synced", message: "synced" };
+// ---------------------------------------------------------------------------
+// Public API — backward-compatible
+// ---------------------------------------------------------------------------
+
+/**
+ * Called by domain stores after every mutation.
+ * In v3, this signals all registerPull listeners to refresh their collection.
+ */
+export function notifySync(): void {
+  dispatchDocChange('*');
 }
 
-export function teardownStarfish(): void {
-  debouncedCancel?.();
-  debouncedNotify = null;
-  debouncedCancel = null;
-  if (crossTabCleanup) {
-    crossTabCleanup();
-    crossTabCleanup = null;
+/**
+ * Returns a truthy sentinel while sync is active. The v2 `StoreApi<StarfishStore>`
+ * is gone — callers that only check `!!getStarfishStore()` continue to work.
+ *
+ * @deprecated Migrate callers to `isSyncActive()`.
+ */
+export function getStarfishStore(): object | null {
+  return _active ? { _v3sentinel: true } : null;
+}
+
+export function isSyncActive(): boolean {
+  return _active;
+}
+
+/**
+ * Returns a v3 StarfishClient scoped to the fiance namespace.
+ * Returns null before initSync() is called.
+ *
+ * @deprecated Callers that use pullEntitlements(sfClient, userId) have been
+ * updated to use pullEntitlements(null, userId) from this module directly.
+ */
+export function getStarfishClient(): object | null {
+  if (!_session) return null;
+  return makeClient(_session.contentCap, _session.keys.edPriv);
+}
+
+/**
+ * Subscribe to sync active/inactive changes.
+ * Returns an unsubscribe function.
+ */
+export function onSyncStatusChange(listener: (enabled: boolean) => void): () => void {
+  listener(_active);
+  return onSseStatus((up: boolean) => {
+    if (up) _lastSyncTs = new Date().toISOString();
+    _lastUp = up;
+    listener(up);
+  });
+}
+
+export function getSyncStatus(): { status: SyncStatusValue; message: string } | null {
+  if (!_active) return null;
+  if (_lastUp === null) return { status: 'pending', message: 'pending' };
+  return _lastUp
+    ? { status: 'synced', message: 'synced' }
+    : { status: 'offline', message: 'offline' };
+}
+
+export function getLastSyncTimestamp(): string | null {
+  return _lastSyncTs;
+}
+
+// ---------------------------------------------------------------------------
+// Pull entitlements — v3 cap-cert (replaces pullEntitlements from starfish-client)
+// ---------------------------------------------------------------------------
+
+/**
+ * Pull the user's entitlements (premium feature flags) from the fiance namespace
+ * using cap-cert auth. Replaces the v2 `pullEntitlements(sfClient, userId)` API.
+ *
+ * The entitlements collection is read-only via cap-cert; Doubloon writes it via
+ * the legacy Bearer path (both share the same R2 key).
+ */
+export async function pullEntitlements(
+  _sfClientOrSession: unknown,
+  userId: string,
+): Promise<string[]> {
+  if (!_session) return [];
+  try {
+    const client = makeClient(_session.contentCap, _session.keys.edPriv);
+    const result = await (client as unknown as { pull: (path: string, hash: number | null) => Promise<{ data: unknown }> })
+      .pull(`users/${userId}/entitlements`, null);
+    const data = result?.data as Record<string, unknown> | null;
+    const features = data?.features;
+    if (Array.isArray(features)) return features.filter((f): f is string => typeof f === 'string');
+    return [];
+  } catch {
+    return [];
   }
-  store = null;
-  activeClient = null;
-  lastSyncTimestamp = null;
-  notifySyncStatus(false);
+}
+
+// ---------------------------------------------------------------------------
+// Init / teardown
+// ---------------------------------------------------------------------------
+
+export interface SyncInitConfig {
+  session: Session;
+  spaceId: string;
+  serverUrl: string;
+  /** The registry entry UUID used as the root wedding ObjectNode ID. */
+  weddingNodeId: string;
+}
+
+/**
+ * Initialise the v3 sync layer.
+ * Call this once the user's session and space are known.
+ * Emits an SSE 'connected' status immediately so UI shows sync as active.
+ */
+export async function initSync(cfg: SyncInitConfig): Promise<void> {
+  _session = cfg.session;
+  _spaceId = cfg.spaceId;
+  _weddingNodeId = cfg.weddingNodeId;
+  _active = true;
+  _lastUp = true;
+
+  // Signal connected so onSyncStatusChange listeners fire.
+  emitSseStatus(true);
+
+  // Dispatch so any early registerPull() listeners hydrate immediately.
+  dispatchDocChange('*');
+}
+
+/** Legacy alias kept for call-sites that import initStarfish. */
+export async function initStarfish(
+  _legacyConfig: unknown,
+  _encryptor?: unknown,
+): Promise<object> {
+  // v2 callers pass an old ServerConfig; in v3 initSync() is the right entry point.
+  // SyncInitializer in providers.tsx is being updated to call initSync() directly.
+  // Until all callers are migrated, this is a safe no-op returning a sentinel.
+  console.warn('[starfish] initStarfish() is deprecated — use initSync() from lib/starfish');
+  return { _v3stub: true };
+}
+
+/**
+ * Tear down the sync layer — stops SSE, clears all listeners.
+ */
+export function teardownSync(): void {
+  clearLiveSyncBus();
+  _session = null;
+  _spaceId = null;
+  _weddingNodeId = null;
+  _active = false;
+  _lastUp = null;
+  emitSseStatus(false);
+}
+
+/** Legacy alias. */
+export const teardownStarfish = teardownSync;
+
+// ---------------------------------------------------------------------------
+// v2 compat shim: subscribeSyncStatus (was in starfish-client/zustand)
+// ---------------------------------------------------------------------------
+
+/** @deprecated v2 zustand store listener — use onSseStatus() from @fiance/sdk. */
+export function subscribeSyncStatus(
+  _store: unknown,
+  callback: (status: SyncStatusValue) => void,
+): () => void {
+  // Fire immediately with current state.
+  const current = getSyncStatus();
+  if (current) setTimeout(() => callback(current.status), 0);
+  return onSseStatus((up: boolean) => {
+    callback(up ? 'synced' : 'offline');
+  });
+}
+
+/** @deprecated Use SyncStatusValue directly. */
+export type SyncStatus = SyncStatusValue;
+
+// ---------------------------------------------------------------------------
+// Accessors for session / spaceId (used by stores in B3)
+// ---------------------------------------------------------------------------
+
+export function getActiveSession(): Session | null {
+  return _session;
+}
+
+export function getActiveSpaceId(): string | null {
+  return _spaceId;
+}
+
+export function getActiveWeddingNodeId(): string | null {
+  return _weddingNodeId;
 }
