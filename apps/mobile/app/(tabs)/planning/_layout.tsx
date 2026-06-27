@@ -2,11 +2,13 @@ import React from "react";
 import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 
 export default function PlanningLayout() {
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const isWide = useIsWideScreen();
   return (
     <Stack
       screenOptions={{
@@ -15,7 +17,7 @@ export default function PlanningLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Planning" }} />
+      <Stack.Screen name="index" options={{ title: "Planning", headerShown: !isWide }} />
       <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
       <Stack.Screen name="categories" options={{ title: "Catégories" }} />
       <Stack.Screen name="agenda-event" options={{ title: "Rendez-vous" }} />

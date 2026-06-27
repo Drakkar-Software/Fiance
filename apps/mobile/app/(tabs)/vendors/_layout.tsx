@@ -3,12 +3,14 @@ import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 
 export default function VendorsLayout() {
   const { t } = useTranslation("vendors");
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const isWide = useIsWideScreen();
   return (
     <Stack
       screenOptions={{
@@ -17,7 +19,7 @@ export default function VendorsLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: t("common:tabs.vendors") }} />
+      <Stack.Screen name="index" options={{ title: t("common:tabs.vendors"), headerShown: !isWide }} />
       <Stack.Screen name="new" options={{ title: t("newVendor") }} />
       <Stack.Screen name="[type]/index" options={{ title: t("common:tabs.vendors") }} />
       <Stack.Screen name="[type]/[id]" options={{ title: "" }} />

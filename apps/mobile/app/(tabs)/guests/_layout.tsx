@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { BedDouble, Tag } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { StackMenu } from "@/components/StackMenu";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 
 export default function InvitesLayout() {
   const { t } = useTranslation("guests");
@@ -12,6 +13,7 @@ export default function InvitesLayout() {
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const isWide = useIsWideScreen();
 
   return (
     <Stack
@@ -25,6 +27,7 @@ export default function InvitesLayout() {
         name="index"
         options={{
           title: t("guestsScreen"),
+          headerShown: !isWide,
           headerRight: () => (
             <StackMenu
               items={[
