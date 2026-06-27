@@ -44,8 +44,6 @@ import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
 import { theme as GP } from "@/lib/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import * as Updates from "expo-updates";
-
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -54,6 +52,7 @@ import { Toaster } from "@/lib/toast/sonner";
 import { SunglassesProvider, SunglassesGlobalErrorBoundary, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
 import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot } from "@/lib/providers";
+import { UpdateBanner } from "@/components/UpdateBanner";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
 // available before any screen renders (home, settings, public-page all call
@@ -127,6 +126,7 @@ function InnerApp() {
   useExpoRouterScreenTracking(analytics);
   return (
     <>
+      <UpdateBanner topInset />
       <AppContent />
       <Toaster />
     </>
@@ -196,21 +196,6 @@ export default function RootLayout() {
       document.documentElement.classList.toggle("dark", isDark);
     }
   }, [colorScheme, systemScheme]);
-
-  useEffect(() => {
-    if (__DEV__) return;
-    (async () => {
-      try {
-        const { isAvailable } = await Updates.checkForUpdateAsync();
-        if (isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-        }
-      } catch {
-        // Silent fail — update check is best-effort
-      }
-    })();
-  }, []);
 
   const handleUnlock = useCallback(() => setLocked(false), []);
 
