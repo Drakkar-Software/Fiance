@@ -11,6 +11,8 @@ import { DatabaseProvider } from "@/db/provider";
 import { SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
 import { getStarfishStore, onSyncStatusChange, subscribeSyncStatus, type SyncStatus } from "@/lib/starfish";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { DesktopSidebar } from "@/components/DesktopSidebar";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
@@ -27,12 +29,14 @@ export default function TabLayout() {
     [tasks]
   );
 
+  const isWide = useIsWideScreen();
+
   const tabs = (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: GP.clay,
         tabBarInactiveTintColor: isDark ? GP.mute : "#a09585",
-        tabBarStyle: !hasWedding ? { display: "none" } : {
+        tabBarStyle: (!hasWedding || isWide) ? { display: "none" } : {
           backgroundColor: isDark ? GP.paperDark : GP.paper,
           borderTopColor: isDark ? GP.hairStrong : GP.hair,
           borderTopWidth: 1,
@@ -139,9 +143,18 @@ export default function TabLayout() {
       {activeWedding && <SyncInitializer wedding={activeWedding} />}
       {activeWedding && <NotificationInitializer />}
       {activeWedding && <IAPInitializer wedding={activeWedding} />}
-      <View style={{ flex: 1 }}>
-        {tabs}
-        {activeWedding && <OfflineBanner />}
+      <View style={{ flex: 1, flexDirection: isWide && hasWedding ? "row" : "column" }}>
+        {isWide && hasWedding && (
+          <DesktopSidebar
+            isDark={isDark}
+            overdueCount={overdueTasks.length}
+            activeWedding={activeWedding}
+          />
+        )}
+        <View style={{ flex: 1 }}>
+          {tabs}
+          {activeWedding && <OfflineBanner />}
+        </View>
       </View>
     </DatabaseProvider>
   );
