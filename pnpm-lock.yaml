@@ -34,7 +34,7 @@ importers:
       '@legendapp/motion': '>=2.0.0'
       '@react-native-async-storage/async-storage': ^2.2.0
       '@react-native-community/netinfo': ^11.5.2
-      '@sentry/react-native': ^7.11.0
+      '@sentry/react-native': ~7.11.0
       '@shopify/react-native-skia': 2.4.18
       '@storybook/addon-mcp': ^0.5.0
       '@storybook/react-vite': ^10.3.5
@@ -51,10 +51,10 @@ importers:
       expo-constants: ^55.0.16
       expo-crypto: ~55.0.15
       expo-dev-client: ~55.0.35
-      expo-document-picker: ~55.0.13
+      expo-document-picker: ~55.0.14
       expo-file-system: ^55.0.22
       expo-font: ^55.0.8
-      expo-haptics: ~55.0.14
+      expo-haptics: ~55.0.15
       expo-iap: ^4.2.1
       expo-image-picker: ~55.0.20
       expo-linking: ^55.0.15
@@ -87,7 +87,7 @@ importers:
       react-native-reanimated: 4.2.1
       react-native-safe-area-context: ~5.6.2
       react-native-screens: ~4.23.0
-      react-native-svg: ^15.15.3
+      react-native-svg: 15.15.3
       react-native-web: ^0.21.2
       react-native-web-lite: ^1.112.4
       react-native-worklets: 0.7.4
@@ -103,7 +103,7 @@ importers:
       zustand: ^5.0.12
     dependencies:
       '@babel/runtime': 7.29.2
-      '@drakkar.software/seahorse': 0.7.2_e0c4bd0d2fa3b3e43ef6e9b474d77140
+      '@drakkar.software/seahorse': 0.7.2_84c42850676c40d5d01415a4e42a5a93
       '@drakkar.software/starfish-client': 3.0.0-alpha.44_react@19.2.0+zustand@5.0.12
       '@drakkar.software/starfish-identities': 3.0.0-alpha.44_react@19.2.0+zustand@5.0.12
       '@drakkar.software/starfish-keyring': 3.0.0-alpha.44_react@19.2.0+zustand@5.0.12
@@ -128,7 +128,7 @@ importers:
       '@legendapp/motion': 2.5.3_6dfe269360a48b4019202514e031ce4c
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.6
       '@react-native-community/netinfo': 11.5.2_react-native@0.83.6+react@19.2.0
-      '@sentry/react-native': 7.13.0_97050be8c3dd1ea52fa286564c4857a5
+      '@sentry/react-native': 7.11.0_97050be8c3dd1ea52fa286564c4857a5
       '@shopify/react-native-skia': 2.4.18_876d622b1797c7cdffe1750fefecdde8
       date-fns: 3.6.0
       date-fns-tz: 3.2.0_date-fns@3.6.0
@@ -138,10 +138,10 @@ importers:
       expo-constants: 55.0.16_expo@55.0.27+react-native@0.83.6
       expo-crypto: 55.0.16_expo@55.0.27
       expo-dev-client: 55.0.36_expo@55.0.27
-      expo-document-picker: 55.0.13_expo@55.0.27
+      expo-document-picker: 55.0.14_expo@55.0.27
       expo-file-system: 55.0.23_expo@55.0.27+react-native@0.83.6
       expo-font: 55.0.8_97050be8c3dd1ea52fa286564c4857a5
-      expo-haptics: 55.0.14_expo@55.0.27
+      expo-haptics: 55.0.15_expo@55.0.27
       expo-iap: 4.2.3_97050be8c3dd1ea52fa286564c4857a5
       expo-image-picker: 55.0.21_expo@55.0.27
       expo-linking: 55.0.16_97050be8c3dd1ea52fa286564c4857a5
@@ -157,7 +157,7 @@ importers:
       expo-status-bar: 55.0.6_react-native@0.83.6+react@19.2.0
       expo-updates: 55.0.25_97050be8c3dd1ea52fa286564c4857a5
       i18next: 24.2.3_typescript@5.9.3
-      lucide-react-native: 1.8.0_a0f334d3c4d955bcb3c2e7ee9ecb4313
+      lucide-react-native: 1.8.0_433dcfc05d6cf28eabaa57e4e70e088c
       nativewind: 5.0.0-preview.3_724813c9de0a51142dc3834e12fa1bdb
       react: 19.2.0
       react-dom: 19.2.0_react@19.2.0
@@ -167,16 +167,16 @@ importers:
       react-native-css: 3.0.7_react-native@0.83.6+react@19.2.0
       react-native-edge-to-edge: 1.8.1_react-native@0.83.6+react@19.2.0
       react-native-gesture-handler: 2.30.1_react-native@0.83.6+react@19.2.0
-      react-native-qrcode-svg: 6.3.21_a0f334d3c4d955bcb3c2e7ee9ecb4313
+      react-native-qrcode-svg: 6.3.21_433dcfc05d6cf28eabaa57e4e70e088c
       react-native-quick-crypto: 1.1.5_746663f1d3f903581bccb861cd371f39
       react-native-reanimated: 4.2.1_ccdfe6e9e5a941f1563f0a59e5eaa87e
       react-native-safe-area-context: 5.6.2_react-native@0.83.6+react@19.2.0
       react-native-screens: 4.23.0_react-native@0.83.6+react@19.2.0
-      react-native-svg: 15.15.4_react-native@0.83.6+react@19.2.0
+      react-native-svg: 15.15.3_react-native@0.83.6+react@19.2.0
       react-native-web: 0.21.2_react-dom@19.2.0+react@19.2.0
       react-native-worklets: 0.7.4_be0199d271fe438567bc1ebb581d12be
       sonner: 2.0.5_react-dom@19.2.0+react@19.2.0
-      sonner-native: 0.21.0_8bb7664de10bf93e3912ebbcfc92c899
+      sonner-native: 0.21.0_0ee54c4adb84902b49d116ce3199a604
       victory-native: 41.20.2_c21c73a92a78e9e46f6ee1f8ddd927b3
       zod: 3.25.76
       zustand: 5.0.12_f9d8fb1182447c3de6da3842e05f6d58
@@ -1499,7 +1499,7 @@ packages:
       '@drakkar.software/starfish-client': 3.0.0-alpha.44
     dev: false
 
-  /@drakkar.software/seahorse/0.7.2_e0c4bd0d2fa3b3e43ef6e9b474d77140:
+  /@drakkar.software/seahorse/0.7.2_84c42850676c40d5d01415a4e42a5a93:
     resolution: {integrity: sha512-0djajUn6NTzAs1AmzCoucb9AB/uM9ZrbsRNe4oVdHxl0DAf6mgAcZqeTL0veWY0bBvejknY4b/HlBu1hBBxARQ==}
     peerDependencies:
       '@expo/html-elements': '>=55.0.0'
@@ -1570,23 +1570,23 @@ packages:
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.6
       clsx: 2.1.1
       date-fns: 3.6.0
-      expo-document-picker: 55.0.13_expo@55.0.27
+      expo-document-picker: 55.0.14_expo@55.0.27
       expo-file-system: 55.0.23_expo@55.0.27+react-native@0.83.6
-      expo-haptics: 55.0.14_expo@55.0.27
+      expo-haptics: 55.0.15_expo@55.0.27
       expo-local-authentication: 55.0.15_expo@55.0.27
       expo-print: 55.0.16_expo@55.0.27+react-native@0.83.6
       expo-secure-store: 55.0.15_expo@55.0.27
       expo-sharing: 55.0.21_97050be8c3dd1ea52fa286564c4857a5
       expo-sqlite: 55.0.17_97050be8c3dd1ea52fa286564c4857a5
       expo-updates: 55.0.25_97050be8c3dd1ea52fa286564c4857a5
-      lucide-react-native: 1.8.0_a0f334d3c4d955bcb3c2e7ee9ecb4313
+      lucide-react-native: 1.8.0_433dcfc05d6cf28eabaa57e4e70e088c
       nativewind: 5.0.0-preview.3_724813c9de0a51142dc3834e12fa1bdb
       react: 19.2.0
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
       react-native-css: 3.0.7_react-native@0.83.6+react@19.2.0
-      react-native-svg: 15.15.4_react-native@0.83.6+react@19.2.0
+      react-native-svg: 15.15.3_react-native@0.83.6+react@19.2.0
       sonner: 2.0.5_react-dom@19.2.0+react@19.2.0
-      sonner-native: 0.21.0_8bb7664de10bf93e3912ebbcfc92c899
+      sonner-native: 0.21.0_0ee54c4adb84902b49d116ce3199a604
       tailwind-merge: 3.5.0
     dev: false
 
@@ -4430,50 +4430,50 @@ packages:
       '@scure/base': 2.2.0
     dev: false
 
-  /@sentry-internal/browser-utils/10.38.0:
-    resolution: {integrity: sha512-UOJtYmdcxHCcV0NPfXFff/a95iXl/E0EhuQ1y0uE0BuZDMupWSF5t2BgC4HaE5Aw3RTjDF3XkSHWoIF6ohy7eA==}
+  /@sentry-internal/browser-utils/10.37.0:
+    resolution: {integrity: sha512-rqdESYaVio9Ktz55lhUhtBsBUCF3wvvJuWia5YqoHDd+egyIfwWxITTAa0TSEyZl7283A4WNHNl0hyeEMblmfA==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry/core': 10.38.0
+      '@sentry/core': 10.37.0
     dev: false
 
-  /@sentry-internal/feedback/10.38.0:
-    resolution: {integrity: sha512-JXneg9zRftyfy1Fyfc39bBlF/Qd8g4UDublFFkVvdc1S6JQPlK+P6q22DKz3Pc8w3ySby+xlIq/eTu9Pzqi4KA==}
+  /@sentry-internal/feedback/10.37.0:
+    resolution: {integrity: sha512-P0PVlfrDvfvCYg2KPIS7YUG/4i6ZPf8z1MicXx09C9Cz9W9UhSBh/nii13eBdDtLav2BFMKhvaFMcghXHX03Hw==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry/core': 10.38.0
+      '@sentry/core': 10.37.0
     dev: false
 
-  /@sentry-internal/replay-canvas/10.38.0:
-    resolution: {integrity: sha512-OXWM9jEqNYh4VTvrMu7v+z1anz+QKQ/fZXIZdsO7JTT2lGNZe58UUMeoq386M+Saxen8F9SUH7yTORy/8KI5qw==}
+  /@sentry-internal/replay-canvas/10.37.0:
+    resolution: {integrity: sha512-PyIYSbjLs+L5essYV0MyIsh4n5xfv2eV7l0nhUoPJv9Bak3kattQY3tholOj0EP3SgKgb+8HSZnmazgF++Hbog==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry-internal/replay': 10.38.0
-      '@sentry/core': 10.38.0
+      '@sentry-internal/replay': 10.37.0
+      '@sentry/core': 10.37.0
     dev: false
 
-  /@sentry-internal/replay/10.38.0:
-    resolution: {integrity: sha512-YWIkL6/dnaiQyFiZXJ/nN+NXGv/15z45ia86bE/TMq01CubX/DUOilgsFz0pk2v/pg3tp/U2MskLO9Hz0cnqeg==}
+  /@sentry-internal/replay/10.37.0:
+    resolution: {integrity: sha512-snuk12ZaDerxesSnetNIwKoth/51R0y/h3eXD/bGtXp+hnSkeXN5HanI/RJl297llRjn4zJYRShW9Nx86Ay0Dw==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry-internal/browser-utils': 10.38.0
-      '@sentry/core': 10.38.0
+      '@sentry-internal/browser-utils': 10.37.0
+      '@sentry/core': 10.37.0
     dev: false
 
-  /@sentry/babel-plugin-component-annotate/4.9.1:
-    resolution: {integrity: sha512-0gEoi2Lb54MFYPOmdTfxlNKxI7kCOvNV7gP8lxMXJ7nCazF5OqOOZIVshfWjDLrc0QrSV6XdVvwPV9GDn4wBMg==}
+  /@sentry/babel-plugin-component-annotate/4.8.0:
+    resolution: {integrity: sha512-cy/9Eipkv23MsEJ4IuB4dNlVwS9UqOzI3Eu+QPake5BVFgPYCX0uP0Tr3Z43Ime6Rb+BiDnWC51AJK9i9afHYw==}
     engines: {node: '>= 14'}
     dev: false
 
-  /@sentry/browser/10.38.0:
-    resolution: {integrity: sha512-3phzp1YX4wcQr9mocGWKbjv0jwtuoDBv7+Y6Yfrys/kwyaL84mDLjjQhRf4gL5SX7JdYkhBp4WaiNlR0UC4kTA==}
+  /@sentry/browser/10.37.0:
+    resolution: {integrity: sha512-kheqJNqGZP5TSBCPv4Vienv1sfZwXKHQDYR+xrdHHYdZqwWuZMJJW/cLO9XjYAe+B9NnJ4UwJOoY4fPvU+HQ1Q==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry-internal/browser-utils': 10.38.0
-      '@sentry-internal/feedback': 10.38.0
-      '@sentry-internal/replay': 10.38.0
-      '@sentry-internal/replay-canvas': 10.38.0
-      '@sentry/core': 10.38.0
+      '@sentry-internal/browser-utils': 10.37.0
+      '@sentry-internal/feedback': 10.37.0
+      '@sentry-internal/replay': 10.37.0
+      '@sentry-internal/replay-canvas': 10.37.0
+      '@sentry/core': 10.37.0
     dev: false
 
   /@sentry/cli-darwin/2.58.4:
@@ -4564,13 +4564,13 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/core/10.38.0:
-    resolution: {integrity: sha512-1pubWDZE5y5HZEPMAZERP4fVl2NH3Ihp1A+vMoVkb3Qc66Diqj1WierAnStlZP7tCx0TBa0dK85GTW/ZFYyB9g==}
+  /@sentry/core/10.37.0:
+    resolution: {integrity: sha512-hkRz7S4gkKLgPf+p3XgVjVm7tAfvcEPZxeACCC6jmoeKhGkzN44nXwLiqqshJ25RMcSrhfFvJa/FlBg6zupz7g==}
     engines: {node: '>=18'}
     dev: false
 
-  /@sentry/react-native/7.13.0_97050be8c3dd1ea52fa286564c4857a5:
-    resolution: {integrity: sha512-pKY+rln3CEnhnG21eUXcl/yeG5fkNruqXXjEikE5FjsyLmJi2POAGwT4tlupyHtG3fQT5mp06QI7bQdpAuH4Xw==}
+  /@sentry/react-native/7.11.0_97050be8c3dd1ea52fa286564c4857a5:
+    resolution: {integrity: sha512-OiDaLCAGpRN18YG/o7IIwLhU0Xpb0tYKQ5QxkGHiwb+L3VHn+MqGCGfITYNdhqr06HHMvu9Lysm+UJxaNmGaJg==}
     hasBin: true
     peerDependencies:
       expo: '>=49.0.0'
@@ -4580,12 +4580,12 @@ packages:
       expo:
         optional: true
     dependencies:
-      '@sentry/babel-plugin-component-annotate': 4.9.1
-      '@sentry/browser': 10.38.0
+      '@sentry/babel-plugin-component-annotate': 4.8.0
+      '@sentry/browser': 10.37.0
       '@sentry/cli': 2.58.4
-      '@sentry/core': 10.38.0
-      '@sentry/react': 10.38.0_react@19.2.0
-      '@sentry/types': 10.38.0
+      '@sentry/core': 10.37.0
+      '@sentry/react': 10.37.0_react@19.2.0
+      '@sentry/types': 10.37.0
       expo: 55.0.27_1a10d0fc5f9c5f5d97334b4ff947521d
       react: 19.2.0
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
@@ -4594,22 +4594,22 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/react/10.38.0_react@19.2.0:
-    resolution: {integrity: sha512-3UiKo6QsqTyPGUt0XWRY9KLaxc/cs6Kz4vlldBSOXEL6qPDL/EfpwNJT61osRo81VFWu8pKu7ZY2bvLPryrnBQ==}
+  /@sentry/react/10.37.0_react@19.2.0:
+    resolution: {integrity: sha512-XLnXJOHgsCeVAVBbO+9AuGlZWnCxLQHLOmKxpIr8wjE3g7dHibtug6cv8JLx78O4dd7aoCqv2TTyyKY9FLJ2EQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
     dependencies:
-      '@sentry/browser': 10.38.0
-      '@sentry/core': 10.38.0
+      '@sentry/browser': 10.37.0
+      '@sentry/core': 10.37.0
       react: 19.2.0
     dev: false
 
-  /@sentry/types/10.38.0:
-    resolution: {integrity: sha512-DoeyTv/TvnoVDhHgdyv/wehieAKdyjLjEMtPOqqq/AjkP02BxeC0JYUrrWKOjV0wdLq5ZP8jKcCX8GN7awZonQ==}
+  /@sentry/types/10.37.0:
+    resolution: {integrity: sha512-umpnUKRC0AAbJrADg6SlFtqN2yzf7NHciCF9lkHau+ax2PIZ/NDmoG4RQujFVflVaVoD60Ly2t+CcPnYIWMPlw==}
     engines: {node: '>=18'}
     dependencies:
-      '@sentry/core': 10.38.0
+      '@sentry/core': 10.37.0
     dev: false
 
   /@shopify/react-native-skia/2.4.18_876d622b1797c7cdffe1750fefecdde8:
@@ -5522,7 +5522,7 @@ packages:
       '@vitest/spy': 4.1.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 8.0.8_@types+node@22.20.0
+      vite: 8.0.8
     dev: true
 
   /@vitest/pretty-format/3.2.4:
@@ -7550,8 +7550,8 @@ packages:
       expo-dev-menu-interface: 55.0.2_expo@55.0.27
     dev: false
 
-  /expo-document-picker/55.0.13_expo@55.0.27:
-    resolution: {integrity: sha512-IhswJElhdzs3fKDEKW8KXYRoFkWGEsXRMYAZT46Yo56zqqy8yQXrczo33RSwD2hFzNQBdLT97SJL9N311UyS3g==}
+  /expo-document-picker/55.0.14_expo@55.0.27:
+    resolution: {integrity: sha512-Jfw7q5evNc1ebM/gZQ0bmG1t56QdHurbZ6IF8NwSnf/F5B4qjS97OeCfdsq+Q5JLrTmqSIkvYhCZwRYZzuX0Fw==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -7597,8 +7597,8 @@ packages:
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
     dev: false
 
-  /expo-haptics/55.0.14_expo@55.0.27:
-    resolution: {integrity: sha512-KjDItBsA9mi1f5nRwf8g1wOdfEcLHwvEdt5Jl1sMCDETR/homcGOl+F3QIiPOl/PRlbGVieQsjTtF4DGtHOj6g==}
+  /expo-haptics/55.0.15_expo@55.0.27:
+    resolution: {integrity: sha512-RREAflKxOIPAJ5l5M22eHUDU4PGetH2xvQN4ihN4rNEKrzbxrxI2e8yf3MopujCOz5aV5JO1gaGezdJbWEeS9w==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -9216,7 +9216,7 @@ packages:
     dependencies:
       yallist: 3.1.1
 
-  /lucide-react-native/1.8.0_a0f334d3c4d955bcb3c2e7ee9ecb4313:
+  /lucide-react-native/1.8.0_433dcfc05d6cf28eabaa57e4e70e088c:
     resolution: {integrity: sha512-trgqSA2ghSHUE3yLUBTdhjF1EMbgcJuccI1VXe6zTI2u4tbeUXbtXeHGORRdeGUdC80XBn/XJa1YrG8uvKhpNg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -9225,7 +9225,7 @@ packages:
     dependencies:
       react: 19.2.0
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
-      react-native-svg: 15.15.4_react-native@0.83.6+react@19.2.0
+      react-native-svg: 15.15.3_react-native@0.83.6+react@19.2.0
     dev: false
 
   /lucide-react/1.8.0_react@19.2.0:
@@ -10345,7 +10345,7 @@ packages:
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
     dev: false
 
-  /react-native-qrcode-svg/6.3.21_a0f334d3c4d955bcb3c2e7ee9ecb4313:
+  /react-native-qrcode-svg/6.3.21_433dcfc05d6cf28eabaa57e4e70e088c:
     resolution: {integrity: sha512-6vcj4rcdpWedvphDR+NSJcudJykNuLgNGFwm2p4xYjR8RdyTzlrELKI5LkO4ANS9cQUbqsfkpippPv64Q2tUtA==}
     peerDependencies:
       react: '*'
@@ -10356,7 +10356,7 @@ packages:
       qrcode: 1.5.4
       react: 19.2.0
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
-      react-native-svg: 15.15.4_react-native@0.83.6+react@19.2.0
+      react-native-svg: 15.15.3_react-native@0.83.6+react@19.2.0
       text-encoding: 0.7.0
     dev: false
 
@@ -10433,8 +10433,8 @@ packages:
       warn-once: 0.1.1
     dev: false
 
-  /react-native-svg/15.15.4_react-native@0.83.6+react@19.2.0:
-    resolution: {integrity: sha512-boT/vIRgj6zZKBpfTPJJiYWMbZE9duBMOwPK6kCSTgxsS947IFMOq9OgIFkpWZTB7t229H24pDRkh3W9ZK/J1A==}
+  /react-native-svg/15.15.3_react-native@0.83.6+react@19.2.0:
+    resolution: {integrity: sha512-/k4KYwPBLGcx2f5d4FjE+vCScK7QOX14cl2lIASJ28u4slHHtIhL0SZKU7u9qmRBHxTCKPoPBtN6haT1NENJNA==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -11140,7 +11140,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dev: false
 
-  /sonner-native/0.21.0_8bb7664de10bf93e3912ebbcfc92c899:
+  /sonner-native/0.21.0_0ee54c4adb84902b49d116ce3199a604:
     resolution: {integrity: sha512-pIdyMd722xuDukIvCZCmWh9Jy5FV+m9uKYl3oAzonYE+91eX5556vYrIik5MisDlBniSXaWqC9CnPoS6DKo2Lg==}
     peerDependencies:
       react: '*'
@@ -11157,7 +11157,7 @@ packages:
       react-native-reanimated: 4.2.1_ccdfe6e9e5a941f1563f0a59e5eaa87e
       react-native-safe-area-context: 5.6.2_react-native@0.83.6+react@19.2.0
       react-native-screens: 4.23.0_react-native@0.83.6+react@19.2.0
-      react-native-svg: 15.15.4_react-native@0.83.6+react@19.2.0
+      react-native-svg: 15.15.3_react-native@0.83.6+react@19.2.0
     dev: false
 
   /sonner/2.0.5_react-dom@19.2.0+react@19.2.0:
