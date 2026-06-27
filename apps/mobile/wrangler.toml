@@ -1,5 +1,5 @@
 name = "fiance"
-compatibility_date = "2025-04-05"
+compatibility_date = "2026-05-22"
 
 [assets]
 directory = "dist"
