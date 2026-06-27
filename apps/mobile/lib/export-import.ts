@@ -69,13 +69,21 @@ async function exportNative(json: string, filename: string): Promise<void> {
 // ─── Import ─────────────────────────────────────────────────────────────────
 
 /**
- * Pick a JSON file, validate it, and restore into the active wedding.
- * Returns true on success, null if the user cancelled, or an ImportError string.
+ * Open the platform file picker and return the raw JSON string.
+ * Must be called from a trusted user gesture (direct onPress) so the browser
+ * doesn't block the file dialog.
+ * Returns null if the user cancelled.
  */
-export async function importWedding(): Promise<true | null | ImportError> {
-  const json = Platform.OS === "web" ? await importWeb() : await importNative();
-  if (!json) return null;
+export async function pickBackupJson(): Promise<string | null> {
+  return Platform.OS === "web" ? importWeb() : importNative();
+}
 
+/**
+ * Validate and restore a JSON backup string into the active wedding.
+ * Returns true on success or an ImportError string on failure.
+ * Call after pickBackupJson() and user confirmation.
+ */
+export async function applyBackup(json: string): Promise<true | ImportError> {
   let data: Record<string, unknown>;
   try {
     data = JSON.parse(json);
@@ -89,7 +97,6 @@ export async function importWedding(): Promise<true | null | ImportError> {
 
   restoreFromBackup(data, getStorage());
   // Push to Space immediately so the restored data survives the next hydrateFromSpace.
-  // Without this, the debounced push races with boot hydration and may be overwritten.
   const _session = getActiveSession();
   const _spaceId = getActiveSpaceId();
   const _weddingNodeId = getActiveWeddingNodeId();
@@ -103,21 +110,16 @@ export async function importWedding(): Promise<true | null | ImportError> {
   return true;
 }
 
-// ─── Import legacy backup → Space ───────────────────────────────────────────
-
 export type LegacyImportResult =
   | { ok: true; result: ImportResult }
   | { ok: false; error: "no_session" | "invalid_json" | "invalid_backup" | "push_failed" };
 
 /**
- * Pick a v6 backup JSON, parse it, and push all entities into the active Space
- * as ObjectNodes using `importLegacyBackup`. Does NOT restore local store state —
- * the next `hydrateFromSpace` at login will pull the imported nodes.
+ * Parse a legacy v6 backup JSON string and push all entities into the active Space.
+ * Does NOT restore local store state — the next hydrateFromSpace at login will pull them.
+ * Call after pickBackupJson() and user confirmation.
  */
-export async function importLegacyToSpace(): Promise<LegacyImportResult | null> {
-  const json = Platform.OS === "web" ? await importWeb() : await importNative();
-  if (!json) return null;
-
+export async function applyLegacyToSpace(json: string): Promise<LegacyImportResult> {
   const snapshot = parseAndRestore(json);
   if (snapshot === "invalid_json") return { ok: false, error: "invalid_json" };
   if (snapshot === "invalid_backup") return { ok: false, error: "invalid_backup" };
@@ -128,7 +130,6 @@ export async function importLegacyToSpace(): Promise<LegacyImportResult | null> 
   if (!session || !spaceId || !weddingNodeId) return { ok: false, error: "no_session" };
 
   // Block any debounced push from firing during the import window.
-  // A pending timer's replace-domain merge would overwrite the freshly pushed legacy nodes.
   suppressSyncPush();
   try {
     const result = await importLegacyBackup(session, spaceId, snapshot, weddingNodeId);
@@ -142,6 +143,28 @@ export async function importLegacyToSpace(): Promise<LegacyImportResult | null> 
   } finally {
     restoreSyncPush();
   }
+}
+
+/**
+ * Pick a JSON file, validate it, and restore into the active wedding.
+ * Returns true on success, null if the user cancelled, or an ImportError string.
+ * @deprecated Prefer pickBackupJson() + applyBackup() so the file dialog opens
+ * before the confirm sheet (avoids browser user-activation loss).
+ */
+export async function importWedding(): Promise<true | null | ImportError> {
+  const json = await pickBackupJson();
+  if (!json) return null;
+  return applyBackup(json);
+}
+
+/**
+ * Pick a v6 backup JSON, parse it, and push all entities into the active Space.
+ * @deprecated Prefer pickBackupJson() + applyLegacyToSpace().
+ */
+export async function importLegacyToSpace(): Promise<LegacyImportResult | null> {
+  const json = await pickBackupJson();
+  if (!json) return null;
+  return applyLegacyToSpace(json);
 }
 
 function importWeb(): Promise<string | null> {

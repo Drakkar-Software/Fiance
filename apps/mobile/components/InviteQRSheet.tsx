@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { View, Text, Pressable } from "react-native-css/components";
-import { Share } from "react-native";
 import { useTranslation } from "react-i18next";
+import { shareLink } from "@/lib/share";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import QRCode from "react-native-qrcode-svg";
 
@@ -31,11 +31,7 @@ export function InviteQRSheet({ visible, onClose, inviteUrl }: InviteQRSheetProp
   );
 
   const handleShare = async () => {
-    try {
-      await Share.share({ message: t("joinOurWedding", { url: inviteUrl }) });
-    } catch {
-      // User cancelled
-    }
+    await shareLink(inviteUrl, t("joinOurWedding", { url: inviteUrl }), t("linkCopied"));
   };
 
   return (

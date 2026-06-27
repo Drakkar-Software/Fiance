@@ -87,6 +87,22 @@ export function configureOnBoot(): void {
 // SyncInitializer — replaces v2 initStarfish + createMobileLifecycle
 // ---------------------------------------------------------------------------
 
+/**
+ * Core sync activation: resolves session, provisions space, and calls initSync.
+ * Returns { userId } on success, null if any step fails.
+ * Used by both SyncInitializer (boot) and the settings toggle (runtime enable).
+ */
+export async function activateSync(
+  wedding: WeddingRegistryEntry,
+): Promise<{ userId: string } | null> {
+  const sessionConfig = await resolveSessionConfig(wedding);
+  if (!sessionConfig) return null;
+  const { session, userId, serverUrl } = sessionConfig;
+  const spaceId = await ensureSpaceProvisioned(session, wedding);
+  await initSync({ session, spaceId, serverUrl, weddingNodeId: wedding.id });
+  return { userId };
+}
+
 /** Initializes starfish-spaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
@@ -99,22 +115,14 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     let unregisterPush: (() => void) | null = null;
 
     (async () => {
-      const sessionConfig = await resolveSessionConfig(wedding);
-      if (cancelled || !sessionConfig) return;
+      const activated = await activateSync(wedding);
+      if (cancelled || !activated) return;
+      resolvedUserId = activated.userId;
 
-      const { session, userId, serverUrl } = sessionConfig;
-      resolvedUserId = userId;
-
-      // Provision the space if it doesn't exist yet (idempotent).
-      // Writes _access + objindex seed + _keyring (octospaces) then persists the sp- id.
-      const spaceId = await ensureSpaceProvisioned(session, wedding);
-      if (cancelled) return;
-
-      // The registry entry id is stable UUID — used as the root wedding ObjectNode id.
-      const weddingNodeId = wedding.id;
-
-      if (cancelled) return;
-      await initSync({ session, spaceId, serverUrl, weddingNodeId });
+      const session = getActiveSession();
+      const spaceId = getActiveSpaceId();
+      const weddingNodeId = getActiveWeddingNodeId();
+      if (!session || !spaceId || !weddingNodeId) return;
 
       // B3: hydrate stores from ObjectNode server data (boot pull).
       if (!cancelled) {
@@ -141,7 +149,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 
       // Pull entitlements using cap-cert.
       if (!cancelled) {
-        const features = await pullEntitlements(null, userId).catch(() => null);
+        const features = await pullEntitlements(null, activated.userId).catch(() => null);
         if (!cancelled && features !== null) {
           useEntitlementsStore.getState().setFeatures(features);
         }

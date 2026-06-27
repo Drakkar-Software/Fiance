@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Share, Alert, Linking } from "react-native";
+import { Alert, Linking } from "react-native";
+import { shareLink } from "@/lib/share";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
@@ -148,11 +149,9 @@ export default function PublicPageScreen() {
   // Share
   const handleShare = useCallback(async () => {
     if (!activeEntry?.seedPhrase) return;
-    try {
-      const userId = await deriveUserId(activeEntry.seedPhrase);
-      const url = buildWeddingPageUrl(userId);
-      await Share.share({ message: t("sharePublicPageMsg", { url }) });
-    } catch {}
+    const userId = await deriveUserId(activeEntry.seedPhrase);
+    const url = buildWeddingPageUrl(userId);
+    await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
   }, [activeEntry?.seedPhrase, t]);
 
   return (

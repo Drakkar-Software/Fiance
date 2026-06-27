@@ -10,7 +10,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
-import { exportWedding, importWedding, importLegacyToSpace } from "@/lib/export-import";
+import { exportWedding, pickBackupJson, applyBackup, applyLegacyToSpace } from "@/lib/export-import";
 import { getActiveWeddingNodeId } from "@/lib/starfish";
 import { Archive, ArrowRightLeft } from "lucide-react-native";
 import {
@@ -45,8 +45,10 @@ export default function ExportImportScreen() {
 
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [pickedJson, setPickedJson] = useState<string | null>(null);
   const [showImportConfirm, setShowImportConfirm] = useState(false);
   const [importingToSpace, setImportingToSpace] = useState(false);
+  const [pickedLegacyJson, setPickedLegacyJson] = useState<string | null>(null);
   const [showImportToSpaceConfirm, setShowImportToSpaceConfirm] = useState(false);
 
   const handleExportJson = useCallback(async () => {
@@ -60,11 +62,21 @@ export default function ExportImportScreen() {
     }
   }, [activeEntry?.label, t]);
 
+  const handlePickImport = useCallback(() => {
+    pickBackupJson().then((json) => {
+      if (!json) return;
+      setPickedJson(json);
+      setShowImportConfirm(true);
+    });
+  }, []);
+
   const doImport = useCallback(async () => {
+    if (!pickedJson) return;
     setShowImportConfirm(false);
     setImporting(true);
     try {
-      const result = await importWedding();
+      const result = await applyBackup(pickedJson);
+      setPickedJson(null);
       if (result === true) {
         Alert.alert(t("importSuccess"), t("importSuccessMsg"));
         if (useSettingsStore.getState().notificationsEnabled) {
@@ -83,14 +95,23 @@ export default function ExportImportScreen() {
     } finally {
       setImporting(false);
     }
-  }, [t]);
+  }, [pickedJson, t]);
+
+  const handlePickLegacyImport = useCallback(() => {
+    pickBackupJson().then((json) => {
+      if (!json) return;
+      setPickedLegacyJson(json);
+      setShowImportToSpaceConfirm(true);
+    });
+  }, []);
 
   const doImportToSpace = useCallback(async () => {
+    if (!pickedLegacyJson) return;
     setShowImportToSpaceConfirm(false);
     setImportingToSpace(true);
     try {
-      const result = await importLegacyToSpace();
-      if (result === null) return; // cancelled
+      const result = await applyLegacyToSpace(pickedLegacyJson);
+      setPickedLegacyJson(null);
       if (!result.ok) {
         const msgKey = result.error === "no_session"
           ? "importToSpaceNoSession"
@@ -108,7 +129,7 @@ export default function ExportImportScreen() {
     } finally {
       setImportingToSpace(false);
     }
-  }, [t]);
+  }, [pickedLegacyJson, t]);
 
   const handleExportPdf = useCallback(
     async (type: "guests" | "budget" | "timeline" | "vendors") => {
@@ -234,7 +255,7 @@ export default function ExportImportScreen() {
                 icon={<ArrowRightLeft size={18} color="#8B5CF6" />}
                 label={importingToSpace ? t("importing") : t("migrationImport")}
                 sublabel={t("migrationImportDesc")}
-                onPress={() => setShowImportToSpaceConfirm(true)}
+                onPress={handlePickLegacyImport}
                 last
               />
             </FormCard>
@@ -258,13 +279,13 @@ export default function ExportImportScreen() {
               icon={<Upload size={18} color="#F59E0B" />}
               label={importing ? t("importing") : t("importData")}
               sublabel={t("importDesc")}
-              onPress={() => setShowImportConfirm(true)}
+              onPress={handlePickImport}
             />
             <ExportRow
               icon={<Archive size={18} color="#8B5CF6" />}
               label={importingToSpace ? t("importing") : t("importToSpace")}
               sublabel={t("importToSpaceDesc")}
-              onPress={() => setShowImportToSpaceConfirm(true)}
+              onPress={handlePickLegacyImport}
               last
             />
           </FormCard>

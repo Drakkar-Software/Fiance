@@ -95,6 +95,7 @@
   "publicOnTimeline": "Visible on shared timeline",
   "shareTimeline": "Share",
   "shareTimelineMessage": "View our wedding day schedule: {{url}}",
+  "linkCopied": "Link copied!",
   "categories": {
     "admin": "Administrative & legal",
     "venue": "Venue & logistics",

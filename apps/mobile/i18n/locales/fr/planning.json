@@ -95,6 +95,7 @@
   "publicOnTimeline": "Visible sur le planning partagé",
   "shareTimeline": "Partager",
   "shareTimelineMessage": "Consultez le programme de notre mariage : {{url}}",
+  "linkCopied": "Lien copié !",
   "categories": {
     "admin": "Administratif & légal",
     "venue": "Lieu & logistique",

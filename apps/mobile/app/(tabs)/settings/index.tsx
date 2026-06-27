@@ -10,14 +10,15 @@ import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell,
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
 import {
-  initStarfish,
   teardownStarfish,
   getStarfishStore,
+  isSyncActive,
   getLastSyncTimestamp,
   getSyncStatus,
   onSyncStatusChange,
   subscribeSyncStatus,
 } from "@/lib/starfish";
+import { activateSync } from "@/lib/providers";
 import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
 import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
 import { createGroupInvite } from "@/lib/group-crypto";
@@ -137,12 +138,11 @@ export default function SettingsScreen() {
     }
     updateRegistryWedding(activeEntry.id, { syncDisabled: false });
 
-    const config = await resolveServerConfig(activeEntry);
-    if (!config) return;
+    const activated = await activateSync(activeEntry);
+    if (!activated) return;
 
-    await initStarfish(config);
     analytics.capture("sync_enabled");
-    setSyncEnabled(true);
+    setSyncEnabled(isSyncActive());
 
     // If the user has local data that hasn't been pushed to Space yet, offer migration.
     if (wedding) {

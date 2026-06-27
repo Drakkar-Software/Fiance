@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert, Share } from "react-native";
+import { Alert } from "react-native";
+import { shareLink } from "@/lib/share";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -517,11 +518,9 @@ function DayOfView() {
 
   const handleShareTimeline = useCallback(async () => {
     if (!activeEntry?.seedPhrase) return;
-    try {
-      const userId = await deriveUserId(activeEntry.seedPhrase);
-      const url = buildWeddingPageUrl(userId);
-      await Share.share({ message: t("shareTimelineMessage", { url }) });
-    } catch {}
+    const userId = await deriveUserId(activeEntry.seedPhrase);
+    const url = buildWeddingPageUrl(userId);
+    await shareLink(url, t("shareTimelineMessage", { url }), t("linkCopied"));
   }, [activeEntry?.seedPhrase, t]);
 
   return (
