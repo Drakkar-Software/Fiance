@@ -11,7 +11,7 @@
     "primaryColor": "#EC4899",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fiance.app",
+      "bundleIdentifier": "software.drakkar.fiance.app",
       "appStoreUrl": "https://apps.apple.com/app/fiance/id000000000",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Fiancé a besoin d'accéder à vos photos pour vos idées d'inspiration mariage.",
@@ -28,8 +28,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fiance.app",
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.fiance.app"
+      "package": "software.drakkar.fiance.app",
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=software.drakkar.fiance.app"
     },
     "web": {
       "bundler": "metro",
@@ -80,10 +80,10 @@
         "expo-iap",
         {
           "iosProductIds": [
-            "com.fiance.app.premium.lifetime"
+            "software.drakkar.fiance.app.premium.lifetime"
           ],
           "androidProductIds": [
-            "com.fiance.app.premium.lifetime"
+            "software.drakkar.fiance.app.premium.lifetime"
           ]
         }
       ],

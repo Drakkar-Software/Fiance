@@ -121,8 +121,8 @@ const PREMIUM_PRODUCT = {
   name: "Fiancé Premium",
   defaultDuration: 0, // lifetime — no expiry
 };
-const GOOGLE_PRODUCT_SKU = "com.fiance.app.premium.lifetime";
-const PACKAGE_NAME = "com.fiance.app";
+const GOOGLE_PRODUCT_SKU = "software.drakkar.fiance.app.premium.lifetime";
+const PACKAGE_NAME = "software.drakkar.fiance.app";
 
 export function createDoubloon(env: DoubloonEnv) {
   // TODO(doubloon-v3): StarfishClient.auth removed in v3 — pending Doubloon migration to cap-cert.

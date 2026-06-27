@@ -27,7 +27,7 @@ export function isPremiumSync(): boolean {
   return false;
 }
 
-export const PREMIUM_SKU = "com.fiance.app.premium.lifetime";
+export const PREMIUM_SKU = "software.drakkar.fiance.app.premium.lifetime";
 
 // Dynamically imported to avoid Metro bundling on web
 let iapModule: typeof import("expo-iap") | null = null;
