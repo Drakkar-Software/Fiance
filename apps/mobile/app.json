@@ -48,7 +48,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/2da930dd-2220-4371-8588-05a9fe390c44"
+      "url": "https://u.expo.dev/f8184666-f7f3-47f7-98d9-e42a8de5247d"
     },
     "plugins": [
       "react-native-edge-to-edge",
@@ -99,7 +99,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "2da930dd-2220-4371-8588-05a9fe390c44"
+        "projectId": "f8184666-f7f3-47f7-98d9-e42a8de5247d"
       }
     }
   }
