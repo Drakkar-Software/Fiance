@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native-css/components";
-import { Alert, Platform, StatusBar as RNStatusBar } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, RefreshCw } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
@@ -14,8 +14,6 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
-import { resolveServerConfig } from "@/lib/server";
 import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { TimelineItem } from "@/components/TimelineItem";
@@ -130,34 +128,6 @@ function DashboardScreen() {
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
-  const syncEnabled = !!activeEntry?.seedPhrase;
-  const [syncing, setSyncing] = useState(false);
-
-  const getRsvpConfig = useCallback(
-    () => resolveServerConfig(activeEntry),
-    [activeEntry?.seedPhrase, activeEntry?.serverUrl],
-  );
-
-  const handleRsvpSync = useCallback(async () => {
-    analytics.capture("rsvp_sync_triggered");
-    setSyncing(true);
-    try {
-      const config = await getRsvpConfig();
-      if (!config) return;
-      await pushRsvpRoster(config);
-      const submissions = await fetchRsvpInbox(config);
-      const count = applyRsvpSubmissions(submissions);
-      if (count > 0) {
-        Alert.alert(t("syncSuccess", { count }));
-      } else {
-        Alert.alert(t("syncNone"));
-      }
-    } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
-    } finally {
-      setSyncing(false);
-    }
-  }, [getRsvpConfig, t]);
 
   return (
     <ScrollView
@@ -428,31 +398,6 @@ function DashboardScreen() {
           </Pressable>
         </View>
 
-        {/* RSVP sync */}
-        {syncEnabled && (
-          <Pressable
-            onPress={handleRsvpSync}
-            disabled={syncing}
-            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
-          >
-            <View className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900 items-center justify-center mr-3">
-              {syncing ? (
-                <ActivityIndicator size="small" color="#3B82F6" />
-              ) : (
-                <RefreshCw size={16} color="#3B82F6" />
-              )}
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">
-                {t("rsvpSyncButton")}
-              </Text>
-              <Text className="text-xs text-mute leading-4 mt-0.5">
-                {t("rsvpSyncDesc")}
-              </Text>
-            </View>
-            <ChevronRight size={16} color="#C0C0C8" />
-          </Pressable>
-        )}
 
         {/* Vendors summary */}
         <Pressable

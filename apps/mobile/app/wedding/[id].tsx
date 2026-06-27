@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Image, Pressable, TextInput } from "react-native-css/components";
+import { View, Text, ScrollView, ActivityIndicator, Image, Pressable } from "react-native-css/components";
 import { Platform, Linking } from "react-native";
 import { useLocalSearchParams, Redirect, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download, Camera } from "lucide-react-native";
+import { Clock, MapPin, HelpCircle, Calendar, Globe, CheckCircle2, Gift, ExternalLink, Download } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
-import { fetchPublicPage, type PublicWeddingPage } from "@/lib/public-page";
+import { type PublicWeddingPage } from "@/lib/public-page";
 import { printPublicSchedule } from "@/lib/print-schedule";
-import { fetchRsvpRoster, submitRsvp, type RsvpRosterEntry } from "@/lib/rsvp-sync";
+import { type RsvpSubmission } from "@/lib/rsvp-sync";
 import { resolveServerUrl } from "@/lib/server";
 import {
   decodeNodeInviteLink,
@@ -16,6 +16,7 @@ import {
   writeNodeWithLinkCap,
   type NodeInviteLinkToken,
 } from "@fiance/sdk";
+import { decodeGuestLink } from "@/lib/guest-link";
 import { TimelineItem } from "@/components/TimelineItem";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
@@ -63,13 +64,13 @@ function LangSwitch() {
 
 export default function WeddingPublicPage() {
   const { t } = useTranslation(["wedding-page", "seo"]);
-  const { id, token } = useLocalSearchParams<{ id: string; token?: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [page, setPage] = useState<PublicWeddingPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [roster, setRoster] = useState<RsvpRosterEntry[] | null>(null);
-  const [rsvpSearch, setRsvpSearch] = useState("");
-  const [selectedGuest, setSelectedGuest] = useState<RsvpRosterEntry | null>(null);
+  // v3 RSVP state — populated when `id` is a combined guest link.
+  const [rsvpToken, setRsvpToken] = useState<NodeInviteLinkToken | null>(null);
+  const [rsvpSeed, setRsvpSeed] = useState<RsvpSubmission | null>(null);
   const [rsvpStatus, setRsvpStatus] = useState<"ACCEPTED" | "DECLINED" | "MAYBE" | null>(null);
   const [rsvpDiet, setRsvpDiet] = useState("STANDARD");
   const [plusOneStatus, setPlusOneStatus] = useState<"ACCEPTED" | "DECLINED" | null>(null);
@@ -78,57 +79,46 @@ export default function WeddingPublicPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(false);
-  // v3: the decoded NodeInviteLinkToken if `id` is a base64url fragment (RSVP write cap).
-  const [rsvpLinkToken, setRsvpLinkToken] = useState<NodeInviteLinkToken | null>(null);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
-        // v3: `id` is the base64url NodeInviteLinkToken fragment from the URL path.
-        let linkToken: NodeInviteLinkToken | null = null;
-        try {
-          linkToken = decodeNodeInviteLink(id);
-        } catch {
-          // Not a v3 token — fall through to legacy path.
+        const serverUrl = resolveServerUrl();
+        if (!serverUrl) { setError(true); return; }
+        const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
+
+        // Try combined guest link first ({ v:1, p: pageToken, r: rsvpToken }).
+        const combined = decodeGuestLink(id);
+        if (combined) {
+          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
+          if (result?.data) {
+            setPage(result.data as PublicWeddingPage);
+            setOgMeta(result.data as PublicWeddingPage, t);
+          } else {
+            setError(true);
+            return;
+          }
+          // Read rsvp node to get seed data (guest name, companion info).
+          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
+          const seed = rsvpResult?.data as RsvpSubmission | null;
+          if (seed?.guestId) setRsvpSeed(seed);
+          setRsvpToken(combined.rsvp);
+          return;
         }
 
-        if (linkToken) {
-          // v3 path: session-less link-cap read.
-          const serverUrl = resolveServerUrl();
-          if (!serverUrl) { setError(true); return; }
-          const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
-          const result = await readNodeWithLinkCap(linkToken, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
+        // Plain page-only link (bare NodeInviteLinkToken from getPublicPageInviteLink).
+        try {
+          const pageToken = decodeNodeInviteLink(id);
+          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
           if (result?.data) {
-            const data = result.data as PublicWeddingPage;
-            setPage(data);
-            setOgMeta(data, t);
-            // Store token only when it has write capability (RSVP node links).
-            if (linkToken.write) setRsvpLinkToken(linkToken);
+            setPage(result.data as PublicWeddingPage);
+            setOgMeta(result.data as PublicWeddingPage, t);
           } else {
             setError(true);
           }
-        } else {
-          // Legacy path: userId-based fetch (returns null since v2 server is gone).
-          const serverUrl = resolveServerUrl();
-          if (!serverUrl) { setError(true); return; }
-          const [data, rosterData] = await Promise.all([
-            fetchPublicPage(serverUrl, id),
-            fetchRsvpRoster(serverUrl, id),
-          ]);
-          if (data) {
-            setPage(data);
-            setOgMeta(data, t);
-          } else {
-            setError(true);
-          }
-          if (rosterData?.guests) {
-            setRoster(rosterData.guests);
-            if (token) {
-              const match = rosterData.guests.find((g) => g.rsvpToken === token);
-              if (match) setSelectedGuest(match);
-            }
-          }
+        } catch {
+          setError(true);
         }
       } catch {
         setError(true);
@@ -136,7 +126,7 @@ export default function WeddingPublicPage() {
         setLoading(false);
       }
     })();
-  }, [id, token]);
+  }, [id]);
 
   const about = page?.about;
   const timeline = page?.timeline ?? [];
@@ -412,8 +402,8 @@ export default function WeddingPublicPage() {
           </View>
         )}
 
-        {/* RSVP — only shown when guest is pre-selected via token */}
-        {roster && roster.length > 0 && selectedGuest && (
+        {/* RSVP — only shown for per-guest combined links */}
+        {rsvpToken && (
           <View className="mt-4 px-4 pb-6">
             <View className="flex-row items-center gap-3 mb-6">
               <View className="h-px flex-1 bg-accent-rose-light" />
@@ -432,250 +422,170 @@ export default function WeddingPublicPage() {
                   <CheckCircle2 size={40} color="#10B981" />
                 </View>
                 <Display size={20} italic style={{ textAlign: "center" }}>{t("rsvpSuccess")}</Display>
-                <Text className="text-sm text-mute mt-1 text-center">
-                  {selectedGuest?.firstName} {selectedGuest?.lastName}
-                </Text>
+                {rsvpSeed?.firstName && (
+                  <Text className="text-sm text-mute mt-1 text-center">
+                    {rsvpSeed.firstName} {rsvpSeed.lastName}
+                  </Text>
+                )}
               </View>
             ) : (
               <View className="bg-accent-card rounded-2xl p-4 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
-                {!selectedGuest ? (
+                {rsvpSeed?.firstName && (
+                  <Text className="text-base font-semibold text-ink mb-4">
+                    {rsvpSeed.firstName} {rsvpSeed.lastName}
+                  </Text>
+                )}
+
+                <Text className="text-sm text-mute mb-2">{t("rsvpAttendance")}</Text>
+                <View className="flex-row gap-2 mb-4">
+                  {(["ACCEPTED", "DECLINED", "MAYBE"] as const).map((s) => {
+                    const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo"), MAYBE: t("rsvpMaybe") };
+                    const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444", MAYBE: "#3B82F6" };
+                    return (
+                      <Pressable
+                        key={s}
+                        onPress={() => setRsvpStatus(s)}
+                        className={`flex-1 py-2.5 rounded-xl items-center border ${rsvpStatus === s ? "border-transparent" : "border-hair"}`}
+                        style={rsvpStatus === s ? { backgroundColor: colors[s] } : undefined}
+                      >
+                        <Text className={`text-sm font-semibold ${rsvpStatus === s ? "text-white" : "text-mute"}`}>
+                          {labels[s]}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                {rsvpStatus === "ACCEPTED" && (
                   <>
-                    <Text className="text-sm text-mute mb-2">{t("rsvpSearch")}</Text>
-                    <TextInput
-                      className="border border-hair rounded-xl px-3 py-2.5 text-base text-ink mb-3"
-                      placeholder={t("rsvpSearch")}
-                      value={rsvpSearch}
-                      onChangeText={setRsvpSearch}
-                      placeholderTextColor="#D0D0D8"
-                    />
-                    {rsvpSearch.length > 1 && (
-                      <View>
-                        {roster
-                          .filter((g) =>
-                            `${g.firstName} ${g.lastName}`.toLowerCase().includes(rsvpSearch.toLowerCase())
-                          )
-                          .slice(0, 6)
-                          .map((g) => (
-                            <Pressable
-                              key={g.id}
-                              onPress={() => setSelectedGuest(g)}
-                              className="py-2.5 border-b border-hair active:opacity-60"
-                            >
-                              <Text className="text-base text-ink">
-                                {g.firstName} {g.lastName}
-                              </Text>
-                            </Pressable>
-                          ))}
-                      </View>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <View className="flex-row items-center justify-between mb-4">
-                      <Text className="text-base font-semibold text-ink">
-                        {selectedGuest.firstName} {selectedGuest.lastName}
-                      </Text>
-                      {!(token && selectedGuest.rsvpToken === token) && (
-                        <Pressable onPress={() => { setSelectedGuest(null); setRsvpStatus(null); setRsvpSearch(""); }}>
-                          <Text className="text-sm text-mute">{t("rsvpChange")}</Text>
-                        </Pressable>
-                      )}
-                    </View>
-
-                    <Text className="text-sm text-mute mb-2">{t("rsvpAttendance")}</Text>
-                    <View className="flex-row gap-2 mb-4">
-                      {(["ACCEPTED", "DECLINED", "MAYBE"] as const).map((s) => {
-                        const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo"), MAYBE: t("rsvpMaybe") };
-                        const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444", MAYBE: "#3B82F6" };
-                        return (
-                          <Pressable
-                            key={s}
-                            onPress={() => setRsvpStatus(s)}
-                            className={`flex-1 py-2.5 rounded-xl items-center border ${rsvpStatus === s ? "border-transparent" : "border-hair"}`}
-                            style={rsvpStatus === s ? { backgroundColor: colors[s] } : undefined}
-                          >
-                            <Text className={`text-sm font-semibold ${rsvpStatus === s ? "text-white" : "text-mute"}`}>
-                              {labels[s]}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-
-                    {rsvpStatus === "ACCEPTED" && (
-                      <>
-                        <Text className="text-sm text-mute mb-2">{t("rsvpDiet")}</Text>
-                        <View className="flex-row flex-wrap gap-2 mb-4">
-                          {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
-                            <Pressable
-                              key={key}
-                              onPress={() => setRsvpDiet(key)}
-                              className={`px-3 py-1.5 rounded-full border ${rsvpDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
-                            >
-                              <Text className={`text-sm ${rsvpDiet === key ? "text-white font-medium" : "text-mute"}`}>
-                                {label}
-                              </Text>
-                            </Pressable>
-                          ))}
-                        </View>
-
-                        {/* +1 companion */}
-                        {(() => {
-                          const companion = selectedGuest.companionId
-                            ? roster?.find((g) => g.id === selectedGuest.companionId)
-                            : null;
-                          if (!companion) return null;
-                          return (
-                            <>
-                              <View className="h-px bg-accent-paper mb-4" />
-                              <Text className="text-sm font-semibold text-ink mb-1">
-                                {t("plusOneLabel", { name: `${companion.firstName} ${companion.lastName}` })}
-                              </Text>
-                              <Text className="text-sm text-mute mb-2">{t("plusOneAttendance")}</Text>
-                              <View className="flex-row gap-2 mb-4">
-                                {(["ACCEPTED", "DECLINED"] as const).map((s) => {
-                                  const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo") };
-                                  const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444" };
-                                  return (
-                                    <Pressable
-                                      key={s}
-                                      onPress={() => setPlusOneStatus(s)}
-                                      className={`flex-1 py-2.5 rounded-xl items-center border ${plusOneStatus === s ? "border-transparent" : "border-hair"}`}
-                                      style={plusOneStatus === s ? { backgroundColor: colors[s] } : undefined}
-                                    >
-                                      <Text className={`text-sm font-semibold ${plusOneStatus === s ? "text-white" : "text-mute"}`}>
-                                        {labels[s]}
-                                      </Text>
-                                    </Pressable>
-                                  );
-                                })}
-                              </View>
-                              {plusOneStatus === "ACCEPTED" && (
-                                <>
-                                  <Text className="text-sm text-mute mb-2">{t("plusOneDiet")}</Text>
-                                  <View className="flex-row flex-wrap gap-2 mb-4">
-                                    {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
-                                      <Pressable
-                                        key={key}
-                                        onPress={() => setPlusOneDiet(key)}
-                                        className={`px-3 py-1.5 rounded-full border ${plusOneDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
-                                      >
-                                        <Text className={`text-sm ${plusOneDiet === key ? "text-white font-medium" : "text-mute"}`}>
-                                          {label}
-                                        </Text>
-                                      </Pressable>
-                                    ))}
-                                  </View>
-                                </>
-                              )}
-                            </>
-                          );
-                        })()}
-
-                        {/* Children count */}
-                        <View className="h-px bg-accent-paper mb-4" />
-                        <Text className="text-sm text-mute mb-2">{t("childrenLabel")}</Text>
-                        <View className="flex-row items-center gap-3 mb-4">
-                          <Pressable
-                            onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-                            className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
-                          >
-                            <Text className="text-lg text-mute">−</Text>
-                          </Pressable>
-                          <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
-                          <Pressable
-                            onPress={() => setChildrenCount(childrenCount + 1)}
-                            className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
-                          >
-                            <Text className="text-lg text-mute">+</Text>
-                          </Pressable>
-                        </View>
-                      </>
-                    )}
-
-                    {rsvpStatus && (
-                      <>
-                        <ScriptButton
-                          disabled={submitting}
-                          onPress={async () => {
-                            if (!rsvpStatus || submitting) return;
-                            setSubmitting(true);
-                            const submission = {
-                              rsvpToken: selectedGuest.rsvpToken,
-                              rsvpStatus,
-                              diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
-                              plusOneRsvpStatus: rsvpStatus === "ACCEPTED" && plusOneStatus ? plusOneStatus : undefined,
-                              plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
-                              childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
-                              submittedAt: new Date().toISOString(),
-                            };
-                            let ok = false;
-                            if (rsvpLinkToken) {
-                              // v3: write via session-less link-cap.
-                              const _serverUrl = resolveServerUrl();
-                              if (!_serverUrl) {
-                                ok = false; // server URL not configured on this device
-                              } else {
-                                try {
-                                  const _baseUrl = _serverUrl.replace(/\/v1\/?$/, "");
-                                  await writeNodeWithLinkCap(rsvpLinkToken, submission as unknown as Record<string, unknown>, { baseUrl: _baseUrl, namespace: "fiance" });
-                                  ok = true;
-                                } catch { ok = false; }
-                              }
-                            } else {
-                              // Legacy: no-op in v3.
-                              const serverUrl = resolveServerUrl();
-                              if (serverUrl) {
-                                ok = await submitRsvp(serverUrl, id!, submission);
-                              }
-                            }
-                            setSubmitting(false);
-                            if (ok) {
-                              setSubmitted(true);
-                              setSubmitError(false);
-                            } else {
-                              setSubmitError(true);
-                            }
-                          }}
-                          style={{ opacity: submitting ? 0.5 : 1 }}
+                    <Text className="text-sm text-mute mb-2">{t("rsvpDiet")}</Text>
+                    <View className="flex-row flex-wrap gap-2 mb-4">
+                      {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
+                        <Pressable
+                          key={key}
+                          onPress={() => setRsvpDiet(key)}
+                          className={`px-3 py-1.5 rounded-full border ${rsvpDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
                         >
-                          {submitting ? "..." : t("rsvpSubmit")}
-                        </ScriptButton>
-                        {submitError && (
-                          <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
+                          <Text className={`text-sm ${rsvpDiet === key ? "text-white font-medium" : "text-mute"}`}>
+                            {label}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+
+                    {/* +1 companion */}
+                    {rsvpSeed?.companionGuestId && rsvpSeed.companionFirstName && (
+                      <>
+                        <View className="h-px bg-accent-paper mb-4" />
+                        <Text className="text-sm font-semibold text-ink mb-1">
+                          {t("plusOneLabel", { name: `${rsvpSeed.companionFirstName} ${rsvpSeed.companionLastName ?? ""}`.trim() })}
+                        </Text>
+                        <Text className="text-sm text-mute mb-2">{t("plusOneAttendance")}</Text>
+                        <View className="flex-row gap-2 mb-4">
+                          {(["ACCEPTED", "DECLINED"] as const).map((s) => {
+                            const labels = { ACCEPTED: t("rsvpYes"), DECLINED: t("rsvpNo") };
+                            const colors = { ACCEPTED: "#10B981", DECLINED: "#EF4444" };
+                            return (
+                              <Pressable
+                                key={s}
+                                onPress={() => setPlusOneStatus(s)}
+                                className={`flex-1 py-2.5 rounded-xl items-center border ${plusOneStatus === s ? "border-transparent" : "border-hair"}`}
+                                style={plusOneStatus === s ? { backgroundColor: colors[s] } : undefined}
+                              >
+                                <Text className={`text-sm font-semibold ${plusOneStatus === s ? "text-white" : "text-mute"}`}>
+                                  {labels[s]}
+                                </Text>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                        {plusOneStatus === "ACCEPTED" && (
+                          <>
+                            <Text className="text-sm text-mute mb-2">{t("plusOneDiet")}</Text>
+                            <View className="flex-row flex-wrap gap-2 mb-4">
+                              {Object.entries((t("rsvpDiets", { returnObjects: true }) as Record<string, string>)).map(([key, label]) => (
+                                <Pressable
+                                  key={key}
+                                  onPress={() => setPlusOneDiet(key)}
+                                  className={`px-3 py-1.5 rounded-full border ${plusOneDiet === key ? "bg-primary-500 border-primary-500" : "border-hair bg-white"}`}
+                                >
+                                  <Text className={`text-sm ${plusOneDiet === key ? "text-white font-medium" : "text-mute"}`}>
+                                    {label}
+                                  </Text>
+                                </Pressable>
+                              ))}
+                            </View>
+                          </>
                         )}
                       </>
+                    )}
+
+                    {/* Children count */}
+                    <View className="h-px bg-accent-paper mb-4" />
+                    <Text className="text-sm text-mute mb-2">{t("childrenLabel")}</Text>
+                    <View className="flex-row items-center gap-3 mb-4">
+                      <Pressable
+                        onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                        className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
+                      >
+                        <Text className="text-lg text-mute">−</Text>
+                      </Pressable>
+                      <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
+                      <Pressable
+                        onPress={() => setChildrenCount(childrenCount + 1)}
+                        className="w-9 h-9 rounded-full bg-accent-paper items-center justify-center"
+                      >
+                        <Text className="text-lg text-mute">+</Text>
+                      </Pressable>
+                    </View>
+                  </>
+                )}
+
+                {rsvpStatus && (
+                  <>
+                    <ScriptButton
+                      disabled={submitting}
+                      onPress={async () => {
+                        if (!rsvpStatus || submitting || !rsvpToken) return;
+                        setSubmitting(true);
+                        const submission: RsvpSubmission = {
+                          guestId: rsvpSeed?.guestId ?? rsvpToken.nodeId,
+                          rsvpStatus,
+                          diet: rsvpStatus === "ACCEPTED" ? rsvpDiet : undefined,
+                          plusOneGuestId: rsvpStatus === "ACCEPTED" && plusOneStatus ? (rsvpSeed?.companionGuestId ?? null) : null,
+                          plusOneRsvpStatus: rsvpStatus === "ACCEPTED" && plusOneStatus ? plusOneStatus : undefined,
+                          plusOneDiet: rsvpStatus === "ACCEPTED" && plusOneStatus === "ACCEPTED" ? plusOneDiet : undefined,
+                          childrenCount: rsvpStatus === "ACCEPTED" ? childrenCount : undefined,
+                          submittedAt: new Date().toISOString(),
+                        };
+                        let ok = false;
+                        const serverUrl = resolveServerUrl();
+                        if (serverUrl) {
+                          try {
+                            const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
+                            await writeNodeWithLinkCap(rsvpToken, submission as unknown as Record<string, unknown>, { baseUrl, namespace: "fiance" });
+                            ok = true;
+                          } catch { ok = false; }
+                        }
+                        setSubmitting(false);
+                        if (ok) {
+                          setSubmitted(true);
+                          setSubmitError(false);
+                        } else {
+                          setSubmitError(true);
+                        }
+                      }}
+                      style={{ opacity: submitting ? 0.5 : 1 }}
+                    >
+                      {submitting ? "..." : t("rsvpSubmit")}
+                    </ScriptButton>
+                    {submitError && (
+                      <Text className="text-sm text-red-500 text-center mt-2">{t("rsvpError")}</Text>
                     )}
                   </>
                 )}
               </View>
             )}
-          </View>
-        )}
-
-        {/* Event Photos — only shown for token holders */}
-        {token && (
-          <View className="mt-4 px-4 pb-6">
-            <View className="flex-row items-center gap-3 mb-6">
-              <View className="h-px flex-1 bg-accent-rose-light" />
-              <View className="w-1.5 h-1.5 rounded-full bg-accent-rose" />
-              <View className="h-px flex-1 bg-accent-rose-light" />
-            </View>
-            <View className="flex-row items-center gap-2 px-1 mb-4">
-              <Camera size={18} color="#C9956B" />
-              <Display size={20} italic>
-                {t("eventPhotos")}
-              </Display>
-            </View>
-            <View
-              className="bg-accent-card rounded-2xl p-6 items-center shadow-sm"
-              style={{ shadowColor: "#b96a4a", shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
-            >
-              <Camera size={40} color="#E8D5C0" />
-              <Text className="text-sm text-mute text-center mt-3 leading-5">
-                {t("eventPhotosPlaceholder")}
-              </Text>
-            </View>
           </View>
         )}
 

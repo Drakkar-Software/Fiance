@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
@@ -164,6 +164,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
           if (features.length > 0) useEntitlementsStore.getState().setFeatures(features);
         })
         .catch(() => {});
+      const fgSession = getActiveSession();
+      const fgSpaceId = getActiveSpaceId();
+      if (fgSession && fgSpaceId) {
+        refreshRsvpInbox(fgSession, fgSpaceId).catch(() => {});
+      }
     });
 
     return () => {

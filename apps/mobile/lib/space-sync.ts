@@ -14,6 +14,7 @@ import {
   getNodeAccess,
   objDocPush,
   objDocPull,
+  objInvPull,
   FIANCE_TYPES,
   weddingToNode, weddingFromDoc,
   guestGroupToNode, guestGroupFromDoc,
@@ -44,6 +45,7 @@ import { useAccommodationsStore } from '@/store/useAccommodationsStore';
 import { useGiftsStore } from '@/store/useGiftsStore';
 import { useInvitationTypesStore } from '@/store/useInvitationTypesStore';
 import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from '@/lib/starfish';
+import { applyRsvpSubmissionsByGuestId, type RsvpSubmission } from '@/lib/rsvp-sync';
 
 // ---------------------------------------------------------------------------
 // Debounced push scheduler
@@ -338,8 +340,57 @@ export async function hydrateFromSpace(
     if (dayOfItemDocs.length) usePlanningStore.getState().setDayOfItems(dayOfItemDocs.map(dayOfItemFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setDayOfItems']>[0]);
     if (ideaCollectionDocs.length) useIdeasStore.getState().setCollections(ideaCollectionDocs.map(ideaCollectionFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setCollections']>[0]);
     if (ideaDocs.length) useIdeasStore.getState().setIdeas(ideaDocs.map(ideaFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setIdeas']>[0]);
+
+    // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
+    await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
+
     return nodes.length;
   } finally {
     _isHydrating = false;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// RSVP inbox — pull and merge guest submissions
+// ---------------------------------------------------------------------------
+
+async function pullRsvpNodeContent(
+  session: Session,
+  spaceId: string,
+  node: ObjectNode,
+): Promise<RsvpSubmission | null> {
+  try {
+    const handle = await getNodeAccess(spaceId, node.id, { access: 'invite', enc: false }, session, null);
+    const result = await handle.client.pull(objInvPull(spaceId, node.id)) as { data: unknown } | null;
+    const data = result?.data as RsvpSubmission | null;
+    if (!data?.guestId) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+async function pullAndApplyRsvpNodes(
+  session: Session,
+  spaceId: string,
+  rsvpNodes: ObjectNode[],
+): Promise<void> {
+  if (!rsvpNodes.length) return;
+  const results = await Promise.all(rsvpNodes.map((n) => pullRsvpNodeContent(session, spaceId, n)));
+  const submissions = results.filter((r): r is RsvpSubmission => r !== null);
+  if (submissions.length) applyRsvpSubmissionsByGuestId(submissions);
+}
+
+/**
+ * Pull only the rsvp nodes and merge guest submissions into the store.
+ * Called on foreground to pick up new RSVP responses without a full re-hydrate.
+ */
+export async function refreshRsvpInbox(session: Session, spaceId: string): Promise<void> {
+  try {
+    const nodes = await readObjectTree(session, spaceId);
+    const rsvpNodes = nodes.filter((n) => n.type === FIANCE_TYPES.rsvp);
+    await pullAndApplyRsvpNodes(session, spaceId, rsvpNodes);
+  } catch (err) {
+    console.warn('[space-sync] refreshRsvpInbox failed:', err);
   }
 }

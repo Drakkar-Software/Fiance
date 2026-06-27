@@ -22,12 +22,14 @@ vi.mock("@drakkar.software/starfish-spaces", () => ({
   })),
   objDocPush: vi.fn((s: string, n: string) => `push/${s}/${n}`),
   objDocPull: vi.fn((s: string, n: string) => `pull/${s}/${n}`),
+  objInvPull: vi.fn((s: string, n: string) => `invpull/${s}/${n}`),
   FIANCE_TYPES: {
     wedding: "wedding", guestGroup: "guestGroup", guest: "guest", table: "table",
     vendor: "vendor", quotePricing: "quotePricing", vendorPayment: "vendorPayment",
     accommodation: "accommodation", gift: "gift", invitationType: "invitationType",
     taskCategory: "taskCategory", task: "task", agendaEvent: "agendaEvent",
     dayOfItem: "dayOfItem", ideaCollection: "ideaCollection", idea: "idea",
+    rsvp: "rsvp",
   },
   weddingToNode: vi.fn(() => ({ id: "w1", type: "wedding", access: "space", enc: true, contentKind: "merge" })),
   guestGroupToNode: vi.fn(), guestToNode: vi.fn(), tableToNode: vi.fn(),
@@ -78,6 +80,10 @@ vi.mock("@/store/useIdeasStore", () => ({ useIdeasStore: emptyStore }));
 vi.mock("@/store/useAccommodationsStore", () => ({ useAccommodationsStore: emptyStore }));
 vi.mock("@/store/useGiftsStore", () => ({ useGiftsStore: emptyStore }));
 vi.mock("@/store/useInvitationTypesStore", () => ({ useInvitationTypesStore: emptyStore }));
+
+vi.mock("@/lib/rsvp-sync", () => ({
+  applyRsvpSubmissionsByGuestId: vi.fn(),
+}));
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 

@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
 import { shareLink } from "@/lib/share";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Globe, Clock, MapPin, Gift, ChevronRight, Send, RefreshCw, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
+import { Globe, Clock, MapPin, Gift, ChevronRight, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { TimelineItem } from "@/components/TimelineItem";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -13,11 +13,8 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { buildWeddingPageUrl } from "@/lib/identity";
-import { resolveServerConfig, deriveUserId } from "@/lib/server";
 import { recalculateDueDates } from "@/lib/planning";
 import { rescheduleAllNotifications } from "@/lib/notifications";
-import { pushRsvpRoster, fetchRsvpInbox, applyRsvpSubmissions } from "@/lib/rsvp-sync";
 import { IconCard } from "@/components/IconCard";
 import {
   SectionTitle,
@@ -114,45 +111,24 @@ export default function PublicPageScreen() {
 
   // RSVP
   const guestCount = useGuestsStore((s) => s.guests.length);
-  const [publishingRoster, setPublishingRoster] = useState(false);
-  const [syncingRsvp, setSyncingRsvp] = useState(false);
 
-  const handlePublishRoster = useCallback(async () => {
-    const config = await resolveServerConfig(activeEntry);
-    if (!config) return;
-    setPublishingRoster(true);
-    try {
-      await pushRsvpRoster(config);
-      Alert.alert(t("publishRosterSuccess"));
-    } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
-    } finally {
-      setPublishingRoster(false);
-    }
-  }, [activeEntry, t]);
-
-  const handleSyncRsvp = useCallback(async () => {
-    const config = await resolveServerConfig(activeEntry);
-    if (!config) return;
-    setSyncingRsvp(true);
-    try {
-      const submissions = await fetchRsvpInbox(config);
-      const count = applyRsvpSubmissions(submissions);
-      Alert.alert(count > 0 ? t("syncRsvpSuccess", { count }) : t("syncRsvpNone"));
-    } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
-    } finally {
-      setSyncingRsvp(false);
-    }
-  }, [activeEntry, t]);
-
-  // Share
+  // Share — mint a v3 page-read invite link.
   const handleShare = useCallback(async () => {
-    if (!activeEntry?.seedPhrase) return;
-    const userId = await deriveUserId(activeEntry.seedPhrase);
-    const url = buildWeddingPageUrl(userId);
-    await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
-  }, [activeEntry?.seedPhrase, t]);
+    import("@/lib/starfish").then(async ({ getActiveSession, getActiveSpaceId, getActiveWeddingNodeId }) => {
+      const session = getActiveSession();
+      const spaceId = getActiveSpaceId();
+      const weddingNodeId = getActiveWeddingNodeId();
+      if (!session || !spaceId || !weddingNodeId) return;
+      try {
+        const { getPublicPageInviteLink } = await import("@/lib/public-page");
+        const pageNodeId = `pub-${weddingNodeId}`;
+        const url = await getPublicPageInviteLink(session, spaceId, pageNodeId);
+        await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
+      } catch {
+        // Session not ready
+      }
+    }).catch(() => {});
+  }, [t]);
 
   return (
     <ScrollView
@@ -185,48 +161,10 @@ export default function PublicPageScreen() {
         <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {activeEntry?.seedPhrase ? t("rsvpSectionDesc") : t("syncRequiredRsvp")}
         </Text>
-        {activeEntry?.seedPhrase ? (
-          <View className="gap-2">
-            <Text className="text-xs text-mute mb-1">
-              {t("rsvpCount", { count: guestCount })}
-            </Text>
-            <Pressable
-              onPress={publishingRoster ? undefined : handlePublishRoster}
-              className="bg-accent-card rounded-2xl p-4 border border-hair flex-row items-center active:opacity-80"
-            >
-              <View className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
-                <Send size={18} color="#b96a4a" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-medium text-ink">
-                  {publishingRoster ? "..." : t("publishRoster")}
-                </Text>
-                <Text className="text-xs text-mute mt-0.5 leading-4">
-                  {t("publishRosterDesc")}
-                </Text>
-              </View>
-            </Pressable>
-            <Pressable
-              onPress={syncingRsvp ? undefined : handleSyncRsvp}
-              className="bg-accent-card rounded-2xl p-4 border border-hair flex-row items-center active:opacity-80"
-            >
-              <View className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900 items-center justify-center mr-3">
-                <RefreshCw size={18} color="#10B981" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-medium text-ink">
-                  {syncingRsvp ? "..." : t("syncRsvp")}
-                </Text>
-                <Text className="text-xs text-mute mt-0.5 leading-4">
-                  {t("syncRsvpDesc")}
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-        ) : (
-          <View className="bg-accent-paper rounded-2xl p-4 border border-hair dark:border-hair">
-            <Text className="text-sm text-mute">{t("syncRequiredRsvp")}</Text>
-          </View>
+        {activeEntry?.seedPhrase && (
+          <Text className="text-xs text-mute mb-4">
+            {t("rsvpCount", { count: guestCount })}
+          </Text>
         )}
       </View>
 
@@ -320,11 +258,21 @@ export default function PublicPageScreen() {
           <Pressable
             onPress={async () => {
               try {
-                const userId = await deriveUserId(activeEntry.seedPhrase!);
-                if (typeof window !== "undefined") {
-                  router.push(`/wedding/${userId}`);
-                } else {
-                  await Linking.openURL(buildWeddingPageUrl(userId));
+                const { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } = await import("@/lib/starfish");
+                const session = getActiveSession();
+                const spaceId = getActiveSpaceId();
+                const weddingNodeId = getActiveWeddingNodeId();
+                if (!session || !spaceId || !weddingNodeId) return;
+                const { getPublicPageInviteLink } = await import("@/lib/public-page");
+                const pageNodeId = `pub-${weddingNodeId}`;
+                const url = await getPublicPageInviteLink(session, spaceId, pageNodeId);
+                const fragment = url.includes("/wedding/") ? url.split("/wedding/")[1] : null;
+                if (fragment) {
+                  if (typeof window !== "undefined") {
+                    router.push(`/wedding/${fragment}`);
+                  } else {
+                    await Linking.openURL(url);
+                  }
                 }
               } catch {}
             }}
