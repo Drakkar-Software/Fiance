@@ -115,6 +115,7 @@ export default function SettingsScreen() {
   }, [activeEntry?.id, activeEntry?.seedPhrase]);
 
   const handleToggleSync = useCallback(async () => {
+    console.log("[sync] handleToggleSync called", { id: activeEntry?.id, syncEnabled, premium, hasSeed: !!activeEntry?.seedPhrase, serverUrl: activeEntry?.serverUrl });
     if (!activeEntry?.id) return;
 
     if (syncEnabled) {

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, Download, Upload, FileText, Table2 } from "lucide-react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";
@@ -251,13 +251,23 @@ export default function ExportImportScreen() {
                 sublabel={t("migrationBackupDesc")}
                 onPress={handleExportJson}
               />
-              <ExportRow
-                icon={<ArrowRightLeft size={18} color="#8B5CF6" />}
-                label={importingToSpace ? t("importing") : t("migrationImport")}
-                sublabel={t("migrationImportDesc")}
-                onPress={handlePickLegacyImport}
-                last
-              />
+              {Platform.OS === "web" ? (
+                <WebFileRow
+                  icon={<ArrowRightLeft size={18} color="#8B5CF6" />}
+                  label={t("migrationImport")}
+                  sublabel={t("migrationImportDesc")}
+                  last
+                  onJson={(json) => { setPickedLegacyJson(json); setShowImportToSpaceConfirm(true); }}
+                />
+              ) : (
+                <ExportRow
+                  icon={<ArrowRightLeft size={18} color="#8B5CF6" />}
+                  label={importingToSpace ? t("importing") : t("migrationImport")}
+                  sublabel={t("migrationImportDesc")}
+                  onPress={handlePickLegacyImport}
+                  last
+                />
+              )}
             </FormCard>
           </View>
         )}
@@ -275,19 +285,38 @@ export default function ExportImportScreen() {
               sublabel={t("exportDesc")}
               onPress={handleExportJson}
             />
-            <ExportRow
-              icon={<Upload size={18} color="#F59E0B" />}
-              label={importing ? t("importing") : t("importData")}
-              sublabel={t("importDesc")}
-              onPress={handlePickImport}
-            />
-            <ExportRow
-              icon={<Archive size={18} color="#8B5CF6" />}
-              label={importingToSpace ? t("importing") : t("importToSpace")}
-              sublabel={t("importToSpaceDesc")}
-              onPress={handlePickLegacyImport}
-              last
-            />
+            {Platform.OS === "web" ? (
+              <WebFileRow
+                icon={<Upload size={18} color="#F59E0B" />}
+                label={t("importData")}
+                sublabel={t("importDesc")}
+                onJson={(json) => { setPickedJson(json); setShowImportConfirm(true); }}
+              />
+            ) : (
+              <ExportRow
+                icon={<Upload size={18} color="#F59E0B" />}
+                label={importing ? t("importing") : t("importData")}
+                sublabel={t("importDesc")}
+                onPress={handlePickImport}
+              />
+            )}
+            {Platform.OS === "web" ? (
+              <WebFileRow
+                icon={<Archive size={18} color="#8B5CF6" />}
+                label={t("importToSpace")}
+                sublabel={t("importToSpaceDesc")}
+                last
+                onJson={(json) => { setPickedLegacyJson(json); setShowImportToSpaceConfirm(true); }}
+              />
+            ) : (
+              <ExportRow
+                icon={<Archive size={18} color="#8B5CF6" />}
+                label={importingToSpace ? t("importing") : t("importToSpace")}
+                sublabel={t("importToSpaceDesc")}
+                onPress={handlePickLegacyImport}
+                last
+              />
+            )}
           </FormCard>
         </View>
 
@@ -343,5 +372,53 @@ function ExportRow({
       </View>
       <ChevronRight size={16} color="#C0C0C8" />
     </Pressable>
+  );
+}
+
+/**
+ * Web-only file import row. Uses a native <label>+<input type="file"> so the
+ * browser opens the file picker via its own mechanism — bypasses the JS
+ * programmatic click restriction in Safari PWA standalone mode.
+ */
+function WebFileRow({
+  icon,
+  label,
+  sublabel,
+  last = false,
+  onJson,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  sublabel?: string;
+  last?: boolean;
+  onJson: (json: string) => void;
+}) {
+  const borderStyle = last ? {} : { borderBottomWidth: 1, borderBottomColor: "rgba(0,0,0,0.08)", borderBottomStyle: "solid" as const };
+  return (
+    // @ts-ignore — <label> is valid HTML on web; not a RN primitive
+    <label style={{ display: "flex", flexDirection: "row", alignItems: "center", paddingTop: 14, paddingBottom: 14, cursor: "pointer", ...borderStyle }}>
+      {/* @ts-ignore */}
+      <input
+        type="file"
+        accept=".json,application/json"
+        style={{ position: "absolute", opacity: 0, width: 1, height: 1, pointerEvents: "none" } as any}
+        onChange={(e: any) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (reader.result) onJson(reader.result as string);
+          };
+          reader.readAsText(file);
+          e.target.value = "";
+        }}
+      />
+      <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 12 }}>{icon}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 16, color: "var(--color-ink, #1a1a1a)", fontWeight: "500" }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 12, color: "var(--color-mute, #9ca3af)", marginTop: 2 }}>{sublabel}</div>}
+      </div>
+      <ChevronRight size={16} color="#C0C0C8" />
+    </label>
   );
 }
