@@ -19,7 +19,7 @@
     "@drakkar.software/starfish-protocol": "3.0.0-alpha.44",
     "@drakkar.software/starfish-server": "3.0.0-alpha.44",
     "@drakkar.software/starfish-sharing": "3.0.0-alpha.44",
-    "hono": "4.12.12",
+    "hono": "4.12.25",
     "stripe": "^17.0.0"
   },
   "devDependencies": {
