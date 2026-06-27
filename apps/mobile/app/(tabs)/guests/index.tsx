@@ -212,7 +212,7 @@ function GuestsView() {
   }));
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       <SearchBar
         value={search}
         onChangeText={setSearch}
@@ -374,7 +374,7 @@ function GroupsView() {
   };
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       {groups.length === 0 && !showAdd ? (
         <EmptyState
           icon={FolderOpen}
@@ -572,7 +572,7 @@ function TablesView() {
   );
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       {/* Unassigned guests warning */}
       {unassignedCount > 0 && (
         <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">

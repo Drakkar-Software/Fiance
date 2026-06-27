@@ -41,7 +41,7 @@ export default function CollectionsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         <PageHeader
           eyebrow={t("collections")}

@@ -24,7 +24,7 @@ export default function VendorTypeListScreen() {
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       {vendors.length === 0 ? (
         <EmptyState
           icon={Briefcase}

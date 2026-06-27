@@ -106,7 +106,7 @@ export default function InvitationTypesScreen() {
   const needsSleepingDesc = t("needsSleepingDesc");
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       {invitationTypes.length === 0 && !showAdd ? (
         <EmptyState
           icon={Tag}

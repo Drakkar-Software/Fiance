@@ -43,7 +43,7 @@ export default function TablesScreen() {
   };
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       {/* Add table form */}
       {showAdd && (
         <View className="mx-4 mt-4 bg-accent-card rounded-2xl p-4 border border-primary-200 dark:border-primary-800">

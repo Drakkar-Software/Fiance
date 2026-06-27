@@ -133,7 +133,7 @@ export default function AccommodationsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       {accommodations.length === 0 && !showAdd ? (
         <EmptyState
           icon={Home}

@@ -125,7 +125,7 @@ export default function IdeasScreen() {
     : null;
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       {Platform.OS === 'web' && (
         <PageHeader
           eyebrow={t("common:tabs.ideas")}

@@ -123,7 +123,7 @@ export default function GiftsScreen() {
   const claimed = gifts.filter((g) => g.claimed);
 
   return (
-    <View className="flex-1 bg-accent-paper">
+    <View className="relative flex-1 bg-accent-paper">
       <PageHeader
         eyebrow={t("giftRegistry")}
         title={gifts.length}

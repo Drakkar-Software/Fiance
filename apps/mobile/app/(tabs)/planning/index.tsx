@@ -195,7 +195,7 @@ function PreparationView() {
   };
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       <SectionHeader
         title={t("progress")}
         right={
@@ -369,7 +369,7 @@ function AgendaView() {
   ).length;
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       <SectionHeader subtitle={`${events.length} ${t("appointments")} · ${upcoming} ${t("upcoming")}`} />
 
       {events.length === 0 ? (
@@ -525,7 +525,7 @@ function DayOfView() {
   }, [activeEntry?.seedPhrase, t]);
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
       <SectionHeader
         subtitle={t("moment", { count: items.length })}
         right={hasPublicItems ? (
