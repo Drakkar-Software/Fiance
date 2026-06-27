@@ -1,5 +1,5 @@
 import { Platform, Share } from "react-native";
-import { toast } from "sonner-native";
+import { toast } from "@/lib/toast/sonner";
 
 /**
  * Cross-platform share helper.

@@ -33,8 +33,9 @@ const NAV_ITEMS: NavItem[] = [
   { key: "planning", route: "/planning", icon: Calendar,  labelKey: "tabs.planning" },
   { key: "ideas",    route: "/ideas",    icon: Sparkles,  labelKey: "tabs.ideas" },
   { key: "budget",   route: "/budget",   icon: PieChart,  labelKey: "tabs.budget" },
-  { key: "settings", route: "/settings", icon: Settings,  labelKey: "tabs.settings" },
 ];
+
+const SETTINGS_ITEM: NavItem = { key: "settings", route: "/settings", icon: Settings, labelKey: "tabs.settings" };
 
 interface Props {
   isDark: boolean;
@@ -130,32 +131,58 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
               onHoverOut={() => setHoveredKey(null)}
               style={[styles.row, { backgroundColor: rowBg }]}
             >
-              {/* Active ribbon bar */}
-              {isActive && <View style={styles.ribbon} />}
-              {/* Spacer to keep icon aligned when ribbon absent */}
-              {!isActive && <View style={styles.ribbonSpacer} />}
-
+              {isActive ? <View style={styles.ribbon} /> : <View style={styles.ribbonSpacer} />}
               <View style={styles.rowInner}>
                 <Icon size={20} color={iconColor} />
                 <Text style={[styles.rowLabel, { color: labelColor }]}>
                   {t(item.labelKey)}
                 </Text>
-
-                {/* Planning overdue badge */}
                 {item.key === "planning" && overdueCount > 0 && (
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>{overdueCount}</Text>
                   </View>
                 )}
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
 
-                {/* Settings sync dot */}
-                {item.key === "settings" && syncDotColor && (
+      {/* Settings pinned to bottom */}
+      <View style={[styles.divider, { backgroundColor: borderColor, marginTop: 8, marginBottom: 8 }]} />
+      <View style={styles.bottomNav}>
+        {(() => {
+          const item = SETTINGS_ITEM;
+          const isActive = activeKey === item.key;
+          const isHovered = hoveredKey === item.key;
+          const Icon = item.icon;
+          const iconColor = isActive ? GP.clay : isDark ? GP.inkDark : GP.inkSoft;
+          const labelColor = isActive ? GP.clay : isDark ? GP.inkDark : GP.inkSoft;
+          const rowBg =
+            isActive ? GP.claySoft :
+            isHovered ? (isDark ? "rgba(42,36,24,0.10)" : GP.paper) :
+            "transparent";
+          return (
+            <Pressable
+              onPress={() => router.push(item.route as any)}
+              // @ts-ignore — web-only hover events
+              onHoverIn={() => setHoveredKey(item.key)}
+              onHoverOut={() => setHoveredKey(null)}
+              style={[styles.row, { backgroundColor: rowBg }]}
+            >
+              {isActive ? <View style={styles.ribbon} /> : <View style={styles.ribbonSpacer} />}
+              <View style={styles.rowInner}>
+                <Icon size={20} color={iconColor} />
+                <Text style={[styles.rowLabel, { color: labelColor }]}>
+                  {t(item.labelKey)}
+                </Text>
+                {syncDotColor && (
                   <View style={[styles.syncDot, { backgroundColor: syncDotColor }]} />
                 )}
               </View>
             </Pressable>
           );
-        })}
+        })()}
       </View>
     </View>
   );
@@ -239,5 +266,8 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
+  },
+  bottomNav: {
+    paddingHorizontal: 8,
   },
 });

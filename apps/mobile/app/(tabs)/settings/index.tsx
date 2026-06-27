@@ -138,7 +138,16 @@ export default function SettingsScreen() {
     }
     updateRegistryWedding(activeEntry.id, { syncDisabled: false });
 
-    const activated = await activateSync(activeEntry);
+    let activated: { userId: string } | null = null;
+    try {
+      activated = await activateSync(activeEntry);
+    } catch (err: any) {
+      console.error("[sync] activateSync failed:", err);
+      updateRegistryWedding(activeEntry.id, { syncDisabled: true });
+      setSyncEnabled(false);
+      Alert.alert(t("syncImpossible"), err?.message ?? String(err));
+      return;
+    }
     if (!activated) return;
 
     analytics.capture("sync_enabled");

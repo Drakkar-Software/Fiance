@@ -27,6 +27,7 @@ import { Script } from "@/components/Script";
 import { Label } from "@/components/Label";
 import { Sprig } from "@/components/Sprig";
 import { PageHeader } from "@/components/PageHeader";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -37,6 +38,7 @@ function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
   const guests = useGuestsStore((s) => s.guests);
@@ -172,18 +174,20 @@ function DashboardScreen() {
           borderBottomRightRadius: 32,
         }}
       >
-        <View className="absolute right-3 z-10" style={{ top: topInset + 8 }} pointerEvents="box-none">
-          <Pressable
-            onPress={(e) => {
-              if (Platform.OS === "web") (e.currentTarget as any)?.blur?.();
-              router.push("/(tabs)/settings");
-            }}
-            className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Settings size={22} color="rgba(255,255,255,0.85)" />
-          </Pressable>
-        </View>
+        {!isWide && (
+          <View className="absolute right-3 z-10" style={{ top: topInset + 8 }} pointerEvents="box-none">
+            <Pressable
+              onPress={(e) => {
+                if (Platform.OS === "web") (e.currentTarget as any)?.blur?.();
+                router.push("/(tabs)/settings");
+              }}
+              className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Settings size={22} color="rgba(255,255,255,0.85)" />
+            </Pressable>
+          </View>
+        )}
         <View style={{ position: "absolute", top: topInset + 14, right: 58, opacity: 0.4, pointerEvents: "none" }}>
           <Sprig size={22} color="#fff" angle={16} />
         </View>

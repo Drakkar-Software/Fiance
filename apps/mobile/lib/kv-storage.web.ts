@@ -15,7 +15,13 @@ let webInitialized = false;
 let activePrefix = "";
 
 // Opaque sentinel so `if (storage) persist(storage)` guards in stores work.
-const WEB_STORAGE_READY = {} as any;
+// Also exposes getItemSync/setItemSync/removeItemSync so makeKvAdapter (providers.tsx)
+// can cache SDK caps/keyring on web via localStorage.
+const WEB_STORAGE_READY = {
+  getItemSync: (k: string) => localStorage.getItem(activePrefix + k),
+  setItemSync: (k: string, v: string) => localStorage.setItem(activePrefix + k, v),
+  removeItemSync: (k: string) => localStorage.removeItem(activePrefix + k),
+} as any;
 
 // All collection keys written by persistence.ts — used for one-shot migration.
 const KNOWN_COLLECTION_KEYS = [
