@@ -9,11 +9,6 @@
     "scheme": "fiance",
     "userInterfaceStyle": "automatic",
     "primaryColor": "#EC4899",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fiance.app",
@@ -75,7 +70,7 @@
             }
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "16.4"
           }
         }
       ],
@@ -84,8 +79,21 @@
       [
         "expo-iap",
         {
-          "iosProductIds": ["com.fiance.app.premium.lifetime"],
-          "androidProductIds": ["com.fiance.app.premium.lifetime"]
+          "iosProductIds": [
+            "com.fiance.app.premium.lifetime"
+          ],
+          "androidProductIds": [
+            "com.fiance.app.premium.lifetime"
+          ]
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ]
     ],
