@@ -1,6 +1,6 @@
 {
   "name": "@fiance/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Headless business logic for the Fiancé wedding planner app.",
   "type": "module",
   "sideEffects": false,
