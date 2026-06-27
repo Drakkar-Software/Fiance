@@ -6,10 +6,5 @@
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@drakkar.software/doubloon-starfish@0.3.0": "patches/@drakkar.software__doubloon-starfish@0.3.0.patch"
-    }
   }
 }
