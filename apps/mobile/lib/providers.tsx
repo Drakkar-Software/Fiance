@@ -70,7 +70,9 @@ export function configureOnBoot(): void {
       configurePlatform: (cfg: { crypto: unknown; base64: { encode: (b: Uint8Array) => string; decode: (s: string) => Uint8Array } }) => void;
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const QuickCrypto = require("react-native-quick-crypto") as unknown;
+    const QuickCrypto = require("react-native-quick-crypto") as { install: () => void };
+    // install() sets global.crypto = QuickCrypto so @noble/hashes can find getRandomValues.
+    QuickCrypto.install();
     configurePlatform({
       crypto: QuickCrypto,
       base64: {
