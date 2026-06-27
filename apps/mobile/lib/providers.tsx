@@ -18,7 +18,6 @@ import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
 import { setupPurchaseListeners } from "@/lib/iap";
@@ -92,7 +91,6 @@ export function configureOnBoot(): void {
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
     if (isSyncActive()) teardownSync();
-    starfishAnalyticsAdapter.deactivate();
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
 
@@ -141,11 +139,6 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
         await ensurePublicPageNode(session, spaceId, weddingNodeId).catch(() => {});
       }
 
-      const userData = await getAnalyticsCore()?.exportUserData();
-      // Pass the full serverUrl (with /v1 suffix) — the analytics adapter appends
-      // /push/analytics/{id}/events, which the legacy router serves at /v1/push/...
-      starfishAnalyticsAdapter.activate(serverUrl, userData?.anonymousId ?? "anonymous");
-
       // Pull entitlements using cap-cert.
       if (!cancelled) {
         const features = await pullEntitlements(null, userId).catch(() => null);
@@ -169,7 +162,6 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       cancelled = true;
       foregroundSub.remove();
       unregisterPush?.();
-      starfishAnalyticsAdapter.deactivate();
     };
   }, [wedding.id]);
 

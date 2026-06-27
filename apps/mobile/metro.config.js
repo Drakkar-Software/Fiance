@@ -1,10 +1,10 @@
 const path = require('node:path')
 const { withNativeWind } = require('nativewind/metro')
-const { getSentryExpoConfig } = require("@sentry/react-native/metro");
+const { getDefaultConfig } = require("expo/metro-config");
 
 const projectRoot = __dirname
 const workspaceRoot = path.resolve(projectRoot, '../..')
-const config = getSentryExpoConfig(projectRoot)
+const config = getDefaultConfig(projectRoot)
 
 config.watchFolders = [workspaceRoot]
 config.resolver.unstable_enableSymlinks = true

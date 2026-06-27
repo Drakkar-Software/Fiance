@@ -16,12 +16,10 @@ importers:
       '@drakkar.software/starfish-protocol': 3.0.0-alpha.44
       '@drakkar.software/starfish-sharing': 3.0.0-alpha.44
       '@drakkar.software/starfish-spaces': 3.0.0-alpha.44
-      '@drakkar.software/sunglasses-adapter-console': ^0.7.0
-      '@drakkar.software/sunglasses-adapter-sentry': ^0.7.0
-      '@drakkar.software/sunglasses-adapter-starfish': ^0.7.0
-      '@drakkar.software/sunglasses-core': ^0.7.0
-      '@drakkar.software/sunglasses-react-native': ^0.7.0
-      '@drakkar.software/sunglasses-storage-async-storage': ^0.7.0
+      '@drakkar.software/sunglasses-adapter-starfish': 0.9.0
+      '@drakkar.software/sunglasses-core': 0.12.0
+      '@drakkar.software/sunglasses-react-native': 0.12.1
+      '@drakkar.software/sunglasses-storage-async-storage': 0.9.0
       '@expo-google-fonts/caveat': ^0.3.0
       '@expo-google-fonts/fraunces': ^0.3.0
       '@expo-google-fonts/inter': ^0.3.0
@@ -34,7 +32,6 @@ importers:
       '@legendapp/motion': '>=2.0.0'
       '@react-native-async-storage/async-storage': ^2.2.0
       '@react-native-community/netinfo': ^11.5.2
-      '@sentry/react-native': ~7.11.0
       '@shopify/react-native-skia': 2.4.18
       '@storybook/addon-mcp': ^0.5.0
       '@storybook/react-vite': ^10.3.5
@@ -110,12 +107,10 @@ importers:
       '@drakkar.software/starfish-protocol': 3.0.0-alpha.44
       '@drakkar.software/starfish-sharing': 3.0.0-alpha.44_react@19.2.0+zustand@5.0.12
       '@drakkar.software/starfish-spaces': 3.0.0-alpha.44_react@19.2.0+zustand@5.0.12
-      '@drakkar.software/sunglasses-adapter-console': 0.7.0
-      '@drakkar.software/sunglasses-adapter-sentry': 0.7.0_react@19.2.0
-      '@drakkar.software/sunglasses-adapter-starfish': 0.7.0
-      '@drakkar.software/sunglasses-core': 0.7.0
-      '@drakkar.software/sunglasses-react-native': 0.7.0_5cb5f4fc75e970ec810e75c36fbba98f
-      '@drakkar.software/sunglasses-storage-async-storage': 0.7.0_a20128f7da3967792562aa04ed7a086d
+      '@drakkar.software/sunglasses-adapter-starfish': 0.9.0
+      '@drakkar.software/sunglasses-core': 0.12.0
+      '@drakkar.software/sunglasses-react-native': 0.12.1_5cb5f4fc75e970ec810e75c36fbba98f
+      '@drakkar.software/sunglasses-storage-async-storage': 0.9.0_a20128f7da3967792562aa04ed7a086d
       '@expo-google-fonts/caveat': 0.3.0
       '@expo-google-fonts/fraunces': 0.3.1
       '@expo-google-fonts/inter': 0.3.0
@@ -128,7 +123,6 @@ importers:
       '@legendapp/motion': 2.5.3_6dfe269360a48b4019202514e031ce4c
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.6
       '@react-native-community/netinfo': 11.5.2_react-native@0.83.6+react@19.2.0
-      '@sentry/react-native': 7.11.0_97050be8c3dd1ea52fa286564c4857a5
       '@shopify/react-native-skia': 2.4.18_876d622b1797c7cdffe1750fefecdde8
       date-fns: 3.6.0
       date-fns-tz: 3.2.0_date-fns@3.6.0
@@ -1778,36 +1772,22 @@ packages:
       - zustand
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-console/0.7.0:
-    resolution: {integrity: sha512-NXTAZaE0ImJkXzePg+yQtHIsVeuYq/9Mt3mkXgrSdLmbgdq02aXxauJtTIsyZmJ70IxbV0HRVLi1qCeSM7XD8w==}
+  /@drakkar.software/sunglasses-adapter-starfish/0.9.0:
+    resolution: {integrity: sha512-3IRpZntInvhCwTDuRgHtSxiL8+79OpcrdRVTARrM6WcS8XArE8xjI5+hn7bIpHmvu+hUMGUZ+9SMsGHThl9yZA==}
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.7.0
+      '@drakkar.software/sunglasses-core': 0.10.0
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-sentry/0.7.0_react@19.2.0:
-    resolution: {integrity: sha512-+nrV0asoLWJXL6sckUhrw8jvSnhEVd+M3nZ04ud69jzVGe+O3LU6p7kEgENflH36Qm4lZ8mCaFd5gUjz8x865Q==}
-    peerDependencies:
-      react: '>=17'
-    peerDependenciesMeta:
-      react:
-        optional: true
-    dependencies:
-      '@drakkar.software/sunglasses-core': 0.7.0
-      react: 19.2.0
+  /@drakkar.software/sunglasses-core/0.10.0:
+    resolution: {integrity: sha512-rIhRZbu1tdStrFUnATsVS7271hnvbSY50C1Z3vosqGXcXAzvTqL5a0IeVGG3BlM27Zp81ymAWCIDDpjVz58w7g==}
     dev: false
 
-  /@drakkar.software/sunglasses-adapter-starfish/0.7.0:
-    resolution: {integrity: sha512-sFjN3+WigUXSqL1MDxBHsBfLhV6dOHgJivaKzeuKDmjtGy3dpudflhi8cDAn3v277qOBEY8568P92ybI/ufWsw==}
-    dependencies:
-      '@drakkar.software/sunglasses-core': 0.7.0
+  /@drakkar.software/sunglasses-core/0.12.0:
+    resolution: {integrity: sha512-bUZBwUeF5lX0u9GFR+IGrOBm2PvJvFrvZ/YZopLIkTdYX7SiMpAU+6HjOpl0KqF0ihwrTIp058AwxESsi+cS5A==}
     dev: false
 
-  /@drakkar.software/sunglasses-core/0.7.0:
-    resolution: {integrity: sha512-fW9Q9VDEn1AgUj6Rnn6uyRtpE1ArP0mSyON0Kx+MVwAFypUBTt2Ez4aXPcxoTitfgLcu7tno6oqrnLlFbEVpew==}
-    dev: false
-
-  /@drakkar.software/sunglasses-react-native/0.7.0_5cb5f4fc75e970ec810e75c36fbba98f:
-    resolution: {integrity: sha512-PILOIrKtr3BBKNdf643D/FYy2HN78IClPEWSaBs7e00x1wuYzZXdKpnJEyyBus43YqszCqYY8iScgj3DOnwYAg==}
+  /@drakkar.software/sunglasses-react-native/0.12.1_5cb5f4fc75e970ec810e75c36fbba98f:
+    resolution: {integrity: sha512-kB94ljO894Ss6SeOC6qErmDVEgDpNRRksqFp4pBCSZsMGqoNpAVyCinVjzxndjT2VNvYnpJXeEtXVCNhW0cY9Q==}
     peerDependencies:
       expo-router: '>=3.0.0'
       react: '>=18.0.0'
@@ -1816,18 +1796,18 @@ packages:
       expo-router:
         optional: true
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.7.0
+      '@drakkar.software/sunglasses-core': 0.12.0
       expo-router: 55.0.16_536ca98b7bf7d27dc8df9e504e6115ed
       react: 19.2.0
       react-native: 0.83.6_c933ad1581318756add432bf45df9101
     dev: false
 
-  /@drakkar.software/sunglasses-storage-async-storage/0.7.0_a20128f7da3967792562aa04ed7a086d:
-    resolution: {integrity: sha512-4emHspQlLxyTrmqw2p42iNcgXGn7NDCQRyZJfNQ89TorkRhG6ReJUac7Ss/WykpmIwV3KskvSo5QnVEbEdNQWQ==}
+  /@drakkar.software/sunglasses-storage-async-storage/0.9.0_a20128f7da3967792562aa04ed7a086d:
+    resolution: {integrity: sha512-0rdgPmzZVzwkDvymcRO6erp1fRi/TB9ZPm5UuSO4tYgsBphziXDy0ubfgAh5cSZ6sYtFF1zluu4PdAxNJN85Dg==}
     peerDependencies:
       '@react-native-async-storage/async-storage': '>=1.x'
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.7.0
+      '@drakkar.software/sunglasses-core': 0.10.0
       '@react-native-async-storage/async-storage': 2.2.0_react-native@0.83.6
     dev: false
 
@@ -4430,188 +4410,6 @@ packages:
       '@scure/base': 2.2.0
     dev: false
 
-  /@sentry-internal/browser-utils/10.37.0:
-    resolution: {integrity: sha512-rqdESYaVio9Ktz55lhUhtBsBUCF3wvvJuWia5YqoHDd+egyIfwWxITTAa0TSEyZl7283A4WNHNl0hyeEMblmfA==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry/core': 10.37.0
-    dev: false
-
-  /@sentry-internal/feedback/10.37.0:
-    resolution: {integrity: sha512-P0PVlfrDvfvCYg2KPIS7YUG/4i6ZPf8z1MicXx09C9Cz9W9UhSBh/nii13eBdDtLav2BFMKhvaFMcghXHX03Hw==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry/core': 10.37.0
-    dev: false
-
-  /@sentry-internal/replay-canvas/10.37.0:
-    resolution: {integrity: sha512-PyIYSbjLs+L5essYV0MyIsh4n5xfv2eV7l0nhUoPJv9Bak3kattQY3tholOj0EP3SgKgb+8HSZnmazgF++Hbog==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry-internal/replay': 10.37.0
-      '@sentry/core': 10.37.0
-    dev: false
-
-  /@sentry-internal/replay/10.37.0:
-    resolution: {integrity: sha512-snuk12ZaDerxesSnetNIwKoth/51R0y/h3eXD/bGtXp+hnSkeXN5HanI/RJl297llRjn4zJYRShW9Nx86Ay0Dw==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry-internal/browser-utils': 10.37.0
-      '@sentry/core': 10.37.0
-    dev: false
-
-  /@sentry/babel-plugin-component-annotate/4.8.0:
-    resolution: {integrity: sha512-cy/9Eipkv23MsEJ4IuB4dNlVwS9UqOzI3Eu+QPake5BVFgPYCX0uP0Tr3Z43Ime6Rb+BiDnWC51AJK9i9afHYw==}
-    engines: {node: '>= 14'}
-    dev: false
-
-  /@sentry/browser/10.37.0:
-    resolution: {integrity: sha512-kheqJNqGZP5TSBCPv4Vienv1sfZwXKHQDYR+xrdHHYdZqwWuZMJJW/cLO9XjYAe+B9NnJ4UwJOoY4fPvU+HQ1Q==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry-internal/browser-utils': 10.37.0
-      '@sentry-internal/feedback': 10.37.0
-      '@sentry-internal/replay': 10.37.0
-      '@sentry-internal/replay-canvas': 10.37.0
-      '@sentry/core': 10.37.0
-    dev: false
-
-  /@sentry/cli-darwin/2.58.4:
-    resolution: {integrity: sha512-kbTD+P4X8O+nsNwPxCywtj3q22ecyRHWff98rdcmtRrvwz8CKi/T4Jxn/fnn2i4VEchy08OWBuZAqaA5Kh2hRQ==}
-    engines: {node: '>=10'}
-    os: [darwin]
-    dev: false
-    optional: true
-
-  /@sentry/cli-linux-arm/2.58.4:
-    resolution: {integrity: sha512-rdQ8beTwnN48hv7iV7e7ZKucPec5NJkRdrrycMJMZlzGBPi56LqnclgsHySJ6Kfq506A2MNuQnKGaf/sBC9REA==}
-    engines: {node: '>=10'}
-    cpu: [arm]
-    os: [linux, freebsd, android]
-    dev: false
-    optional: true
-
-  /@sentry/cli-linux-arm64/2.58.4:
-    resolution: {integrity: sha512-0g0KwsOozkLtzN8/0+oMZoOuQ0o7W6O+hx+ydVU1bktaMGKEJLMAWxOQNjsh1TcBbNIXVOKM/I8l0ROhaAb8Ig==}
-    engines: {node: '>=10'}
-    cpu: [arm64]
-    os: [linux, freebsd, android]
-    dev: false
-    optional: true
-
-  /@sentry/cli-linux-i686/2.58.4:
-    resolution: {integrity: sha512-NseoIQAFtkziHyjZNPTu1Gm1opeQHt7Wm1LbLrGWVIRvUOzlslO9/8i6wETUZ6TjlQxBVRgd3Q0lRBG2A8rFYA==}
-    engines: {node: '>=10'}
-    cpu: [x86, ia32]
-    os: [linux, freebsd, android]
-    dev: false
-    optional: true
-
-  /@sentry/cli-linux-x64/2.58.4:
-    resolution: {integrity: sha512-d3Arz+OO/wJYTqCYlSN3Ktm+W8rynQ/IMtSZLK8nu0ryh5mJOh+9XlXY6oDXw4YlsM8qCRrNquR8iEI1Y/IH+Q==}
-    engines: {node: '>=10'}
-    cpu: [x64]
-    os: [linux, freebsd, android]
-    dev: false
-    optional: true
-
-  /@sentry/cli-win32-arm64/2.58.4:
-    resolution: {integrity: sha512-bqYrF43+jXdDBh0f8HIJU3tbvlOFtGyRjHB8AoRuMQv9TEDUfENZyCelhdjA+KwDKYl48R1Yasb4EHNzsoO83w==}
-    engines: {node: '>=10'}
-    cpu: [arm64]
-    os: [win32]
-    dev: false
-    optional: true
-
-  /@sentry/cli-win32-i686/2.58.4:
-    resolution: {integrity: sha512-3triFD6jyvhVcXOmGyttf+deKZcC1tURdhnmDUIBkiDPJKGT/N5xa4qAtHJlAB/h8L9jgYih9bvJnvvFVM7yug==}
-    engines: {node: '>=10'}
-    cpu: [x86, ia32]
-    os: [win32]
-    dev: false
-    optional: true
-
-  /@sentry/cli-win32-x64/2.58.4:
-    resolution: {integrity: sha512-cSzN4PjM1RsCZ4pxMjI0VI7yNCkxiJ5jmWncyiwHXGiXrV1eXYdQ3n1LhUYLZ91CafyprR0OhDcE+RVZ26Qb5w==}
-    engines: {node: '>=10'}
-    cpu: [x64]
-    os: [win32]
-    dev: false
-    optional: true
-
-  /@sentry/cli/2.58.4:
-    resolution: {integrity: sha512-ArDrpuS8JtDYEvwGleVE+FgR+qHaOp77IgdGSacz6SZy6Lv90uX0Nu4UrHCQJz8/xwIcNxSqnN22lq0dH4IqTg==}
-    engines: {node: '>= 10'}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      https-proxy-agent: 5.0.1
-      node-fetch: 2.7.0
-      progress: 2.0.3
-      proxy-from-env: 1.1.0
-      which: 2.0.2
-    optionalDependencies:
-      '@sentry/cli-darwin': 2.58.4
-      '@sentry/cli-linux-arm': 2.58.4
-      '@sentry/cli-linux-arm64': 2.58.4
-      '@sentry/cli-linux-i686': 2.58.4
-      '@sentry/cli-linux-x64': 2.58.4
-      '@sentry/cli-win32-arm64': 2.58.4
-      '@sentry/cli-win32-i686': 2.58.4
-      '@sentry/cli-win32-x64': 2.58.4
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: false
-
-  /@sentry/core/10.37.0:
-    resolution: {integrity: sha512-hkRz7S4gkKLgPf+p3XgVjVm7tAfvcEPZxeACCC6jmoeKhGkzN44nXwLiqqshJ25RMcSrhfFvJa/FlBg6zupz7g==}
-    engines: {node: '>=18'}
-    dev: false
-
-  /@sentry/react-native/7.11.0_97050be8c3dd1ea52fa286564c4857a5:
-    resolution: {integrity: sha512-OiDaLCAGpRN18YG/o7IIwLhU0Xpb0tYKQ5QxkGHiwb+L3VHn+MqGCGfITYNdhqr06HHMvu9Lysm+UJxaNmGaJg==}
-    hasBin: true
-    peerDependencies:
-      expo: '>=49.0.0'
-      react: '>=17.0.0'
-      react-native: '>=0.65.0'
-    peerDependenciesMeta:
-      expo:
-        optional: true
-    dependencies:
-      '@sentry/babel-plugin-component-annotate': 4.8.0
-      '@sentry/browser': 10.37.0
-      '@sentry/cli': 2.58.4
-      '@sentry/core': 10.37.0
-      '@sentry/react': 10.37.0_react@19.2.0
-      '@sentry/types': 10.37.0
-      expo: 55.0.27_1a10d0fc5f9c5f5d97334b4ff947521d
-      react: 19.2.0
-      react-native: 0.83.6_c933ad1581318756add432bf45df9101
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: false
-
-  /@sentry/react/10.37.0_react@19.2.0:
-    resolution: {integrity: sha512-XLnXJOHgsCeVAVBbO+9AuGlZWnCxLQHLOmKxpIr8wjE3g7dHibtug6cv8JLx78O4dd7aoCqv2TTyyKY9FLJ2EQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: ^16.14.0 || 17.x || 18.x || 19.x
-    dependencies:
-      '@sentry/browser': 10.37.0
-      '@sentry/core': 10.37.0
-      react: 19.2.0
-    dev: false
-
-  /@sentry/types/10.37.0:
-    resolution: {integrity: sha512-umpnUKRC0AAbJrADg6SlFtqN2yzf7NHciCF9lkHau+ax2PIZ/NDmoG4RQujFVflVaVoD60Ly2t+CcPnYIWMPlw==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sentry/core': 10.37.0
-    dev: false
-
   /@shopify/react-native-skia/2.4.18_876d622b1797c7cdffe1750fefecdde8:
     resolution: {integrity: sha512-/AB/mvb2dGSQVIJTxyG9ZMFn2PjwWlVcFxHU4TV+K25LCU49ntJXl4xda2ghXxdENMggKgO9R5pA+P/AQ0UUrA==}
     hasBin: true
@@ -5522,7 +5320,7 @@ packages:
       '@vitest/spy': 4.1.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 8.0.8
+      vite: 8.0.8_@types+node@22.20.0
     dev: true
 
   /@vitest/pretty-format/3.2.4:
@@ -5628,15 +5426,6 @@ packages:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
     hasBin: true
-
-  /agent-base/6.0.2:
-    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
-    engines: {node: '>= 6.0.0'}
-    dependencies:
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /agent-base/7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
@@ -8434,16 +8223,6 @@ packages:
       toidentifier: 1.0.1
     dev: false
 
-  /https-proxy-agent/5.0.1:
-    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
-    engines: {node: '>= 6'}
-    dependencies:
-      agent-base: 6.0.2
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /https-proxy-agent/7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
@@ -10131,10 +9910,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-
-  /proxy-from-env/1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
-    dev: false
 
   /punycode/2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}

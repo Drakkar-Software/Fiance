@@ -1,9 +1,8 @@
 import { Platform } from "react-native";
 import { SunglassesCore, createLazyClient } from "@drakkar.software/sunglasses-core";
-import type { IAnalyticsAdapter, SunglassesEvent } from "@drakkar.software/sunglasses-core";
 import { AsyncStorageAdapter } from "@drakkar.software/sunglasses-storage-async-storage";
-import { ConsoleAdapter } from "@drakkar.software/sunglasses-adapter-console";
 import { StarfishAnalyticsAdapter } from "@drakkar.software/sunglasses-adapter-starfish";
+import { StarfishClient } from "@drakkar.software/starfish-client";
 
 export type FianceEvents = {
   // Lifecycle
@@ -31,66 +30,42 @@ export type FianceEvents = {
   import_data:                 undefined;
 };
 
-/**
- * Lazy wrapper around StarfishAnalyticsAdapter.
- * Included in the adapter list from app start (so the core knows about it),
- * but is a no-op until activate() is called once the server URL is known.
- * No auth token — the analytics-events collection is public (writeRoles: ["public"]).
- */
-class LazyStarfishAnalyticsAdapter implements IAnalyticsAdapter {
-  private inner: StarfishAnalyticsAdapter | null = null;
-
-  activate(serverUrl: string, anonymousId: string) {
-    this.inner?.shutdown().catch(() => {});
-    this.inner = new StarfishAnalyticsAdapter({
-      serverUrl,
-      storagePath: `analytics/${anonymousId}/events`,
-      pushOnly: true,
-    });
-  }
-
-  deactivate() {
-    this.inner?.shutdown().catch(() => {});
-    this.inner = null;
-  }
-
-  async send(batch: SunglassesEvent[]): Promise<void> {
-    await this.inner?.send(batch);
-  }
-
-  async reset(): Promise<void> {
-    await this.inner?.reset();
-  }
-
-  async shutdown(): Promise<void> {
-    await this.inner?.shutdown();
-  }
-}
-
-export const starfishAnalyticsAdapter = new LazyStarfishAnalyticsAdapter();
-
-let _core: SunglassesCore | null = null;
-
 export const analytics = createLazyClient<FianceEvents>();
 
-export async function initAnalytics(): Promise<SunglassesCore> {
-  const adapters: IAnalyticsAdapter[] = [starfishAnalyticsAdapter];
-  if (__DEV__) adapters.unshift(new ConsoleAdapter());
+const ANALYTICS_BASE =
+  process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "http://localhost:8787";
+const ANALYTICS_APP = "fiance";
 
-  _core = await SunglassesCore.create({
-    storage: new AsyncStorageAdapter(""),
-    adapters,
-    defaultOptIn: true,
-    platform: Platform.OS === "web" ? "web" : "react-native",
-    debug: __DEV__,
-    enableSessionTracking: true,
-    enableEventCounting: true,
+// Guard against double-init (React StrictMode double-effects, fast-refresh, etc.)
+let started = false;
+
+export async function initAnalytics(): Promise<void> {
+  if (started) return;
+  started = true;
+
+  const syncClient = new StarfishClient({
+    baseUrl: ANALYTICS_BASE,
+    namespace: "analytics",
   });
 
-  analytics.init(_core);
-  return _core;
-}
+  const client = await SunglassesCore.create({
+    storage: new AsyncStorageAdapter(),
+    adapters: [
+      new StarfishAnalyticsAdapter({
+        client: syncClient,
+        app: ANALYTICS_APP,
+        // StarfishClient.push() does NOT add /push/ — applyNamespace() only prepends
+        // /v1/{namespace}. Must include /push/ explicitly to reach:
+        //   ANALYTICS_BASE/v1/analytics/push/events/fiance/{uuid}
+        pathTemplate: "/push/events/{app}/{batchId}",
+      }),
+    ],
+    platform: Platform.OS === "web" ? "web" : "react-native",
+    appName: "fiance-mobile",
+    defaultOptIn: true,
+    enableSessionTracking: true,
+    debug: __DEV__,
+  });
 
-export function getAnalyticsCore(): SunglassesCore | null {
-  return _core;
+  analytics.init(client);
 }

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
-import { analytics, starfishAnalyticsAdapter, getAnalyticsCore } from "@/lib/analytics";
+import { analytics } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
@@ -118,7 +118,6 @@ export default function SettingsScreen() {
 
     if (syncEnabled) {
       teardownStarfish();
-      starfishAnalyticsAdapter.deactivate();
       analytics.capture("sync_disabled");
       setSyncEnabled(false);
       updateRegistryWedding(activeEntry.id, { syncDisabled: true });
@@ -142,8 +141,6 @@ export default function SettingsScreen() {
     if (!config) return;
 
     await initStarfish(config);
-    const userData = await getAnalyticsCore()?.exportUserData();
-    starfishAnalyticsAdapter.activate(config.serverUrl, userData?.anonymousId ?? "anonymous");
     analytics.capture("sync_enabled");
     setSyncEnabled(true);
 

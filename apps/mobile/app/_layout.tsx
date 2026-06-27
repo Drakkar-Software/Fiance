@@ -45,17 +45,14 @@ import { theme as GP } from "@/lib/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
-import * as Sentry from "@sentry/react-native";
 
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
-import { SunglassesProvider, useSunglasses, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
-import { SunglassesErrorBoundary, createSentryBeforeSend } from "@drakkar.software/sunglasses-adapter-sentry";
-import { initAnalytics, getAnalyticsCore } from "@/lib/analytics";
-import type { SunglassesCore } from "@drakkar.software/sunglasses-core";
+import { SunglassesProvider, SunglassesGlobalErrorBoundary, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
+import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot } from "@/lib/providers";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -63,21 +60,6 @@ import { configureOnBoot } from "@/lib/providers";
 // resolveServerConfig which calls deriveSession).
 configureOnBoot();
 
-// Initialize Sentry at module load — before any components render.
-// beforeSend lazily accesses the analytics client once it's ready.
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  beforeSend: (event: any, hint: any) => {
-    const core = getAnalyticsCore();
-    if (!core) return process.env.EXPO_PUBLIC_SENTRY_DSN ? event : null;
-    return (createSentryBeforeSend(core, {
-      suppressSentrySend: !process.env.EXPO_PUBLIC_SENTRY_DSN,
-      maxMessageLength: 200,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any)(event, hint);
-  },
-});
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -142,8 +124,7 @@ function AppContent() {
 }
 
 function InnerApp() {
-  const client = useSunglasses();
-  useExpoRouterScreenTracking(client);
+  useExpoRouterScreenTracking(analytics);
   return (
     <>
       <AppContent />
@@ -189,16 +170,13 @@ export default function RootLayout() {
   const colorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const [locked, setLocked] = useState<boolean | null>(null);
-  const [analyticsClient, setAnalyticsClient] = useState<SunglassesCore | null>(null);
-  const [analyticsReady, setAnalyticsReady] = useState(false);
 
   useEffect(() => {
     loadRegistry();
-    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled(), initAnalytics().catch(() => null)]).then(
-      ([, , , enabled, client]) => {
+    initAnalytics().catch(console.error);
+    Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled()]).then(
+      ([, , , enabled]) => {
         setLocked(enabled);
-        setAnalyticsClient(client);
-        setAnalyticsReady(true);
       }
     );
   }, []);
@@ -242,20 +220,18 @@ export default function RootLayout() {
         <ForgeThemeProvider theme={{ colors: { primary: GP.clay } }}>
         <BottomSheetModalProvider>
           <StatusBar style="auto" />
-          {!fontsLoaded || locked === null || !analyticsReady ? (
+          {!fontsLoaded || locked === null ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" />
             </View>
           ) : locked ? (
             <LockScreen onUnlock={handleUnlock} />
-          ) : analyticsClient ? (
-            <SunglassesErrorBoundary client={analyticsClient} fallback={crashFallback}>
-              <SunglassesProvider client={analyticsClient}>
-                <InnerApp />
-              </SunglassesProvider>
-            </SunglassesErrorBoundary>
           ) : (
-            <><AppContent /><Toaster /></>
+            <SunglassesProvider client={analytics} autoCaptureErrors={{ globalHandlers: true, console: true }}>
+              <SunglassesGlobalErrorBoundary fallback={crashFallback} includeNonFatalGlobalErrors>
+                <InnerApp />
+              </SunglassesGlobalErrorBoundary>
+            </SunglassesProvider>
           )}
         </BottomSheetModalProvider>
         </ForgeThemeProvider>
