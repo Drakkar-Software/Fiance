@@ -12,7 +12,6 @@
     "onlyBuiltDependencies": [
       "@shopify/react-native-skia",
       "esbuild",
-      "sharp",
       "unrs-resolver",
       "workerd"
     ]
