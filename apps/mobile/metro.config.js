@@ -36,6 +36,14 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web' && moduleName.startsWith('@babel/runtime/helpers/esm/'))
     return resolve(context, moduleName.replace('@babel/runtime/helpers/esm/', '@babel/runtime/helpers/'), platform)
 
+  // hash-wasm (Argon2id in starfish-identities) requires a WebAssembly global —
+  // absent on Hermes ("WebAssembly is not supported in this environment"). Redirect
+  // to a pure-JS @noble/hashes shim on every platform so native and web derive
+  // identical identities. A package exports map can't remap a third-party specifier
+  // imported deep inside a dependency, so the alias must live here.
+  if (moduleName === 'hash-wasm')
+    return { type: 'sourceFile', filePath: path.resolve(projectRoot, 'lib/hash-wasm-shim.ts') }
+
   // Workspace SDK packages (packages/*) use NodeNext-style .js extensions in
   // source imports for ESM/tsup compatibility. Metro resolves directly from TS
   // source so it can't find .js files — strip the extension to resolve to .ts.
