@@ -14,8 +14,8 @@ importers:
         specifier: ^7.29.2
         version: 7.29.7
       '@drakkar.software/seahorse':
-        specifier: 0.7.2
-        version: 0.7.2(9dad4e422471fe9d77e18173c1ace30d)
+        specifier: 0.7.8
+        version: 0.7.8(9dad4e422471fe9d77e18173c1ace30d)
       '@drakkar.software/starfish-client':
         specifier: 3.0.0-alpha.44
         version: 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -888,8 +888,8 @@ packages:
     peerDependencies:
       '@drakkar.software/starfish-client': '>=1.0.0'
 
-  '@drakkar.software/seahorse@0.7.2':
-    resolution: {integrity: sha512-0djajUn6NTzAs1AmzCoucb9AB/uM9ZrbsRNe4oVdHxl0DAf6mgAcZqeTL0veWY0bBvejknY4b/HlBu1hBBxARQ==}
+  '@drakkar.software/seahorse@0.7.8':
+    resolution: {integrity: sha512-w7FeTOK/pH4iBOvUzM2K2rmlFsh4JM+XBVuBFVVd8ZC7YhdrZx5GaF77JHOPOaGgSpkHcxMEuofExh8NUicc6Q==}
     peerDependencies:
       '@expo/html-elements': '>=55.0.0'
       '@gorhom/bottom-sheet': '>=5.0.0'
@@ -7726,7 +7726,7 @@ snapshots:
       '@drakkar.software/doubloon-core': 0.3.0
       '@drakkar.software/starfish-client': 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
 
-  '@drakkar.software/seahorse@0.7.2(9dad4e422471fe9d77e18173c1ace30d)':
+  '@drakkar.software/seahorse@0.7.8(9dad4e422471fe9d77e18173c1ace30d)':
     dependencies:
       clsx: 2.1.1
       lucide-react-native: 1.21.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
