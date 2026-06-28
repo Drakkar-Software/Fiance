@@ -13,7 +13,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { exportWedding, pickBackupJson, applyBackup, applyLegacyToSpace } from "@/lib/export-import";
 import { getActiveWeddingNodeId } from "@/lib/starfish";
-import { Archive, ArrowRightLeft } from "lucide-react-native";
+import { ArrowRightLeft } from "lucide-react-native";
 import {
   exportToPdf,
   buildGuestListHtml,
@@ -291,6 +291,7 @@ export default function ExportImportScreen() {
                 icon={<Upload size={18} color="#F59E0B" />}
                 label={t("importData")}
                 sublabel={t("importDesc")}
+                last
                 onJson={(json) => { setPickedJson(json); setShowImportConfirm(true); }}
               />
             ) : (
@@ -299,22 +300,6 @@ export default function ExportImportScreen() {
                 label={importing ? t("importing") : t("importData")}
                 sublabel={t("importDesc")}
                 onPress={handlePickImport}
-              />
-            )}
-            {Platform.OS === "web" ? (
-              <WebFileRow
-                icon={<Archive size={18} color="#8B5CF6" />}
-                label={t("importToSpace")}
-                sublabel={t("importToSpaceDesc")}
-                last
-                onJson={(json) => { setPickedLegacyJson(json); setShowImportToSpaceConfirm(true); }}
-              />
-            ) : (
-              <ExportRow
-                icon={<Archive size={18} color="#8B5CF6" />}
-                label={importingToSpace ? t("importing") : t("importToSpace")}
-                sublabel={t("importToSpaceDesc")}
-                onPress={handlePickLegacyImport}
                 last
               />
             )}
