@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
+import { toast } from "@/lib/toast/sonner";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, Download, Upload, FileText, Table2 } from "lucide-react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";
@@ -78,7 +79,7 @@ export default function ExportImportScreen() {
       const result = await applyBackup(pickedJson);
       setPickedJson(null);
       if (result === true) {
-        Alert.alert(t("importSuccess"), t("importSuccessMsg"));
+        toast.success(t("importSuccessMsg"));
         if (useSettingsStore.getState().notificationsEnabled) {
           const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
           rescheduleAllNotifications(newTasks, newEvents).catch((err) =>
@@ -86,12 +87,12 @@ export default function ExportImportScreen() {
           );
         }
       } else if (result === "invalid_json") {
-        Alert.alert(t("common:error"), t("invalidJson"));
+        toast.error(t("invalidJson"));
       } else if (result === "invalid_backup") {
-        Alert.alert(t("common:error"), t("invalidBackup"));
+        toast.error(t("invalidBackup"));
       }
     } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
+      toast.error(e.message);
     } finally {
       setImporting(false);
     }
@@ -120,12 +121,12 @@ export default function ExportImportScreen() {
           : result.error === "invalid_json"
           ? "invalidJson"
           : "invalidBackup";
-        Alert.alert(t("common:error"), t(msgKey));
+        toast.error(t(msgKey));
       } else {
-        Alert.alert(t("importToSpaceSuccess"), t("importToSpaceSuccessMsg", { count: result.result.nodeCount }));
+        toast.success(t("importToSpaceSuccessMsg", { count: result.result.nodeCount }));
       }
     } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
+      toast.error(e.message);
     } finally {
       setImportingToSpace(false);
     }
