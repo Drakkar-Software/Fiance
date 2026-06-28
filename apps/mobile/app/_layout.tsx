@@ -1,4 +1,4 @@
-import "@/lib/crypto-polyfill";
+import "react-native-get-random-values";
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState, useCallback } from "react";

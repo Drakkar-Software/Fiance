@@ -102,6 +102,7 @@
     "react-native-edge-to-edge": "^1.8.1",
     "react-native-gesture-handler": "~2.31.1",
     "react-native-qrcode-svg": "^6.3.21",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-quick-crypto": ">=0.7.0",
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "~5.7.0",
