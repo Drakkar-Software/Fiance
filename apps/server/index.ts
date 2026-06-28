@@ -16,7 +16,7 @@ import { sharingServerPlugin } from "@drakkar.software/starfish-sharing";
 import { createSpacesRoleEnricher, createSpacesDirectoryServerPlugin } from "@drakkar.software/starfish-spaces";
 import { CORS_ALLOW_HEADERS } from "@drakkar.software/starfish-protocol";
 import { config as legacyConfig } from "./starfish-config";
-import { octospacesSyncConfig } from "./octospaces-config";
+import { fiancespacesSyncConfig } from "./fiancespaces-config";
 import { fianceSyncConfig } from "./fiance-config";
 import { createDoubloon, type DoubloonEnv } from "./doubloon";
 
@@ -134,7 +134,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Per-Worker singleton cache — built once per isolate lifetime.
 let _store: R2ObjectStore | null = null;
 let _capCertResolver: ReturnType<typeof createCapCertRoleResolver> | null = null;
-let _octospacesSyncRouter: Hono | null = null;
+let _fiancespacesSyncRouter: Hono | null = null;
 let _fianceSyncRouter: Hono | null = null;
 let _legacySyncRouter: Hono | null = null;
 let _doubloon: ReturnType<typeof createDoubloon> | null = null;
@@ -159,27 +159,39 @@ function getCapCertResolver(): ReturnType<typeof createCapCertRoleResolver> {
   return _capCertResolver;
 }
 
-function getOctospacesSyncRouter(env: Env): Hono {
-  if (_octospacesSyncRouter) return _octospacesSyncRouter;
+// Shared fiancespace registry namespace — space registries, access records,
+// keyrings, profiles, devices, pairing.
+//
+// Mounted via Hono .route() so that c.req.url is never rewritten: the server
+// reconstructs the signed `p` field from the original URL (cap-resolver:572
+// pathAndQueryFromUrl). Rewriting the URL would strip /v1/fiancespaces from
+// the path, causing a request-signature mismatch → HTTP 401.
+function getFiancespacesSyncRouter(env: Env): Hono {
+  if (_fiancespacesSyncRouter) return _fiancespacesSyncRouter;
 
   const s = getStore(env);
   const roleResolver = getCapCertResolver();
-  // Official space role enricher replaces the hand-written space-role.ts.
   const spaceEnricher = createSpacesRoleEnricher(s, undefined, { allowTofu: true });
 
-  _octospacesSyncRouter = createSyncRouter({
+  const inner = createSyncRouter({
     store: s,
-    config: octospacesSyncConfig,
+    config: fiancespacesSyncConfig,
     roleResolver,
     roleEnricher: spaceEnricher,
     cors: { allowHeaders: [...CORS_ALLOW_HEADERS] },
     securityHeaders: true,
   });
 
-  saveConfig(s, octospacesSyncConfig).catch(() => {});
-  return _octospacesSyncRouter;
+  // Mount at the full prefix so inner routes resolve against the original URL.
+  const mounted = new Hono();
+  mounted.route("/v1/fiancespaces", inner);
+  _fiancespacesSyncRouter = mounted;
+
+  saveConfig(s, fiancespacesSyncConfig).catch(() => {});
+  return _fiancespacesSyncRouter;
 }
 
+// Fiance content namespace — same fix: mount via .route() to preserve c.req.url.
 function getFianceSyncRouter(env: Env): Hono {
   if (_fianceSyncRouter) return _fianceSyncRouter;
 
@@ -187,7 +199,7 @@ function getFianceSyncRouter(env: Env): Hono {
   const roleResolver = getCapCertResolver();
   const spaceEnricher = createSpacesRoleEnricher(s);
 
-  _fianceSyncRouter = createSyncRouter({
+  const inner = createSyncRouter({
     store: s,
     config: fianceSyncConfig,
     roleResolver,
@@ -204,6 +216,10 @@ function getFianceSyncRouter(env: Env): Hono {
     cors: { allowHeaders: [...CORS_ALLOW_HEADERS] },
     securityHeaders: true,
   });
+
+  const mounted = new Hono();
+  mounted.route("/v1/fiance", inner);
+  _fianceSyncRouter = mounted;
 
   saveConfig(s, fianceSyncConfig).catch(() => {});
   return _fianceSyncRouter;
@@ -232,26 +248,18 @@ function getDoubloon(env: Env): ReturnType<typeof createDoubloon> {
 }
 
 // ---------------------------------------------------------------------------
-// Routing: fiance and octospaces are matched BEFORE the legacy catch-all
+// Routing: fiance and fiancespaces are matched BEFORE the legacy catch-all
 // ---------------------------------------------------------------------------
 
 // Fiance content namespace — cap-cert + space-role enricher.
-app.all("/v1/fiance/*", (c) => {
-  const url = new URL(c.req.raw.url);
-  url.pathname = url.pathname.replace(/^\/v1\/fiance/, "") || "/";
-  return getFianceSyncRouter(c.env).fetch(new Request(url, c.req.raw), c.env, c.executionCtx);
-});
+app.all("/v1/fiance/*", (c) =>
+  getFianceSyncRouter(c.env).fetch(c.req.raw, c.env, c.executionCtx),
+);
 
-// Shared octospaces registry namespace — cap-cert + space-role enricher.
-app.all("/v1/octospaces/*", (c) => {
-  const url = new URL(c.req.raw.url);
-  url.pathname = url.pathname.replace(/^\/v1\/octospaces/, "") || "/";
-  return getOctospacesSyncRouter(c.env).fetch(
-    new Request(url, c.req.raw),
-    c.env,
-    c.executionCtx,
-  );
-});
+// Shared fiancespace registry namespace — cap-cert + space-role enricher.
+app.all("/v1/fiancespaces/*", (c) =>
+  getFiancespacesSyncRouter(c.env).fetch(c.req.raw, c.env, c.executionCtx),
+);
 
 // Legacy Bearer namespace — entitlements + analytics-events (Doubloon compat).
 app.all("/v1/*", (c) => {

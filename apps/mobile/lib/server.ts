@@ -75,7 +75,7 @@ export async function deriveUserId(
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
     { baseUrl, namespace: "fiance" },
-    { sharedNamespace: "octospaces" },
+    { sharedNamespace: "fiancespaces" },
   );
   return session.userId;
 }
@@ -93,7 +93,7 @@ export async function resolveSessionConfig(
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
     makeClientOpts(serverUrl),
-    { sharedNamespace: "octospaces" },
+    { sharedNamespace: "fiancespaces" },
   );
   return { serverUrl, session, userId: session.userId };
 }
@@ -115,7 +115,7 @@ export async function resolveServerConfig(
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
     makeClientOpts(serverUrl),
-    { sharedNamespace: "octospaces" },
+    { sharedNamespace: "fiancespaces" },
   );
   return {
     serverUrl,

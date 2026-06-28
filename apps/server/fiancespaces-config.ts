@@ -1,17 +1,17 @@
 /**
- * Starfish collection layout — shared `octospaces` registry namespace.
+ * Starfish collection layout — shared `fiancespaces` registry namespace.
  *
  * This namespace handles per-identity space registries, per-space access
  * records, per-space E2EE keyrings, profiles, devices, and pairing rendezvous.
- * It mirrors the octospaces canonical server configuration exactly.
+ * It mirrors the octospaces-sdk canonical server configuration.
  *
- * Mounted at /v1/octospaces/ by the Worker.
+ * Mounted at /v1/fiancespaces/ by the Worker.
  */
 import type { SyncConfig } from "@drakkar.software/starfish-server";
 
 const JSON_ONLY = ["application/json"];
 
-export const octospacesSyncConfig: SyncConfig = {
+export const fiancespacesSyncConfig: SyncConfig = {
   version: 1,
   collections: [
     // Per-identity space list.

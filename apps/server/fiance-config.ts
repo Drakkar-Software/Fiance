@@ -2,7 +2,7 @@
  * Starfish collection layout — `fiance` content namespace.
  *
  * All wedding-domain object collections. No registry collections (spaces,
- * spacekeyring, etc.) — those live in the shared `octospaces` namespace.
+ * spacekeyring, etc.) — those live in the shared `fiancespaces` namespace.
  *
  * E2EE invariant: `encryption:"delegated"` means the CLIENT seals content
  * before upload; the server stores opaque bytes. `encryption:"none"` means
@@ -17,7 +17,7 @@ const JSON_ONLY = ["application/json"];
 export const fianceSyncConfig: SyncConfig = {
   version: 1,
   collections: [
-    // ── Generic object family (mirrors octospaces generic collections) ─────────
+    // ── Generic object family (mirrors fiancespaces generic collections) ─────────
 
     // Object tree — union-merged list of every ObjectNode (plaintext, member-gated).
     {
@@ -119,9 +119,9 @@ export const fianceSyncConfig: SyncConfig = {
       allowedMimeTypes: JSON_ONLY,
     },
 
-    // ── Identity profile — mirrors octospaces layout, served here so the SDK's
+    // ── Identity profile — mirrors fiancespaces layout, served here so the SDK's
     // accountClient (fiance namespace) can read/write the profile without hitting the
-    // octospaces router. Both configs share the same R2 bucket, so the key is the same.
+    // fiancespaces router. Both configs share the same R2 bucket, so the key is the same.
     {
       name: "profile",
       storagePath: "user/{identity}/profile",

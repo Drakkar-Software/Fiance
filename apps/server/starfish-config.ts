@@ -6,7 +6,7 @@
  *  - `analytics-events` — public-write, never needed cap-cert
  *
  * All wedding-domain collections (wedding, wedding-page, rsvp-roster, etc.)
- * are retired; data lives in the octospaces/fiance namespaces as ObjectNodes.
+ * are retired; data lives in the fiancespaces/fiance namespaces as ObjectNodes.
  *
  * TODO(doubloon-v3): once Doubloon is migrated to cap-cert auth, move
  * `entitlements` to the fiance namespace and delete this file.

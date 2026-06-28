@@ -2,14 +2,14 @@
  * Group-crypto helpers — STUBBED for octospaces v3 migration.
  *
  * The `starfish-client/group` subpath was removed in Starfish 3.0.
- * Partner sharing is now done via octospaces space invites
+ * Partner sharing is now done via fiancespace space invites
  * (`createSpaceInviteLink` / `joinSpaceByLink`) — see Phase B5.
  *
  * These stubs keep existing callers compiling. The UI in settings/index.tsx
  * that calls `createGroupInvite` will be replaced with the space-invite flow
  * in B5; until then it falls back to the legacy seed-phrase invite URL.
  *
- * @deprecated Replace all callers with octospaces space invite flow (B5).
+ * @deprecated Replace all callers with fiancespace space invite flow (B5).
  */
 
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";

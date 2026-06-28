@@ -2,8 +2,8 @@
  * Space provisioner — bootstraps the owner's starfish-space for a new wedding.
  *
  * The SDK splits registry operations between two namespaces:
- *   - `spacesRegistryClient` (octospaces) — _access, _spaces
- *   - `spacesKeyringClient`  (octospaces) — _keyring  (via ownerEnsureSpaceKeyring)
+ *   - `spacesRegistryClient` (fiancespaces) — _access, _spaces
+ *   - `spacesKeyringClient`  (fiancespaces) — _keyring  (via ownerEnsureSpaceKeyring)
  *   - `contentClient`        (fiance)     — objindex  (via seedSpaceObjectIndex)
  *
  * The first `writeSpaceAccess` succeeds via TOFU (Trust On First Use): when no
@@ -39,7 +39,7 @@ export async function ensureSpaceProvisioned(
   const spaceId = `${session.spaceIdPrefix}${Crypto.randomUUID().replace(/-/g, '')}`;
   const name = wedding.label;
 
-  // 1. Write _access to octospaces (TOFU grants space:owner on first write).
+  // 1. Write _access to fiancespaces (TOFU grants space:owner on first write).
   //    Sets owner = userId, members = [], and the human-readable space name.
   await writeSpaceAccess(
     session.spacesRegistryClient,
@@ -55,11 +55,11 @@ export async function ensureSpaceProvisioned(
   //    getSpaceClient falls through to session.contentClient when no local access entry.
   await seedSpaceObjectIndex(session, spaceId);
 
-  // 3. Create the space-wide E2EE keyring in octospaces.
+  // 3. Create the space-wide E2EE keyring in fiancespaces.
   //    Uses session.spacesKeyringClient.
   await ownerEnsureSpaceKeyring(session, spaceId);
 
-  // 4. Register the space in the user's _spaces list (octospaces).
+  // 4. Register the space in the user's _spaces list (fiancespaces).
   const { spaces } = await readSpaces(session.spacesRegistryClient, session);
   const space = buildSpace(spaceId, name);
   await writeSpaces(session.spacesRegistryClient, session, [...spaces, space]);

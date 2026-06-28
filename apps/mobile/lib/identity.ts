@@ -71,7 +71,7 @@ export async function deriveSessionFromPhrase(
   const session = await _deriveSession(
     words,
     { baseUrl: normalizeSyncBase(serverUrl), namespace: "fiance" },
-    { sharedNamespace: "octospaces" },
+    { sharedNamespace: "fiancespaces" },
   );
   return { session, userId: session.userId };
 }
