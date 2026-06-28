@@ -165,7 +165,7 @@ function getOctospacesSyncRouter(env: Env): Hono {
   const s = getStore(env);
   const roleResolver = getCapCertResolver();
   // Official space role enricher replaces the hand-written space-role.ts.
-  const spaceEnricher = createSpacesRoleEnricher(s);
+  const spaceEnricher = createSpacesRoleEnricher(s, undefined, { allowTofu: true });
 
   _octospacesSyncRouter = createSyncRouter({
     store: s,
