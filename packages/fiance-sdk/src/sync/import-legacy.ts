@@ -44,6 +44,7 @@ import {
   accommodationToNode,
   giftToNode,
   invitationTypeToNode,
+  communicationToNode,
   taskCategoryToNode,
   taskToNode,
   agendaEventToNode,
@@ -63,7 +64,7 @@ export interface ImportResult {
 }
 
 /**
- * Import a v6 WeddingSnapshot into an existing Space as ObjectNodes.
+ * Import a v7 WeddingSnapshot into an existing Space as ObjectNodes.
  *
  * All admin nodes (`access:'space', enc:true`) are batch-inserted into the
  * index in a single `updateObjectIndex` call, then their content docs are
@@ -273,7 +274,15 @@ export async function importLegacyBackup(
     contentMap.set(iId, idea);
   }
 
-  // ── 12. Guests (after tables + accommodations are resolved in idMap) ──────
+  // ── 12. Communications ───────────────────────────────────────────────────
+  for (const comm of (snapshot.communications ?? [])) {
+    if (alreadyImported(comm.id)) continue;
+    const id = nextId(`communication:${comm.id}`, comm.id);
+    allDescriptors.push(withLegacyId(communicationToNode(comm, id, resolvedWeddingId), comm.id));
+    contentMap.set(id, comm);
+  }
+
+  // ── 13. Guests (after tables + accommodations are resolved in idMap) ──────
   for (const g of snapshot.guests) {
     if (alreadyImported(g.id)) continue;
     const groupNodeId =

@@ -15,6 +15,7 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import { DEFAULT_INVITATION_TYPES } from "@/db/types";
 import { readCollection, writeCollection } from "./kv-storage";
 
@@ -39,6 +40,7 @@ export function clearAllStores(): void {
   useAccommodationsStore.getState().setAccommodations([]);
   useGiftsStore.getState().setGifts([]);
   useInvitationTypesStore.getState().setInvitationTypes([]);
+  useCommunicationsStore.getState().setCommunications([]);
 }
 
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
@@ -76,6 +78,8 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
   useAccommodationsStore.getState().setAccommodations(readCollection<any[]>("accommodations") ?? []);
 
   useGiftsStore.getState().setGifts(readCollection<any[]>("gifts") ?? []);
+
+  useCommunicationsStore.getState().setCommunications(readCollection<any[]>("communications") ?? []);
 
   const storedInvTypes = readCollection<any[]>("invitationTypes");
   if (storedInvTypes && storedInvTypes.length > 0) {
@@ -155,6 +159,10 @@ export function persistInvitationTypes(_storage: SQLiteStorage): void {
   writeCollection("invitationTypes", useInvitationTypesStore.getState().invitationTypes);
 }
 
+export function persistCommunications(_storage: SQLiteStorage): void {
+  writeCollection("communications", useCommunicationsStore.getState().communications);
+}
+
 // ─── Bulk restore (for sync pull and import) ────────────────────────────────
 
 export function restoreAllTables(_storage: SQLiteStorage, data: {
@@ -174,6 +182,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   accommodations?: any[];
   gifts?: any[];
   invitationTypes?: any[];
+  communications?: any[];
 }): void {
   writeCollection("wedding", data.wedding);
   writeCollection("guestGroups", data.guestGroups);
@@ -191,4 +200,5 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("ideas", data.ideas);
   writeCollection("gifts", data.gifts ?? []);
   writeCollection("invitationTypes", data.invitationTypes ?? []);
+  writeCollection("communications", data.communications ?? []);
 }

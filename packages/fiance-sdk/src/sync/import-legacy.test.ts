@@ -96,6 +96,7 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     dayOfItems: [{ id: 'doi1', title: 'Accueil', time: '14:00', isPublic: true } as never],
     ideaCollections: [{ id: 'ic1', title: 'Déco' } as never],
     ideas: [{ id: 'idea1', title: 'Bougie', collectionId: 'ic1' } as never],
+    communications: [{ id: 'comm1', label: 'Faire-part', date: null, notes: null, recipients: [], createdAt: null, updatedAt: null } as never],
     ...overrides,
   };
 }

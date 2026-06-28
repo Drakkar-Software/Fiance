@@ -133,5 +133,19 @@
   "guestsWithType": "{{count}} guest(s)",
   "pageTagline": "people we love",
   "seatingTitle": "Seating plan",
-  "accommodationsTagline": "of {{total}} rooms"
+  "accommodationsTagline": "of {{total}} rooms",
+  "communicationsScreen": "Announcements",
+  "communicationRosterScreen": "Recipients",
+  "newCommunication": "New announcement",
+  "communicationName": "Name",
+  "communicationNamePlaceholder": "e.g. Wedding invitation, Save the date, Menus...",
+  "communicationNameRequired": "Name is required",
+  "communicationDate": "Planned send date",
+  "communicationSentAt": "Date sent",
+  "communicationRecipients": "Recipients",
+  "noCommunications": "No announcements yet",
+  "createCommunicationsDesc": "Create your communications (invitations, save the dates, menus...) and track who received what",
+  "deleteCommunication": "Delete this announcement?",
+  "deleteCommunicationMsg": "This action cannot be undone.",
+  "communicationNotFound": "Communication not found"
 }

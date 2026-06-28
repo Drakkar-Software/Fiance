@@ -27,6 +27,7 @@ import type {
   Accommodation,
   Gift,
   InvitationTypeEntity,
+  Communication,
   TaskCategory,
   Task,
   AgendaEvent,
@@ -409,6 +410,25 @@ export function ideaToNode(
 
 export function ideaFromDoc(doc: unknown): Idea {
   return doc as Idea;
+}
+
+// ─── Communication ────────────────────────────────────────────────────────────
+
+export function communicationToNode(c: Communication, id: string, weddingNodeId: string): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.communication,
+    parentId: weddingNodeId,
+    title: c.label,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: c.id },
+  };
+}
+
+export function communicationFromDoc(doc: unknown): Communication {
+  return doc as Communication;
 }
 
 // ─── PublicPage (invite, plaintext) ──────────────────────────────────────────

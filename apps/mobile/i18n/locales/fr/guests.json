@@ -133,5 +133,19 @@
   "guestsWithType": "{{count}} invité(s)",
   "pageTagline": "personnes qu'on aime",
   "seatingTitle": "Plan de tables",
-  "accommodationsTagline": "sur {{total}} chambres"
+  "accommodationsTagline": "sur {{total}} chambres",
+  "communicationsScreen": "Faire-parts & invitations",
+  "communicationRosterScreen": "Destinataires",
+  "newCommunication": "Nouveau faire-part",
+  "communicationName": "Nom",
+  "communicationNamePlaceholder": "ex: Faire-part, Save the date, Menus...",
+  "communicationNameRequired": "Le nom est obligatoire",
+  "communicationDate": "Date d'envoi prévue",
+  "communicationSentAt": "Date d'envoi",
+  "communicationRecipients": "Destinataires",
+  "noCommunications": "Aucun faire-part",
+  "createCommunicationsDesc": "Créez vos communications (faire-part, save the date, menus...) et suivez les envois invité par invité",
+  "deleteCommunication": "Supprimer ce faire-part ?",
+  "deleteCommunicationMsg": "Cette action est irréversible.",
+  "communicationNotFound": "Communication introuvable"
 }

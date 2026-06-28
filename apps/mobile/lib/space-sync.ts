@@ -26,6 +26,7 @@ import {
   accommodationToNode, accommodationFromDoc,
   giftToNode, giftFromDoc,
   invitationTypeToNode, invitationTypeFromDoc,
+  communicationToNode, communicationFromDoc,
   taskCategoryToNode, taskCategoryFromDoc,
   taskToNode, taskFromDoc,
   agendaEventToNode, agendaEventFromDoc,
@@ -44,6 +45,7 @@ import { useIdeasStore } from '@/store/useIdeasStore';
 import { useAccommodationsStore } from '@/store/useAccommodationsStore';
 import { useGiftsStore } from '@/store/useGiftsStore';
 import { useInvitationTypesStore } from '@/store/useInvitationTypesStore';
+import { useCommunicationsStore } from '@/store/useCommunicationsStore';
 import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from '@/lib/starfish';
 import { applyRsvpSubmissionsByGuestId, type RsvpSubmission } from '@/lib/rsvp-sync';
 
@@ -167,6 +169,7 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
 
   const { gifts } = useGiftsStore.getState();
   const { invitationTypes } = useInvitationTypesStore.getState();
+  const { communications } = useCommunicationsStore.getState();
 
   for (const a of accommodations) {
     push(accommodationToNode(a, a.id, weddingNodeId), a);
@@ -176,6 +179,9 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   }
   for (const it of invitationTypes) {
     push(invitationTypeToNode(it, it.id, weddingNodeId), it);
+  }
+  for (const c of communications) {
+    push(communicationToNode(c, c.id, weddingNodeId), c);
   }
 
   for (const tc of categories) {
@@ -298,6 +304,7 @@ export async function hydrateFromSpace(
       accommodationDocs,
       giftDocs,
       invitationTypeDocs,
+      communicationDocs,
       taskCategoryDocs,
       taskDocs,
       agendaEventDocs,
@@ -315,6 +322,7 @@ export async function hydrateFromSpace(
       pullAll(FIANCE_TYPES.accommodation),
       pullAll(FIANCE_TYPES.gift),
       pullAll(FIANCE_TYPES.invitationType),
+      pullAll(FIANCE_TYPES.communication),
       pullAll(FIANCE_TYPES.taskCategory),
       pullAll(FIANCE_TYPES.task),
       pullAll(FIANCE_TYPES.agendaEvent),
@@ -334,6 +342,7 @@ export async function hydrateFromSpace(
     if (accommodationDocs.length) useAccommodationsStore.getState().setAccommodations(accommodationDocs.map(accommodationFromDoc) as Parameters<ReturnType<typeof useAccommodationsStore.getState>['setAccommodations']>[0]);
     if (giftDocs.length) useGiftsStore.getState().setGifts(giftDocs.map(giftFromDoc) as Parameters<ReturnType<typeof useGiftsStore.getState>['setGifts']>[0]);
     if (invitationTypeDocs.length) useInvitationTypesStore.getState().setInvitationTypes(invitationTypeDocs.map(invitationTypeFromDoc) as Parameters<ReturnType<typeof useInvitationTypesStore.getState>['setInvitationTypes']>[0]);
+    if (communicationDocs.length) useCommunicationsStore.getState().setCommunications(communicationDocs.map(communicationFromDoc) as Parameters<ReturnType<typeof useCommunicationsStore.getState>['setCommunications']>[0]);
     if (taskCategoryDocs.length) usePlanningStore.getState().setCategories(taskCategoryDocs.map(taskCategoryFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setCategories']>[0]);
     if (taskDocs.length) usePlanningStore.getState().setTasks(taskDocs.map(taskFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setTasks']>[0]);
     if (agendaEventDocs.length) usePlanningStore.getState().setAgendaEvents(agendaEventDocs.map(agendaEventFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setAgendaEvents']>[0]);

@@ -22,9 +22,11 @@ import type {
   Accommodation,
   Gift,
   InvitationTypeEntity,
+  Communication,
 } from '../domain/schema.js';
 
-export const BACKUP_VERSION = 6;
+// v6 → v7: added communications collection
+export const BACKUP_VERSION = 7;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -45,6 +47,7 @@ export interface WeddingSnapshot {
   accommodations: Accommodation[];
   gifts: Gift[];
   invitationTypes: InvitationTypeEntity[];
+  communications: Communication[];
 }
 
 // ─── BackupData ─────────────────────────────────────────────────────────────
@@ -68,6 +71,7 @@ export interface BackupData {
   accommodations: unknown[];
   gifts: unknown[];
   invitationTypes?: unknown[];
+  communications?: unknown[];
 }
 
 // ─── Serialiser ─────────────────────────────────────────────────────────────
@@ -93,6 +97,7 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     accommodations: snapshot.accommodations,
     gifts: snapshot.gifts,
     invitationTypes: snapshot.invitationTypes,
+    communications: snapshot.communications,
   };
 }
 
@@ -179,6 +184,7 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   // v3 → v4: added companionId field on guests (nullable, no migration needed)
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
   // v5 → v6: added invitationTypes collection (user-configurable)
+  // v6 → v7: added communications collection (user-created, with embedded recipients)
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -218,6 +224,7 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     accommodations: (doc.accommodations || []) as unknown as Accommodation[],
     gifts: (doc.gifts || []) as unknown as Gift[],
     invitationTypes: restoredInvitationTypes as unknown as InvitationTypeEntity[],
+    communications: (doc.communications || []) as unknown as Communication[],
   };
 }
 

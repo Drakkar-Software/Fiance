@@ -2,7 +2,7 @@ import React from "react";
 import { useColorScheme } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { BedDouble, Tag } from "lucide-react-native";
+import { BedDouble, Tag, Mail } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { StackMenu } from "@/components/StackMenu";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
@@ -41,6 +41,11 @@ export default function InvitesLayout() {
                   icon: Tag,
                   onPress: () => router.push("/(tabs)/guests/invitation-types"),
                 },
+                {
+                  label: t("communicationsScreen"),
+                  icon: Mail,
+                  onPress: () => router.push("/(tabs)/guests/communications"),
+                },
               ]}
             />
           ),
@@ -50,6 +55,13 @@ export default function InvitesLayout() {
       <Stack.Screen name="tables" options={{ title: t("tablesPlanScreen") }} />
       <Stack.Screen name="accommodations" options={{ title: t("accommodations") }} />
       <Stack.Screen name="invitation-types" options={{ title: t("invitationTypesScreen") }} />
+      <Stack.Screen name="communications" options={{ title: t("communicationsScreen") }} />
+      <Stack.Screen
+        name="communication/[id]"
+        options={({ route }) => ({
+          title: (route.params as any)?.title ?? t("communicationRosterScreen"),
+        })}
+      />
       <Stack.Screen name="seating" options={{ headerShown: false }} />
     </Stack>
   );

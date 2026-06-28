@@ -236,10 +236,26 @@ export interface Idea {
   updatedAt: string | null;
 }
 
+export interface CommunicationRecipient {
+  guestId: string;
+  sentAt: string | null;
+}
+
+export interface Communication {
+  id: string;
+  label: string;
+  date: string | null;
+  notes: string | null;
+  recipients: CommunicationRecipient[];
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
 // ─── Insert type aliases ─────────────────────────────────────────────────────
 // With KV storage, there's no schema enforcement — Insert types equal Select types.
 
 export type WeddingInsert = Wedding;
+export type CommunicationInsert = Communication;
 export type GuestInsert = Guest;
 export type GuestGroupInsert = GuestGroup;
 export type TableInsert = Table;

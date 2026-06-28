@@ -12,6 +12,7 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import { DEFAULT_INVITATION_TYPES } from "@fiance/sdk";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
@@ -34,9 +35,11 @@ export interface BackupData {
   accommodations: unknown[];
   gifts: unknown[];
   invitationTypes?: unknown[];
+  communications?: unknown[];
 }
 
-const BACKUP_VERSION = 6;
+// v6 → v7: added communications collection
+const BACKUP_VERSION = 7;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -59,6 +62,7 @@ export function createBackupDocument(): Record<string, unknown> {
     accommodations: useAccommodationsStore.getState().accommodations,
     gifts: useGiftsStore.getState().gifts,
     invitationTypes: useInvitationTypesStore.getState().invitationTypes,
+    communications: useCommunicationsStore.getState().communications,
   };
 }
 
@@ -90,6 +94,7 @@ export function restoreFromBackup(
   // v3 → v4: added companionId field on guests (nullable, no migration needed)
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
   // v5 → v6: added invitationTypes collection (user-configurable)
+  // v6 → v7: added communications collection (user-created, with embedded recipients)
 
   const now = new Date().toISOString();
   const rawInvTypes = (backup.invitationTypes || []) as any[];
@@ -124,6 +129,7 @@ export function restoreFromBackup(
     accommodations: (backup.accommodations || []) as any[],
     gifts: (backup.gifts || []) as any[],
     invitationTypes: restoredInvitationTypes,
+    communications: (backup.communications || []) as any[],
   };
 
   // Write to KV storage then re-hydrate stores from it
@@ -148,6 +154,7 @@ export function restoreFromBackup(
     useAccommodationsStore.getState().setAccommodations(restoredData.accommodations);
     useGiftsStore.getState().setGifts(restoredData.gifts);
     useInvitationTypesStore.getState().setInvitationTypes(restoredData.invitationTypes);
+    useCommunicationsStore.getState().setCommunications(restoredData.communications);
   }
 }
 

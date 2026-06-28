@@ -26,6 +26,7 @@ export const FIANCE_TYPES = {
   dayOfItem:      'dayOfItem',
   ideaCollection: 'ideaCollection',
   idea:           'idea',
+  communication:  'communication',
   // ─── 2 guest-surface synthetic nodes (access:'invite', enc:false) ─────────
   /** Invite-only guest page (about/timeline/FAQ/gifts). One per wedding. */
   publicPage:     'publicPage',

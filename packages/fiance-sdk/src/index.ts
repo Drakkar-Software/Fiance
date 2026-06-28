@@ -2,6 +2,7 @@
 export * from './domain/types.js';
 export * from './domain/schema.js';
 export * from './domain/guests.js';
+export * from './domain/communications.js';
 export * from './domain/budget.js';
 export * from './domain/planning.js';
 export * from './domain/vendor-config.js';

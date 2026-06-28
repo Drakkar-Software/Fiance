@@ -18,8 +18,10 @@ import {
 } from "@fiance/sdk";
 export type { GuestCounts } from "@fiance/sdk";
 import { getStorage } from "@/lib/kv-storage";
-import { persistGuests, persistTables, persistGroups } from "@/lib/persistence";
+import { persistGuests, persistTables, persistGroups, persistCommunications } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { removeGuestFromAll } from "@fiance/sdk";
+import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 
 // Re-export computeCounts so existing callers of the store module still work
 export { computeCounts };
@@ -68,8 +70,14 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
   },
   removeGuest: (id) => {
     set((s) => ({ guests: sdkRemoveGuest(s.guests, id) }));
+    // Cascade: strip this guest from all communications recipients
+    const commStore = useCommunicationsStore.getState();
+    commStore.setCommunications(removeGuestFromAll(commStore.communications, id));
     const storage = getStorage();
-    if (storage) persistGuests(storage);
+    if (storage) {
+      persistGuests(storage);
+      persistCommunications(storage);
+    }
     notifySync();
   },
   linkCompanion: (guestId, companionId) => {
