@@ -185,6 +185,14 @@ export function LandingPage() {
               />
             ))}
           </View>
+          <View className="flex-row justify-center gap-6 mt-12">
+            <Pressable onPress={() => router.push("/privacy" as any)} className="active:opacity-60">
+              <Text className="text-sm text-typography-400 underline">{t("legal.privacyLink")}</Text>
+            </Pressable>
+            <Pressable onPress={() => router.push("/terms" as any)} className="active:opacity-60">
+              <Text className="text-sm text-typography-400 underline">{t("legal.termsLink")}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
 

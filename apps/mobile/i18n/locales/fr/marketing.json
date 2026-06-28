@@ -1,4 +1,22 @@
 {
+  "legal": {
+    "terms": {
+      "meta": {
+        "title": "Conditions d'utilisation | Fiancé",
+        "description": "Conditions d'utilisation de l'application Fiancé. Application de planification de mariage privée et hors ligne.",
+        "canonical": "https://fiance.pages.dev/terms"
+      }
+    },
+    "privacy": {
+      "meta": {
+        "title": "Politique de confidentialité | Fiancé",
+        "description": "Comment Fiancé gère vos données. Application hors ligne, zéro collecte, synchronisation chiffrée AES-256-GCM optionnelle.",
+        "canonical": "https://fiance.pages.dev/privacy"
+      }
+    },
+    "termsLink": "Conditions d'utilisation",
+    "privacyLink": "Confidentialité"
+  },
   "nav": {
     "features": "Fonctionnalités",
     "seatingChart": "Plan de table",

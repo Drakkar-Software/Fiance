@@ -1,4 +1,22 @@
 {
+  "legal": {
+    "terms": {
+      "meta": {
+        "title": "Terms of Service | Fiancé",
+        "description": "Terms of Service for the Fiancé app. Private, offline-first wedding planning application.",
+        "canonical": "https://fiance.pages.dev/terms"
+      }
+    },
+    "privacy": {
+      "meta": {
+        "title": "Privacy Policy | Fiancé",
+        "description": "How Fiancé handles your data. Offline-first, zero data collection, optional AES-256-GCM encrypted sync.",
+        "canonical": "https://fiance.pages.dev/privacy"
+      }
+    },
+    "termsLink": "Terms of Service",
+    "privacyLink": "Privacy Policy"
+  },
   "nav": {
     "features": "Features",
     "seatingChart": "Seating Chart",

@@ -60,6 +60,21 @@ export function MarketingFooter() {
               ))}
             </View>
           </View>
+
+          {/* Legal */}
+          <View style={{ minWidth: 160 }}>
+            <Text className="text-xs font-semibold text-typography-400 uppercase tracking-widest mb-3">
+              {t("footer.legal")}
+            </Text>
+            <View className="gap-2">
+              <Pressable onPress={() => router.push("/terms" as any)} className="active:opacity-60">
+                <Text className="text-sm text-typography-300">{t("legal.termsLink")}</Text>
+              </Pressable>
+              <Pressable onPress={() => router.push("/privacy" as any)} className="active:opacity-60">
+                <Text className="text-sm text-typography-300">{t("legal.privacyLink")}</Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
 
         {/* Divider */}
