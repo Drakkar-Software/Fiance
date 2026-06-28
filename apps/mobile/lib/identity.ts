@@ -7,8 +7,10 @@
  */
 
 import * as Linking from "expo-linking";
+import { getRandomBytes } from "expo-crypto";
+import { entropyToMnemonic } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import {
-  generateSeedWords as _generateSeedWords,
   isValidSeed as _isValidSeed,
   deriveSession as _deriveSession,
   fingerprintFromUserId,
@@ -35,12 +37,12 @@ export function normalizePhrase(phrase: string): string {
  * @deprecated alias — prefer `generateSeedWords()` in new code.
  */
 export function generatePassphrase(): string {
-  return _generateSeedWords().join(" ");
+  return entropyToMnemonic(getRandomBytes(16), wordlist);
 }
 
 /** Generate a BIP-39 seed phrase (space-separated, 12 words). */
 export function generateSeedWords(): string {
-  return _generateSeedWords().join(" ");
+  return entropyToMnemonic(getRandomBytes(16), wordlist);
 }
 
 /** Check that a phrase is a valid BIP-39 mnemonic (after normalizing). */

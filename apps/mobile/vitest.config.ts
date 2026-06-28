@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "."),
       "@fiance/sdk": path.resolve(__dirname, "../../packages/fiance-sdk/src/index.ts"),
+      "expo-crypto": path.resolve(__dirname, "__tests__/mocks/expo-crypto.ts"),
     },
   },
 });
