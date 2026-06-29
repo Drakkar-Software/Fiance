@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@drakkar.software/doubloon-starfish@0.3.0':
+    hash: 604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4
+    path: patches/@drakkar.software__doubloon-starfish@0.3.0.patch
+
 importers:
 
   .: {}
@@ -310,10 +315,10 @@ importers:
         version: 0.3.0
       '@drakkar.software/doubloon-server':
         specifier: 0.3.0
-        version: 0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))
+        version: 0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))
       '@drakkar.software/doubloon-starfish':
         specifier: 0.3.0
-        version: 0.3.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
+        version: 0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
       '@drakkar.software/starfish-client':
         specifier: 3.0.0-alpha.44
         version: 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -7715,16 +7720,16 @@ snapshots:
 
   '@drakkar.software/doubloon-core@0.3.0': {}
 
-  '@drakkar.software/doubloon-server@0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))':
+  '@drakkar.software/doubloon-server@0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))':
     dependencies:
       '@drakkar.software/doubloon-core': 0.3.0
     optionalDependencies:
       '@drakkar.software/doubloon-bridge-apple': 0.3.0(@apple/app-store-server-library@3.1.0)
       '@drakkar.software/doubloon-bridge-google': 0.3.0(googleapis@144.0.0)
       '@drakkar.software/doubloon-bridge-stripe': 0.3.1(stripe@17.7.0)
-      '@drakkar.software/doubloon-starfish': 0.3.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
+      '@drakkar.software/doubloon-starfish': 0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
 
-  '@drakkar.software/doubloon-starfish@0.3.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))':
+  '@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))':
     dependencies:
       '@drakkar.software/doubloon-core': 0.3.0
       '@drakkar.software/starfish-client': 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -9212,7 +9217,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-color@2.1.0': {}
 

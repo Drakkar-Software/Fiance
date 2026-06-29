@@ -5,6 +5,7 @@ on:
     branches: [main, master]
     paths:
       - "apps/server/**"
+      - "patches/**"
   workflow_dispatch:
 
 permissions:
@@ -14,10 +15,6 @@ jobs:
   deploy:
     name: Deploy Starfish Sync Server
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/server
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,7 +31,9 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        # Run from repo root so pnpm patches (patchedDependencies) are applied.
+        # --frozen-lockfile ensures the lockfile's patch_hash is honoured.
+        run: pnpm install --frozen-lockfile
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3

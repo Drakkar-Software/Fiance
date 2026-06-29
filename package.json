@@ -14,6 +14,9 @@
       "esbuild",
       "unrs-resolver",
       "workerd"
-    ]
+    ],
+    "patchedDependencies": {
+      "@drakkar.software/doubloon-starfish@0.3.0": "patches/@drakkar.software__doubloon-starfish@0.3.0.patch"
+    }
   }
 }
