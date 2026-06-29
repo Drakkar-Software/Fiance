@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 import { shareLink } from "@/lib/share";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Globe, Clock, MapPin, Gift, ChevronRight, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
@@ -13,6 +13,9 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { isSyncActive } from "@/lib/starfish";
+import { resolvePublicPageUrl } from "@/lib/public-page";
+import { toast } from "@/lib/toast/sonner";
 import { recalculateDueDates } from "@/lib/planning";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { IconCard } from "@/components/IconCard";
@@ -112,22 +115,24 @@ export default function PublicPageScreen() {
   // RSVP
   const guestCount = useGuestsStore((s) => s.guests.length);
 
+  // Track live sync state so buttons only appear (and work) when sync is active.
+  const [syncActive, setSyncActive] = useState(isSyncActive);
+  useFocusEffect(
+    useCallback(() => {
+      setSyncActive(isSyncActive());
+    }, []),
+  );
+
   // Share — mint a v3 page-read invite link.
   const handleShare = useCallback(async () => {
-    import("@/lib/starfish").then(async ({ getActiveSession, getActiveSpaceId, getActiveWeddingNodeId }) => {
-      const session = getActiveSession();
-      const spaceId = getActiveSpaceId();
-      const weddingNodeId = getActiveWeddingNodeId();
-      if (!session || !spaceId || !weddingNodeId) return;
-      try {
-        const { getPublicPageInviteLink } = await import("@/lib/public-page");
-        const pageNodeId = `pub-${weddingNodeId}`;
-        const url = await getPublicPageInviteLink(session, spaceId, pageNodeId);
-        await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
-      } catch {
-        // Session not ready
-      }
-    }).catch(() => {});
+    try {
+      const url = await resolvePublicPageUrl();
+      if (!url) return;
+      await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
+    } catch (err) {
+      console.warn("[public-page] handleShare failed:", err);
+      toast.error(t("shareError"));
+    }
   }, [t]);
 
   return (
@@ -251,47 +256,53 @@ export default function PublicPageScreen() {
 
       {/* Preview + Share */}
       {activeEntry?.seedPhrase && (
-        <View className="px-4 mt-2 gap-2" style={{ position: "relative" }}>
-          <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
-            {t("sharePublicPage")}
-          </Postit>
-          <Pressable
-            onPress={async () => {
-              try {
-                const { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } = await import("@/lib/starfish");
-                const session = getActiveSession();
-                const spaceId = getActiveSpaceId();
-                const weddingNodeId = getActiveWeddingNodeId();
-                if (!session || !spaceId || !weddingNodeId) return;
-                const { getPublicPageInviteLink } = await import("@/lib/public-page");
-                const pageNodeId = `pub-${weddingNodeId}`;
-                const url = await getPublicPageInviteLink(session, spaceId, pageNodeId);
-                const fragment = url.includes("/wedding/") ? url.split("/wedding/")[1] : null;
-                if (fragment) {
-                  if (typeof window !== "undefined") {
-                    router.push(`/wedding/${fragment}`);
-                  } else {
-                    await Linking.openURL(url);
-                  }
-                }
-              } catch {}
-            }}
-            className="bg-accent-card rounded-2xl py-3.5 flex-row items-center justify-center border border-hair active:opacity-80"
-          >
-            <Eye size={18} color="#6B7280" />
-            <Text className="text-mute dark:text-mute font-medium text-base ml-2">
-              {t("previewPage")}
+        <View className="px-4 mt-2 gap-2">
+          {syncActive ? (
+            <View style={{ position: "relative" }}>
+              <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
+                {t("sharePublicPage")}
+              </Postit>
+              <View className="gap-2">
+                <Pressable
+                  onPress={async () => {
+                    try {
+                      const url = await resolvePublicPageUrl();
+                      if (!url) return;
+                      const fragment = url.includes("/wedding/") ? url.split("/wedding/")[1] : null;
+                      if (!fragment) return;
+                      if (Platform.OS === "web") {
+                        router.push(`/wedding/${fragment}`);
+                      } else {
+                        await Linking.openURL(url);
+                      }
+                    } catch (err) {
+                      console.warn("[public-page] preview failed:", err);
+                      toast.error(t("shareError"));
+                    }
+                  }}
+                  className="bg-accent-card rounded-2xl py-3.5 flex-row items-center justify-center border border-hair active:opacity-80"
+                >
+                  <Eye size={18} color="#6B7280" />
+                  <Text className="text-mute dark:text-mute font-medium text-base ml-2">
+                    {t("previewPage")}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleShare}
+                  className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"
+                >
+                  <Globe size={20} color="#fff" />
+                  <Text className="text-white font-semibold text-base ml-2">
+                    {t("sharePublicPage")}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : (
+            <Text className="text-sm text-mute leading-5 mb-3">
+              {t("syncRequiredShare")}
             </Text>
-          </Pressable>
-          <Pressable
-            onPress={handleShare}
-            className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"
-          >
-            <Globe size={20} color="#fff" />
-            <Text className="text-white font-semibold text-base ml-2">
-              {t("sharePublicPage")}
-            </Text>
-          </Pressable>
+          )}
         </View>
       )}
 

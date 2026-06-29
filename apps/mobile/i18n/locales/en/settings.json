@@ -180,6 +180,8 @@
   "rsvpSectionDesc": "Allow your guests to confirm attendance online",
   "rsvpCount": "{{count}} guest(s) in the list",
   "syncRequiredRsvp": "Enable sync to manage online RSVP",
+  "syncRequiredShare": "Enable sync to share your public page",
+  "shareError": "Couldn't generate the link, please try again",
   "previewPage": "Preview page",
   "manageDayOf": "Manage schedule",
   "manageDayOfDesc": "Edit public moments in Day-of planning",

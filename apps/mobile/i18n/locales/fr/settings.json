@@ -180,6 +180,8 @@
   "rsvpSectionDesc": "Permettez à vos invités de confirmer leur présence en ligne",
   "rsvpCount": "{{count}} invité(s) dans la liste",
   "syncRequiredRsvp": "Activez la synchronisation pour gérer les RSVP en ligne",
+  "syncRequiredShare": "Activez la synchronisation pour partager votre page publique",
+  "shareError": "Impossible de générer le lien, réessayez",
   "previewPage": "Aperçu de la page",
   "manageDayOf": "Gérer le programme",
   "manageDayOfDesc": "Modifier les moments publics dans le Jour J",

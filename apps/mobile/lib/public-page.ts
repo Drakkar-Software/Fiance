@@ -28,9 +28,8 @@ function getAppOrigin(): string {
   if (Platform.OS === "web" && typeof window !== "undefined") {
     return window.location.origin;
   }
-  // Deep-link scheme for native — avoids Linking.createURL which isn't
-  // available on all versions. The scheme is configured in app.json.
-  return "exp://";
+  // On native, share real HTTPS links that open in a browser.
+  return "https://fiance.drakkar.software";
 }
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -180,6 +179,25 @@ export async function getPublicPageInviteLink(
   // Extract the fragment (everything after '#') and use it as the path segment.
   const fragment = encoded.includes("#") ? encoded.split("#")[1] : encoded;
   return `${origin}/wedding/${fragment}`;
+}
+
+// ---------------------------------------------------------------------------
+// Shared helper — used by the settings/public-page screen
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the active sync session and mint a public-page invite link.
+ * Returns the URL string on success, or null if sync is not active.
+ * Throws if the link cannot be minted (caller should surface the error).
+ */
+export async function resolvePublicPageUrl(): Promise<string | null> {
+  const { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } = await import("@/lib/starfish");
+  const session = getActiveSession();
+  const spaceId = getActiveSpaceId();
+  const weddingNodeId = getActiveWeddingNodeId();
+  if (!session || !spaceId || !weddingNodeId) return null;
+  const pageNodeId = publicPageNodeId(weddingNodeId);
+  return getPublicPageInviteLink(session, spaceId, pageNodeId);
 }
 
 // ---------------------------------------------------------------------------
