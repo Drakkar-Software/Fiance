@@ -39,35 +39,47 @@ Available on **iOS, Android, and Web** from a single codebase.
 **👥 Guest Management**
 Track RSVPs, dietary needs, plus-ones, and table assignments. Never lose track of who's coming.
 
+**💌 Invitation Tracking**
+Log every send — type, date, notes. Custom invitation categories with accommodation needs per group.
+
+**🏨 Accommodations**
+Manage hotels for out-of-town guests: check-in/out dates, bed count, price per night.
+
+**💬 Guest Communications**
+Keep a full log of every message, call, and email with your guests.
+
 **💰 Budget Tracker**
 Visual breakdowns by vendor category. Know exactly where every euro goes.
 
 **📋 Planning**
 Task management with priorities and deadlines — from "12 months before" to day-of checklists.
 
-**🏢 Vendor Directory**
-Compare vendors across 20+ categories. Track quotes, deposits, contracts, and booking status.
-
 </td>
 <td width="50%">
+
+**🏢 Vendor Directory**
+Compare vendors across 20+ categories. Side-by-side caterer comparison with scoring and pricing.
 
 **🖼️ Mood Board**
 Collect inspiration images, tag them, and organize into themed collections.
 
-**🪑 Table Planner**
-Create tables, assign guests, manage seating capacity visually.
+**🎁 Gift List**
+Track your gift registry — home, travel, experience, and more — with purchase status.
 
-**🔐 App Lock**
-PIN code and biometric authentication. Your data, your eyes only.
+**📸 Event Photos**
+Collect and organize wedding day memories in a shared photo gallery.
 
-**☁️ Cloud Sync** *(optional)*
-AES-256-GCM encrypted sync via Starfish. Zero-knowledge server — even we can't read your data.
+**🌐 Public Wedding Page**
+Shareable page for guests: program, RSVP, practical info. No account needed.
+
+**⏱️ Wedding Day View**
+Live countdown and day-of agenda — your schedule at a glance as the day unfolds.
 
 </td>
 </tr>
 </table>
 
-**Also:** Multi-wedding support · PWA installable · Full French & English localization
+**Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · App Lock (PIN + biometrics) · Cloud sync (AES-256-GCM, zero-knowledge) · Full French & English localization
 
 ---
 
