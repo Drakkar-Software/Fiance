@@ -20,7 +20,8 @@
 
 ## Le Carnet (blog)
 
-- [Les premières étapes pour organiser votre mariage](https://fiance.drakkar.software/blog/exemple-mariage): Guide pour débuter l'organisation sereinement — date, budget, prestataires, liste d'invités.
+- [Les premières étapes pour organiser votre mariage](https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage): Guide pour débuter l'organisation sereinement — date, budget, prestataires, liste d'invités.
+- [Combien de temps faut-il pour organiser un mariage en France ?](https://fiance.drakkar.software/blog/combien-temps-organiser-mariage): Rétroplanning 12 à 18 mois, délais prestataires et jalons administratifs.
 
 ## Privacy
 
