@@ -512,8 +512,14 @@ export function formatBlogYear(iso: string): string {
 
 // ─── JSON-LD builders ──────────────────────────────────────────────────────
 
+const SCHEMA_CONTEXT = "https://schema.org";
+const ORG_ID = `${BASE_URL}/#organization`;
+const AUTHOR_ID = `${BASE_URL}/#author-paul`;
+const BLOG_ID = `${BASE_URL}/blog#blog`;
+
 const PUBLISHER = {
   "@type": "Organization",
+  "@id": ORG_ID,
   name: "Fiancé",
   url: BASE_URL,
   logo: {
@@ -522,102 +528,192 @@ const PUBLISHER = {
   },
 };
 
+const AUTHOR = {
+  "@type": "Person",
+  "@id": AUTHOR_ID,
+  name: BLOG_AUTHOR.name,
+  url: BLOG_AUTHOR.url,
+};
+
+function blogNameForLang(lang: string): string {
+  return lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
+}
+
+function inLanguageForLang(lang: string): string {
+  return lang === "en" ? "en-US" : "fr-FR";
+}
+
+/** ISO 8601 datetime for schema.org (date-only inputs get a stable UTC time). */
+export function toSchemaDateTime(iso: string): string {
+  if (iso.includes("T")) return iso;
+  return `${iso}T08:00:00Z`;
+}
+
+function postCanonicalUrl(slug: string): string {
+  return `${BASE_URL}/blog/${slug}`;
+}
+
 function computeWordCount(post: BlogPost): number {
   return post.sections
     .flatMap((s) => [
       ...(s.paragraphs ?? []),
       ...(s.items ?? []),
       s.quote ?? "",
+      s.title ?? "",
     ])
     .join(" ")
     .split(/\s+/)
     .filter(Boolean).length;
 }
 
-/** BlogPosting + BreadcrumbList JSON-LD for a single post page. */
-export function buildPostJsonLd(post: BlogPost, lang: string): object[] {
-  const inLanguage = lang === "en" ? "en-US" : "fr-FR";
-  const canonical = `${BASE_URL}/blog/${post.slug}`;
-  const blogName = lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
-
-  return [
-    {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: post.title,
-      description: post.excerpt,
-      image: post.heroImage,
-      datePublished: post.date,
-      dateModified: post.updated ?? post.date,
-      author: {
-        "@type": "Person",
-        name: BLOG_AUTHOR.name,
-        url: BLOG_AUTHOR.url,
-      },
-      publisher: PUBLISHER,
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": canonical,
-      },
-      inLanguage,
-      articleSection: post.category,
-      wordCount: computeWordCount(post),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Fiancé", item: BASE_URL },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: blogName,
-          item: `${BASE_URL}/blog`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: post.title,
-          item: canonical,
-        },
-      ],
-    },
-  ];
+/** Plain-text body for schema.org articleBody (strips markdown link syntax). */
+export function extractArticleBody(post: BlogPost): string {
+  const chunks = post.sections.flatMap((s) => {
+    const parts: string[] = [];
+    if (s.title) parts.push(s.title);
+    if (s.paragraphs) parts.push(...s.paragraphs);
+    if (s.items) parts.push(...s.items);
+    if (s.quote) parts.push(s.quote);
+    return parts;
+  });
+  return chunks
+    .join("\n\n")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .trim();
 }
 
-/** Blog + BreadcrumbList JSON-LD for the blog index page. */
-export function buildBlogJsonLd(posts: BlogPost[], lang: string): object[] {
-  const inLanguage = lang === "en" ? "en-US" : "fr-FR";
-  const blogName = lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
-  const blogUrl = `${BASE_URL}/blog`;
+/** Full BlogPosting node from BlogPost source data. */
+export function buildBlogPostingNode(post: BlogPost, lang: string): object {
+  const canonical = postCanonicalUrl(post.slug);
+  const blogName = blogNameForLang(lang);
+  const inLanguage = inLanguageForLang(lang);
+  const dateModified = post.updated ?? post.date;
 
-  return [
-    {
-      "@context": "https://schema.org",
+  return {
+    "@type": "BlogPosting",
+    "@id": `${canonical}#article`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    url: canonical,
+    headline: post.title,
+    name: post.title,
+    description: post.excerpt,
+    abstract: post.excerpt,
+    articleBody: extractArticleBody(post),
+    image: {
+      "@type": "ImageObject",
+      url: post.heroImage,
+      caption: post.heroImageAlt,
+    },
+    thumbnailUrl: post.heroImage,
+    datePublished: toSchemaDateTime(post.date),
+    dateModified: toSchemaDateTime(dateModified),
+    author: { "@id": AUTHOR_ID },
+    publisher: { "@id": ORG_ID },
+    inLanguage,
+    articleSection: post.category,
+    keywords: post.categoryKey,
+    wordCount: computeWordCount(post),
+    timeRequired: `PT${post.readingMinutes}M`,
+    isPartOf: {
       "@type": "Blog",
+      "@id": BLOG_ID,
       name: blogName,
-      url: blogUrl,
-      inLanguage,
-      publisher: PUBLISHER,
-      blogPost: posts.map((p) => ({
-        "@type": "BlogPosting",
-        headline: p.title,
-        datePublished: p.date,
-        url: `${BASE_URL}/blog/${p.slug}`,
-        author: {
-          "@type": "Person",
-          name: BLOG_AUTHOR.name,
-          url: BLOG_AUTHOR.url,
-        },
-      })),
+      url: `${BASE_URL}/blog`,
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Fiancé", item: BASE_URL },
-        { "@type": "ListItem", position: 2, name: blogName, item: blogUrl },
-      ],
-    },
-  ];
+  };
+}
+
+function buildBreadcrumbList(
+  items: { name: string; item: string }[]
+): object {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: entry.item,
+    })),
+  };
+}
+
+/** BlogPosting + WebPage + BreadcrumbList JSON-LD for a single post page. */
+export function buildPostJsonLd(post: BlogPost, lang: string): object {
+  const canonical = postCanonicalUrl(post.slug);
+  const blogName = blogNameForLang(lang);
+  const inLanguage = inLanguageForLang(lang);
+
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": canonical,
+        url: canonical,
+        name: post.title,
+        description: post.excerpt,
+        inLanguage,
+        isPartOf: { "@id": BLOG_ID },
+        primaryImageOfPage: { "@id": `${canonical}#article` },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": `${canonical}#article` },
+      },
+      buildBlogPostingNode(post, lang),
+      {
+        "@type": "Blog",
+        "@id": BLOG_ID,
+        name: blogName,
+        url: `${BASE_URL}/blog`,
+        inLanguage,
+        publisher: { "@id": ORG_ID },
+      },
+      AUTHOR,
+      PUBLISHER,
+      {
+        ...buildBreadcrumbList([
+          { name: "Fiancé", item: BASE_URL },
+          { name: blogName, item: `${BASE_URL}/blog` },
+          { name: post.title, item: canonical },
+        ]),
+        "@id": `${canonical}#breadcrumb`,
+      },
+    ],
+  };
+}
+
+/** Blog index + full BlogPosting entries + BreadcrumbList JSON-LD. */
+export function buildBlogJsonLd(
+  posts: BlogPost[],
+  lang: string,
+  blogDescription: string
+): object {
+  const blogName = blogNameForLang(lang);
+  const blogUrl = `${BASE_URL}/blog`;
+  const inLanguage = inLanguageForLang(lang);
+
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@graph": [
+      {
+        "@type": "Blog",
+        "@id": BLOG_ID,
+        name: blogName,
+        description: blogDescription,
+        url: blogUrl,
+        inLanguage,
+        publisher: { "@id": ORG_ID },
+        blogPost: posts.map((p) => ({ "@id": `${postCanonicalUrl(p.slug)}#article` })),
+      },
+      ...posts.map((p) => buildBlogPostingNode(p, lang)),
+      AUTHOR,
+      PUBLISHER,
+      {
+        ...buildBreadcrumbList([
+          { name: "Fiancé", item: BASE_URL },
+          { name: blogName, item: blogUrl },
+        ]),
+        "@id": `${blogUrl}#breadcrumb`,
+      },
+    ],
+  };
 }

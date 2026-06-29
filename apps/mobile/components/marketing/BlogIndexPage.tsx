@@ -24,7 +24,7 @@ export function BlogIndexPage() {
         description={t("blog.meta.description")}
         ogDescription={t("blog.meta.ogDescription")}
         canonical={t("blog.meta.canonical")}
-        jsonLd={buildBlogJsonLd(posts, lang)}
+        jsonLd={buildBlogJsonLd(posts, lang, t("blog.meta.description"))}
       />
 
       {/* Hero */}
