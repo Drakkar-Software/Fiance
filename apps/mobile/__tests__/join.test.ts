@@ -26,7 +26,7 @@ vi.mock("expo-linking", () => ({
 }));
 
 
-import { decodeInviteToken, buildInviteUrl } from "@/lib/identity";
+import { decodeInviteToken, buildInviteUrl, parseInviteUrl } from "@/lib/identity";
 
 // ─── Pure helpers that mirror join.tsx decision logic ────────────────────────
 
@@ -88,6 +88,12 @@ describe("decodeInviteToken", () => {
     expect(fragment).not.toBe("");
     const result = decodeInviteToken(fragment);
     expect(result).toEqual({ name: "Alice & Bob", password: "my-secret-pass" });
+  });
+
+  it("parseInviteUrl decodes a fragment-based invite URL end-to-end", () => {
+    // Exercises the full builder → fragment → reader path (the path join.tsx now uses)
+    const url = buildInviteUrl("Alice & Bob", "my-secret-pass");
+    expect(parseInviteUrl(url)).toEqual({ name: "Alice & Bob", password: "my-secret-pass" });
   });
 
   it("handles special characters in wedding name", () => {

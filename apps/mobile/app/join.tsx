@@ -3,11 +3,12 @@ import { Seo } from "@/components/Seo";
 import { View, Text, Pressable, ActivityIndicator } from "react-native-css/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import * as Linking from "expo-linking";
 import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { decodeInviteToken } from "@/lib/identity";
+import { decodeInviteToken, parseInviteUrl } from "@/lib/identity";
 
 function useJoinAndNavigate() {
   const router = useRouter();
@@ -32,12 +33,34 @@ function useJoinAndNavigate() {
 }
 
 export default function JoinScreen() {
-  const { t: token } = useLocalSearchParams<{ t?: string }>();
-  const invite = useMemo(() => decodeInviteToken(token), [token]);
+  const { t: queryToken } = useLocalSearchParams<{ t?: string }>();
+
+  // undefined = still resolving; null = resolved but no URL; string = resolved URL
+  const [url, setUrl] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    Linking.getInitialURL().then((u) => setUrl(u ?? null));
+    const sub = Linking.addEventListener("url", ({ url: incoming }) => setUrl(incoming));
+    return () => sub.remove();
+  }, []);
+
+  // Payload lives in the URL fragment (#), not a query param — mirrors onboarding.tsx
+  const invite = useMemo(
+    () => (url ? parseInviteUrl(url) : null) ?? decodeInviteToken(queryToken),
+    [url, queryToken],
+  );
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const [confirmed, setConfirmed] = useState(false);
   const joinAndNavigate = useJoinAndNavigate();
+
+  // Still resolving the initial URL — avoid flashing the error screen
+  if (url === undefined && !queryToken) {
+    return (
+      <View className="flex-1 bg-accent-paper items-center justify-center">
+        <ActivityIndicator size="large" color="#b96a4a" />
+      </View>
+    );
+  }
 
   // No valid invite token → show error
   if (!invite) {
