@@ -67,17 +67,13 @@ export function configureOnBoot(): void {
     // Dynamic require so Metro doesn't bundle this on web where quick-crypto is absent.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { configurePlatform } = require("@fiance/sdk") as {
-      configurePlatform: (cfg: { crypto: unknown; base64: { encode: (b: Uint8Array) => string; decode: (s: string) => Uint8Array } }) => void;
+      configurePlatform: (cfg: { crypto: unknown }) => void;
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const QuickCrypto = require("react-native-quick-crypto");
-    configurePlatform({
-      crypto: QuickCrypto,
-      base64: {
-        encode: (data: Uint8Array) => Buffer.from(data).toString("base64"),
-        decode: (s: string) => new Uint8Array(Buffer.from(s, "base64")),
-      },
-    });
+    // base64 intentionally omitted: starfish-protocol's getBase64() falls back to
+    // Hermes btoa/atob (or a pure-JS codec), so no Buffer global is needed.
+    configurePlatform({ crypto: QuickCrypto });
   }
 
   configureFiance(makeKvAdapter());
