@@ -7,7 +7,7 @@
  * with default version 0x13 — identical to hash-wasm's default — so the derived
  * userId is consistent across web and native.
  */
-import { argon2id as nobleArgon2id } from "@noble/hashes/argon2";
+import { argon2id as nobleArgon2id } from "@noble/hashes/argon2.js";
 
 interface Argon2idOptions {
   password: string | Uint8Array;

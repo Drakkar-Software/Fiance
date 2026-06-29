@@ -21,10 +21,10 @@ const manifest = {
   iarc_rating_id: "",
   prefer_related_applications: false,
   icons: [
-    { src: "/assets/favicon.png", sizes: "48x48", type: "image/png" },
-    { src: "/assets/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-    { src: "/assets/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-    { src: "/assets/icon.png", sizes: "1024x1024", type: "image/png" },
+    { src: "/favicon.png", sizes: "48x48", type: "image/png" },
+    { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+    { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+    { src: "/icon.png", sizes: "1024x1024", type: "image/png" },
   ],
   shortcuts: [
     {
@@ -32,21 +32,21 @@ const manifest = {
       short_name: "Budget",
       url: "/(tabs)/budget",
       description: seo.shortcuts.budget,
-      icons: [{ src: "/assets/favicon.png", sizes: "48x48" }],
+      icons: [{ src: "/favicon.png", sizes: "48x48" }],
     },
     {
       name: "Invités",
       short_name: "Invités",
       url: "/(tabs)/guests",
       description: seo.shortcuts.guests,
-      icons: [{ src: "/assets/favicon.png", sizes: "48x48" }],
+      icons: [{ src: "/favicon.png", sizes: "48x48" }],
     },
     {
       name: "Planning",
       short_name: "Planning",
       url: "/(tabs)/planning",
       description: seo.shortcuts.planning,
-      icons: [{ src: "/assets/favicon.png", sizes: "48x48" }],
+      icons: [{ src: "/favicon.png", sizes: "48x48" }],
     },
   ],
 };
