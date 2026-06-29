@@ -4,14 +4,16 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   DollarSign, Users, LayoutGrid, Store, CalendarCheck,
-  Camera, Globe, WifiOff, Lock, ShieldCheck, Star,
+  Camera, Globe, WifiOff, Lock, ShieldCheck, HeartHandshake,
 } from "lucide-react-native";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { Display } from "@/components/Display";
+import { Script } from "@/components/Script";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
     <View
-      className="bg-white rounded-2xl p-5 border border-accent-rose-light"
+      className="bg-accent-card rounded-2xl p-5 border border-accent-rose-light"
       style={{ flex: 1, minWidth: 260 }}
     >
       <View className="mb-3 w-10 h-10 rounded-xl bg-accent-blush items-center justify-center">
@@ -59,6 +61,7 @@ export function LandingPage() {
     title: t("landing.meta.title"),
     description: t("landing.meta.description"),
     canonical: t("landing.meta.canonical"),
+    ogImage: "https://fiance.pages.dev/assets/icon-512.png",
   });
 
   const appFeatures = [
@@ -83,15 +86,14 @@ export function LandingPage() {
       {/* Hero */}
       <View className="w-full py-20 px-6 items-center bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
-          <View className="bg-accent-blush px-4 py-1.5 rounded-full mb-6">
-            <Text className="text-xs font-semibold text-accent-gold">{t("landing.hero.badge")}</Text>
-          </View>
-          <Text
-            className="text-typography-900 font-bold text-center mb-4"
-            style={{ fontSize: 42, lineHeight: 50 }}
-          >
+          {/* Eyebrow in Caveat script — warm, handwritten wedding feel */}
+          <Script size={17} style={{ marginBottom: 20 }}>
+            {t("landing.hero.badge")}
+          </Script>
+          {/* Headline in Fraunces — Garden Press display type */}
+          <Display size={50} weight="600" style={{ textAlign: "center", marginBottom: 16 }}>
             {t("landing.hero.headline")}
-          </Text>
+          </Display>
           <Text className="text-lg text-typography-500 text-center mb-8 leading-7">
             {t("landing.hero.subheadline")}
           </Text>
@@ -115,9 +117,9 @@ export function LandingPage() {
       {/* Features grid */}
       <View className="w-full py-20 px-6 bg-white">
         <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Text className="text-3xl font-bold text-typography-900 text-center mb-3">
+          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.features.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-500 text-center mb-12">
             {t("landing.features.subtitle")}
           </Text>
@@ -137,9 +139,9 @@ export function LandingPage() {
       {/* Free tools */}
       <View className="w-full py-20 px-6 bg-accent-cream">
         <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Text className="text-3xl font-bold text-typography-900 text-center mb-3">
+          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.tools.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-500 text-center mb-12">
             {t("landing.tools.subtitle")}
           </Text>
@@ -169,9 +171,9 @@ export function LandingPage() {
       {/* Privacy section */}
       <View className="w-full py-20 px-6 bg-typography-900">
         <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Text className="text-3xl font-bold text-white text-center mb-3">
+          <Display size={34} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.privacy.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-400 text-center mb-12">
             {t("landing.privacy.subtitle")}
           </Text>
@@ -199,10 +201,10 @@ export function LandingPage() {
       {/* Download CTA */}
       <View className="w-full py-20 px-6 items-center bg-accent-blush">
         <View style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
-          <Star size={32} className="text-primary-500 mb-4" />
-          <Text className="text-3xl font-bold text-typography-900 text-center mb-3">
+          <HeartHandshake size={40} className="text-primary-500 mb-6" />
+          <Display size={36} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.download.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-500 text-center mb-8">
             {t("landing.download.subtitle")}
           </Text>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -29,7 +30,15 @@ export function MarketingFooter() {
         <View className="flex-row flex-wrap gap-10">
           {/* Brand */}
           <View className="flex-1" style={{ minWidth: 200 }}>
-            <Text className="text-lg font-bold text-white mb-2">Fiancé</Text>
+            <View className="flex-row items-center gap-2 mb-2">
+              <Image
+                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                source={require("@/assets/icon-192.png")}
+                style={{ width: 24, height: 24, borderRadius: 5 }}
+                accessible={false}
+              />
+              <Text className="text-lg font-bold text-white">Fiancé</Text>
+            </View>
             <Text className="text-sm text-typography-400 leading-5">{t("footer.tagline")}</Text>
           </View>
 

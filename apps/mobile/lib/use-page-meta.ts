@@ -46,6 +46,7 @@ export function usePageMeta(meta: PageMeta) {
         document.head.appendChild(link);
       }
       link.href = meta.canonical;
+      setMeta("og:url", meta.canonical, true);
     }
   }, [meta.title, meta.description, meta.canonical, meta.ogTitle, meta.ogDescription, meta.ogImage]);
 }

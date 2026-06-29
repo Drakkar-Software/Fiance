@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Modal, Dimensions } from "react-native";
+import { Modal, Dimensions, Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -50,7 +50,13 @@ export function MarketingNav() {
         style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
       >
         {/* Logo */}
-        <Pressable onPress={() => router.push("/" as any)} className="active:opacity-70">
+        <Pressable onPress={() => router.push("/" as any)} className="flex-row items-center gap-2 active:opacity-70">
+          <Image
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            source={require("@/assets/icon-192.png")}
+            style={{ width: 28, height: 28, borderRadius: 7 }}
+            accessible={false}
+          />
           <Text className="text-lg font-bold text-primary-500">Fiancé</Text>
         </Pressable>
 
