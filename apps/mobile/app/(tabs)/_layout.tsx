@@ -72,10 +72,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="home/wedding-day"
-        options={{ tabBarStyle: { display: "none" }, href: null }}
-      />
-      <Tabs.Screen
         name="vendors"
         options={{
           title: t("tabs.vendors"),

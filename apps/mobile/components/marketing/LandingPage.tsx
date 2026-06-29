@@ -98,13 +98,13 @@ export function LandingPage() {
           </Text>
           <View className="flex-row gap-3 flex-wrap justify-center">
             <Pressable
-              onPress={() => router.push("/home" as any)}
+              onPress={() => router.replace("/onboarding" as any)}
               className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push("/home" as any)}
+              onPress={() => router.replace("/onboarding" as any)}
               className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>

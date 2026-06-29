@@ -44,12 +44,14 @@ const ANALYTICS_BASE =
   process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "http://localhost:8787";
 const ANALYTICS_APP = "fiance";
 
-// Guard against double-init (React StrictMode double-effects, fast-refresh, etc.)
-let started = false;
+// Guard against double-init (React StrictMode double-effects, fast-refresh, HMR module re-eval, etc.)
+// Uses globalThis so it survives module re-evaluation in development.
+const g = globalThis as Record<string, unknown>;
+const INIT_KEY = "__fiance_analytics_started__";
 
 export async function initAnalytics(): Promise<void> {
-  if (started) return;
-  started = true;
+  if (g[INIT_KEY]) return;
+  g[INIT_KEY] = true;
 
   const syncClient = new StarfishClient({
     baseUrl: ANALYTICS_BASE,

@@ -255,7 +255,7 @@ export default function BudgetScreen() {
                     className="flex-1 py-3 rounded-xl border border-hair items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
                   >
                     <Text className="text-xs font-medium text-mute dark:text-mute text-center">
-                      {t(BUDGET_TEMPLATE_LABELS[key])}
+                      {t(BUDGET_TEMPLATE_LABELS[key] || '')}
                     </Text>
                   </Pressable>
                 ))}
@@ -275,7 +275,7 @@ export default function BudgetScreen() {
                 className={`flex-row items-center py-2.5 ${idx < Object.keys(BUDGET_CATEGORIES).length - 1 ? "border-b border-hair" : ""}`}
               >
                 <Text className="flex-1 text-sm text-ink-soft">
-                  {t(BUDGET_CATEGORY_LABELS[cat])}
+                  {t(BUDGET_CATEGORY_LABELS[cat] || '')}
                 </Text>
                 {spent > 0 && (
                   <Text className={`text-xs font-medium mr-2 ${isOver ? "text-red-500" : "text-mute"}`}>
@@ -334,7 +334,7 @@ export default function BudgetScreen() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
                     <Text className="text-base font-medium text-ink">
-                      {t(BUDGET_CATEGORY_LABELS[cat.categoryName])}
+                      {t(BUDGET_CATEGORY_LABELS[cat.categoryName] || '')}
                     </Text>
                     <Text className="text-xs text-mute mt-0.5">
                       {t("vendor", { count: cat.vendors.length })}
@@ -437,7 +437,7 @@ export default function BudgetScreen() {
                   className="px-3 py-1.5 bg-accent-card border border-hair rounded-full"
                 >
                   <Text className="text-sm text-mute">
-                    {t(BUDGET_CATEGORY_LABELS[c.categoryName])}
+                    {t(BUDGET_CATEGORY_LABELS[c.categoryName] || '')}
                   </Text>
                 </View>
               ))}
@@ -471,7 +471,7 @@ export default function BudgetScreen() {
                 <View className="flex-row justify-between items-center">
                   <View>
                     <Text className="text-sm font-medium text-ink">
-                      {t(payment.type)} — {payment.vendorName}
+                      {t(payment.type || '')} — {payment.vendorName}
                     </Text>
                     <Text className="text-xs text-mute mt-0.5">
                       {format(new Date(payment.dueDate), "dd/MM/yyyy")}

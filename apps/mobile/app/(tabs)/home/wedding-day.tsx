@@ -1,8 +1,9 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, useCallback } from "react";
 import { View, ScrollView, Pressable, StyleSheet } from "react-native";
 import { Text } from "react-native-css/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
@@ -27,7 +28,14 @@ export default function WeddingDayScreen() {
   const { t } = useTranslation("planning");
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const navigation = useNavigation();
   const now = useClock();
+
+  useFocusEffect(useCallback(() => {
+    const parent = navigation.getParent();
+    parent?.setOptions({ tabBarStyle: { display: "none" } });
+    return () => parent?.setOptions({ tabBarStyle: undefined });
+  }, [navigation]));
   const items = usePlanningStore((s) => s.dayOfItems);
   const wedding = useWeddingStore((s) => s.wedding);
 
