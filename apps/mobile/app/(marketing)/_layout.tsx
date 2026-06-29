@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Platform } from "react-native";
 import { View, ScrollView, ActivityIndicator } from "react-native-css/components";
 import { Slot, useRouter } from "expo-router";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
@@ -12,17 +13,21 @@ export default function MarketingLayout() {
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
   const isStandalone = typeof window !== "undefined" && isPwaStandalone();
 
+  // Native app users (and installed PWAs) never see the marketing page —
+  // skip straight into the app. Regular web visitors still get the landing.
+  const shouldEnterApp = Platform.OS !== "web" || isStandalone;
+
   useEffect(() => {
-    if (!isStandalone || !isLoaded) return;
+    if (!shouldEnterApp || !isLoaded) return;
     if (registry?.weddings.length) {
       router.replace("/home" as any);
     } else {
       router.replace("/onboarding" as any);
     }
-  }, [isStandalone, isLoaded]);
+  }, [shouldEnterApp, isLoaded, registry?.weddings.length]);
 
-  // PWA: show spinner while registry loads / redirect is in-flight
-  if (isStandalone) {
+  // Native / PWA: show spinner while registry loads / redirect is in-flight
+  if (shouldEnterApp) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
