@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  '@drakkar.software/doubloon-starfish@0.3.0':
-    hash: 604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4
-    path: patches/@drakkar.software__doubloon-starfish@0.3.0.patch
-
 importers:
 
   .: {}
@@ -315,10 +310,10 @@ importers:
         version: 0.3.0
       '@drakkar.software/doubloon-server':
         specifier: 0.3.0
-        version: 0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))
+        version: 0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.4.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))(@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))
       '@drakkar.software/doubloon-starfish':
-        specifier: 0.3.0
-        version: 0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
+        specifier: 0.4.0
+        version: 0.4.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))(@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
       '@drakkar.software/starfish-client':
         specifier: 3.0.0-alpha.44
         version: 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -891,10 +886,11 @@ packages:
       '@drakkar.software/doubloon-starfish':
         optional: true
 
-  '@drakkar.software/doubloon-starfish@0.3.0':
-    resolution: {integrity: sha512-0csxtbv/cOkjxy6klCotmTE0Dni9+y/x0wAkjBqBqGWebB1LBiKMhLwGt/cOu4sUOjZMqtL1qm3BGZfXvIHpZA==}
+  '@drakkar.software/doubloon-starfish@0.4.0':
+    resolution: {integrity: sha512-28vFZmKP9k9Sj+8hluj1SU50XPdneLKg/gIeJE/9dd9TZ7atBdD+bK32oud8/Oluj72U5JFME/edAfX5y1HAVg==}
     peerDependencies:
-      '@drakkar.software/starfish-client': '>=1.0.0'
+      '@drakkar.software/starfish-client': ^3.0.0-alpha.44
+      '@drakkar.software/starfish-entitlements': ^3.0.0-alpha.44
 
   '@drakkar.software/seahorse@0.7.8':
     resolution: {integrity: sha512-w7FeTOK/pH4iBOvUzM2K2rmlFsh4JM+XBVuBFVVd8ZC7YhdrZx5GaF77JHOPOaGgSpkHcxMEuofExh8NUicc6Q==}
@@ -976,6 +972,9 @@ packages:
         optional: true
       zustand:
         optional: true
+
+  '@drakkar.software/starfish-entitlements@3.0.0-alpha.44':
+    resolution: {integrity: sha512-TL7++u8WsuF/jVUVMEoB+N5OV0lAiU7ZE6LpAWJeRmHkB5xgf7fssgTMzlLL4xRpIf3MVB5KbP1kFpIKyHmN6w==}
 
   '@drakkar.software/starfish-identities@3.0.0-alpha.44':
     resolution: {integrity: sha512-Ozf9gSmIVu1QUtV0xIR53jLGLJ1BZnks4Ighe6yYGY15Ktd8vIK9KbK/0Z7CeMjEjb+2twEbjLJvlkYubr7NLQ==}
@@ -7720,19 +7719,20 @@ snapshots:
 
   '@drakkar.software/doubloon-core@0.3.0': {}
 
-  '@drakkar.software/doubloon-server@0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))':
+  '@drakkar.software/doubloon-server@0.3.0(@drakkar.software/doubloon-bridge-apple@0.3.0(@apple/app-store-server-library@3.1.0))(@drakkar.software/doubloon-bridge-google@0.3.0(googleapis@144.0.0))(@drakkar.software/doubloon-bridge-stripe@0.3.1(stripe@17.7.0))(@drakkar.software/doubloon-starfish@0.4.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))(@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))))':
     dependencies:
       '@drakkar.software/doubloon-core': 0.3.0
     optionalDependencies:
       '@drakkar.software/doubloon-bridge-apple': 0.3.0(@apple/app-store-server-library@3.1.0)
       '@drakkar.software/doubloon-bridge-google': 0.3.0(googleapis@144.0.0)
       '@drakkar.software/doubloon-bridge-stripe': 0.3.1(stripe@17.7.0)
-      '@drakkar.software/doubloon-starfish': 0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
+      '@drakkar.software/doubloon-starfish': 0.4.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))(@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))
 
-  '@drakkar.software/doubloon-starfish@0.3.0(patch_hash=604da8cd9665abcc6fbea1b3a5f3d534833ca21f19de708b94be5a2b56c28ff4)(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))':
+  '@drakkar.software/doubloon-starfish@0.4.0(@drakkar.software/starfish-client@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))(@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))))':
     dependencies:
       '@drakkar.software/doubloon-core': 0.3.0
       '@drakkar.software/starfish-client': 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
+      '@drakkar.software/starfish-entitlements': 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
 
   '@drakkar.software/seahorse@0.7.8(9dad4e422471fe9d77e18173c1ace30d)':
     dependencies:
@@ -7769,6 +7769,18 @@ snapshots:
     optionalDependencies:
       react: 19.2.3
       zustand: 5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
+
+  '@drakkar.software/starfish-entitlements@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
+    dependencies:
+      '@drakkar.software/starfish-client': 3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
+      '@drakkar.software/starfish-server': 3.0.0-alpha.44
+    transitivePeerDependencies:
+      - '@aws-sdk/client-s3'
+      - '@legendapp/state'
+      - ajv
+      - immer
+      - react
+      - zustand
 
   '@drakkar.software/starfish-identities@3.0.0-alpha.44(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
     dependencies:
@@ -10953,9 +10965,9 @@ snapshots:
       '@typescript-eslint/eslint-plugin': 8.62.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       '@typescript-eslint/parser': 8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       eslint: 9.39.4(jiti@2.7.0)
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-expo: 1.0.3(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.4(jiti@2.7.0))
       globals: 16.5.0
@@ -10973,7 +10985,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
@@ -10984,18 +10996,18 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0)):
+  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -11008,7 +11020,7 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -11019,7 +11031,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
+      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.16.2
       is-glob: 4.0.3
