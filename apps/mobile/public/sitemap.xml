@@ -3,58 +3,58 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://fiance.pages.dev/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.pages.dev/"/>
+    <loc>https://fiance.drakkar.software/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/seating-chart</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/seating-chart"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/seating-chart"/>
+    <loc>https://fiance.drakkar.software/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/seating-chart"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/budget</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/budget"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/budget"/>
+    <loc>https://fiance.drakkar.software/budget</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/budget"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/budget"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/photos</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/photos"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/photos"/>
+    <loc>https://fiance.drakkar.software/photos</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/photos"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/photos"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/tools/seating-chart</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/tools/seating-chart"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/tools/seating-chart"/>
+    <loc>https://fiance.drakkar.software/tools/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/seating-chart"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/tools/budget-calculator</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/tools/budget-calculator"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/tools/budget-calculator"/>
+    <loc>https://fiance.drakkar.software/tools/budget-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/budget-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/budget-calculator"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://fiance.pages.dev/tools/timeline</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.pages.dev/tools/timeline"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.pages.dev/tools/timeline"/>
+    <loc>https://fiance.drakkar.software/tools/timeline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/timeline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/timeline"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

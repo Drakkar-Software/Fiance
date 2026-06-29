@@ -61,7 +61,7 @@ export function LandingPage() {
     title: t("landing.meta.title"),
     description: t("landing.meta.description"),
     canonical: t("landing.meta.canonical"),
-    ogImage: "https://fiance.pages.dev/assets/icon-512.png",
+    ogImage: "https://fiance.drakkar.software/assets/icon-512.png",
   });
 
   const appFeatures = [

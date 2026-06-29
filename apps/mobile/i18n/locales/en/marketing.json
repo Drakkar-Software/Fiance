@@ -4,14 +4,14 @@
       "meta": {
         "title": "Terms of Service | Fiancé",
         "description": "Terms of Service for the Fiancé app. Private, offline-first wedding planning application.",
-        "canonical": "https://fiance.pages.dev/terms"
+        "canonical": "https://fiance.drakkar.software/terms"
       }
     },
     "privacy": {
       "meta": {
         "title": "Privacy Policy | Fiancé",
         "description": "How Fiancé handles your data. Offline-first, zero data collection, optional AES-256-GCM encrypted sync.",
-        "canonical": "https://fiance.pages.dev/privacy"
+        "canonical": "https://fiance.drakkar.software/privacy"
       }
     },
     "termsLink": "Terms of Service",
@@ -41,7 +41,7 @@
     "meta": {
       "title": "Fiancé — Wedding Planning App | Private & Offline",
       "description": "Private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data.",
-      "canonical": "https://fiance.pages.dev/"
+      "canonical": "https://fiance.drakkar.software/"
     },
     "hero": {
       "headline": "Plan your wedding, simply",
@@ -133,7 +133,7 @@
     "meta": {
       "title": "Wedding Seating Chart Maker | Fiancé",
       "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the Fiancé wedding planning app.",
-      "canonical": "https://fiance.pages.dev/feature/seating-chart"
+      "canonical": "https://fiance.drakkar.software/feature/seating-chart"
     },
     "hero": {
       "headline": "Wedding Seating Chart",
@@ -183,7 +183,7 @@
     "meta": {
       "title": "Wedding Budget Calculator & Planner | Fiancé",
       "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Interactive calculator and complete mobile app.",
-      "canonical": "https://fiance.pages.dev/feature/budget"
+      "canonical": "https://fiance.drakkar.software/feature/budget"
     },
     "hero": {
       "headline": "Wedding Budget Planner",
@@ -233,7 +233,7 @@
     "meta": {
       "title": "Private Wedding Photo Sharing App | Fiancé",
       "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Wedding photo app.",
-      "canonical": "https://fiance.pages.dev/feature/photos"
+      "canonical": "https://fiance.drakkar.software/feature/photos"
     },
     "hero": {
       "headline": "Wedding Photo Sharing",
@@ -291,7 +291,7 @@
       "meta": {
         "title": "Online Wedding Seating Chart Maker | Fiancé",
         "description": "Create your wedding seating chart online. Add your tables and guests, visualize the result and export as PDF. No account required.",
-        "canonical": "https://fiance.pages.dev/tools/seating-chart"
+        "canonical": "https://fiance.drakkar.software/tools/seating-chart"
       },
       "title": "Wedding Seating Chart Maker",
       "subtitle": "Create your seating chart online. Add tables, assign guests, export as PDF.",
@@ -327,7 +327,7 @@
       "meta": {
         "title": "Wedding Budget Calculator | Fiancé",
         "description": "Estimate and allocate your wedding budget by category. Interactive calculator. Download your estimate as PDF.",
-        "canonical": "https://fiance.pages.dev/tools/budget-calculator"
+        "canonical": "https://fiance.drakkar.software/tools/budget-calculator"
       },
       "title": "Wedding Budget Calculator",
       "subtitle": "Enter your total budget and discover the recommended breakdown by category.",
@@ -363,7 +363,7 @@
       "meta": {
         "title": "Wedding Day-of Timeline Builder | Fiancé",
         "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Wedding planning timeline template.",
-        "canonical": "https://fiance.pages.dev/tools/timeline"
+        "canonical": "https://fiance.drakkar.software/tools/timeline"
       },
       "title": "Wedding Day-of Timeline",
       "subtitle": "Build your wedding day schedule step by step. Export as PDF to distribute.",

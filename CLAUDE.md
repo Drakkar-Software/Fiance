@@ -33,6 +33,15 @@ Tests use Vitest. Test files:
 - `apps/mobile/__tests__/` — integration tests that depend on RN mocks
 - `packages/fiance-sdk/src/**/*.test.ts` — pure-logic unit tests (no RN)
 
+## Production domain
+
+The web app is deployed at **https://fiance.drakkar.software** (Cloudflare Pages). All canonical URLs, sitemap, robots.txt, llms.txt, and i18n `canonical` fields must use this domain.
+
+When adding or renaming a page, route, or significant feature, update:
+- `apps/mobile/public/sitemap.xml` — add/update the URL entry
+- `apps/mobile/public/llms.txt` — add/update the relevant section
+- `apps/mobile/i18n/locales/*/marketing.json` — update `canonical` fields
+
 ## Before committing and pushing
 
 Always run both commands and verify they succeed before committing:

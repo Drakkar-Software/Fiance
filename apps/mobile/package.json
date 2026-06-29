@@ -20,7 +20,7 @@
     "expo",
     "react-native"
   ],
-  "homepage": "https://fiance.pages.dev",
+  "homepage": "https://fiance.drakkar.software",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",

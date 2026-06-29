@@ -24,12 +24,12 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="robots" content="index, follow" />
 
         {/* Alternate language */}
-        <link rel="alternate" hrefLang="fr" href="https://fiance.pages.dev/" />
-        <link rel="alternate" hrefLang="en" href="https://fiance.pages.dev/" />
+        <link rel="alternate" hrefLang="fr" href="https://fiance.drakkar.software/" />
+        <link rel="alternate" hrefLang="en" href="https://fiance.drakkar.software/" />
         <link
           rel="alternate"
           hrefLang="x-default"
-          href="https://fiance.pages.dev/"
+          href="https://fiance.drakkar.software/"
         />
 
         {/* Open Graph / Facebook */}
@@ -43,7 +43,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
         <meta property="og:image:alt" content={seo.ogImageAlt} />
-        <meta property="og:url" content="https://fiance.pages.dev/" />
+        <meta property="og:url" content="https://fiance.drakkar.software/" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />

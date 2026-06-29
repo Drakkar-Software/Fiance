@@ -4,14 +4,14 @@
       "meta": {
         "title": "Conditions d'utilisation | Fiancé",
         "description": "Conditions d'utilisation de l'application Fiancé. Application de planification de mariage privée et hors ligne.",
-        "canonical": "https://fiance.pages.dev/terms"
+        "canonical": "https://fiance.drakkar.software/terms"
       }
     },
     "privacy": {
       "meta": {
         "title": "Politique de confidentialité | Fiancé",
         "description": "Comment Fiancé gère vos données. Application hors ligne, zéro collecte, synchronisation chiffrée AES-256-GCM optionnelle.",
-        "canonical": "https://fiance.pages.dev/privacy"
+        "canonical": "https://fiance.drakkar.software/privacy"
       }
     },
     "termsLink": "Conditions d'utilisation",
@@ -41,7 +41,7 @@
     "meta": {
       "title": "Fiancé — Organisez votre mariage simplement | Application mariage privée",
       "description": "Application mariage privée. Budget, plan de table, invités, prestataires, planning, checklist. Fonctionne hors ligne, zéro publicité, données 100% privées.",
-      "canonical": "https://fiance.pages.dev/"
+      "canonical": "https://fiance.drakkar.software/"
     },
     "hero": {
       "headline": "Organisez votre mariage simplement",
@@ -133,7 +133,7 @@
     "meta": {
       "title": "Plan de table mariage en ligne | Fiancé",
       "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Inclus dans l'application mariage Fiancé.",
-      "canonical": "https://fiance.pages.dev/feature/seating-chart"
+      "canonical": "https://fiance.drakkar.software/feature/seating-chart"
     },
     "hero": {
       "headline": "Plan de table mariage",
@@ -183,7 +183,7 @@
     "meta": {
       "title": "Budget mariage — Simulateur & Calculateur | Fiancé",
       "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur interactif et application mobile complète.",
-      "canonical": "https://fiance.pages.dev/feature/budget"
+      "canonical": "https://fiance.drakkar.software/feature/budget"
     },
     "hero": {
       "headline": "Budget mariage",
@@ -233,7 +233,7 @@
     "meta": {
       "title": "Application partage photos mariage privée | Fiancé",
       "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage.",
-      "canonical": "https://fiance.pages.dev/feature/photos"
+      "canonical": "https://fiance.drakkar.software/feature/photos"
     },
     "hero": {
       "headline": "Partage de photos mariage",
@@ -291,7 +291,7 @@
       "meta": {
         "title": "Plan de table mariage en ligne | Fiancé",
         "description": "Créez votre plan de table mariage en ligne. Ajoutez vos tables et invités, visualisez le résultat et exportez en PDF. Aucun compte requis.",
-        "canonical": "https://fiance.pages.dev/tools/seating-chart"
+        "canonical": "https://fiance.drakkar.software/tools/seating-chart"
       },
       "title": "Plan de table mariage",
       "subtitle": "Créez votre plan de table en ligne. Ajoutez vos tables, assignez vos invités, exportez en PDF.",
@@ -327,7 +327,7 @@
       "meta": {
         "title": "Simulateur budget mariage | Fiancé",
         "description": "Estimez et répartissez votre budget mariage par catégorie. Simulateur interactif. Téléchargez votre estimation en PDF.",
-        "canonical": "https://fiance.pages.dev/tools/budget-calculator"
+        "canonical": "https://fiance.drakkar.software/tools/budget-calculator"
       },
       "title": "Simulateur de budget mariage",
       "subtitle": "Entrez votre budget total et découvrez la répartition recommandée par catégorie.",
@@ -363,7 +363,7 @@
       "meta": {
         "title": "Planning jour J mariage | Fiancé",
         "description": "Créez le programme de votre journée mariage. Ajoutez, réorganisez et imprimez votre planning jour J. Modèle de planning mariage.",
-        "canonical": "https://fiance.pages.dev/tools/timeline"
+        "canonical": "https://fiance.drakkar.software/tools/timeline"
       },
       "title": "Planning jour J mariage",
       "subtitle": "Construisez le programme de votre journée étape par étape. Exportez-le en PDF pour le distribuer.",

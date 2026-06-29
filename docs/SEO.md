@@ -65,7 +65,7 @@ All texts sourced from `i18n/locales/{lang}/seo.json`.
 | `meta description` | 160-char description covering all major features + offline + privacy USP |
 | `meta keywords` | 20 high-value French wedding terms |
 | `meta robots` | `index, follow` |
-| `link canonical` | `https://fiance.pages.dev/` |
+| `link canonical` | `https://fiance.drakkar.software/` |
 | `link hreflang` | `fr`, `en`, `x-default` |
 
 ### Open Graph
@@ -77,7 +77,7 @@ All texts sourced from `i18n/locales/{lang}/seo.json`.
 | `og:title` | `Fiancé — Organisez votre mariage simplement` |
 | `og:description` | Short feature summary with offline USP |
 | `og:image` | `/assets/icon-512.png` (512x512) |
-| `og:url` | `https://fiance.pages.dev/` |
+| `og:url` | `https://fiance.drakkar.software/` |
 
 ### Twitter Card
 
@@ -108,7 +108,7 @@ Type: `schema.org/SoftwareApplication`
 **`robots.txt`**:
 - Allow: `/`, `/wedding/`
 - Disallow: `/_expo/`, `/assets/`
-- Sitemap: `https://fiance.pages.dev/sitemap.xml`
+- Sitemap: `https://fiance.drakkar.software/sitemap.xml`
 
 ### HTTP Headers (`_headers` — Cloudflare Pages)
 
