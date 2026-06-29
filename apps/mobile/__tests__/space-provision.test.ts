@@ -2,13 +2,13 @@
  * Tests for lib/space-provision.ts — ensureSpaceProvisioned
  *
  * The critical sequence:
- *   1. writeSpaceAccess (fiancespaces _access) — TOFU bootstrap write, must be FIRST
+ *   1. writeSpaceAccess (fiance _access) — TOFU bootstrap write, must be FIRST
  *   2. seedSpaceObjectIndex (fiance content) — only runs after _access exists
- *   3. ownerEnsureSpaceKeyring (fiancespaces _keyring) — idem
+ *   3. ownerEnsureSpaceKeyring (fiance _keyring) — idem
  *   4. readSpaces / writeSpaces (_spaces list) — idem
  *   5. updateWeddingEntry — persist spaceId locally
  *
- * Ordering matters for the server's allowTofu design: the fiancespaces enricher
+ * Ordering matters for the server's allowTofu design: the fiance enricher
  * gets allowTofu:true so step 1 can succeed with no prior _access doc. Steps 2-4
  * use owner-match because _access already exists after step 1.
  */

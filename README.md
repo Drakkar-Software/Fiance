@@ -126,20 +126,9 @@ Sync is **100% optional** — all data stays on-device by default.
 To enable: go to **Settings › Synchronisation** and enter your Starfish server URL + auth token. An AES-256-GCM key is generated on-device and stored in the secure keychain. The server only ever sees encrypted blobs.
 
 ```bash
-# Start local sync server
-cd apps/server && pnpm dev          # http://localhost:8787
-
-# Point the app at it
-echo 'EXPO_PUBLIC_SYNC_URL=http://localhost:8787' > apps/mobile/.env.local
+# Point the app at the production drakkar_sync server
+echo 'EXPO_PUBLIC_SYNC_URL=https://sync.drakkar.software/sync' > apps/mobile/.env.local
 pnpm --filter fiance run web
-```
-
-```bash
-# Deploy to production (Cloudflare Workers)
-cd apps/server
-wrangler r2 bucket create wedding-os-sync
-wrangler secret put ENCRYPTION_SECRET
-wrangler deploy
 ```
 
 ---
@@ -192,7 +181,7 @@ claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope 
 |--------|---------|-----|
 | Web (Cloudflare Pages) | `pnpm --filter fiance build:web` | Push to `main` |
 | Android APK (EAS) | `npx eas-cli build --platform android --profile preview` | Push to `main` |
-| Sync server | `wrangler deploy` (from `apps/server/`) | Push to `main` (paths: `apps/server/**`) |
+| Sync server | Managed by `Drakkar-Software/Infra` (drakkar_sync) | Infra repo deploy |
 
 ---
 

@@ -12,8 +12,7 @@
     "onlyBuiltDependencies": [
       "@shopify/react-native-skia",
       "esbuild",
-      "unrs-resolver",
-      "workerd"
+      "unrs-resolver"
     ]
   }
 }

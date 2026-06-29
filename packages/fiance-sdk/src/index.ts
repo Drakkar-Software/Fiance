@@ -26,7 +26,7 @@ export type { KvAdapter } from './core/config.js';
 
 // ─── Vendored: per-node content-doc path builders ────────────────────────────
 // starfish-spaces' SpaceLayout does not expose per-node objdoc/objinv paths;
-// these are app-specific and must mirror apps/server/fiance-config.ts.
+// these are app-specific and must mirror drakkar_sync/apps/fiance/collections.py.
 export { objDocPush, objDocPull, objInvPush, objInvPull } from './sync/object-paths.js';
 
 // ─── Vendored: in-process live-sync bus ──────────────────────────────────────

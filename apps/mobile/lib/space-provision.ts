@@ -1,10 +1,10 @@
 /**
  * Space provisioner — bootstraps the owner's starfish-space for a new wedding.
  *
- * The SDK splits registry operations between two namespaces:
- *   - `spacesRegistryClient` (fiancespaces) — _access, _spaces
- *   - `spacesKeyringClient`  (fiancespaces) — _keyring  (via ownerEnsureSpaceKeyring)
- *   - `contentClient`        (fiance)     — objindex  (via seedSpaceObjectIndex)
+ * The SDK splits registry operations between two sub-clients on the fiance namespace:
+ *   - `spacesRegistryClient` — _access, _spaces
+ *   - `spacesKeyringClient`  — _keyring  (via ownerEnsureSpaceKeyring)
+ *   - `contentClient`        — objindex  (via seedSpaceObjectIndex)
  *
  * The first `writeSpaceAccess` succeeds via TOFU (Trust On First Use): when no
  * `_access` doc exists, the server enricher grants [space:owner, space:member]
@@ -40,7 +40,7 @@ export async function ensureSpaceProvisioned(
   const spaceId = `${session.spaceIdPrefix}${Crypto.randomUUID().replace(/-/g, '')}`;
   const name = wedding.label;
 
-  // 1. Write _access to fiancespaces (TOFU grants space:owner on first write).
+  // 1. Write _access to fiance (TOFU grants space:owner on first write).
   //    Sets owner = userId, members = [], and the human-readable space name.
   await writeSpaceAccess(
     session.spacesRegistryClient,
@@ -58,11 +58,11 @@ export async function ensureSpaceProvisioned(
   //    duplicate activation racing here would get a 409 hash_mismatch without the lock.
   await withIndexLock(spaceId, () => seedSpaceObjectIndex(session, spaceId));
 
-  // 3. Create the space-wide E2EE keyring in fiancespaces.
+  // 3. Create the space-wide E2EE keyring in fiance.
   //    Uses session.spacesKeyringClient.
   await ownerEnsureSpaceKeyring(session, spaceId);
 
-  // 4. Register the space in the user's _spaces list (fiancespaces).
+  // 4. Register the space in the user's _spaces list (fiance).
   const { spaces } = await readSpaces(session.spacesRegistryClient, session);
   const space = buildSpace(spaceId, name);
   await writeSpaces(session.spacesRegistryClient, session, [...spaces, space]);

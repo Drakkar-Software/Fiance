@@ -4,12 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Monorepo layout
 
-This is a **pnpm workspace** with three packages:
+This is a **pnpm workspace** with two packages:
 
 | Package | Path | Description |
 |---------|------|-------------|
 | `fiance` | `apps/mobile/` | Expo app (iOS · Android · Web) |
-| `fiance-sync` | `apps/server/` | Starfish sync server (Cloudflare Worker) |
 | `@fiance/sdk` | `packages/fiance-sdk/` | Pure headless business logic (no RN deps) |
 
 ## Commands
@@ -65,7 +64,7 @@ Three-layer persistence:
 
 1. **Zustand stores** (`apps/mobile/store/`) — runtime state; domain stores include `useWeddingStore`, `useGuestsStore`, `useVendorsStore`, `usePlanningStore`, `useIdeasStore`, `useAccommodationsStore`, `useGiftsStore`, plus `useWeddingRegistryStore` for multi-wedding support.
 2. **KV-store** (`apps/mobile/db/schema.ts` — plain TS interfaces, no Drizzle ORM) — `apps/mobile/lib/persistence.ts` handles hydration on boot and write-through on every mutation via `lib/kv-storage.ts`.
-3. **Starfish sync** (optional) — `apps/mobile/lib/starfish.ts` and `packages/fiance-sdk/src/sync/backup.ts` push AES-256-GCM encrypted backups to `apps/server/`. Triggered via `notifySync()` after store mutations.
+3. **Starfish sync** (optional) — `apps/mobile/lib/starfish.ts` and `packages/fiance-sdk/src/sync/backup.ts` push AES-256-GCM encrypted backups to `https://sync.drakkar.software/sync` (drakkar_sync, `/v1/fiance` namespace). Triggered via `notifySync()` after store mutations.
 
 ### `@fiance/sdk` — pure headless SDK
 
@@ -100,4 +99,3 @@ NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`
 
 - **Web**: Push to main/master → `.github/workflows/deploy-web.yml` → Cloudflare Pages (`apps/mobile/dist/`)
 - **Android APK**: Push to version tags → `.github/workflows/build-apk.yml` → EAS Build (runs from `apps/mobile/`) → artifact upload
-- **Sync server**: Push to main/master (paths: `apps/server/**`) → `.github/workflows/deploy-sync.yml` → Cloudflare Workers

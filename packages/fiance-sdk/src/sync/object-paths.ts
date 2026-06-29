@@ -4,7 +4,7 @@
  * starfish-spaces' SpaceLayout exposes objIndexPull/Push, keyring, inbox,
  * profile, and objectDir helpers — but NOT per-node content-doc paths.
  * Those paths are app-specific and must mirror the server's registered
- * collections in `apps/server/fiance-config.ts`.
+ * collections in `drakkar_sync/apps/fiance/collections.py`.
  *
  * Server storagePaths (fiance-config.ts):
  *   objdoc  → spaces/{spaceId}/objects/docs/{objectId}
