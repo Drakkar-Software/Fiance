@@ -3,6 +3,8 @@ const path = require("path");
 
 const seo = require("../i18n/locales/fr/seo.json");
 
+const DIST = path.join(__dirname, "..", "dist");
+
 // Generate manifest.json from translation keys
 const manifest = {
   id: "/",
@@ -51,21 +53,85 @@ const manifest = {
   ],
 };
 
-const manifestPath = path.join(__dirname, "..", "dist", "manifest.json");
-fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+fs.writeFileSync(path.join(DIST, "manifest.json"), JSON.stringify(manifest, null, 2));
 console.log("manifest.json generated from translations into dist/manifest.json");
+
+/**
+ * Expo static export emits `page.html` files. Crawlers and sitemap use clean
+ * URLs (`/blog/my-post`). Promote each file to `my-post/index.html` so hosts
+ * serve the prerendered HTML (with title, canonical, JSON-LD) at the clean path.
+ */
+function promoteHtmlFilesToDirectories(dir) {
+  if (!fs.existsSync(dir)) return 0;
+  let count = 0;
+  for (const name of fs.readdirSync(dir)) {
+    if (!name.endsWith(".html") || name === "index.html") continue;
+    const slug = name.slice(0, -".html".length);
+    if (slug.includes("[") || slug.includes("]")) continue;
+    const src = path.join(dir, name);
+    const targetDir = path.join(dir, slug);
+    fs.mkdirSync(targetDir, { recursive: true });
+    fs.renameSync(src, path.join(targetDir, "index.html"));
+    count++;
+  }
+  return count;
+}
+
+function promoteRootPage(name) {
+  const src = path.join(DIST, `${name}.html`);
+  if (!fs.existsSync(src)) return false;
+  const targetDir = path.join(DIST, name);
+  fs.mkdirSync(targetDir, { recursive: true });
+  fs.renameSync(src, path.join(targetDir, "index.html"));
+  return true;
+}
+
+// SEO marketing routes: /blog/:slug, /tools/:slug, /feature/:slug
+const blogCount = promoteHtmlFilesToDirectories(path.join(DIST, "blog"));
+const toolsCount = promoteHtmlFilesToDirectories(path.join(DIST, "tools"));
+const featureCount = promoteHtmlFilesToDirectories(path.join(DIST, "feature"));
+for (const page of ["privacy", "terms"]) {
+  promoteRootPage(page);
+}
+console.log(
+  `Clean URLs: promoted ${blogCount} blog, ${toolsCount} tools, ${featureCount} feature pages to directory/index.html`
+);
+
+// Remove dynamic route placeholders (empty shell pages, bad for SEO)
+function removeDynamicPlaceholders(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const name of fs.readdirSync(dir)) {
+    if (name.includes("[") || name.includes("]")) {
+      fs.rmSync(path.join(dir, name), { recursive: true, force: true });
+      console.log(`Removed dynamic placeholder: ${path.join(dir, name)}`);
+    }
+  }
+}
+removeDynamicPlaceholders(path.join(DIST, "blog"));
+removeDynamicPlaceholders(path.join(DIST, "tools"));
+removeDynamicPlaceholders(path.join(DIST, "feature"));
+
+// Expo also exports the (marketing) route group as a literal folder — duplicate
+// content at /(marketing)/blog/... that splits SEO signals. Remove it.
+const marketingDir = path.join(DIST, "(marketing)");
+if (fs.existsSync(marketingDir)) {
+  fs.rmSync(marketingDir, { recursive: true, force: true });
+  console.log("Removed duplicate dist/(marketing) route-group export");
+}
 
 // Cloudflare Pages excludes directories starting with "." from deployment.
 // Font TTFs land in dist/assets/node_modules/.pnpm/ — rename to drop the dot,
 // then prepend a rewrite rule so bundle requests still resolve correctly.
-// The SPA catch-all (/* /index.html 200) is already the last line of
-// public/_redirects; prepending the font rule keeps it last — correct precedence.
-const dotPnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", ".pnpm");
-const pnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", "pnpm");
+// public/_redirects provides SPA fallback as the last rule.
+const dotPnpmPath = path.join(DIST, "assets", "node_modules", ".pnpm");
+const pnpmPath = path.join(DIST, "assets", "node_modules", "pnpm");
 if (fs.existsSync(dotPnpmPath)) {
   fs.renameSync(dotPnpmPath, pnpmPath);
-  const redirectsPath = path.join(__dirname, "..", "dist", "_redirects");
+  const redirectsPath = path.join(DIST, "_redirects");
   const existing = fs.readFileSync(redirectsPath, "utf8");
-  fs.writeFileSync(redirectsPath, "/assets/node_modules/.pnpm/* /assets/node_modules/pnpm/:splat 200\n" + existing);
+  fs.writeFileSync(
+    redirectsPath,
+    "/assets/node_modules/.pnpm/* /assets/node_modules/pnpm/:splat 200\n" + existing
+  );
   console.log("Font assets: renamed .pnpm → pnpm, prepended rewrite rule to _redirects");
 }
