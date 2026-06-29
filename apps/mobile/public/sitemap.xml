@@ -77,10 +77,20 @@
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/blog/exemple-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
+    <loc>https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/blog/combien-temps-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog/combien-temps-organiser-mariage"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
