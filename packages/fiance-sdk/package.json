@@ -32,12 +32,6 @@
     "date-fns": "^3.6.0",
     "zod": "^3.25.76"
   },
-  "peerDependencies": {
-    "@drakkar.software/starfish-client": ">=3.0.0-alpha.31",
-    "@drakkar.software/starfish-identities": ">=3.0.0-alpha.31",
-    "@drakkar.software/starfish-keyring": ">=3.0.0-alpha.31",
-    "@drakkar.software/starfish-sharing": ">=3.0.0-alpha.31"
-  },
   "devDependencies": {
     "@drakkar.software/starfish-client": "3.0.0-alpha.45",
     "@drakkar.software/starfish-identities": "3.0.0-alpha.45",
