@@ -138,6 +138,7 @@ function CreateWeddingForm({
       await onCreate(label.trim());
     } catch (e: any) {
       Alert.alert(t("error"), e.message);
+    } finally {
       setSaving(false);
     }
   };
@@ -221,6 +222,7 @@ function JoinWeddingForm({
       await onJoin(name.trim(), pwd.trim());
     } catch (e: any) {
       Alert.alert(t("error"), e.message);
+    } finally {
       setSaving(false);
     }
   };

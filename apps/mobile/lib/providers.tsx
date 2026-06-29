@@ -129,6 +129,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     let unregisterPush: (() => void) | null = null;
 
     (async () => {
+      console.info("[fiance] sync build alpha.49");
       const activated = await activateSync(wedding);
       if (cancelled || !activated) return;
       resolvedUserId = activated.userId;

@@ -24,8 +24,8 @@ let mockClientPull: Mock = vi.fn(async () => ({ data: null, hash: null }));
 let mockClientPush: Mock = vi.fn(async () => ({ hash: "H_new" }));
 
 // handle.push mirrors the fixed NodeAccessHandle.push: pull → hash-gated decrypt → mutate → push.
-// baseHash uses `|| null` (not `?? null`) so "" → null (canonical create semantics).
-// cur is null when baseHash is falsy — no decrypt on a missing doc (Bug B regression guard).
+// baseHash uses `?? ""` (alpha.49 fix): preserves "" so the server's heal path is reachable.
+// "" is falsy so cur is still null for a missing/hash-less doc (Bug B: no decrypt({}) call).
 function makeHandlePush(pull: Mock, push: Mock, encryptor: { decrypt: Mock; encrypt: Mock } | null = null) {
   return vi.fn(async (
     pullPath: string,
@@ -35,7 +35,7 @@ function makeHandlePush(pull: Mock, push: Mock, encryptor: { decrypt: Mock; encr
     const res = await pull(pullPath).catch(() => null) as
       | { data: Record<string, unknown>; hash: string }
       | null;
-    const baseHash = res?.hash || null;
+    const baseHash = res?.hash ?? "";
     const cur = baseHash
       ? (encryptor ? await encryptor.decrypt(res!.data) : res!.data)
       : null;
@@ -297,11 +297,12 @@ describe("pushNodeContent succeeds for a missing encrypted node (Bug B regressio
       expect.stringContaining("w1"),
       expect.any(Function),
     );
-    // client.push must succeed (node created with baseHash = null, not swallowed).
+    // client.push must succeed (node created with baseHash = "" per alpha.49 fix, not null).
+    // "" is the correct create/heal baseHash — null would deadlock against a hash-less existing doc.
     expect(mockClientPush).toHaveBeenCalledWith(
       expect.stringContaining("w1"),
       expect.any(Object),
-      null,
+      "",
     );
   });
 });

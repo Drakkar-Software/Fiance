@@ -89,7 +89,7 @@ function AppContent() {
     if (registry?.weddings.length) {
       router.replace("/home" as any);
     }
-  }, [isLoaded, isPublicPage, registry?.weddings.length]);
+  }, [isLoaded, isPublicPage, registry?.weddings.length, segments]);
 
   // Public wedding page — always reachable, no auth required
   if (isPublicPage) {

@@ -32,8 +32,8 @@ importers:
         specifier: 3.0.0-alpha.45
         version: 3.0.0-alpha.45(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
       '@drakkar.software/starfish-spaces':
-        specifier: 3.0.0-alpha.48
-        version: 3.0.0-alpha.48(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
+        specifier: 3.0.0-alpha.49
+        version: 3.0.0-alpha.49(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
       '@drakkar.software/sunglasses-adapter-starfish':
         specifier: 0.9.0
         version: 0.9.0
@@ -300,8 +300,8 @@ importers:
         specifier: 3.0.0-alpha.45
         version: 3.0.0-alpha.45
       '@drakkar.software/starfish-spaces':
-        specifier: 3.0.0-alpha.48
-        version: 3.0.0-alpha.48(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
+        specifier: 3.0.0-alpha.49
+        version: 3.0.0-alpha.49(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
       '@noble/curves':
         specifier: ^2.2.0
         version: 2.2.0
@@ -861,8 +861,8 @@ packages:
   '@drakkar.software/starfish-sharing@3.0.0-alpha.45':
     resolution: {integrity: sha512-mCkF7j9a84NXelw0Uw1l4N+ZOwDPceSNlW91IuoL+I2lSASIzG/gN5lqpSaYfOm6u41IocChMnG46av1BCSbFg==}
 
-  '@drakkar.software/starfish-spaces@3.0.0-alpha.48':
-    resolution: {integrity: sha512-zMgP7Jvy1pY/fgAKydWXWxZQzucF89YA+/9TPzOnUILo39sbUxuBR0Yopg81hUoAFQTrjm5JjNnJv25MvZx+Bg==}
+  '@drakkar.software/starfish-spaces@3.0.0-alpha.49':
+    resolution: {integrity: sha512-LtiXRzEzkTX8B59I8G2yC+90kLgpKnkDZOjNX2bj5tYONPVPLLPniKoknkbSjXawQ2gStq92yNcxH/fveRdp7A==}
 
   '@drakkar.software/sunglasses-adapter-starfish@0.9.0':
     resolution: {integrity: sha512-3IRpZntInvhCwTDuRgHtSxiL8+79OpcrdRVTARrM6WcS8XArE8xjI5+hn7bIpHmvu+hUMGUZ+9SMsGHThl9yZA==}
@@ -7259,7 +7259,7 @@ snapshots:
       - react
       - zustand
 
-  '@drakkar.software/starfish-spaces@3.0.0-alpha.48(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
+  '@drakkar.software/starfish-spaces@3.0.0-alpha.49(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
     dependencies:
       '@drakkar.software/starfish-client': 3.0.0-alpha.48(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
       '@drakkar.software/starfish-identities': 3.0.0-alpha.45(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -8544,7 +8544,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-color@2.1.0': {}
 
