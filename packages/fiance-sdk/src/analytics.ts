@@ -16,15 +16,23 @@ export type FianceEvents = {
   pwa_install_clicked:         undefined;
   // Guests
   guest_added:                 undefined;
+  guest_deleted:               undefined;
+  guest_rsvp_shared:           undefined;
   // Vendors
   vendor_added:                { category: string };
+  vendor_deleted:              { category: string };
   // Planning
+  task_added:                  undefined;
+  task_deleted:                undefined;
   task_completed:              undefined;
   planning_template_generated: undefined;
+  agenda_event_added:          undefined;
+  day_of_item_added:           undefined;
   // Budget
   budget_template_applied:     { template: string };
   // Ideas
   idea_added:                  undefined;
+  idea_deleted:                undefined;
   // Settings
   sync_enabled:                undefined;
   sync_disabled:               undefined;

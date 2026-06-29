@@ -132,6 +132,7 @@ export default function IdeaDetailScreen() {
 
   const handleDelete = () => {
     removeIdea(id!);
+    analytics.capture("idea_deleted");
     setShowDelete(false);
     router.back();
   };
@@ -341,3 +342,5 @@ export default function IdeaDetailScreen() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

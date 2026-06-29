@@ -97,3 +97,5 @@ export default function CommunicationRosterScreen() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

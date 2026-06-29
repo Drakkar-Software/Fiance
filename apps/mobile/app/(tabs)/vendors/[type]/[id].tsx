@@ -133,6 +133,7 @@ export default function VendorDetailScreen() {
 
   const handleDelete = () => {
     removeVendor(id!);
+    analytics.capture("vendor_deleted", { category: type });
     setShowDelete(false);
     router.back();
   };
@@ -539,3 +540,5 @@ function CustomFieldRenderer({
 
   return null;
 }
+
+export async function generateStaticParams() { return []; }

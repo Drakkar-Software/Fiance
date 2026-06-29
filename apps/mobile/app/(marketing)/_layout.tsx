@@ -10,7 +10,7 @@ export default function MarketingLayout() {
   const router = useRouter();
   const registry = useWeddingRegistryStore((s) => s.registry);
   const isLoaded = useWeddingRegistryStore((s) => s.isLoaded);
-  const isStandalone = isPwaStandalone();
+  const isStandalone = typeof window !== "undefined" && isPwaStandalone();
 
   useEffect(() => {
     if (!isStandalone || !isLoaded) return;

@@ -94,3 +94,5 @@ export default function VendorTypeListScreen() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

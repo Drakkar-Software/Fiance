@@ -159,6 +159,7 @@ export default function GuestDetailScreen() {
 
   const handleDelete = () => {
     removeGuest(id!);
+    analytics.capture("guest_deleted");
     setShowDelete(false);
     router.back();
   };
@@ -413,6 +414,7 @@ export default function GuestDetailScreen() {
             onPress={async () => {
               const url = rsvpUrl;
               if (!url) return;
+              analytics.capture("guest_rsvp_shared");
               if (Platform.OS === "web") {
                 try {
                   if (navigator.share) {
@@ -506,3 +508,5 @@ export default function GuestDetailScreen() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

@@ -170,7 +170,7 @@ export default function RootLayout() {
   const loadColorScheme = useSettingsStore((s) => s.loadColorScheme);
   const colorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
-  const [locked, setLocked] = useState<boolean | null>(null);
+  const [locked, setLocked] = useState<boolean | null>(Platform.OS === "web" ? false : null);
 
   useEffect(() => {
     loadRegistry();

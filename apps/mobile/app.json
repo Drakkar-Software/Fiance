@@ -33,7 +33,7 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "single",
+      "output": "static",
       "favicon": "./assets/favicon.png",
       "name": "Fiancé — Organisez votre mariage",
       "shortName": "Fiancé",

@@ -608,3 +608,5 @@ export default function WeddingPublicPage() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

@@ -22,6 +22,7 @@ import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
 import { PageHeader } from "@/components/PageHeader";
 import { Seal } from "@/components/Seal";
+import { analytics } from "@/lib/analytics";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "DONE"];
@@ -102,6 +103,7 @@ export default function TaskDetailScreen() {
         reminderDaysBefore: null,
         createdAt: now,
       } as Task);
+      analytics.capture("task_added");
     } else {
       updateTask(id!, taskData);
     }
@@ -110,6 +112,7 @@ export default function TaskDetailScreen() {
 
   const handleDelete = () => {
     removeTask(id!);
+    analytics.capture("task_deleted");
     setShowDelete(false);
     router.back();
   };
@@ -305,3 +308,5 @@ export default function TaskDetailScreen() {
     </View>
   );
 }
+
+export async function generateStaticParams() { return []; }

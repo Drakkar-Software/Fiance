@@ -11,6 +11,7 @@ import { SectionTitle, FormCard, InputRow, DateRow, TimeRow } from "@/components
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
+import { analytics } from "@/lib/analytics";
 import type { AgendaEvent } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -62,6 +63,7 @@ export default function AgendaEventScreen() {
 
     if (isNew) {
       addEvent({ ...data, id: Crypto.randomUUID(), createdAt: now } as AgendaEvent);
+      analytics.capture("agenda_event_added");
     } else {
       updateEvent(id!, data);
     }

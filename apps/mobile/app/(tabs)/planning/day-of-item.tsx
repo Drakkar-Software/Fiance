@@ -10,6 +10,7 @@ import { SectionTitle, FormCard, InputRow, DateRow, TimeRow, ToggleRow } from "@
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { analytics } from "@/lib/analytics";
 import type { DayOfItem } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -69,6 +70,7 @@ export default function DayOfItemScreen() {
         sortOrder: maxOrder + 1,
         createdAt: now,
       } as DayOfItem);
+      analytics.capture("day_of_item_added");
     } else {
       updateItem(id!, data);
     }
