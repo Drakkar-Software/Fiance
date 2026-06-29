@@ -122,7 +122,8 @@ if (fs.existsSync(marketingDir)) {
 // Cloudflare Pages excludes directories starting with "." from deployment.
 // Font TTFs land in dist/assets/node_modules/.pnpm/ — rename to drop the dot,
 // then prepend a rewrite rule so bundle requests still resolve correctly.
-// public/_redirects provides SPA fallback as the last rule.
+// public/_redirects holds legacy 301 rules only. SPA fallback is configured in
+// wrangler.toml via not_found_handling = "single-page-application".
 const dotPnpmPath = path.join(DIST, "assets", "node_modules", ".pnpm");
 const pnpmPath = path.join(DIST, "assets", "node_modules", "pnpm");
 if (fs.existsSync(dotPnpmPath)) {

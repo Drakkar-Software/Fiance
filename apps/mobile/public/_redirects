@@ -4,9 +4,3 @@
 /feature/:slug.html /feature/:slug 301
 /privacy.html /privacy 301
 /terms.html /terms 301
-
-# Duplicate Expo route-group export — canonical paths live at /blog, /tools, etc.
-/(marketing)/* /404.html 404
-
-# SPA shell for in-app routes (must stay last)
-/* /index.html 200
