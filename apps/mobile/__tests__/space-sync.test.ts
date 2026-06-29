@@ -7,6 +7,9 @@
  *     restoreSyncPush() re-enables it.
  * H1/H2: pushNodeContent delegates to handle.push(), which owns CAS + hash
  *     tracking — client.push never receives a null baseHash after the first write.
+ * H3 (Bug B regression): handle.push with an encrypted node and a missing doc
+ *     (pull returns { data: {}, hash: "" }) must call client.push successfully
+ *     — not throw "Encrypted payload is too short" and swallow the node silently.
  */
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 
@@ -20,8 +23,10 @@ let mockWeddingData: Record<string, unknown> | null = null;
 let mockClientPull: Mock = vi.fn(async () => ({ data: null, hash: null }));
 let mockClientPush: Mock = vi.fn(async () => ({ hash: "H_new" }));
 
-// handle.push mirrors the real NodeAccessHandle.push: pull → mutate → client.push.
-function makeHandlePush(pull: Mock, push: Mock) {
+// handle.push mirrors the fixed NodeAccessHandle.push: pull → hash-gated decrypt → mutate → push.
+// baseHash uses `|| null` (not `?? null`) so "" → null (canonical create semantics).
+// cur is null when baseHash is falsy — no decrypt on a missing doc (Bug B regression guard).
+function makeHandlePush(pull: Mock, push: Mock, encryptor: { decrypt: Mock; encrypt: Mock } | null = null) {
   return vi.fn(async (
     pullPath: string,
     pushPath: string,
@@ -30,8 +35,15 @@ function makeHandlePush(pull: Mock, push: Mock) {
     const res = await pull(pullPath).catch(() => null) as
       | { data: Record<string, unknown>; hash: string }
       | null;
-    const next = mutator(res?.data ?? null);
-    if (next !== null) await push(pushPath, next, res?.hash ?? null);
+    const baseHash = res?.hash || null;
+    const cur = baseHash
+      ? (encryptor ? await encryptor.decrypt(res!.data) : res!.data)
+      : null;
+    const next = mutator(cur);
+    if (next !== null) {
+      const payload = encryptor ? await encryptor.encrypt(next) : next;
+      await push(pushPath, payload, baseHash);
+    }
   });
 }
 
@@ -238,6 +250,58 @@ describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () =>
       expect.stringContaining("w1"),  // pushPath
       expect.anything(),              // payload
       "H1",                           // ← hash from pull, never null
+    );
+  });
+});
+
+// ─── Regression: encrypted nodes must not be silently dropped (Bug B) ─────────
+//
+// When a doc does not exist the server returns { data: {}, hash: "" }. The fixed
+// handle.push gates decrypt on a non-empty hash, so cur = null and the mutator
+// still runs. The node is created with baseHash = null (not swallowed with a throw).
+
+describe("pushNodeContent succeeds for a missing encrypted node (Bug B regression)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    // Pull returns the "missing doc" response: truthy {} data with empty hash.
+    mockClientPull = vi.fn(async () => ({ data: {}, hash: "" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H_created" }));
+    const mockEncryptor = {
+      decrypt: vi.fn(async () => { throw new Error("Encrypted payload is too short") }),
+      encrypt: vi.fn(async (d: unknown) => ({ _encrypted: JSON.stringify(d) })),
+    };
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush, mockEncryptor);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: mockEncryptor as never,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("H3: client.push is called (node created) and decrypt is NOT called for a missing doc", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    // handle.push must have been invoked for the wedding node.
+    expect(mockHandlePush).toHaveBeenCalledWith(
+      expect.stringContaining("w1"),
+      expect.stringContaining("w1"),
+      expect.any(Function),
+    );
+    // client.push must succeed (node created with baseHash = null, not swallowed).
+    expect(mockClientPush).toHaveBeenCalledWith(
+      expect.stringContaining("w1"),
+      expect.any(Object),
+      null,
     );
   });
 });
