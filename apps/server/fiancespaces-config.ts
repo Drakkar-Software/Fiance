@@ -18,8 +18,8 @@ export const fiancespacesSyncConfig: SyncConfig = {
     {
       name: "spaces",
       storagePath: "user/{identity}/_spaces",
-      readRoles: ["cap:read:spaces"],
-      writeRoles: ["cap:write:spaces"],
+      readRoles: ["self"],
+      writeRoles: ["self"],
       encryption: "none",
       maxBodyBytes: 131_072,
       allowedMimeTypes: JSON_ONLY,
@@ -58,8 +58,8 @@ export const fiancespacesSyncConfig: SyncConfig = {
     {
       name: "devices",
       storagePath: "users/{identity}/_devices",
-      readRoles: ["cap:read:devices"],
-      writeRoles: ["cap:write:devices"],
+      readRoles: ["self"],
+      writeRoles: ["self"],
       encryption: "none",
       maxBodyBytes: 131_072,
       allowedMimeTypes: JSON_ONLY,
