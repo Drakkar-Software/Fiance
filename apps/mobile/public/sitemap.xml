@@ -67,6 +67,26 @@
   </url>
 
   <url>
+    <loc>https://fiance.drakkar.software/blog</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/blog/exemple-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog/exemple-mariage"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://fiance.drakkar.software/privacy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/privacy"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/privacy"/>

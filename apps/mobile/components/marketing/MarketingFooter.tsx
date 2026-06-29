@@ -70,6 +70,18 @@ export function MarketingFooter() {
             </View>
           </View>
 
+          {/* Le Carnet / Journal */}
+          <View style={{ minWidth: 140 }}>
+            <Text className="text-xs font-semibold text-typography-400 uppercase tracking-widest mb-3">
+              {t("footer.blog")}
+            </Text>
+            <View className="gap-2">
+              <Pressable onPress={() => router.push("/blog" as any)} className="active:opacity-60">
+                <Text className="text-sm text-typography-300">{t("nav.blog")}</Text>
+              </Pressable>
+            </View>
+          </View>
+
           {/* Legal */}
           <View style={{ minWidth: 160 }}>
             <Text className="text-xs font-semibold text-typography-400 uppercase tracking-widest mb-3">

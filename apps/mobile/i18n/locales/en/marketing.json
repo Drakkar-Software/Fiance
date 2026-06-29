@@ -27,7 +27,8 @@
     "toolsBudget": "Budget calculator",
     "toolsTimeline": "Day-of timeline",
     "download": "Download",
-    "openApp": "Open app"
+    "openApp": "Open app",
+    "blog": "Journal"
   },
   "footer": {
     "tagline": "The private, offline-first wedding planner.",
@@ -35,7 +36,8 @@
     "tools": "Tools",
     "privacy": "100% Private",
     "legal": "Legal",
-    "madeWith": "Made with ♥ for future newlyweds"
+    "madeWith": "Made with ♥ for future newlyweds",
+    "blog": "Journal"
   },
   "landing": {
     "meta": {
@@ -128,6 +130,32 @@
       "android": "Download on Android",
       "web": "Use on web"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "The Journal | Fiancé",
+      "description": "Tips, guides and inspiration for planning your wedding with peace of mind. Budget, guests, seating chart, decoration — everything you need to know.",
+      "canonical": "https://fiance.drakkar.software/blog"
+    },
+    "hero": {
+      "eyebrow": "Fiancé · The Journal",
+      "headline": "The Journal",
+      "subtitle": "Tips & inspiration for planning your wedding"
+    },
+    "featuredLabel": "Featured article",
+    "readMore": "Read article",
+    "by": "By",
+    "readingTime": "{{count}} min read",
+    "publishedOn": "Published on",
+    "updatedOn": "Updated on",
+    "backToBlog": "← Back to Journal",
+    "authorBioTitle": "About the author",
+    "authorRole": "Founder of Fiancé",
+    "ctaTitle": "Ready to plan your wedding?",
+    "ctaButton": "Try Fiancé for free",
+    "emptyTitle": "The Journal is coming soon",
+    "emptyBody": "Our first wedding planning articles will be published soon.",
+    "postNotFound": "Article not found"
   },
   "seatingChart": {
     "meta": {

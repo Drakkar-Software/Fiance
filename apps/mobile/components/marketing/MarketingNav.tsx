@@ -25,6 +25,7 @@ export function MarketingNav() {
     { label: t("nav.budget"), href: "/feature/budget" },
     { label: t("nav.photos"), href: "/feature/photos" },
     { label: t("nav.tools"), href: "/tools/seating-chart" },
+    { label: t("nav.blog"), href: "/blog" },
   ];
 
   function handleLangPress() {

@@ -27,7 +27,8 @@
     "toolsBudget": "Simulateur budget",
     "toolsTimeline": "Planning jour J",
     "download": "Télécharger",
-    "openApp": "Ouvrir l'app"
+    "openApp": "Ouvrir l'app",
+    "blog": "Le Carnet"
   },
   "footer": {
     "tagline": "L'organisateur de mariage privé et hors ligne.",
@@ -35,7 +36,8 @@
     "tools": "Outils",
     "privacy": "100% Privé",
     "legal": "Mentions légales",
-    "madeWith": "Fait avec ♥ pour les futurs mariés"
+    "madeWith": "Fait avec ♥ pour les futurs mariés",
+    "blog": "Le Carnet"
   },
   "landing": {
     "meta": {
@@ -128,6 +130,32 @@
       "android": "Télécharger sur Android",
       "web": "Utiliser sur le web"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Le Carnet | Fiancé",
+      "description": "Conseils, guides et inspirations pour organiser votre mariage sereinement. Budget, invités, plan de table, décoration — tout ce qu'il faut savoir.",
+      "canonical": "https://fiance.drakkar.software/blog"
+    },
+    "hero": {
+      "eyebrow": "Fiancé · Le Carnet",
+      "headline": "Le Carnet",
+      "subtitle": "Conseils & inspirations pour organiser votre mariage"
+    },
+    "featuredLabel": "Article à la une",
+    "readMore": "Lire l'article",
+    "by": "Par",
+    "readingTime": "{{count}} min de lecture",
+    "publishedOn": "Publié le",
+    "updatedOn": "Mis à jour le",
+    "backToBlog": "← Retour au Carnet",
+    "authorBioTitle": "À propos de l'auteur",
+    "authorRole": "Fondateur de Fiancé",
+    "ctaTitle": "Prêt à organiser votre mariage ?",
+    "ctaButton": "Essayer Fiancé gratuitement",
+    "emptyTitle": "Le Carnet arrive bientôt",
+    "emptyBody": "Nos premiers articles de conseils mariage seront publiés prochainement.",
+    "postNotFound": "Article introuvable"
   },
   "seatingChart": {
     "meta": {

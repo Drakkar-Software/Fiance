@@ -3,6 +3,7 @@ Allow: /
 Allow: /feature/
 Allow: /tools/
 Allow: /wedding/
+Allow: /blog/
 
 Disallow: /_expo/
 

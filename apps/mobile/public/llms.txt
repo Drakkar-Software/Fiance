@@ -18,6 +18,10 @@
 - [Budget Calculator](https://fiance.drakkar.software/tools/budget-calculator): Estimate and allocate your wedding budget by category. Download as PDF.
 - [Day-of Timeline Builder](https://fiance.drakkar.software/tools/timeline): Build your wedding day schedule and export as PDF.
 
+## Le Carnet (blog)
+
+- [Les premières étapes pour organiser votre mariage](https://fiance.drakkar.software/blog/exemple-mariage): Guide pour débuter l'organisation sereinement — date, budget, prestataires, liste d'invités.
+
 ## Privacy
 
 - [Privacy Policy](https://fiance.drakkar.software/privacy): All data stays on-device. Optional sync is end-to-end encrypted. Zero tracking, zero ads.
