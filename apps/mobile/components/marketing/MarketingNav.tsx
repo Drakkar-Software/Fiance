@@ -53,8 +53,9 @@ export function MarketingNav() {
         <Pressable onPress={() => router.push("/" as any)} className="flex-row items-center gap-2 active:opacity-70">
           <Image
             // eslint-disable-next-line @typescript-eslint/no-require-imports
-            source={require("@/assets/icon-192.png")}
+            source={require("@/assets/logo.png")}
             style={{ width: 28, height: 28, borderRadius: 7 }}
+            resizeMode="cover"
             accessible={false}
           />
           <Text className="text-lg font-bold text-primary-500">Fiancé</Text>
