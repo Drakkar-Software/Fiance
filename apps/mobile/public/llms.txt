@@ -1,0 +1,24 @@
+# Fiancé
+
+> Fiancé is a 100% private, offline-first wedding planning app for iOS, Android and web. No ads, no data collection, no account required for guests. Optional end-to-end encrypted sync (AES-256-GCM) between partners.
+
+## App features
+
+- [Wedding Budget Planner](https://fiance.pages.dev/budget): Track expenses by category, manage deposits, visualize balances in real time. Linked to vendor records. Export as PDF/CSV.
+- [Guest List & RSVP](https://fiance.pages.dev/): Manage guests, track RSVPs, organize plus-ones and groups.
+- [Seating Chart](https://fiance.pages.dev/seating-chart): Drag-and-drop seating with round and rectangular tables. Synced with guest list. PDF export.
+- [Vendors](https://fiance.pages.dev/): Compare, contact and track vendors (caterer, photographer, florist, etc.).
+- [Planning & Checklist](https://fiance.pages.dev/): Personalized timeline and to-do checklist before the wedding day.
+- [Photo Sharing](https://fiance.pages.dev/photos): Private album shared via QR code. Guests upload without an account. Photos hosted on your own sync server.
+- [Wedding Website](https://fiance.pages.dev/): Personalized public wedding page to share details with guests.
+
+## Free online tools (no account required)
+
+- [Seating Chart Maker](https://fiance.pages.dev/tools/seating-chart): Create a wedding seating chart online, assign guests to tables, export as PDF.
+- [Budget Calculator](https://fiance.pages.dev/tools/budget-calculator): Estimate and allocate your wedding budget by category. Download as PDF.
+- [Day-of Timeline Builder](https://fiance.pages.dev/tools/timeline): Build your wedding day schedule and export as PDF.
+
+## Privacy
+
+- [Privacy Policy](https://fiance.pages.dev/privacy): All data stays on-device. Optional sync is end-to-end encrypted. Zero tracking, zero ads.
+- [Terms of Service](https://fiance.pages.dev/terms): Usage terms for the Fiancé app and website.
