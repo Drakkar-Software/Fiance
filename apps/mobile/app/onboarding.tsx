@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Seo } from "@/components/Seo";
 import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
-import { Alert, Platform } from "react-native";
+import { Alert, Platform, ActivityIndicator } from "react-native";
 import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
@@ -182,11 +182,15 @@ function CreateWeddingForm({
           <Pressable
             onPress={handleCreate}
             disabled={saving}
+            style={{ opacity: saving ? 0.6 : 1 }}
             className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
           >
-            <Text className="text-white font-semibold text-base">
-              {saving ? t("onboarding.creating") : t("create")}
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {saving && <ActivityIndicator size="small" color="#fff" />}
+              <Text className="text-white font-semibold text-base">
+                {saving ? t("onboarding.creating") : t("create")}
+              </Text>
+            </View>
           </Pressable>
         </View>
       </ScrollView>
@@ -276,11 +280,15 @@ function JoinWeddingForm({
             <Pressable
               onPress={() => handleJoin(label, password)}
               disabled={saving}
+              style={{ opacity: saving ? 0.6 : 1 }}
               className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
             >
-              <Text className="text-white font-semibold text-base">
-                {saving ? t("onboarding.joining") : t("onboarding.join")}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                {saving && <ActivityIndicator size="small" color="#fff" />}
+                <Text className="text-white font-semibold text-base">
+                  {saving ? t("onboarding.joining") : t("onboarding.join")}
+                </Text>
+              </View>
             </Pressable>
           </View>
         </ScrollView>
@@ -308,12 +316,13 @@ function JoinWeddingForm({
           <Pressable
             onPress={() => setScanning(true)}
             disabled={saving}
+            style={{ opacity: saving ? 0.6 : 1 }}
             className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600 mb-6"
           >
             <View className="flex-row items-center gap-2">
-              <ScanLine size={20} color="#fff" />
+              {saving ? <ActivityIndicator size="small" color="#fff" /> : <ScanLine size={20} color="#fff" />}
               <Text className="text-white font-semibold text-base">
-                {t("onboarding.scanQR")}
+                {saving ? t("onboarding.joining") : t("onboarding.scanQR")}
               </Text>
             </View>
           </Pressable>
