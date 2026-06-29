@@ -154,7 +154,7 @@ const pairs = [
           "Un créneau perdu sur le lieu ou le photographe se rattrape rarement. Le reste se compresse.",
       },
       fianceHelpFr([
-        "L'onglet Prestataires de Fiancé suit chaque contact avec statut (prospect, devis reçu, réservé). La checklist pré-remplie rappelle les jalons « 12 mois avant », « 9 mois avant », etc., calés sur votre date de mariage.",
+        "L'onglet Prestataires de Fiancé suit chaque contact avec statut (prospect, devis reçu, réservé). La checklist pré-remplie rappelle les jalons « 12 mois avant », « 9 mois avant », etc., calés sur votre date de mariage. Validez d'abord le plafond dans le [simulateur budget](/tools/budget-calculator).",
       ]),
     ],
     sectionsEn: [
@@ -191,7 +191,7 @@ const pairs = [
           "A missed slot on the venue or photographer rarely gets fixed. Everything else gets compressed.",
       },
       fianceHelpEn([
-        "Fiancé's Vendors tab tracks each contact with status (prospect, quote received, booked). The pre-filled checklist reminds you of \"12 months out\", \"9 months out\" milestones aligned to your wedding date.",
+        "Fiancé's Vendors tab tracks each contact with status (prospect, quote received, booked). The pre-filled checklist reminds you of \"12 months out\", \"9 months out\" milestones aligned to your wedding date. Validate your cap first in the [budget calculator](/tools/budget-calculator).",
       ]),
     ],
   }),
@@ -246,7 +246,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "Comparez les devis traiteur côte à côte dans Fiancé, avec le nombre d'invités confirmés. Liez chaque dépense au budget pour voir l'impact d'une ligne retirée ou ajoutée.",
+        "Comparez les devis traiteur côte à côte dans Fiancé, avec le nombre d'invités confirmés. Liez chaque dépense au budget pour voir l'impact d'une ligne retirée ou ajoutée. Posez d'abord le plafond dans le [simulateur budget](/tools/budget-calculator).",
       ]),
     ],
     sectionsEn: [
@@ -285,7 +285,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "Compare caterer quotes side by side in Fiancé, tied to confirmed guest count. Link each expense to the budget to see the impact of removing or adding a line item.",
+        "Compare caterer quotes side by side in Fiancé, tied to confirmed guest count. Link each expense to the budget to see the impact of removing or adding a line item. Set the cap first in the [budget calculator](/tools/budget-calculator).",
       ]),
     ],
   }),
@@ -331,7 +331,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "Créez cinq fiches prestataires dans Fiancé avec statut et dates de relance. Le tableau de bord affiche combien sont encore en « prospect » vs « réservé ».",
+        "Créez cinq fiches prestataires dans Fiancé avec statut et dates de relance. Le tableau de bord affiche combien sont encore en « prospect » vs « réservé ». Si le budget serre, repassez par le [simulateur budget](/tools/budget-calculator) avant de signer.",
       ]),
     ],
     sectionsEn: [
@@ -361,7 +361,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "Create five vendor records in Fiancé with status and follow-up dates. The dashboard shows how many are still \"prospect\" vs \"booked\".",
+        "Create five vendor records in Fiancé with status and follow-up dates. The dashboard shows how many are still \"prospect\" vs \"booked\". If budget is tight, rerun the [budget calculator](/tools/budget-calculator) before signing.",
       ]),
     ],
   }),
@@ -409,7 +409,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "Fiancé remplace le tableur prestataires : fiches par type (traiteur, photo, DJ…), statuts, montants et lien direct avec le [module budget](/feature/budget). Tout reste sur votre appareil, sans compte cloud obligatoire.",
+        "Fiancé remplace le tableur prestataires : fiches par type (traiteur, photo, DJ…), statuts, montants et lien direct avec le [module budget](/feature/budget). Commencez par le [simulateur budget](/tools/budget-calculator) en ligne si vous n'avez pas encore l'app.",
       ]),
     ],
     sectionsEn: [
@@ -441,7 +441,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "Fiancé replaces the vendor spreadsheet: records by type (caterer, photo, DJ…), statuses, amounts, and a direct link to the [budget module](/feature/budget). Everything stays on your device, no mandatory cloud account.",
+        "Fiancé replaces the vendor spreadsheet: records by type (caterer, photo, DJ…), statuses, amounts, and a direct link to the [budget module](/feature/budget). Start with the online [budget calculator](/tools/budget-calculator) if you do not have the app yet.",
       ]),
     ],
   }),
@@ -494,7 +494,7 @@ const pairs = [
           "Ce que vous ne voyez pas sur un tableau de bord, vous le payez en stress à trois semaines du jour J.",
       },
       fianceHelpFr([
-        "L'écran Prestataires de Fiancé filtre par type et par statut. La barre de progression montre combien de prestataires clés sont réservés. Idéal en réunion hebdo à deux pour décider qui relancer.",
+        "L'écran Prestataires de Fiancé filtre par type et par statut. La barre de progression montre combien de prestataires clés sont réservés. Idéal en réunion hebdo à deux pour décider qui relancer, avec le [simulateur budget](/tools/budget-calculator) ouvert à côté.",
       ]),
     ],
     sectionsEn: [
@@ -531,7 +531,7 @@ const pairs = [
           "What you do not see on a dashboard, you pay for in stress three weeks before the day.",
       },
       fianceHelpEn([
-        "Fiancé's Vendors screen filters by type and status. The progress bar shows how many key vendors are booked. Good for a weekly planning check-in as a couple.",
+        "Fiancé's Vendors screen filters by type and status. The progress bar shows how many key vendors are booked. Good for a weekly planning check-in as a couple, with the [budget calculator](/tools/budget-calculator) open alongside.",
       ]),
     ],
   }),
@@ -810,7 +810,7 @@ const pairs = [
         type: "text",
         paragraphs: [
           "Les invités posent les mêmes questions : « À quelle heure arrive-t-on ? », « Y a-t-il un vin d'honneur ? », « Dress code ? ». Un programme public sur votre page mariage réduit les messages le samedi à 8h.",
-          "Ne publiez pas la timeline minute par minute réservée aux prestataires. Distillez trois à cinq moments lisibles pour vos proches.",
+          "Ne publiez pas la [timeline minute par minute](/tools/timeline) réservée aux prestataires. Distillez trois à cinq moments lisibles pour vos proches.",
         ],
       },
       {
@@ -834,7 +834,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "La page mariage Fiancé permet de publier programme, lieu, FAQ et RSVP. Vous choisissez ce qui est visible sans exposer vos notes internes.",
+        "La page mariage Fiancé permet de publier programme, lieu, FAQ et RSVP. Vous choisissez ce qui est visible sans exposer vos notes internes ni la [timeline prestataires](/tools/timeline).",
       ]),
     ],
     sectionsEn: [
@@ -842,7 +842,7 @@ const pairs = [
         type: "text",
         paragraphs: [
           "Guests ask the same questions: \"What time do we arrive?\", \"Is there a cocktail hour?\", \"Dress code?\" A public schedule on your wedding page cuts down 8 a.m. texts on Saturday.",
-          "Do not publish the minute-by-minute vendor timeline. Distill three to five readable moments for friends and family.",
+          "Do not publish the minute-by-minute [day-of timeline](/tools/timeline) meant for vendors. Distill three to five readable moments for friends and family.",
         ],
       },
       {
@@ -866,7 +866,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "The Fiancé wedding page lets you publish schedule, venue, FAQ, and RSVP. You choose what is visible without exposing internal notes.",
+        "The Fiancé wedding page lets you publish schedule, venue, FAQ, and RSVP. You choose what is visible without exposing internal notes or the vendor [day-of timeline](/tools/timeline).",
       ]),
     ],
   }),
@@ -916,7 +916,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "Notez vos plans B dans les notes Fiancé (timeline, prestataires). Exportez les contacts en PDF pour les témoins. Le mode jour J garde ces numéros à portée de main, [hors ligne](/blog/app-mariage-privee-hors-ligne) si besoin.",
+        "Notez vos plans B dans les notes Fiancé (timeline, prestataires). Exportez les contacts en PDF pour les témoins. Le mode jour J et l'[outil timeline](/tools/timeline) gardent le déroulé à portée de main, [hors ligne](/blog/app-mariage-privee-hors-ligne) si besoin.",
       ]),
     ],
     sectionsEn: [
@@ -949,7 +949,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "Log plan B notes in Fiancé (timeline, vendors). Export contacts as PDF for witnesses. Wedding Day mode keeps numbers handy, [offline](/blog/app-mariage-privee-hors-ligne) if needed.",
+        "Log plan B notes in Fiancé (timeline, vendors). Export contacts as PDF for witnesses. Wedding Day mode and the [timeline tool](/tools/timeline) keep the run sheet handy, [offline](/blog/app-mariage-privee-hors-ligne) if needed.",
       ]),
     ],
   }),
@@ -1547,7 +1547,7 @@ const pairs = [
         ],
       },
       fianceHelpFr([
-        "Invitez votre partenaire depuis Paramètres > Sync. Chaque modification invité ou prestataire se propage. Consultez aussi [l'app privée hors ligne](/blog/app-mariage-privee-hors-ligne) si la confidentialité est votre priorité.",
+        "Invitez votre partenaire depuis Paramètres > Sync. Chaque modification invité ou prestataire se propage. Alignez-vous d'abord sur le [simulateur budget](/tools/budget-calculator), le [plan de table](/tools/seating-chart) et la [timeline jour J](/tools/timeline) en ligne si vous démarrez sans l'app.",
       ]),
     ],
     sectionsEn: [
@@ -1579,7 +1579,7 @@ const pairs = [
         ],
       },
       fianceHelpEn([
-        "Invite your partner from Settings > Sync. Each guest or vendor edit propagates. See also the [private offline app](/blog/app-mariage-privee-hors-ligne) if privacy is your top concern.",
+        "Invite your partner from Settings > Sync. Each guest or vendor edit propagates. Align first on the online [budget calculator](/tools/budget-calculator), [seating chart](/tools/seating-chart), and [day-of timeline](/tools/timeline) if you are starting without the app.",
       ]),
     ],
   }),
@@ -1633,7 +1633,7 @@ const pairs = [
           "Vos invités ne devraient pas créer un compte pour répondre à une invitation. Point.",
       },
       fianceHelpFr([
-        "Téléchargez Fiancé sur iOS, Android ou web. Testez le [simulateur budget](/tools/budget-calculator) sans installer. Activez la sync seulement si vous en avez besoin. Lisez notre page [partage photos](/feature/photos) pour l'album QR invités.",
+        "Téléchargez Fiancé sur iOS, Android ou web. Testez le [simulateur budget](/tools/budget-calculator), le [plan de table](/tools/seating-chart) et la [timeline jour J](/tools/timeline) sans installer. Activez la sync seulement si vous en avez besoin. Lisez notre page [partage photos](/feature/photos) pour l'album QR invités.",
       ]),
     ],
     sectionsEn: [
@@ -1671,7 +1671,7 @@ const pairs = [
           "Your guests should not create an account to answer an invitation. Full stop.",
       },
       fianceHelpEn([
-        "Get Fiancé on iOS, Android, or web. Try the [budget calculator](/tools/budget-calculator) without installing. Turn on sync only if you need it. See our [photo sharing](/feature/photos) page for the guest QR album.",
+        "Get Fiancé on iOS, Android, or web. Try the [budget calculator](/tools/budget-calculator), [seating chart](/tools/seating-chart), and [day-of timeline](/tools/timeline) without installing. Turn on sync only if you need it. See our [photo sharing](/feature/photos) page for the guest QR album.",
       ]),
     ],
   }),

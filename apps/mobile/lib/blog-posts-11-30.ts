@@ -21,7 +21,7 @@ const FIANCE_GUESTS_FR: BlogSection = {
   type: "text",
   title: "Comment Fiancé peut vous aider",
   paragraphs: [
-    "La liste invités Fiancé gère RSVP, +1, enfants et régimes alimentaires. La page publique permet de répondre sans créer de compte. Relancez depuis l'app et suivez qui a reçu save-the-date, faire-part ou menu.",
+    "La liste invités Fiancé gère RSVP, +1, enfants et régimes alimentaires. La page publique permet de répondre sans créer de compte. Relancez depuis l'app et suivez qui a reçu save-the-date, faire-part ou menu. Chaque invité en plus se chiffre vite : testez votre plafond avec le [simulateur budget](/tools/budget-calculator).",
   ],
 };
 
@@ -29,7 +29,7 @@ const FIANCE_GUESTS_EN: BlogSection = {
   type: "text",
   title: "How Fiancé can help",
   paragraphs: [
-    "Fiancé's guest list handles RSVP, plus-ones, children, and dietary needs. The public page lets guests reply without creating an account. Nudge from the app and track who received save-the-dates, invitations, or menu choices.",
+    "Fiancé's guest list handles RSVP, plus-ones, children, and dietary needs. The public page lets guests reply without creating an account. Nudge from the app and track who received save-the-dates, invitations, or menu choices. Every extra guest adds up: stress-test your cap with the [budget calculator](/tools/budget-calculator).",
   ],
 };
 
@@ -158,7 +158,7 @@ const pairs = [
       {
         type: "text",
         paragraphs: [
-          "Quand nous avons conçu le simulateur Fiancé, nous avons constaté que la plupart des couples raisonnent en « budget total » alors que le marché facture surtout à la tête. Le calcul le plus fiable reste : nombre d'invités × coût par convive.",
+          "Quand nous avons conçu le simulateur Fiancé, nous avons constaté que la plupart des couples raisonnent en « budget total » alors que le marché facture surtout à la tête. Le calcul le plus fiable reste : nombre d'invités × coût par convive. Essayez la formule dans le [simulateur budget](/tools/budget-calculator), sans compte.",
         ],
       },
       {
@@ -190,7 +190,7 @@ const pairs = [
       {
         type: "text",
         paragraphs: [
-          "When we built Fiancé's calculator, we kept seeing couples think in « total budget » while vendors price mostly per head. The most reliable math stays: guest count × cost per guest.",
+          "When we built Fiancé's calculator, we kept seeing couples think in « total budget » while vendors price mostly per head. The most reliable math stays: guest count × cost per guest. Try the formula in the free [budget calculator](/tools/budget-calculator), no account needed.",
         ],
       },
       {
@@ -767,7 +767,7 @@ const pairs = [
       {
         type: "text",
         paragraphs: [
-          "La liste d'invités est le premier vrai stress post-demande. Chaque famille a ses attentes, le lieu a une capacité, le budget a un plafond. Sans méthode, vous ajoutez des noms jusqu'à ce qu'un devis traiteur vous force à reculer.",
+          "La liste d'invités est le premier vrai stress post-demande. Chaque famille a ses attentes, le lieu a une capacité, le budget a un plafond. Sans méthode, vous ajoutez des noms jusqu'à ce qu'un devis traiteur vous force à reculer. Fixez d'abord le plafond dans le [simulateur budget](/tools/budget-calculator).",
         ],
       },
       {
@@ -800,7 +800,7 @@ const pairs = [
       {
         type: "text",
         paragraphs: [
-          "The guest list is the first real stress after the proposal. Each family has expectations, the venue has capacity, the budget has a cap. Without a method, you keep adding names until a caterer quote forces you to cut.",
+          "The guest list is the first real stress after the proposal. Each family has expectations, the venue has capacity, the budget has a cap. Without a method, you keep adding names until a caterer quote forces you to cut. Set the cap first in the [budget calculator](/tools/budget-calculator).",
         ],
       },
       {
@@ -1047,6 +1047,12 @@ const pairs = [
         quote:
           "Le bon nombre d'invités, c'est celui où vous connaissez visuellement chaque personne dans la salle, ou celui où vous acceptez de ne pas tous les saluer individuellement.",
       },
+      {
+        type: "callout",
+        paragraphs: [
+          "Comparez 30, 90 et 150 invités dans le [simulateur budget](/tools/budget-calculator) : la différence sur le poste traiteur se voit tout de suite.",
+        ],
+      },
       FIANCE_GUESTS_FR,
     ],
     sectionsEn: [
@@ -1080,6 +1086,12 @@ const pairs = [
         type: "quote",
         quote:
           "The right guest count is where you can picture every face in the room, or where you accept not greeting everyone individually.",
+      },
+      {
+        type: "callout",
+        paragraphs: [
+          "Compare 30, 90, and 150 guests in the [budget calculator](/tools/budget-calculator): the catering line item tells the story immediately.",
+        ],
       },
       FIANCE_GUESTS_EN,
     ],
@@ -1380,7 +1392,7 @@ const pairs = [
       {
         type: "callout",
         paragraphs: [
-          "Ne confirmez jamais 100 % des « oui » au traiteur si votre date limite RSVP n'est pas passée. Voir [relances](/blog/rsvp-mariage-quand-relancer).",
+          "Ne confirmez jamais 100 % des « oui » au traiteur si votre date limite RSVP n'est pas passée. Voir [relances](/blog/rsvp-mariage-quand-relancer). À ~80 % confirmés, démarrez le [plan de table](/tools/seating-chart).",
         ],
       },
       {
@@ -1414,7 +1426,7 @@ const pairs = [
       {
         type: "callout",
         paragraphs: [
-          "Never confirm 100% of « yes » to the caterer if your RSVP deadline has not passed. See [follow-ups](/blog/rsvp-mariage-quand-relancer).",
+          "Never confirm 100% of « yes » to the caterer if your RSVP deadline has not passed. See [follow-ups](/blog/rsvp-mariage-quand-relancer). At ~80% confirmed, start the [seating chart](/tools/seating-chart).",
         ],
       },
       {

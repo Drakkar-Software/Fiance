@@ -8,6 +8,7 @@ import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seo } from "@/components/Seo";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getBlogPosts, buildBlogJsonLd } from "@/lib/blog";
 
 export function BlogIndexPage() {
@@ -121,6 +122,11 @@ export function BlogIndexPage() {
           </View>
         </View>
       )}
+
+      <FreeToolsStrip
+        toolIds={["seatingChart", "budget", "timeline"]}
+        className="w-full py-16 px-6 bg-accent-cream"
+      />
 
       {/* CTA strip */}
       <View className="w-full py-16 px-6 bg-accent-blush items-center">

@@ -156,7 +156,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
         type: "text",
         title: "Comment Fiancé peut vous aider",
         paragraphs: [
-          "Fiancé centralise budget, invités, prestataires et tâches. La checklist pré-remplie suit un ordre logique que vous pouvez adapter. Commencez par [les premières étapes](/blog/premieres-etapes-organiser-mariage) si vous venez de vous fiancer.",
+          "Fiancé centralise budget, invités, prestataires et tâches. La checklist pré-remplie suit un ordre logique que vous pouvez adapter. Commencez par [les premières étapes](/blog/premieres-etapes-organiser-mariage) si vous venez de vous fiancer. Nos outils en ligne couvrent le [simulateur budget](/tools/budget-calculator), le [plan de table](/tools/seating-chart) et la [timeline jour J](/tools/timeline), sans compte.",
         ],
       },
     ],
@@ -218,7 +218,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
         type: "text",
         title: "Comment Fiancé peut vous aider",
         paragraphs: [
-          "La vue « tâches en retard » de Fiancé devient votre filtre quotidien. Assignez chaque action à l'un des deux partenaires pour éviter les doublons.",
+          "La vue « tâches en retard » de Fiancé devient votre filtre quotidien. Assignez chaque action à l'un des deux partenaires pour éviter les doublons. Posez le budget dans le [simulateur en ligne](/tools/budget-calculator) dès la semaine 1.",
         ],
       },
       DISCLAIMER_FR,
@@ -271,7 +271,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
         type: "text",
         title: "Comment Fiancé peut vous aider",
         paragraphs: [
-          "Utilisez Fiancé pour noter les devis au fil de l'eau sans tout verrouiller. Le mood board intégré permet de garder des idées sans engager de budget.",
+          "Utilisez Fiancé pour noter les devis au fil de l'eau sans tout verrouiller. Le mood board intégré permet de garder des idées sans engager de budget. Le [simulateur budget](/tools/budget-calculator) aide à fixer le plafond avant les réservations.",
         ],
       },
     ],
@@ -426,7 +426,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
         type: "text",
         title: "Comment Fiancé peut vous aider",
         paragraphs: [
-          "Importez cette logique en un clic : Fiancé génère une checklist pré-remplie calée sur votre date, avec rappels et assignation par partenaire.",
+          "Importez cette logique en un clic : Fiancé génère une checklist pré-remplie calée sur votre date, avec rappels et assignation par partenaire. Pour le jour J, exportez la [timeline](/tools/timeline) ; pour les invités, le [plan de table](/tools/seating-chart).",
         ],
       },
     ],
@@ -479,7 +479,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
         type: "text",
         title: "Comment Fiancé peut vous aider",
         paragraphs: [
-          "Chaque tâche Fiancé accepte un champ « assigné à ». La sync optionnelle entre partenaires garde la même liste à jour sur deux téléphones, avec des données sécurisées.",
+          "Chaque tâche Fiancé accepte un champ « assigné à ». La sync optionnelle entre partenaires garde la même liste à jour sur deux téléphones, avec des données sécurisées. Partagez le [simulateur budget](/tools/budget-calculator) pour aligner le plafond avant de répartir les domaines.",
         ],
       },
     ],
@@ -689,7 +689,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
         type: "text",
         title: "How Fiancé can help",
         paragraphs: [
-          "Fiancé centralizes budget, guests, vendors, and tasks. The pre-filled checklist follows a logical order you can adjust. Start with [first steps](/blog/premieres-etapes-organiser-mariage) if you just got engaged.",
+          "Fiancé centralizes budget, guests, vendors, and tasks. The pre-filled checklist follows a logical order you can adjust. Start with [first steps](/blog/premieres-etapes-organiser-mariage) if you just got engaged. Our free tools cover the [budget calculator](/tools/budget-calculator), [seating chart](/tools/seating-chart), and [day-of timeline](/tools/timeline), no account required.",
         ],
       },
     ],
@@ -751,7 +751,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
         type: "text",
         title: "How Fiancé can help",
         paragraphs: [
-          "Fiancé's overdue task view becomes your daily filter. Assign each action to either partner to avoid duplicate work.",
+          "Fiancé's overdue task view becomes your daily filter. Assign each action to either partner to avoid duplicate work. Set the budget in the online [calculator](/tools/budget-calculator) in week one.",
         ],
       },
       DISCLAIMER_EN,
@@ -804,7 +804,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
         type: "text",
         title: "How Fiancé can help",
         paragraphs: [
-          "Use Fiancé to track quotes over time without committing everything. The built-in mood board keeps ideas without spending budget.",
+          "Use Fiancé to track quotes over time without committing everything. The built-in mood board keeps ideas without spending budget. The [budget calculator](/tools/budget-calculator) helps set your cap before booking.",
         ],
       },
     ],
@@ -959,7 +959,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
         type: "text",
         title: "How Fiancé can help",
         paragraphs: [
-          "Import this logic in one click: Fiancé generates a pre-filled checklist aligned to your date, with reminders and partner assignment.",
+          "Import this logic in one click: Fiancé generates a pre-filled checklist aligned to your date, with reminders and partner assignment. Export the [day-of timeline](/tools/timeline) and [seating chart](/tools/seating-chart) when you reach those milestones.",
         ],
       },
     ],
@@ -1012,7 +1012,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
         type: "text",
         title: "How Fiancé can help",
         paragraphs: [
-          "Each Fiancé task accepts an assignee field. Optional sync between partners keeps one list on two phones, with secure data.",
+          "Each Fiancé task accepts an assignee field. Optional sync between partners keeps one list on two phones, with secure data. Share the [budget calculator](/tools/budget-calculator) to align on the cap before splitting domains.",
         ],
       },
     ],

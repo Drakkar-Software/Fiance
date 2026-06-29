@@ -18,6 +18,10 @@ import {
   type BlogSection,
 } from "@/lib/blog";
 import { RichText } from "@/lib/rich-text";
+import {
+  FreeToolsStrip,
+  getBlogToolIds,
+} from "@/components/marketing/FreeToolsStrip";
 
 // ─── Section renderer ───────────────────────────────────────────────────────
 
@@ -252,10 +256,16 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
             <ArticleSection key={i} section={section} />
           ))}
 
+          <FreeToolsStrip
+            toolIds={getBlogToolIds(post.categoryKey)}
+            showHeader={false}
+            className="w-full py-0 px-0 bg-white"
+          />
+
           {/* Author bio */}
           <View
             className="border border-accent-rose-light rounded-2xl p-6"
-            style={{ marginTop: 8 }}
+            style={{ marginTop: 32 }}
           >
             <Text
               className="text-xs font-semibold text-typography-400 uppercase tracking-widest"

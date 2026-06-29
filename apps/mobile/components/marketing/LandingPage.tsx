@@ -11,6 +11,7 @@ import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getBlogPosts } from "@/lib/blog";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
@@ -38,21 +39,6 @@ function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; titl
       <Text className="text-base font-semibold text-white mb-1">{title}</Text>
       <Text className="text-sm text-typography-400 leading-5">{description}</Text>
     </View>
-  );
-}
-
-function ToolCard({ title, description, cta, href }: { title: string; description: string; cta: string; href: string }) {
-  const router = useRouter();
-  return (
-    <Pressable
-      onPress={() => router.push(href as any)}
-      className="bg-white rounded-2xl p-5 border border-accent-rose-light active:opacity-80"
-      style={{ flex: 1, minWidth: 220 }}
-    >
-      <Text className="text-base font-semibold text-typography-900 mb-1">{title}</Text>
-      <Text className="text-sm text-typography-500 leading-5 mb-4">{description}</Text>
-      <Text className="text-sm font-semibold text-primary-500">{cta} →</Text>
-    </Pressable>
   );
 }
 
@@ -141,36 +127,10 @@ export function LandingPage() {
       </View>
 
       {/* Free tools */}
-      <View className="w-full py-20 px-6 bg-accent-cream">
-        <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
-            {t("landing.tools.title")}
-          </Display>
-          <Text className="text-base text-typography-500 text-center mb-12">
-            {t("landing.tools.subtitle")}
-          </Text>
-          <View className="flex-row flex-wrap gap-4">
-            <ToolCard
-              title={t("landing.tools.seatingChart.title")}
-              description={t("landing.tools.seatingChart.description")}
-              cta={t("landing.tools.seatingChart.cta")}
-              href="/tools/seating-chart"
-            />
-            <ToolCard
-              title={t("landing.tools.budget.title")}
-              description={t("landing.tools.budget.description")}
-              cta={t("landing.tools.budget.cta")}
-              href="/tools/budget-calculator"
-            />
-            <ToolCard
-              title={t("landing.tools.timeline.title")}
-              description={t("landing.tools.timeline.description")}
-              cta={t("landing.tools.timeline.cta")}
-              href="/tools/timeline"
-            />
-          </View>
-        </View>
-      </View>
+      <FreeToolsStrip
+        toolIds={["seatingChart", "budget", "timeline"]}
+        className="w-full py-20 px-6 bg-accent-cream"
+      />
 
       {/* Le Carnet / Journal */}
       {blogPosts.length > 0 && (
