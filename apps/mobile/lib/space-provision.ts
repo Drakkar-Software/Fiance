@@ -23,6 +23,7 @@ import {
   type Session,
 } from '@fiance/sdk';
 import { updateWeddingEntry, type WeddingRegistryEntry } from '@/lib/wedding-registry';
+import { withIndexLock } from '@/lib/index-lock';
 
 /**
  * Idempotent: returns the existing `spaceId` if already provisioned, otherwise
@@ -53,7 +54,9 @@ export async function ensureSpaceProvisioned(
 
   // 2. Seed the empty object index in fiance (idempotent — skips if already seeded).
   //    getSpaceClient falls through to session.contentClient when no local access entry.
-  await seedSpaceObjectIndex(session, spaceId);
+  //    Wrapped in withIndexLock: seedSpaceObjectIndex has no CAS retry, so a concurrent
+  //    duplicate activation racing here would get a 409 hash_mismatch without the lock.
+  await withIndexLock(spaceId, () => seedSpaceObjectIndex(session, spaceId));
 
   // 3. Create the space-wide E2EE keyring in fiancespaces.
   //    Uses session.spacesKeyringClient.

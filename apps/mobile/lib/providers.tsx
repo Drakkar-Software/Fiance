@@ -84,19 +84,37 @@ export function configureOnBoot(): void {
 // ---------------------------------------------------------------------------
 
 /**
+ * In-flight activations keyed by wedding.id. Dedupes concurrent calls from
+ * SyncInitializer (boot) and the settings toggle so ensureSpaceProvisioned and
+ * initSync run exactly once per wedding at a time. Cleared in .finally() so a
+ * subsequent re-activation after teardownSync works normally.
+ */
+const _activating = new Map<string, Promise<{ userId: string } | null>>();
+
+/**
  * Core sync activation: resolves session, provisions space, and calls initSync.
  * Returns { userId } on success, null if any step fails.
  * Used by both SyncInitializer (boot) and the settings toggle (runtime enable).
+ * Single-flight: concurrent calls for the same wedding.id share one promise.
  */
-export async function activateSync(
+export function activateSync(
   wedding: WeddingRegistryEntry,
 ): Promise<{ userId: string } | null> {
-  const sessionConfig = await resolveSessionConfig(wedding);
-  if (!sessionConfig) return null;
-  const { session, userId, serverUrl } = sessionConfig;
-  const spaceId = await ensureSpaceProvisioned(session, wedding);
-  await initSync({ session, spaceId, serverUrl, weddingNodeId: wedding.id });
-  return { userId };
+  const inflight = _activating.get(wedding.id);
+  if (inflight) return inflight;
+
+  const p = (async () => {
+    const sessionConfig = await resolveSessionConfig(wedding);
+    if (!sessionConfig) return null;
+    const { session, userId, serverUrl } = sessionConfig;
+    const spaceId = await ensureSpaceProvisioned(session, wedding);
+    await initSync({ session, spaceId, serverUrl, weddingNodeId: wedding.id });
+    return { userId };
+  })();
+
+  _activating.set(wedding.id, p);
+  void p.finally(() => { _activating.delete(wedding.id); });
+  return p;
 }
 
 /** Initializes starfish-spaces sync inside DatabaseProvider. */

@@ -23,6 +23,7 @@ import {
   type Session,
   type ObjectNode,
 } from "@fiance/sdk";
+import { withIndexLock } from "@/lib/index-lock";
 
 function getAppOrigin(): string {
   if (Platform.OS === "web" && typeof window !== "undefined") {
@@ -106,22 +107,24 @@ export async function ensurePublicPageNode(
   const pageNodeId = publicPageNodeId(weddingNodeId);
   const desc = publicPageToNode(pageNodeId, weddingNodeId);
 
-  await updateObjectIndex(session, spaceId, (nodes, now) => {
-    const exists = nodes.some((n) => n.id === pageNodeId);
-    if (exists) return null; // nothing to change
-    const node: ObjectNode = {
-      id: desc.id,
-      type: desc.type,
-      parentId: desc.parentId,
-      order: nodes.length,
-      title: desc.title,
-      updatedAt: now,
-      contentKind: desc.contentKind,
-      access: desc.access,
-      enc: desc.enc,
-    };
-    return [...nodes, node];
-  });
+  await withIndexLock(spaceId, () =>
+    updateObjectIndex(session, spaceId, (nodes, now) => {
+      const exists = nodes.some((n) => n.id === pageNodeId);
+      if (exists) return null; // nothing to change
+      const node: ObjectNode = {
+        id: desc.id,
+        type: desc.type,
+        parentId: desc.parentId,
+        order: nodes.length,
+        title: desc.title,
+        updatedAt: now,
+        contentKind: desc.contentKind,
+        access: desc.access,
+        enc: desc.enc,
+      };
+      return [...nodes, node];
+    }),
+  );
 
   return pageNodeId;
 }
