@@ -1,14 +1,23 @@
-import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 import { subDays, setHours, setMinutes, setSeconds, subHours, isBefore } from "date-fns";
 import type { Task, AgendaEvent } from "@/db/schema";
 import i18n from "@/i18n";
+import type * as NotificationsType from "expo-notifications";
+
+// expo-notifications remote push support was removed from Expo Go in SDK 53 — importing
+// it in Expo Go on Android throws at module-load time, crashing the entire layout.
+// Guard with a try/catch dynamic require so the rest of the app stays functional.
+const isExpoGo = Constants.appOwnership === "expo";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const N: typeof NotificationsType | null = isExpoGo ? null : (() => { try { return require("expo-notifications"); } catch { return null; } })();
 
 // ─── Permissions ────────────────────────────────────────────────────────────
 
 export async function requestPermissions(): Promise<boolean> {
-  const { status: existing } = await Notifications.getPermissionsAsync();
+  if (!N) return false;
+  const { status: existing } = await N.getPermissionsAsync();
   if (existing === "granted") return true;
-  const { status } = await Notifications.requestPermissionsAsync();
+  const { status } = await N.requestPermissionsAsync();
   return status === "granted";
 }
 
@@ -22,7 +31,6 @@ function agendaIdentifier(id: string) {
   return `agenda-${id}`;
 }
 
-/** Compute trigger date for a task notification */
 function getTaskTriggerDate(task: Task): Date | null {
   if (!task.dueDate) return null;
   const daysBefore = task.reminderDaysBefore ?? 1;
@@ -33,7 +41,6 @@ function getTaskTriggerDate(task: Task): Date | null {
   return trigger;
 }
 
-/** Compute trigger date for an agenda event notification */
 function getAgendaTriggerDate(event: AgendaEvent): Date | null {
   if (event.time) {
     const parts = event.time.split(":");
@@ -46,7 +53,6 @@ function getAgendaTriggerDate(event: AgendaEvent): Date | null {
     if (isBefore(trigger, new Date())) return null;
     return trigger;
   }
-  // No time → 09:00 on the event day
   const date = new Date(event.date);
   if (isNaN(date.getTime())) return null;
   const trigger = setSeconds(setMinutes(setHours(date, 9), 0), 0);
@@ -57,36 +63,38 @@ function getAgendaTriggerDate(event: AgendaEvent): Date | null {
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 export async function scheduleTaskNotification(task: Task): Promise<void> {
+  if (!N) return;
   const id = taskIdentifier(task.id);
 
   if (task.status === "DONE") {
-    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+    await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
   const trigger = getTaskTriggerDate(task);
   if (!trigger) {
-    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+    await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
-  await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
-  await Notifications.scheduleNotificationAsync({
+  await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+  await N.scheduleNotificationAsync({
     identifier: id,
     content: {
       title: "Fiancé",
       body: i18n.t("planning:notifications.taskReminder", { title: task.title }),
       data: { type: "task", id: task.id },
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: trigger },
+    trigger: { type: N.SchedulableTriggerInputTypes.DATE, date: trigger },
   });
 }
 
 export async function scheduleAgendaNotification(event: AgendaEvent): Promise<void> {
+  if (!N) return;
   const id = agendaIdentifier(event.id);
   const trigger = getAgendaTriggerDate(event);
   if (!trigger) {
-    await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+    await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
     return;
   }
 
@@ -94,33 +102,35 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
     ? i18n.t("planning:notifications.agendaReminderWithTime", { title: event.title, time: event.time })
     : i18n.t("planning:notifications.agendaReminder", { title: event.title });
 
-  await Notifications.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
-  await Notifications.scheduleNotificationAsync({
+  await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+  await N.scheduleNotificationAsync({
     identifier: id,
     content: {
       title: "Fiancé",
       body,
       data: { type: "agenda", id: event.id },
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: trigger },
+    trigger: { type: N.SchedulableTriggerInputTypes.DATE, date: trigger },
   });
 }
 
 export async function cancelNotification(identifier: string): Promise<void> {
-  await Notifications.cancelScheduledNotificationAsync(identifier).catch((e) => console.warn("[notifications] cancel failed:", e));
+  if (!N) return;
+  await N.cancelScheduledNotificationAsync(identifier).catch((e) => console.warn("[notifications] cancel failed:", e));
 }
 
 export async function cancelAllNotifications(): Promise<void> {
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  if (!N) return;
+  await N.cancelAllScheduledNotificationsAsync();
 }
 
 export async function rescheduleAllNotifications(
   tasks: Task[],
   agendaEvents: AgendaEvent[],
 ): Promise<void> {
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  if (!N) return;
+  await N.cancelAllScheduledNotificationsAsync();
 
-  // Collect schedulable items with their trigger dates, sort nearest-first, cap at 60
   const taskItems = tasks
     .filter((t) => t.status !== "DONE" && t.dueDate)
     .map((t) => ({ trigger: getTaskTriggerDate(t), schedule: () => scheduleTaskNotification(t) }))
