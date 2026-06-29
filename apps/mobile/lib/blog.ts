@@ -452,8 +452,24 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
 
 // ─── Data access ───────────────────────────────────────────────────────────
 
+/** Top 3 articles for the homepage Le Carnet section (order matters). */
+export const LANDING_BLOG_SLUGS = [
+  "premieres-etapes-organiser-mariage",
+  "combien-temps-organiser-mariage",
+  "budget-mariage-2026-combien-prevoir",
+] as const;
+
 export function getBlogPosts(lang: string): BlogPost[] {
   return POSTS[lang === "en" ? "en" : "fr"];
+}
+
+/** Curated posts for the marketing homepage — not the full blog index. */
+export function getLandingBlogPosts(lang: string): BlogPost[] {
+  const posts = getBlogPosts(lang);
+  return LANDING_BLOG_SLUGS.flatMap((slug) => {
+    const post = posts.find((p) => p.slug === slug);
+    return post ? [post] : [];
+  });
 }
 
 export function getBlogPost(lang: string, slug: string): BlogPost | undefined {

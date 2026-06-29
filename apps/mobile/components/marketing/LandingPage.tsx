@@ -12,7 +12,7 @@ import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
-import { getBlogPosts } from "@/lib/blog";
+import { getLandingBlogPosts } from "@/lib/blog";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -46,7 +46,7 @@ export function LandingPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
-  const blogPosts = getBlogPosts(lang);
+  const blogPosts = getLandingBlogPosts(lang);
 
   const appFeatures = [
     { key: "budget", icon: <DollarSign size={18} className="text-accent-gold" /> },

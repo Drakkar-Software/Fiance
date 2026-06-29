@@ -5,6 +5,8 @@ import {
   buildPostJsonLd,
   extractArticleBody,
   getBlogSlugs,
+  getLandingBlogPosts,
+  LANDING_BLOG_SLUGS,
   toSchemaDateTime,
   type BlogPost,
 } from "@/lib/blog";
@@ -131,5 +133,13 @@ describe("getBlogSlugs", () => {
   it("lists all published post slugs for static export", () => {
     expect(getBlogSlugs()).toHaveLength(50);
     expect(getBlogSlugs()).toContain("excel-vs-application-mariage");
+  });
+});
+
+describe("getLandingBlogPosts", () => {
+  it("returns exactly three curated posts in order", () => {
+    const posts = getLandingBlogPosts("fr");
+    expect(posts).toHaveLength(3);
+    expect(posts.map((p) => p.slug)).toEqual([...LANDING_BLOG_SLUGS]);
   });
 });
