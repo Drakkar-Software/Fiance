@@ -129,6 +129,12 @@
       "ios": "Download on iOS",
       "android": "Download on Android",
       "web": "Use on web"
+    },
+    "blog": {
+      "eyebrow": "Fiancé · The Journal",
+      "title": "Wedding planning tips",
+      "subtitle": "Practical guides on budget, timeline, and where to start.",
+      "viewAll": "View all articles"
     }
   },
   "blog": {

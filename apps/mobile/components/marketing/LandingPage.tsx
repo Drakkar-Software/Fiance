@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import {
   DollarSign, Users, LayoutGrid, Store, CalendarCheck,
   Camera, Globe, WifiOff, Lock, ShieldCheck, HeartHandshake,
@@ -9,6 +10,8 @@ import {
 import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { getBlogPosts } from "@/lib/blog";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -56,6 +59,8 @@ function ToolCard({ title, description, cta, href }: { title: string; descriptio
 export function LandingPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const blogPosts = getBlogPosts(lang);
 
   const appFeatures = [
     { key: "budget", icon: <DollarSign size={18} className="text-accent-gold" /> },
@@ -166,6 +171,47 @@ export function LandingPage() {
           </View>
         </View>
       </View>
+
+      {/* Le Carnet / Journal */}
+      {blogPosts.length > 0 && (
+        <View className="w-full py-20 px-6 bg-white">
+          <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
+            <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
+              {t("landing.blog.eyebrow")}
+            </Script>
+            <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+              {t("landing.blog.title")}
+            </Display>
+            <Text className="text-base text-typography-500 text-center mb-12">
+              {t("landing.blog.subtitle")}
+            </Text>
+            <View className="flex-row flex-wrap" style={{ gap: 20 }}>
+              {blogPosts.map((post) => (
+                <View
+                  key={post.slug}
+                  style={{ flexBasis: 300, flexGrow: 1, maxWidth: 560 }}
+                >
+                  <BlogPostCard
+                    post={post}
+                    lang={lang}
+                    onPress={() => router.push(`/blog/${post.slug}` as any)}
+                  />
+                </View>
+              ))}
+            </View>
+            <View className="items-center" style={{ marginTop: 28 }}>
+              <Pressable
+                onPress={() => router.push("/blog" as any)}
+                className="active:opacity-60"
+              >
+                <Text className="text-base font-semibold text-primary-500">
+                  {t("landing.blog.viewAll")} →
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
 
       {/* Privacy section */}
       <View className="w-full py-20 px-6 bg-typography-900">

@@ -129,6 +129,12 @@
       "ios": "Télécharger sur iOS",
       "android": "Télécharger sur Android",
       "web": "Utiliser sur le web"
+    },
+    "blog": {
+      "eyebrow": "Fiancé · Le Carnet",
+      "title": "Conseils pour organiser votre mariage",
+      "subtitle": "Guides pratiques sur le budget, le planning et les premières étapes.",
+      "viewAll": "Voir tous les articles"
     }
   },
   "blog": {
