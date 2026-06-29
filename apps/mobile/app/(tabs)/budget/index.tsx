@@ -30,7 +30,7 @@ export default function BudgetScreen() {
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [showTargets, setShowTargets] = useState(false);
+  const [showTargets, setShowTargets] = useState(!wedding?.budgetTarget);
 
   const categoryBudgetsRaw = useWeddingStore((s) => s.wedding?.categoryBudgets);
   const categoryBudgets: Record<string, number> = useMemo(() => {
@@ -242,26 +242,24 @@ export default function BudgetScreen() {
       {showTargets && (
         <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-hair">
           {/* Template picker */}
-          {budget.budgetTarget > 0 && (
-            <View className="mb-4">
-              <Text className="text-xs text-mute font-medium mb-2 uppercase tracking-wider">
-                {t("useTemplate")}
-              </Text>
-              <View className="flex-row gap-2">
-                {Object.keys(BUDGET_ALLOCATION_TEMPLATES).map((key) => (
-                  <Pressable
-                    key={key}
-                    onPress={() => applyTemplate(key)}
-                    className="flex-1 py-3 rounded-xl border border-hair items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
-                  >
-                    <Text className="text-xs font-medium text-mute dark:text-mute text-center">
-                      {t(BUDGET_TEMPLATE_LABELS[key] || '')}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+          <View className="mb-4">
+            <Text className="text-xs text-mute font-medium mb-2 uppercase tracking-wider">
+              {t("useTemplate")}
+            </Text>
+            <View className="flex-row gap-2">
+              {Object.keys(BUDGET_ALLOCATION_TEMPLATES).map((key) => (
+                <Pressable
+                  key={key}
+                  onPress={() => applyTemplate(key)}
+                  className="flex-1 py-3 rounded-xl border border-hair items-center justify-center active:bg-primary-50 dark:active:bg-primary-900"
+                >
+                  <Text className="text-xs font-medium text-mute dark:text-mute text-center">
+                    {t(BUDGET_TEMPLATE_LABELS[key] || '')}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
-          )}
+          </View>
 
           {/* Per-category targets */}
           {Object.keys(BUDGET_CATEGORIES).map((cat, idx) => {
