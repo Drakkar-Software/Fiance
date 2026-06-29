@@ -8,6 +8,7 @@ import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seo } from "@/components/Seo";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getBlogPosts, buildBlogJsonLd } from "@/lib/blog";
 
 export function BlogIndexPage() {
@@ -22,8 +23,9 @@ export function BlogIndexPage() {
       <Seo
         title={t("blog.meta.title")}
         description={t("blog.meta.description")}
+        ogDescription={t("blog.meta.ogDescription")}
         canonical={t("blog.meta.canonical")}
-        jsonLd={buildBlogJsonLd(posts, lang)}
+        jsonLd={buildBlogJsonLd(posts, lang, t("blog.meta.description"))}
       />
 
       {/* Hero */}
@@ -32,6 +34,12 @@ export function BlogIndexPage() {
           <Script size={17} style={{ marginBottom: 14 }}>
             {t("blog.hero.eyebrow")}
           </Script>
+          <Text
+            className="text-xs font-semibold text-primary-500 uppercase tracking-widest text-center"
+            style={{ marginBottom: 16 }}
+          >
+            {t("blog.hero.badge")}
+          </Text>
           <Display
             size={48}
             weight="600"
@@ -114,6 +122,11 @@ export function BlogIndexPage() {
           </View>
         </View>
       )}
+
+      <FreeToolsStrip
+        toolIds={["seatingChart", "budget", "timeline"]}
+        className="w-full py-16 px-6 bg-accent-cream"
+      />
 
       {/* CTA strip */}
       <View className="w-full py-16 px-6 bg-accent-blush items-center">

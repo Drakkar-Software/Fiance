@@ -17,6 +17,11 @@ import {
   BLOG_AUTHOR,
   type BlogSection,
 } from "@/lib/blog";
+import { RichText } from "@/lib/rich-text";
+import {
+  FreeToolsStrip,
+  getBlogToolIds,
+} from "@/components/marketing/FreeToolsStrip";
 
 // ─── Section renderer ───────────────────────────────────────────────────────
 
@@ -43,7 +48,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
         style={{ marginBottom: 32 }}
       >
         {(section.paragraphs ?? []).map((para, i) => (
-          <Text
+          <RichText
             key={i}
             className="text-typography-700"
             style={{
@@ -54,7 +59,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
             }}
           >
             {para}
-          </Text>
+          </RichText>
         ))}
       </View>
     );
@@ -80,12 +85,12 @@ function ArticleSection({ section }: { section: BlogSection }) {
             >
               •
             </Text>
-            <Text
+            <RichText
               className="text-typography-500 flex-1"
               style={{ fontSize: 16, lineHeight: 28 }}
             >
               {item}
-            </Text>
+            </RichText>
           </View>
         ))}
       </View>
@@ -105,13 +110,13 @@ function ArticleSection({ section }: { section: BlogSection }) {
         </Display>
       )}
       {(section.paragraphs ?? []).map((para, i) => (
-        <Text
+        <RichText
           key={i}
           className="text-typography-500"
           style={{ fontSize: 16, lineHeight: 28, marginBottom: 12 }}
         >
           {para}
-        </Text>
+        </RichText>
       ))}
     </View>
   );
@@ -158,6 +163,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
       <Seo
         title={`${post.title} | Fiancé`}
         description={post.excerpt}
+        ogDescription={t("blog.meta.ogDescription")}
         canonical={canonical}
         ogImage={post.heroImage}
         jsonLd={buildPostJsonLd(post, lang)}
@@ -250,10 +256,16 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
             <ArticleSection key={i} section={section} />
           ))}
 
+          <FreeToolsStrip
+            toolIds={getBlogToolIds(post.categoryKey)}
+            showHeader={false}
+            className="w-full py-0 px-0 bg-white"
+          />
+
           {/* Author bio */}
           <View
             className="border border-accent-rose-light rounded-2xl p-6"
-            style={{ marginTop: 8 }}
+            style={{ marginTop: 32 }}
           >
             <Text
               className="text-xs font-semibold text-typography-400 uppercase tracking-widest"

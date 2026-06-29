@@ -1,36 +1,19 @@
+import type {
+  BlogAuthor,
+  BlogPost,
+  BlogSection,
+  BlogSectionType,
+} from "./blog-types";
+import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
+import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
+import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
+
+export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
+
 const BASE_URL = "https://fiance.drakkar.software";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
-
-export interface BlogAuthor {
-  name: string;
-  url: string;
-  avatarInitials: string;
-}
-
-export type BlogSectionType = "text" | "quote" | "callout" | "list";
-
-export interface BlogSection {
-  type?: BlogSectionType; // defaults to "text"
-  title?: string;
-  paragraphs?: string[]; // for "text" and "callout"
-  items?: string[]; // for "list"
-  quote?: string; // for "quote"
-}
-
-export interface BlogPost {
-  slug: string;
-  categoryKey: string;
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string; // ISO 8601, e.g. "2026-06-29"
-  updated?: string; // ISO 8601
-  readingMinutes: number;
-  heroImage: string; // absolute URL — put real images in public/assets/blog/<slug>.jpg
-  heroImageAlt: string;
-  sections: BlogSection[];
-}
+// Defined in blog-types.ts
 
 // ─── Author ────────────────────────────────────────────────────────────────
 
@@ -124,8 +107,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Comment Fiancé peut vous aider",
           paragraphs: [
-            "Fiancé regroupe budget, invités, prestataires et checklist sur votre téléphone. Les données restent sur l'appareil, sans publicité. La synchronisation chiffrée entre partenaires est optionnelle.",
-            "Vous pouvez aussi tester notre simulateur budget en ligne sur fiance.drakkar.software/tools/budget-calculator, sans créer de compte. Pour le suivi complet, créez votre mariage dans l'app.",
+            "Fiancé regroupe budget, invités, prestataires et checklist sur votre téléphone. Les données restent sur l'appareil, sans publicité. La synchronisation entre partenaires est optionnelle, avec des données sécurisées.",
+            "Vous pouvez aussi tester notre [simulateur budget](/tools/budget-calculator), sans créer de compte. Pour le suivi complet, créez votre mariage dans l'app.",
           ],
         },
       ],
@@ -161,7 +144,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Les délais qui ne se compressent pas",
           paragraphs: [
-            "Certains jalons ont des contraintes fixes. La publication des bans à la mairie intervient au minimum 10 jours avant la cérémonie civile (voir service-public.fr). Pour un mariage religieux, le parcours de préparation (CPM) prend plusieurs mois selon le diocèse.",
+            "Certains jalons ont des contraintes fixes. La publication des bans à la mairie intervient au minimum 10 jours avant la cérémonie civile (voir [service-public.fr](https://www.service-public.fr/particuliers/vosdroits/F1027)). Pour un mariage religieux, le parcours de préparation (CPM) prend plusieurs mois selon le diocèse.",
             "Côté prestataires, nous observons ces ordres de grandeur en haute saison :",
             "1. Lieu de réception : 12 à 24 mois",
             "2. Photographe : 9 à 15 mois",
@@ -231,7 +214,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         {
           type: "callout",
           paragraphs: [
-            "Notre outil timeline en ligne (fiance.drakkar.software/tools/timeline) génère un programme jour J exportable en PDF. Pour un rétroplanning complet avec rappels, la checklist Fiancé se cale sur votre date de mariage.",
+            "Notre [outil timeline](/tools/timeline) génère un programme jour J exportable en PDF. Pour un rétroplanning complet avec rappels, la checklist Fiancé se cale sur votre date de mariage.",
           ],
         },
         {
@@ -239,7 +222,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           title: "Comment Fiancé peut vous aider",
           paragraphs: [
             "Fiancé génère une checklist de préparatifs avec des échéances relatives à votre date (par exemple « 9 mois avant », « 1 mois avant »). Vous voyez les tâches en retard depuis l'accueil, et vous pouvez assigner chaque action à l'un des deux partenaires.",
-            "Le module planning couvre aussi l'agenda (essayages, rendez-vous traiteur) et le programme du jour J. Tout reste sur votre appareil, avec sync chiffrée optionnelle entre partenaires.",
+            "Le module planning couvre aussi l'agenda (essayages, rendez-vous traiteur) et le programme du jour J. Tout reste sur votre appareil, avec sync optionnelle et données sécurisées entre partenaires.",
           ],
         },
         {
@@ -251,6 +234,9 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         },
       ],
     },
+    ...POSTS_3_10_FR,
+    ...POSTS_11_30_FR,
+    ...POSTS_31_50_FR,
   ],
   en: [
     {
@@ -332,8 +318,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "How Fiancé can help",
           paragraphs: [
-            "Fiancé brings budget, guests, vendors, and checklist together on your phone. Data stays on your device, with no ads. Encrypted sync between partners is optional.",
-            "You can also try our free online budget calculator at fiance.drakkar.software/tools/budget-calculator, no account required. For full tracking, create your wedding in the app.",
+            "Fiancé brings budget, guests, vendors, and checklist together on your phone. Data stays on your device, with no ads. Optional partner sync keeps your data secure.",
+            "You can also try our free [budget calculator](/tools/budget-calculator), no account required. For full tracking, create your wedding in the app.",
           ],
         },
       ],
@@ -368,7 +354,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Deadlines you cannot compress",
           paragraphs: [
-            "Some milestones have fixed constraints. Banns publication at the town hall happens at least 10 days before the civil ceremony (see service-public.fr). For a religious wedding, preparation (CPM) takes several months depending on the diocese.",
+            "Some milestones have fixed constraints. Banns publication at the town hall happens at least 10 days before the civil ceremony (see [service-public.fr](https://www.service-public.fr/particuliers/vosdroits/F1027)). For a religious wedding, preparation (CPM) takes several months depending on the diocese.",
             "On the vendor side, we see these rough lead times in peak season:",
             "1. Reception venue: 12 to 24 months",
             "2. Photographer: 9 to 15 months",
@@ -438,7 +424,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         {
           type: "callout",
           paragraphs: [
-            "Our free online timeline tool (fiance.drakkar.software/tools/timeline) builds a day-of schedule you can export as PDF. For a full countdown checklist with reminders, Fiancé's planning module aligns tasks to your wedding date.",
+            "Our free [timeline tool](/tools/timeline) builds a day-of schedule you can export as PDF. For a full countdown checklist with reminders, Fiancé's planning module aligns tasks to your wedding date.",
           ],
         },
         {
@@ -446,7 +432,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           title: "How Fiancé can help",
           paragraphs: [
             "Fiancé generates a prep checklist with deadlines relative to your date (for example \"9 months before\", \"1 month before\"). Overdue tasks show on the home screen, and you can assign each item to either partner.",
-            "The planning module also covers appointments (fittings, caterer meetings) and the day-of schedule. Everything stays on your device, with optional encrypted sync between partners.",
+            "The planning module also covers appointments (fittings, caterer meetings) and the day-of schedule. Everything stays on your device, with optional partner sync and secure data.",
           ],
         },
         {
@@ -458,6 +444,9 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         },
       ],
     },
+    ...POSTS_3_10_EN,
+    ...POSTS_11_30_EN,
+    ...POSTS_31_50_EN,
   ],
 };
 
@@ -512,8 +501,14 @@ export function formatBlogYear(iso: string): string {
 
 // ─── JSON-LD builders ──────────────────────────────────────────────────────
 
+const SCHEMA_CONTEXT = "https://schema.org";
+const ORG_ID = `${BASE_URL}/#organization`;
+const AUTHOR_ID = `${BASE_URL}/#author-paul`;
+const BLOG_ID = `${BASE_URL}/blog#blog`;
+
 const PUBLISHER = {
   "@type": "Organization",
+  "@id": ORG_ID,
   name: "Fiancé",
   url: BASE_URL,
   logo: {
@@ -522,102 +517,192 @@ const PUBLISHER = {
   },
 };
 
+const AUTHOR = {
+  "@type": "Person",
+  "@id": AUTHOR_ID,
+  name: BLOG_AUTHOR.name,
+  url: BLOG_AUTHOR.url,
+};
+
+function blogNameForLang(lang: string): string {
+  return lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
+}
+
+function inLanguageForLang(lang: string): string {
+  return lang === "en" ? "en-US" : "fr-FR";
+}
+
+/** ISO 8601 datetime for schema.org (date-only inputs get a stable UTC time). */
+export function toSchemaDateTime(iso: string): string {
+  if (iso.includes("T")) return iso;
+  return `${iso}T08:00:00Z`;
+}
+
+function postCanonicalUrl(slug: string): string {
+  return `${BASE_URL}/blog/${slug}`;
+}
+
 function computeWordCount(post: BlogPost): number {
   return post.sections
     .flatMap((s) => [
       ...(s.paragraphs ?? []),
       ...(s.items ?? []),
       s.quote ?? "",
+      s.title ?? "",
     ])
     .join(" ")
     .split(/\s+/)
     .filter(Boolean).length;
 }
 
-/** BlogPosting + BreadcrumbList JSON-LD for a single post page. */
-export function buildPostJsonLd(post: BlogPost, lang: string): object[] {
-  const inLanguage = lang === "en" ? "en-US" : "fr-FR";
-  const canonical = `${BASE_URL}/blog/${post.slug}`;
-  const blogName = lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
-
-  return [
-    {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: post.title,
-      description: post.excerpt,
-      image: post.heroImage,
-      datePublished: post.date,
-      dateModified: post.updated ?? post.date,
-      author: {
-        "@type": "Person",
-        name: BLOG_AUTHOR.name,
-        url: BLOG_AUTHOR.url,
-      },
-      publisher: PUBLISHER,
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": canonical,
-      },
-      inLanguage,
-      articleSection: post.category,
-      wordCount: computeWordCount(post),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Fiancé", item: BASE_URL },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: blogName,
-          item: `${BASE_URL}/blog`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: post.title,
-          item: canonical,
-        },
-      ],
-    },
-  ];
+/** Plain-text body for schema.org articleBody (strips markdown link syntax). */
+export function extractArticleBody(post: BlogPost): string {
+  const chunks = post.sections.flatMap((s) => {
+    const parts: string[] = [];
+    if (s.title) parts.push(s.title);
+    if (s.paragraphs) parts.push(...s.paragraphs);
+    if (s.items) parts.push(...s.items);
+    if (s.quote) parts.push(s.quote);
+    return parts;
+  });
+  return chunks
+    .join("\n\n")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .trim();
 }
 
-/** Blog + BreadcrumbList JSON-LD for the blog index page. */
-export function buildBlogJsonLd(posts: BlogPost[], lang: string): object[] {
-  const inLanguage = lang === "en" ? "en-US" : "fr-FR";
-  const blogName = lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
-  const blogUrl = `${BASE_URL}/blog`;
+/** Full BlogPosting node from BlogPost source data. */
+export function buildBlogPostingNode(post: BlogPost, lang: string): object {
+  const canonical = postCanonicalUrl(post.slug);
+  const blogName = blogNameForLang(lang);
+  const inLanguage = inLanguageForLang(lang);
+  const dateModified = post.updated ?? post.date;
 
-  return [
-    {
-      "@context": "https://schema.org",
+  return {
+    "@type": "BlogPosting",
+    "@id": `${canonical}#article`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    url: canonical,
+    headline: post.title,
+    name: post.title,
+    description: post.excerpt,
+    abstract: post.excerpt,
+    articleBody: extractArticleBody(post),
+    image: {
+      "@type": "ImageObject",
+      url: post.heroImage,
+      caption: post.heroImageAlt,
+    },
+    thumbnailUrl: post.heroImage,
+    datePublished: toSchemaDateTime(post.date),
+    dateModified: toSchemaDateTime(dateModified),
+    author: { "@id": AUTHOR_ID },
+    publisher: { "@id": ORG_ID },
+    inLanguage,
+    articleSection: post.category,
+    keywords: post.categoryKey,
+    wordCount: computeWordCount(post),
+    timeRequired: `PT${post.readingMinutes}M`,
+    isPartOf: {
       "@type": "Blog",
+      "@id": BLOG_ID,
       name: blogName,
-      url: blogUrl,
-      inLanguage,
-      publisher: PUBLISHER,
-      blogPost: posts.map((p) => ({
-        "@type": "BlogPosting",
-        headline: p.title,
-        datePublished: p.date,
-        url: `${BASE_URL}/blog/${p.slug}`,
-        author: {
-          "@type": "Person",
-          name: BLOG_AUTHOR.name,
-          url: BLOG_AUTHOR.url,
-        },
-      })),
+      url: `${BASE_URL}/blog`,
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Fiancé", item: BASE_URL },
-        { "@type": "ListItem", position: 2, name: blogName, item: blogUrl },
-      ],
-    },
-  ];
+  };
+}
+
+function buildBreadcrumbList(
+  items: { name: string; item: string }[]
+): object {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: entry.item,
+    })),
+  };
+}
+
+/** BlogPosting + WebPage + BreadcrumbList JSON-LD for a single post page. */
+export function buildPostJsonLd(post: BlogPost, lang: string): object {
+  const canonical = postCanonicalUrl(post.slug);
+  const blogName = blogNameForLang(lang);
+  const inLanguage = inLanguageForLang(lang);
+
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": canonical,
+        url: canonical,
+        name: post.title,
+        description: post.excerpt,
+        inLanguage,
+        isPartOf: { "@id": BLOG_ID },
+        primaryImageOfPage: { "@id": `${canonical}#article` },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": `${canonical}#article` },
+      },
+      buildBlogPostingNode(post, lang),
+      {
+        "@type": "Blog",
+        "@id": BLOG_ID,
+        name: blogName,
+        url: `${BASE_URL}/blog`,
+        inLanguage,
+        publisher: { "@id": ORG_ID },
+      },
+      AUTHOR,
+      PUBLISHER,
+      {
+        ...buildBreadcrumbList([
+          { name: "Fiancé", item: BASE_URL },
+          { name: blogName, item: `${BASE_URL}/blog` },
+          { name: post.title, item: canonical },
+        ]),
+        "@id": `${canonical}#breadcrumb`,
+      },
+    ],
+  };
+}
+
+/** Blog index + full BlogPosting entries + BreadcrumbList JSON-LD. */
+export function buildBlogJsonLd(
+  posts: BlogPost[],
+  lang: string,
+  blogDescription: string
+): object {
+  const blogName = blogNameForLang(lang);
+  const blogUrl = `${BASE_URL}/blog`;
+  const inLanguage = inLanguageForLang(lang);
+
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@graph": [
+      {
+        "@type": "Blog",
+        "@id": BLOG_ID,
+        name: blogName,
+        description: blogDescription,
+        url: blogUrl,
+        inLanguage,
+        publisher: { "@id": ORG_ID },
+        blogPost: posts.map((p) => ({ "@id": `${postCanonicalUrl(p.slug)}#article` })),
+      },
+      ...posts.map((p) => buildBlogPostingNode(p, lang)),
+      AUTHOR,
+      PUBLISHER,
+      {
+        ...buildBreadcrumbList([
+          { name: "Fiancé", item: BASE_URL },
+          { name: blogName, item: blogUrl },
+        ]),
+        "@id": `${blogUrl}#breadcrumb`,
+      },
+    ],
+  };
 }

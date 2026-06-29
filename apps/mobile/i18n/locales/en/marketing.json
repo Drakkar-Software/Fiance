@@ -141,10 +141,12 @@
     "meta": {
       "title": "The Journal | Fiancé",
       "description": "Tips, guides and inspiration for planning your wedding with peace of mind. Budget, guests, seating chart, decoration — everything you need to know.",
+      "ogDescription": "Wedding planning tips from the Fiancé team. Private, offline app with secure data.",
       "canonical": "https://fiance.drakkar.software/blog"
     },
     "hero": {
       "eyebrow": "Fiancé · The Journal",
+      "badge": "Offline · Private · Secure data",
       "headline": "The Journal",
       "subtitle": "Tips & inspiration for planning your wedding"
     },

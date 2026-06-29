@@ -141,10 +141,12 @@
     "meta": {
       "title": "Le Carnet | Fiancé",
       "description": "Conseils, guides et inspirations pour organiser votre mariage sereinement. Budget, invités, plan de table, décoration — tout ce qu'il faut savoir.",
+      "ogDescription": "Conseils mariage par l'équipe Fiancé. Application privée, hors ligne, données sécurisées.",
       "canonical": "https://fiance.drakkar.software/blog"
     },
     "hero": {
       "eyebrow": "Fiancé · Le Carnet",
+      "badge": "Hors ligne · Privé · Données sécurisées",
       "headline": "Le Carnet",
       "subtitle": "Conseils & inspirations pour organiser votre mariage"
     },
