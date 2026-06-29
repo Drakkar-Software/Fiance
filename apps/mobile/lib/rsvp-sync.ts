@@ -24,6 +24,7 @@ import {
   type ObjectNode,
 } from "@fiance/sdk";
 import { publicPageNodeId, getPublicPageInviteLink, ensurePublicPageNode } from "@/lib/public-page";
+import { withIndexLock } from "@/lib/index-lock";
 import { encodeGuestLink } from "@/lib/guest-link";
 
 // ---------------------------------------------------------------------------
@@ -125,7 +126,7 @@ export async function ensureRsvpNode(
   const pageNodeId = publicPageNodeId(weddingNodeId);
   const desc = rsvpToNode(nodeId, pageNodeId, guestId);
 
-  await updateObjectIndex(session, spaceId, (nodes, now) => {
+  await withIndexLock(spaceId, () => updateObjectIndex(session, spaceId, (nodes, now) => {
     const exists = nodes.some((n) => n.id === nodeId);
     if (exists) return null;
     const node: ObjectNode = {
@@ -141,7 +142,7 @@ export async function ensureRsvpNode(
       meta: desc.meta,
     };
     return [...nodes, node];
-  });
+  }));
 
   return nodeId;
 }

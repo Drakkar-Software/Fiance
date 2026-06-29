@@ -157,8 +157,20 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       unregisterPush = registerPull("*", () => { scheduleSyncPush(); });
 
       // B5: ensure the publicPage node exists in the space.
+      // Retried with backoff: pull errors and transient 409s are common on first
+      // boot (Garage consistency lag, CDN cache). Each outer attempt runs runCas
+      // internally; delays give the server time to settle between attempts.
       if (!cancelled) {
-        await ensurePublicPageNode(session, spaceId, weddingNodeId).catch(() => {});
+        for (let attempt = 0; attempt < 5 && !cancelled; attempt++) {
+          try {
+            await ensurePublicPageNode(session, spaceId, weddingNodeId);
+            break;
+          } catch {
+            if (attempt < 4 && !cancelled) {
+              await new Promise<void>((r) => setTimeout(r, 2000 * (attempt + 1)));
+            }
+          }
+        }
       }
 
       // Pull entitlements using cap-cert.
