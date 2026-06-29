@@ -5,6 +5,8 @@ import type {
   BlogSectionType,
 } from "./blog-types";
 import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
+import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
+import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
 
@@ -233,6 +235,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
       ],
     },
     ...POSTS_3_10_FR,
+    ...POSTS_11_30_FR,
+    ...POSTS_31_50_FR,
   ],
   en: [
     {
@@ -441,6 +445,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
       ],
     },
     ...POSTS_3_10_EN,
+    ...POSTS_11_30_EN,
+    ...POSTS_31_50_EN,
   ],
 };
 
