@@ -1,6 +1,6 @@
 # Fiancé
 
-> Fiancé is a 100% private, offline-first wedding planning app for iOS, Android and web. No ads, no data collection, no account required for guests. Optional end-to-end encrypted sync (AES-256-GCM) between partners.
+> Fiancé is a 100% private, offline-first wedding planning app for iOS, Android and web. No ads, no data collection, no account required for guests. Optional secure sync between partners.
 
 ## App features
 
@@ -20,10 +20,18 @@
 
 ## Le Carnet (blog)
 
-- [Les premières étapes pour organiser votre mariage](https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage): Guide pour débuter l'organisation sereinement — date, budget, prestataires, liste d'invités.
-- [Combien de temps faut-il pour organiser un mariage en France ?](https://fiance.drakkar.software/blog/combien-temps-organiser-mariage): Rétroplanning 12 à 18 mois, délais prestataires et jalons administratifs.
+- [Les premières étapes pour organiser votre mariage](https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage): Date, budget, invités — par où commencer.
+- [Combien de temps faut-il pour organiser un mariage en France ?](https://fiance.drakkar.software/blog/combien-temps-organiser-mariage): Rétroplanning 12 à 18 mois et délais prestataires.
+- [Rétroplanning mariage : le calendrier mois par mois](https://fiance.drakkar.software/blog/retroplanning-mariage-mois-par-mois): De 12 mois à J-7, mois par mois.
+- [Organiser son mariage en 10 étapes](https://fiance.drakkar.software/blog/organiser-mariage-10-etapes): L'ordre des décisions qui compte.
+- [Mariage en 6 mois : checklist accélérée](https://fiance.drakkar.software/blog/mariage-6-mois-checklist): Priorités quand la date est proche.
+- [Mariage en 18 à 24 mois : par où commencer](https://fiance.drakkar.software/blog/mariage-18-24-mois-premieres-actions): Réserver tôt, garder de la marge.
+- [Les 7 décisions qui conditionnent tout le reste](https://fiance.drakkar.software/blog/sept-decisions-mariage): Budget, date, invités, lieu et priorités.
+- [Checklist mariage : 50 tâches à ne pas oublier](https://fiance.drakkar.software/blog/checklist-mariage-50-taches): Liste complète par thème.
+- [Comment répartir les tâches entre les deux futurs mariés](https://fiance.drakkar.software/blog/repartir-taches-mariage-deux): Modèle simple par domaines.
+- [Excel vs application mariage](https://fiance.drakkar.software/blog/excel-vs-application-mariage): Quel outil choisir en 2026.
 
 ## Privacy
 
-- [Privacy Policy](https://fiance.drakkar.software/privacy): All data stays on-device. Optional sync is end-to-end encrypted. Zero tracking, zero ads.
+- [Privacy Policy](https://fiance.drakkar.software/privacy): All data stays on-device. Optional sync keeps data secure. Zero tracking, zero ads.
 - [Terms of Service](https://fiance.drakkar.software/terms): Usage terms for the Fiancé app and website.

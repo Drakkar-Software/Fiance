@@ -1,36 +1,17 @@
+import type {
+  BlogAuthor,
+  BlogPost,
+  BlogSection,
+  BlogSectionType,
+} from "./blog-types";
+import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
+
+export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
+
 const BASE_URL = "https://fiance.drakkar.software";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
-
-export interface BlogAuthor {
-  name: string;
-  url: string;
-  avatarInitials: string;
-}
-
-export type BlogSectionType = "text" | "quote" | "callout" | "list";
-
-export interface BlogSection {
-  type?: BlogSectionType; // defaults to "text"
-  title?: string;
-  paragraphs?: string[]; // for "text" and "callout"
-  items?: string[]; // for "list"
-  quote?: string; // for "quote"
-}
-
-export interface BlogPost {
-  slug: string;
-  categoryKey: string;
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string; // ISO 8601, e.g. "2026-06-29"
-  updated?: string; // ISO 8601
-  readingMinutes: number;
-  heroImage: string; // absolute URL — put real images in public/assets/blog/<slug>.jpg
-  heroImageAlt: string;
-  sections: BlogSection[];
-}
+// Defined in blog-types.ts
 
 // ─── Author ────────────────────────────────────────────────────────────────
 
@@ -251,6 +232,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         },
       ],
     },
+    ...POSTS_3_10_FR,
   ],
   en: [
     {
@@ -458,6 +440,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         },
       ],
     },
+    ...POSTS_3_10_EN,
   ],
 };
 

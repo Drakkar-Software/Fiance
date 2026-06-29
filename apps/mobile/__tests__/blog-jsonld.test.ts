@@ -4,6 +4,7 @@ import {
   buildBlogPostingNode,
   buildPostJsonLd,
   extractArticleBody,
+  getBlogSlugs,
   toSchemaDateTime,
   type BlogPost,
 } from "@/lib/blog";
@@ -123,5 +124,12 @@ describe("buildBlogJsonLd", () => {
       unknown
     >;
     expect(blog.description).toBe("Blog description.");
+  });
+});
+
+describe("getBlogSlugs", () => {
+  it("lists all published post slugs for static export", () => {
+    expect(getBlogSlugs()).toHaveLength(10);
+    expect(getBlogSlugs()).toContain("excel-vs-application-mariage");
   });
 });
