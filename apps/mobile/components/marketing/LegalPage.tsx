@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { getLegalDocs } from "@/lib/legal";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 import i18n from "@/i18n";
 
 interface LegalPageProps {
@@ -21,7 +21,6 @@ export function LegalPage({ docKey, metaTitle, metaDescription, metaCanonical }:
   const doc = docs[docKey];
   const isEn = lang === "en";
 
-  usePageMeta({ title: metaTitle, description: metaDescription, canonical: metaCanonical });
 
   const handleBack = () => {
     if (router.canGoBack()) router.back();
@@ -30,6 +29,7 @@ export function LegalPage({ docKey, metaTitle, metaDescription, metaCanonical }:
 
   return (
     <View className="w-full">
+      <Seo title={metaTitle} description={metaDescription} canonical={metaCanonical} />
       {/* Hero */}
       <View className="w-full py-16 px-6 bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>

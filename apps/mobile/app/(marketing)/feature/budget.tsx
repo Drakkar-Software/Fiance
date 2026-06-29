@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
   Tag, TrendingDown, BarChart2, Store, FileText, WifiOff, Calculator,
 } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -25,12 +25,6 @@ export default function BudgetPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
 
-  usePageMeta({
-    title: t("budget.meta.title"),
-    description: t("budget.meta.description"),
-    canonical: t("budget.meta.canonical"),
-  });
-
   const features = [
     { key: "categories", icon: <Tag size={18} className="text-accent-gold" /> },
     { key: "tracking", icon: <TrendingDown size={18} className="text-accent-gold" /> },
@@ -42,6 +36,17 @@ export default function BudgetPage() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("budget.meta.title")}
+        description={t("budget.meta.description")}
+        canonical={t("budget.meta.canonical")}
+        jsonLd={[
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("budget.meta.title"), item: t("budget.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Hero */}
       <View className="w-full py-20 px-6 bg-accent-cream items-center">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>

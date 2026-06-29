@@ -3,23 +3,6 @@ const path = require("path");
 
 const seo = require("../i18n/locales/fr/seo.json");
 
-const htmlPath = path.join(__dirname, "..", "dist", "index.html");
-let html = fs.readFileSync(htmlPath, "utf8");
-
-const pwaHead = `
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/assets/icon.png" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />`;
-
-const swRegister = `<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js")</script>`;
-
-html = html.replace("</head>", `${pwaHead}\n  </head>`);
-html = html.replace('lang="en"', 'lang="fr"');
-html = html.replace("</body>", `${swRegister}\n</body>`);
-
-fs.writeFileSync(htmlPath, html);
-console.log("PWA tags + service worker injected into dist/index.html");
-
 // Generate manifest.json from translation keys
 const manifest = {
   id: "/",
@@ -75,6 +58,8 @@ console.log("manifest.json generated from translations into dist/manifest.json")
 // Cloudflare Pages excludes directories starting with "." from deployment.
 // Font TTFs land in dist/assets/node_modules/.pnpm/ — rename to drop the dot,
 // then prepend a rewrite rule so bundle requests still resolve correctly.
+// The SPA catch-all (/* /index.html 200) is already the last line of
+// public/_redirects; prepending the font rule keeps it last — correct precedence.
 const dotPnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", ".pnpm");
 const pnpmPath = path.join(__dirname, "..", "dist", "assets", "node_modules", "pnpm");
 if (fs.existsSync(dotPnpmPath)) {

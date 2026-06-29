@@ -4,12 +4,12 @@
 
 ## App features
 
-- [Wedding Budget Planner](https://fiance.drakkar.software/budget): Track expenses by category, manage deposits, visualize balances in real time. Linked to vendor records. Export as PDF/CSV.
+- [Wedding Budget Planner](https://fiance.drakkar.software/feature/budget): Track expenses by category, manage deposits, visualize balances in real time. Linked to vendor records. Export as PDF/CSV.
 - [Guest List & RSVP](https://fiance.drakkar.software/): Manage guests, track RSVPs, organize plus-ones and groups.
-- [Seating Chart](https://fiance.drakkar.software/seating-chart): Drag-and-drop seating with round and rectangular tables. Synced with guest list. PDF export.
+- [Seating Chart](https://fiance.drakkar.software/feature/seating-chart): Drag-and-drop seating with round and rectangular tables. Synced with guest list. PDF export.
 - [Vendors](https://fiance.drakkar.software/): Compare, contact and track vendors (caterer, photographer, florist, etc.).
 - [Planning & Checklist](https://fiance.drakkar.software/): Personalized timeline and to-do checklist before the wedding day.
-- [Photo Sharing](https://fiance.drakkar.software/photos): Private album shared via QR code. Guests upload without an account. Photos hosted on your own sync server.
+- [Photo Sharing](https://fiance.drakkar.software/feature/photos): Private album shared via QR code. Guests upload without an account. Photos hosted on your own sync server.
 - [Wedding Website](https://fiance.drakkar.software/): Personalized public wedding page to share details with guests.
 
 ## Free online tools (no account required)

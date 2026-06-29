@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Seo } from "@/components/Seo";
 import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import * as Linking from "expo-linking";
@@ -72,6 +73,7 @@ function ChooseMode({ onSelect }: { onSelect: (m: Mode) => void }) {
   const { t } = useTranslation("common");
   return (
     <View className="flex-1 bg-accent-paper justify-center px-6">
+      <Seo title="Fiancé" description="" noindex />
       <View className="items-center mb-10">
         <Image
           source={require("@/assets/icon.png")}
@@ -283,6 +285,7 @@ function JoinWeddingForm({
   // Manual path: scan QR code
   return (
     <View className="flex-1 bg-accent-paper">
+      <Seo title="Fiancé" description="" noindex />
       <ScrollView
         className="flex-1 px-6"
         contentContainerStyle={{ justifyContent: "center", flexGrow: 1 }}

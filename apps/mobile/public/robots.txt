@@ -1,12 +1,9 @@
 User-agent: *
 Allow: /
-Allow: /wedding/
-Allow: /seating-chart
-Allow: /budget
-Allow: /photos
+Allow: /feature/
 Allow: /tools/
+Allow: /wedding/
 
 Disallow: /_expo/
-Disallow: /assets/
 
 Sitemap: https://fiance.drakkar.software/sitemap.xml

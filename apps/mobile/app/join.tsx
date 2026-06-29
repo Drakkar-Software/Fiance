@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
+import { Seo } from "@/components/Seo";
 import { View, Text, Pressable, ActivityIndicator } from "react-native-css/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -105,6 +106,7 @@ function InvalidInvite() {
 
   return (
     <View className="flex-1 bg-accent-paper justify-center px-6">
+      <Seo title="Fiancé" description="" noindex />
       <View className="items-center mb-10">
         <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900 items-center justify-center mb-5">
           <AlertCircle size={36} color="#EF4444" />
@@ -143,6 +145,7 @@ function ConfirmJoin({
 
   return (
     <View className="flex-1 bg-accent-paper justify-center px-6">
+      <Seo title="Fiancé" description="" noindex />
       <View className="items-center mb-10">
         <View className="w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 items-center justify-center mb-5">
           <Heart size={36} color="#b96a4a" />

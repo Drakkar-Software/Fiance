@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
   Move, Square, Users, Download, FileText, RefreshCw,
 } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -25,12 +25,6 @@ export default function SeatingChartPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
 
-  usePageMeta({
-    title: t("seatingChart.meta.title"),
-    description: t("seatingChart.meta.description"),
-    canonical: t("seatingChart.meta.canonical"),
-  });
-
   const features = [
     { key: "dragDrop", icon: <Move size={18} className="text-accent-gold" /> },
     { key: "shapes", icon: <Square size={18} className="text-accent-gold" /> },
@@ -42,6 +36,17 @@ export default function SeatingChartPage() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("seatingChart.meta.title")}
+        description={t("seatingChart.meta.description")}
+        canonical={t("seatingChart.meta.canonical")}
+        jsonLd={[
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("seatingChart.meta.title"), item: t("seatingChart.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Hero */}
       <View className="w-full py-20 px-6 bg-accent-cream items-center">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>

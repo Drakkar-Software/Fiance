@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/c
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@drakkar.software/seahorse/utils/file-export";
 
 type TableShape = "round" | "rectangular";
@@ -81,12 +81,6 @@ export default function SeatingChartTool() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
 
-  usePageMeta({
-    title: t("tools.seatingChart.meta.title"),
-    description: t("tools.seatingChart.meta.description"),
-    canonical: t("tools.seatingChart.meta.canonical"),
-  });
-
   const [tables, setTables] = useState<GuestTable[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
 
@@ -151,6 +145,21 @@ export default function SeatingChartTool() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("tools.seatingChart.meta.title")}
+        description={t("tools.seatingChart.meta.description")}
+        canonical={t("tools.seatingChart.meta.canonical")}
+        jsonLd={[
+          { "@type": "WebApplication", name: t("tools.seatingChart.meta.title"),
+            url: t("tools.seatingChart.meta.canonical"),
+            applicationCategory: "UtilityApplication",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("tools.seatingChart.meta.title"), item: t("tools.seatingChart.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Header */}
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>

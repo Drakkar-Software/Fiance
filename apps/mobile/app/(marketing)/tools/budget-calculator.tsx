@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, RotateCcw } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@drakkar.software/seahorse/utils/file-export";
 
 interface Category {
@@ -33,12 +33,6 @@ function formatAmount(amount: number): string {
 export default function BudgetCalculatorTool() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
-
-  usePageMeta({
-    title: t("tools.budgetCalculator.meta.title"),
-    description: t("tools.budgetCalculator.meta.description"),
-    canonical: t("tools.budgetCalculator.meta.canonical"),
-  });
 
   const [totalBudget, setTotalBudget] = useState("15000");
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
@@ -81,6 +75,21 @@ export default function BudgetCalculatorTool() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("tools.budgetCalculator.meta.title")}
+        description={t("tools.budgetCalculator.meta.description")}
+        canonical={t("tools.budgetCalculator.meta.canonical")}
+        jsonLd={[
+          { "@type": "WebApplication", name: t("tools.budgetCalculator.meta.title"),
+            url: t("tools.budgetCalculator.meta.canonical"),
+            applicationCategory: "UtilityApplication",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("tools.budgetCalculator.meta.title"), item: t("tools.budgetCalculator.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Header */}
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 800, width: "100%", alignSelf: "center" }}>

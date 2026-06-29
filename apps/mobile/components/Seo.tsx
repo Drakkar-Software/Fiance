@@ -45,12 +45,11 @@ export function Seo({
       {ogImage && <meta property="og:image" content={ogImage} />}
       {ogImage && <meta name="twitter:image" content={ogImage} />}
       {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd]),
-          }}
-        />
+        // react-helmet-async serializes script innerHTML via text children (not dangerouslySetInnerHTML)
+        // eslint-disable-next-line react/no-danger
+        <script type="application/ld+json">
+          {JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
+        </script>
       )}
     </Head>
   );

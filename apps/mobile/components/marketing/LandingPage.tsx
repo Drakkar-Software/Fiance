@@ -6,7 +6,7 @@ import {
   DollarSign, Users, LayoutGrid, Store, CalendarCheck,
   Camera, Globe, WifiOff, Lock, ShieldCheck, HeartHandshake,
 } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 
@@ -57,13 +57,6 @@ export function LandingPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
 
-  usePageMeta({
-    title: t("landing.meta.title"),
-    description: t("landing.meta.description"),
-    canonical: t("landing.meta.canonical"),
-    ogImage: "https://fiance.drakkar.software/assets/icon-512.png",
-  });
-
   const appFeatures = [
     { key: "budget", icon: <DollarSign size={18} className="text-accent-gold" /> },
     { key: "guests", icon: <Users size={18} className="text-accent-gold" /> },
@@ -83,6 +76,12 @@ export function LandingPage() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("landing.meta.title")}
+        description={t("landing.meta.description")}
+        canonical={t("landing.meta.canonical")}
+        ogImage="https://fiance.drakkar.software/assets/og-image.png"
+      />
       {/* Hero */}
       <View className="w-full py-20 px-6 items-center bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>

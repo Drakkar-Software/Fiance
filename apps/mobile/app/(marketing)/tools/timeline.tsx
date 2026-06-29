@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft, ArrowUp, ArrowDown, LayoutList } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@drakkar.software/seahorse/utils/file-export";
 
 interface TimelineEvent {
@@ -79,12 +79,6 @@ function EventCard({
 export default function TimelineTool() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
-
-  usePageMeta({
-    title: t("tools.timeline.meta.title"),
-    description: t("tools.timeline.meta.description"),
-    canonical: t("tools.timeline.meta.canonical"),
-  });
 
   const templateTimes: Record<string, string> = {
     gettingReady: "08:00",
@@ -169,6 +163,21 @@ export default function TimelineTool() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("tools.timeline.meta.title")}
+        description={t("tools.timeline.meta.description")}
+        canonical={t("tools.timeline.meta.canonical")}
+        jsonLd={[
+          { "@type": "WebApplication", name: t("tools.timeline.meta.title"),
+            url: t("tools.timeline.meta.canonical"),
+            applicationCategory: "UtilityApplication",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("tools.timeline.meta.title"), item: t("tools.timeline.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Header */}
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
   QrCode, Lock, Upload, UserX, Server, Download, CheckCircle, XCircle,
 } from "lucide-react-native";
-import { usePageMeta } from "@/lib/use-page-meta";
+import { Seo } from "@/components/Seo";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -47,12 +47,6 @@ export default function PhotosPage() {
   const { t } = useTranslation("marketing");
   const router = useRouter();
 
-  usePageMeta({
-    title: t("photos.meta.title"),
-    description: t("photos.meta.description"),
-    canonical: t("photos.meta.canonical"),
-  });
-
   const features = [
     { key: "qrCode", icon: <QrCode size={18} className="text-accent-gold" /> },
     { key: "private", icon: <Lock size={18} className="text-accent-gold" /> },
@@ -66,6 +60,17 @@ export default function PhotosPage() {
 
   return (
     <View className="w-full">
+      <Seo
+        title={t("photos.meta.title")}
+        description={t("photos.meta.description")}
+        canonical={t("photos.meta.canonical")}
+        jsonLd={[
+          { "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
+            { "@type": "ListItem", position: 2, name: t("photos.meta.title"), item: t("photos.meta.canonical") },
+          ]},
+        ]}
+      />
       {/* Hero */}
       <View className="w-full py-20 px-6 bg-accent-cream items-center">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
