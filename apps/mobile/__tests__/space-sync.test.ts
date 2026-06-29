@@ -5,21 +5,34 @@
  *     that was queued before hydration started does not fire mid-hydrate.
  * C2: suppressSyncPush() cancels any pending timer and blocks new scheduling;
  *     restoreSyncPush() re-enables it.
+ * H1/H2: pushNodeContent pulls the current server hash via runCas and forwards
+ *     it as baseHash to client.push — never sends null after the first write.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+
+// Mutable: allows individual tests to inject a wedding entity so buildAllNodes
+// produces at least one node (enabling pushNodeContent to be exercised).
+let mockWeddingData: Record<string, unknown> | null = null;
+
+// Mutable: allows individual tests to inject a custom client for the node handle.
+let mockClientPull: Mock = vi.fn(async () => ({ data: null, hash: null }));
+let mockClientPush: Mock = vi.fn(async () => ({ hash: "H_new" }));
+let mockGetNodeAccessImpl: () => Promise<{ encryptor: null; client: { push: Mock; pull: Mock } }> =
+  async () => ({
+    encryptor: null,
+    client: { push: mockClientPush, pull: mockClientPull },
+  });
 
 const mockUpdateObjectIndex = vi.fn();
 let mockReadObjectTreeImpl: () => Promise<unknown[]> = async () => [];
 
 vi.mock("@drakkar.software/starfish-spaces", () => ({
+  runCas: (fn: () => Promise<unknown>) => fn(),
   updateObjectIndex: (...args: unknown[]) => mockUpdateObjectIndex(...args),
   readObjectTree: (..._args: unknown[]) => mockReadObjectTreeImpl(),
-  getNodeAccess: vi.fn(async () => ({
-    encryptor: null,
-    client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null })) },
-  })),
+  getNodeAccess: vi.fn(async (..._args: unknown[]) => mockGetNodeAccessImpl()),
   objDocPush: vi.fn((s: string, n: string) => `push/${s}/${n}`),
   objDocPull: vi.fn((s: string, n: string) => `pull/${s}/${n}`),
   objInvPull: vi.fn((s: string, n: string) => `invpull/${s}/${n}`),
@@ -76,7 +89,9 @@ const emptyStore = { getState: () => ({
   setDayOfItems: vi.fn(), setCollections: vi.fn(), setIdeas: vi.fn(),
 }) };
 
-vi.mock("@/store/useWeddingStore", () => ({ useWeddingStore: emptyStore }));
+vi.mock("@/store/useWeddingStore", () => ({
+  useWeddingStore: { getState: () => ({ ...emptyStore.getState(), wedding: mockWeddingData }) },
+}));
 vi.mock("@/store/useGuestsStore", () => ({ useGuestsStore: emptyStore }));
 vi.mock("@/store/useVendorsStore", () => ({ useVendorsStore: emptyStore }));
 vi.mock("@/store/usePlanningStore", () => ({ usePlanningStore: emptyStore }));
@@ -168,5 +183,56 @@ describe("scheduleSyncPush / _isHydrating timer guard", () => {
     scheduleSyncPush(); // should not be blocked
     // No assertion needed beyond "does not throw"
     await vi.advanceTimersByTimeAsync(2500);
+  });
+});
+
+// ─── Regression: pushNodeContent must send the pulled hash, not null ──────────
+//
+// Before the fix, pushNodeContent always passed null as baseHash, causing every
+// push after the first to get a 409 hash_mismatch ConflictError from the server.
+
+describe("pushNodeContent sends pulled server hash as baseHash (not null)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+    mockClientPull = vi.fn(async () => ({ data: null, hash: null }));
+    mockClientPush = vi.fn(async () => ({ hash: "H_new" }));
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { push: mockClientPush, pull: mockClientPull },
+    });
+  });
+
+  it("H1: client.pull is called before client.push to learn the current server hash", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(mockClientPull).toHaveBeenCalledWith(expect.stringContaining("w1"));
+  });
+
+  it("H2: client.push receives the hash from client.pull as baseHash (not null)", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    // Third argument to client.push must be "H1" (from the pull), never null
+    expect(mockClientPush).toHaveBeenCalledWith(
+      expect.stringContaining("w1"),  // objDocPush path
+      expect.anything(),              // payload
+      "H1",                           // ← baseHash from pull, not null
+    );
   });
 });
