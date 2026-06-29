@@ -124,8 +124,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Comment Fiancé peut vous aider",
           paragraphs: [
-            "Fiancé regroupe budget, invités, prestataires et checklist sur votre téléphone. Les données restent sur l'appareil, sans publicité. La synchronisation chiffrée entre partenaires est optionnelle.",
-            "Vous pouvez aussi tester notre simulateur budget en ligne sur fiance.drakkar.software/tools/budget-calculator, sans créer de compte. Pour le suivi complet, créez votre mariage dans l'app.",
+            "Fiancé regroupe budget, invités, prestataires et checklist sur votre téléphone. Les données restent sur l'appareil, sans publicité. La synchronisation entre partenaires est optionnelle, avec des données sécurisées.",
+            "Vous pouvez aussi tester notre [simulateur budget](/tools/budget-calculator), sans créer de compte. Pour le suivi complet, créez votre mariage dans l'app.",
           ],
         },
       ],
@@ -161,7 +161,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Les délais qui ne se compressent pas",
           paragraphs: [
-            "Certains jalons ont des contraintes fixes. La publication des bans à la mairie intervient au minimum 10 jours avant la cérémonie civile (voir service-public.fr). Pour un mariage religieux, le parcours de préparation (CPM) prend plusieurs mois selon le diocèse.",
+            "Certains jalons ont des contraintes fixes. La publication des bans à la mairie intervient au minimum 10 jours avant la cérémonie civile (voir [service-public.fr](https://www.service-public.fr/particuliers/vosdroits/F1027)). Pour un mariage religieux, le parcours de préparation (CPM) prend plusieurs mois selon le diocèse.",
             "Côté prestataires, nous observons ces ordres de grandeur en haute saison :",
             "1. Lieu de réception : 12 à 24 mois",
             "2. Photographe : 9 à 15 mois",
@@ -231,7 +231,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         {
           type: "callout",
           paragraphs: [
-            "Notre outil timeline en ligne (fiance.drakkar.software/tools/timeline) génère un programme jour J exportable en PDF. Pour un rétroplanning complet avec rappels, la checklist Fiancé se cale sur votre date de mariage.",
+            "Notre [outil timeline](/tools/timeline) génère un programme jour J exportable en PDF. Pour un rétroplanning complet avec rappels, la checklist Fiancé se cale sur votre date de mariage.",
           ],
         },
         {
@@ -239,7 +239,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           title: "Comment Fiancé peut vous aider",
           paragraphs: [
             "Fiancé génère une checklist de préparatifs avec des échéances relatives à votre date (par exemple « 9 mois avant », « 1 mois avant »). Vous voyez les tâches en retard depuis l'accueil, et vous pouvez assigner chaque action à l'un des deux partenaires.",
-            "Le module planning couvre aussi l'agenda (essayages, rendez-vous traiteur) et le programme du jour J. Tout reste sur votre appareil, avec sync chiffrée optionnelle entre partenaires.",
+            "Le module planning couvre aussi l'agenda (essayages, rendez-vous traiteur) et le programme du jour J. Tout reste sur votre appareil, avec sync optionnelle et données sécurisées entre partenaires.",
           ],
         },
         {
@@ -332,8 +332,8 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "How Fiancé can help",
           paragraphs: [
-            "Fiancé brings budget, guests, vendors, and checklist together on your phone. Data stays on your device, with no ads. Encrypted sync between partners is optional.",
-            "You can also try our free online budget calculator at fiance.drakkar.software/tools/budget-calculator, no account required. For full tracking, create your wedding in the app.",
+            "Fiancé brings budget, guests, vendors, and checklist together on your phone. Data stays on your device, with no ads. Optional partner sync keeps your data secure.",
+            "You can also try our free [budget calculator](/tools/budget-calculator), no account required. For full tracking, create your wedding in the app.",
           ],
         },
       ],
@@ -368,7 +368,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           type: "text",
           title: "Deadlines you cannot compress",
           paragraphs: [
-            "Some milestones have fixed constraints. Banns publication at the town hall happens at least 10 days before the civil ceremony (see service-public.fr). For a religious wedding, preparation (CPM) takes several months depending on the diocese.",
+            "Some milestones have fixed constraints. Banns publication at the town hall happens at least 10 days before the civil ceremony (see [service-public.fr](https://www.service-public.fr/particuliers/vosdroits/F1027)). For a religious wedding, preparation (CPM) takes several months depending on the diocese.",
             "On the vendor side, we see these rough lead times in peak season:",
             "1. Reception venue: 12 to 24 months",
             "2. Photographer: 9 to 15 months",
@@ -438,7 +438,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         {
           type: "callout",
           paragraphs: [
-            "Our free online timeline tool (fiance.drakkar.software/tools/timeline) builds a day-of schedule you can export as PDF. For a full countdown checklist with reminders, Fiancé's planning module aligns tasks to your wedding date.",
+            "Our free [timeline tool](/tools/timeline) builds a day-of schedule you can export as PDF. For a full countdown checklist with reminders, Fiancé's planning module aligns tasks to your wedding date.",
           ],
         },
         {
@@ -446,7 +446,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
           title: "How Fiancé can help",
           paragraphs: [
             "Fiancé generates a prep checklist with deadlines relative to your date (for example \"9 months before\", \"1 month before\"). Overdue tasks show on the home screen, and you can assign each item to either partner.",
-            "The planning module also covers appointments (fittings, caterer meetings) and the day-of schedule. Everything stays on your device, with optional encrypted sync between partners.",
+            "The planning module also covers appointments (fittings, caterer meetings) and the day-of schedule. Everything stays on your device, with optional partner sync and secure data.",
           ],
         },
         {

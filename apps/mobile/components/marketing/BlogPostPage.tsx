@@ -17,6 +17,7 @@ import {
   BLOG_AUTHOR,
   type BlogSection,
 } from "@/lib/blog";
+import { RichText } from "@/lib/rich-text";
 
 // ─── Section renderer ───────────────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
         style={{ marginBottom: 32 }}
       >
         {(section.paragraphs ?? []).map((para, i) => (
-          <Text
+          <RichText
             key={i}
             className="text-typography-700"
             style={{
@@ -54,7 +55,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
             }}
           >
             {para}
-          </Text>
+          </RichText>
         ))}
       </View>
     );
@@ -80,12 +81,12 @@ function ArticleSection({ section }: { section: BlogSection }) {
             >
               •
             </Text>
-            <Text
+            <RichText
               className="text-typography-500 flex-1"
               style={{ fontSize: 16, lineHeight: 28 }}
             >
               {item}
-            </Text>
+            </RichText>
           </View>
         ))}
       </View>
@@ -105,13 +106,13 @@ function ArticleSection({ section }: { section: BlogSection }) {
         </Display>
       )}
       {(section.paragraphs ?? []).map((para, i) => (
-        <Text
+        <RichText
           key={i}
           className="text-typography-500"
           style={{ fontSize: 16, lineHeight: 28, marginBottom: 12 }}
         >
           {para}
-        </Text>
+        </RichText>
       ))}
     </View>
   );
@@ -158,6 +159,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
       <Seo
         title={`${post.title} | Fiancé`}
         description={post.excerpt}
+        ogDescription={t("blog.meta.ogDescription")}
         canonical={canonical}
         ogImage={post.heroImage}
         jsonLd={buildPostJsonLd(post, lang)}

@@ -22,6 +22,7 @@ export function BlogIndexPage() {
       <Seo
         title={t("blog.meta.title")}
         description={t("blog.meta.description")}
+        ogDescription={t("blog.meta.ogDescription")}
         canonical={t("blog.meta.canonical")}
         jsonLd={buildBlogJsonLd(posts, lang)}
       />
@@ -32,6 +33,12 @@ export function BlogIndexPage() {
           <Script size={17} style={{ marginBottom: 14 }}>
             {t("blog.hero.eyebrow")}
           </Script>
+          <Text
+            className="text-xs font-semibold text-primary-500 uppercase tracking-widest text-center"
+            style={{ marginBottom: 16 }}
+          >
+            {t("blog.hero.badge")}
+          </Text>
           <Display
             size={48}
             weight="600"
