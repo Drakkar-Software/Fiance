@@ -9,7 +9,6 @@
  */
 
 import {
-  runCas,
   updateObjectIndex,
   readObjectTree,
   getNodeAccess,
@@ -223,14 +222,7 @@ async function pushNodeContent(
 ): Promise<void> {
   try {
     const handle = await getNodeAccess(spaceId, node.id, node, session, null);
-    const payload = handle.encryptor ? await handle.encryptor.encrypt(content) : content;
-    await runCas(async () => {
-      // Pull only to learn the current server hash; 404/new-doc → null (first push).
-      const res = await handle.client
-        .pull(objDocPull(spaceId, node.id))
-        .catch(() => null) as { hash?: string } | null;
-      await handle.client.push(objDocPush(spaceId, node.id), payload, res?.hash ?? null);
-    });
+    await handle.push(objDocPull(spaceId, node.id), objDocPush(spaceId, node.id), () => content);
   } catch (err) {
     console.warn(`[space-sync] pushNodeContent ${node.id}:`, err);
   }
