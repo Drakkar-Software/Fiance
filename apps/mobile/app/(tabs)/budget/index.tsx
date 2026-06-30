@@ -282,7 +282,8 @@ export default function BudgetScreen() {
                 )}
                 <View className="w-24 bg-accent-paper rounded-lg px-2 py-1">
                   <TextInput
-                    className="text-sm text-ink text-right"
+                    className="text-sm text-ink"
+                    style={{ textAlign: 'right' }}
                     value={target ? target.toString() : ""}
                     onChangeText={(v) => setCategoryTarget(cat, v)}
                     placeholder="—"
