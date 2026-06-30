@@ -23,7 +23,6 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { FAB } from "@/components/FAB";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { SectionHeader } from "@/components/SectionHeader";
 import { Label } from "@/components/Label";
 import { Display } from "@/components/Display";
 import { TimelineItem } from "@/components/TimelineItem";
@@ -220,9 +219,9 @@ function PreparationView() {
 
   return (
     <View className="relative flex-1">
-      <SectionHeader
-        title={t("progress")}
-        right={
+      <View className="px-4 pt-3 pb-3">
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-base font-semibold text-ink">{t("progress")}</Text>
           <View className="flex-row items-center gap-2">
             <Pressable
               onPress={handleGenerateTemplate}
@@ -231,11 +230,11 @@ function PreparationView() {
               <Sparkles size={14} color="#b96a4a" />
               <Text className="text-xs font-medium text-primary-500">{t("generate")}</Text>
             </Pressable>
-            <View className="flex-row bg-accent-paper rounded-lg p-0.5">
+            <View className="flex-row bg-accent-paper rounded-lg p-0.5 border border-hair">
               <Pressable
                 onPress={() => setViewMode("timeline")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "timeline" ? "bg-accent-card" : ""
+                  viewMode === "timeline" ? "bg-accent-card shadow-soft-1" : ""
                 }`}
               >
                 <List size={16} color={viewMode === "timeline" ? "#b96a4a" : "#9CA3AF"} />
@@ -243,21 +242,20 @@ function PreparationView() {
               <Pressable
                 onPress={() => setViewMode("kanban")}
                 className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "kanban" ? "bg-accent-card" : ""
+                  viewMode === "kanban" ? "bg-accent-card shadow-soft-1" : ""
                 }`}
               >
                 <LayoutGrid size={16} color={viewMode === "kanban" ? "#b96a4a" : "#9CA3AF"} />
               </Pressable>
             </View>
           </View>
-        }
-      >
+        </View>
         <ProgressBar
           value={completionRate}
           max={100}
           label={`${tasks.filter((task) => task.status === "DONE").length}/${tasks.length} ${t("tasks")}`}
         />
-      </SectionHeader>
+      </View>
 
       {/* Filter tabs */}
       <View className="mt-3">
@@ -397,7 +395,11 @@ function AgendaView() {
 
   return (
     <View className="relative flex-1">
-      <SectionHeader subtitle={`${events.length} ${t("appointments")} · ${upcoming} ${t("upcoming")}`} />
+      <View className="px-4 pt-3 pb-3">
+        <Text className="text-sm text-mute">
+          {`${events.length} ${t("appointments")} · ${upcoming} ${t("upcoming")}`}
+        </Text>
+      </View>
 
       {events.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
@@ -554,18 +556,20 @@ function DayOfView() {
 
   return (
     <View className="relative flex-1">
-      <SectionHeader
-        subtitle={t("moment", { count: items.length })}
-        right={hasPublicItems ? (
-          <Pressable
-            onPress={handleShareTimeline}
-            className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
-          >
-            <Share2 size={14} color="#b96a4a" />
-            <Text className="text-xs font-medium text-primary-500">{t("shareTimeline")}</Text>
-          </Pressable>
-        ) : undefined}
-      />
+      <View className="px-4 pt-3 pb-3">
+        {hasPublicItems && (
+          <View className="flex-row items-center justify-end">
+            <Pressable
+              onPress={handleShareTimeline}
+              className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900 active:opacity-80"
+            >
+              <Share2 size={14} color="#b96a4a" />
+              <Text className="text-xs font-medium text-primary-500">{t("shareTimeline")}</Text>
+            </Pressable>
+          </View>
+        )}
+        <Text className="text-sm text-mute">{t("moment", { count: items.length })}</Text>
+      </View>
 
       {items.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">

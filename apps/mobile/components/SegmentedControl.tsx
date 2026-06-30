@@ -1,9 +1,14 @@
 import React from "react";
-import { View, Pressable, Text } from "react-native-css/components";
+import { useColorScheme } from "react-native";
+import { View } from "react-native-css/components";
+import NativeSegmentedControl, {
+  type NativeSegmentedControlChangeEvent,
+} from "@expo/ui/community/segmented-control";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
-// Local implementation: seahorse track uses bg-background-900 (~rgb(247,249,250))
-// which is nearly indistinguishable from the white active pill. Using bg-accent-paper
-// gives a more visible track and adding a border to the active pill adds depth.
+// Native @expo/ui control (real SwiftUI/Jetpack Compose segmented control)
+// instead of a custom JS pill — no more bg-background-0/border-b white band
+// under the cream stack header.
 
 interface Segment {
   key: string;
@@ -17,32 +22,26 @@ interface SegmentedControlProps {
 }
 
 export function SegmentedControl({ segments, activeKey, onSelect }: SegmentedControlProps) {
+  const appColorScheme = useSettingsStore((s) => s.colorScheme);
+  const systemScheme = useColorScheme();
+  const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const selectedIndex = Math.max(
+    0,
+    segments.findIndex((s) => s.key === activeKey)
+  );
+
   return (
-    <View className="px-4 pt-3 pb-2 bg-background-0 border-b border-outline-100">
-      <View className="flex-row bg-accent-paper rounded-xl p-1">
-        {segments.map((seg) => {
-          const isActive = seg.key === activeKey;
-          return (
-            <Pressable
-              key={seg.key}
-              onPress={() => onSelect(seg.key)}
-              className={`flex-1 py-2 rounded-lg items-center ${
-                isActive
-                  ? "bg-accent-card shadow-soft-1"
-                  : ""
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  isActive ? "text-primary-500" : "text-mute"
-                }`}
-              >
-                {seg.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View className="px-4 pt-3 pb-2 bg-accent-paper">
+      <NativeSegmentedControl
+        values={segments.map((s) => s.label)}
+        selectedIndex={selectedIndex}
+        onChange={(event: NativeSegmentedControlChangeEvent) => {
+          onSelect(segments[event.nativeEvent.selectedSegmentIndex].key);
+        }}
+        tintColor="#b96a4a"
+        appearance={isDark ? "dark" : "light"}
+        style={{ height: 36 }}
+      />
     </View>
   );
 }

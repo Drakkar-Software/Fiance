@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Users, AlertTriangle, LayoutGrid,
@@ -24,7 +24,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { SearchBar } from "@/components/SearchBar";
+import { ScreenSearch } from "@/components/ScreenSearch";
 import { Avatar } from "@/components/Avatar";
 import type { Guest } from "@/db/schema";
 
@@ -39,6 +39,12 @@ export default function GuestsListScreen() {
 
   return (
     <View className="flex-1 bg-accent-paper">
+      {/* GuestsView mounts the native header search bar (via ScreenSearch)
+          only while the "guests" sub-tab is active; setOptions has no
+          unmount cleanup, so explicitly clear it on the other sub-tabs. */}
+      {aspect !== "guests" && (
+        <Stack.Screen options={{ headerSearchBarOptions: undefined }} />
+      )}
 
       <SegmentedControl
         segments={[
@@ -215,7 +221,7 @@ function GuestsView() {
 
   return (
     <View className="relative flex-1">
-      <SearchBar
+      <ScreenSearch
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchGuest")}

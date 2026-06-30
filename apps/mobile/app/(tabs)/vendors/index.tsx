@@ -14,7 +14,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterTabs } from "@/components/FilterTabs";
-import { SearchBar } from "@/components/SearchBar";
+import { ScreenSearch } from "@/components/ScreenSearch";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { PageHeader } from "@/components/PageHeader";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -72,7 +72,7 @@ export default function VendorsListScreen() {
           <ProgressBar value={bookedVendors.length} max={vendors.length} />
         </View>
       )}
-      <SearchBar
+      <ScreenSearch
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchVendor")}
