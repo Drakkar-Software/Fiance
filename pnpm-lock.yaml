@@ -300,8 +300,8 @@ importers:
         specifier: 3.0.0-alpha.45
         version: 3.0.0-alpha.45
       '@drakkar.software/starfish-spaces':
-        specifier: 3.0.0-alpha.56
-        version: 3.0.0-alpha.56(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
+        specifier: 3.0.0-alpha.58
+        version: 3.0.0-alpha.58(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
       '@noble/curves':
         specifier: ^2.2.0
         version: 2.2.0
@@ -889,9 +889,6 @@ packages:
 
   '@drakkar.software/starfish-sharing@3.0.0-alpha.50':
     resolution: {integrity: sha512-W9dkJj2/SClSxJG6Ifj4jovIZdAS7dMfA0C0+GkBQ5mFBhaAu5EvibTM0UH0wUVX/p2H0X54v8w8+MNfQilBGg==}
-
-  '@drakkar.software/starfish-spaces@3.0.0-alpha.56':
-    resolution: {integrity: sha512-1RcmVd5pHAAkWJl0wrrPcy2OEF7IX9BiBli6RodxWmYbUnIDJ+4BRv6pOnCPEbrxAr24csXJSdQDGzXOgyPshg==}
 
   '@drakkar.software/starfish-spaces@3.0.0-alpha.58':
     resolution: {integrity: sha512-QCeHvroDtRu4FmYOAeY9T9lNBHbNZwQWAlztX9nC2qoRUkguEA5duHiEOqiSFR/ZAGVfewcieaQiIvgYBFDetA==}
@@ -7336,25 +7333,6 @@ snapshots:
       '@drakkar.software/starfish-protocol': 3.0.0-alpha.50
     transitivePeerDependencies:
       - '@legendapp/state'
-      - immer
-      - react
-      - zustand
-
-  '@drakkar.software/starfish-spaces@3.0.0-alpha.56(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
-    dependencies:
-      '@drakkar.software/starfish-client': 3.0.0-alpha.51(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
-      '@drakkar.software/starfish-identities': 3.0.0-alpha.50(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
-      '@drakkar.software/starfish-keyring': 3.0.0-alpha.50(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
-      '@drakkar.software/starfish-protocol': 3.0.0-alpha.50
-      '@drakkar.software/starfish-server': 3.0.0-alpha.50
-      '@drakkar.software/starfish-sharing': 3.0.0-alpha.50(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
-      '@noble/curves': 2.2.0
-      '@noble/hashes': 2.2.0
-      '@scure/bip39': 1.6.0
-    transitivePeerDependencies:
-      - '@aws-sdk/client-s3'
-      - '@legendapp/state'
-      - ajv
       - immer
       - react
       - zustand
