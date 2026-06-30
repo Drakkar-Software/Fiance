@@ -1,5 +1,5 @@
 import type { BlogSection, BlogPost } from "./blog-types";
-import { getBlogPublishDate } from "./blog-publish-dates";
+import { getBlogPublishDate, getBlogContentUpdated } from "./blog-publish-dates";
 
 export const BLOG_HERO =
   "https://fiance.drakkar.software/assets/og-image.png";
@@ -35,15 +35,20 @@ export interface PostPairInput {
   sectionsFr: BlogSection[];
   sectionsEn: BlogSection[];
   disclaimer?: boolean;
+  /** First publication date. Defaults to `BLOG_PUBLISH_DATES[slug]`. */
   date?: string;
+  /** Last content edit. Defaults to `BLOG_CONTENT_UPDATED[slug]` when set. */
+  updated?: string;
 }
 
 export function postPair(input: PostPairInput): { fr: BlogPost; en: BlogPost } {
   const date = input.date ?? getBlogPublishDate(input.slug);
+  const updated = input.updated ?? getBlogContentUpdated(input.slug);
   const base = {
     slug: input.slug,
     categoryKey: input.categoryKey,
     date,
+    ...(updated ? { updated } : {}),
     readingMinutes: input.readingMinutes,
     heroImage: BLOG_HERO,
   };

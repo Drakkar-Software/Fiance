@@ -68,8 +68,28 @@ export const BLOG_PUBLISH_DATES: Record<string, string> = {
   "tendances-mariage-2026": "2026-06-23",
   "palette-couleurs-mariage": "2026-06-25",
   "choisir-alliances-mariage": "2026-07-01",
+  "fiance-vs-mariages-net": "2026-07-02",
+  "fiance-vs-zankyou": "2026-07-03",
+  "fiance-vs-mywed": "2026-07-05",
+  "top-5-applications-mariage-2026": "2026-07-07",
+  "meilleures-applications-mariage-gratuit-france": "2026-07-08",
+  "top-5-apps-mariage-vie-privee-offline": "2026-07-10",
+};
+
+/** Last content-edit date per slug. Add an entry only when title, excerpt, or sections change. */
+export const BLOG_CONTENT_UPDATED: Record<string, string> = {
+  "fiance-vs-mariages-net": "2026-07-10",
+  "fiance-vs-zankyou": "2026-07-10",
+  "fiance-vs-mywed": "2026-07-10",
+  "top-5-applications-mariage-2026": "2026-07-10",
+  "meilleures-applications-mariage-gratuit-france": "2026-07-10",
+  "top-5-apps-mariage-vie-privee-offline": "2026-07-10",
 };
 
 export function getBlogPublishDate(slug: string): string {
   return BLOG_PUBLISH_DATES[slug] ?? "2026-06-29";
+}
+
+export function getBlogContentUpdated(slug: string): string | undefined {
+  return BLOG_CONTENT_UPDATED[slug];
 }

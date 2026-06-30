@@ -8,6 +8,7 @@ import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
 import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
 import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
 import { POSTS_51_68_EN, POSTS_51_68_FR } from "./blog-posts-51-68";
+import { POSTS_69_74_EN, POSTS_69_74_FR } from "./blog-posts-69-74";
 import { getBlogPublishDate } from "./blog-publish-dates";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
@@ -240,6 +241,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_11_30_FR,
     ...POSTS_31_50_FR,
     ...POSTS_51_68_FR,
+    ...POSTS_69_74_FR,
   ],
   en: [
     {
@@ -451,6 +453,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_11_30_EN,
     ...POSTS_31_50_EN,
     ...POSTS_51_68_EN,
+    ...POSTS_69_74_EN,
   ],
 };
 
@@ -596,7 +599,8 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
   const canonical = postCanonicalUrl(post.slug);
   const blogName = blogNameForLang(lang);
   const inLanguage = inLanguageForLang(lang);
-  const dateModified = post.updated ?? post.date;
+  const datePublished = toSchemaDateTime(post.date);
+  const dateModified = toSchemaDateTime(post.updated ?? post.date);
 
   return {
     "@type": "BlogPosting",
@@ -614,8 +618,8 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
       caption: post.heroImageAlt,
     },
     thumbnailUrl: post.heroImage,
-    datePublished: toSchemaDateTime(post.date),
-    dateModified: toSchemaDateTime(dateModified),
+    datePublished,
+    dateModified,
     author: { "@id": AUTHOR_ID },
     publisher: { "@id": ORG_ID },
     inLanguage,

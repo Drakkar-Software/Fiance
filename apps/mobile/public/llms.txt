@@ -89,6 +89,13 @@
 - [Palette de couleurs mariage : 3 couleurs max et cohérence](https://fiance.drakkar.software/blog/palette-couleurs-mariage): Primaire, accent, neutre : comment choisir une palette lisible pour faire-part, fleurs, nappes et tenues sans effet arc-en-ciel.
 - [Choisir ses alliances : métal, style et délais](https://fiance.drakkar.software/blog/choisir-alliances-mariage): Or jaune, platine, gravure intérieure : comment choisir des alliances confortables au quotidien, 4 à 8 semaines avant le jour J.
 
+- [Fiancé vs Mariages.net : quel outil pour organiser votre mariage ?](https://fiance.drakkar.software/blog/fiance-vs-mariages-net): Annuaire prestataires vs app privée : budget, RSVP, plan de table, pubs et données. Un comparatif honnête entre les deux approches.
+- [Fiancé vs Zankyou : site de mariage ou vrai planificateur ?](https://fiance.drakkar.software/blog/fiance-vs-zankyou): Liste de mariage, site invités, annuaire : les forces de Zankyou. Budget détaillé, plan de table, offline : celles de Fiancé.
+- [Fiancé vs MyWed : deux apps tout-en-un face à face](https://fiance.drakkar.software/blog/fiance-vs-mywed): Tâches, budget, invités, sync couple : MyWed et Fiancé visent le même usage. Différences sur la vie privée, le plan de table et le modèle économique.
+- [Top 5 des meilleures applications mariage en 2026](https://fiance.drakkar.software/blog/top-5-applications-mariage-2026): Budget, RSVP, plan de table, vie privée : notre classement 2026 des apps de gestion mariage en France, avec critères concrets.
+- [Meilleures applications mariage gratuites en France (2026)](https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france): Gratuit ne veut pas dire bridé : notre top des apps mariage sans abonnement obligatoire, avec ce qui est vraiment inclus.
+- [Top 5 des apps mariage respectueuses de la vie privée](https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline): RGPD, compte invité, hébergement des données : le classement 2026 pour les couples qui ne veulent pas exposer leur liste invités.
+
 ## Privacy
 
 - [Privacy Policy](https://fiance.drakkar.software/privacy): All data stays on-device. Optional sync keeps data secure. Zero tracking, zero ads.

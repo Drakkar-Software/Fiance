@@ -71,7 +71,7 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog"/>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -617,6 +617,55 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-alliances-mariage"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-alliances-mariage"/>
     <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/blog/fiance-vs-mariages-net</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-mariages-net"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-mariages-net"/>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fiance.drakkar.software/blog/fiance-vs-zankyou</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-zankyou"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-zankyou"/>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fiance.drakkar.software/blog/fiance-vs-mywed</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-mywed"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-mywed"/>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fiance.drakkar.software/blog/top-5-applications-mariage-2026</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/top-5-applications-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/top-5-applications-mariage-2026"/>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france"/>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <lastmod>2026-07-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

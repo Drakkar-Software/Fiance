@@ -97,6 +97,32 @@ Create `apps/mobile/store/useNewStore.ts` with Zustand `create()`. Add KV key to
 
 Create file under `apps/mobile/app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab entry in `apps/mobile/app/(tabs)/_layout.tsx` if it's a new tab.
 
+### Blog (Le Carnet) — publication dates and JSON-LD
+
+Every blog post must expose **`datePublished`** and **`dateModified`** in JSON-LD via `buildBlogPostingNode()` in `apps/mobile/lib/blog.ts`.
+
+| Field | Source | JSON-LD | When to change |
+|-------|--------|---------|----------------|
+| `date` | `BLOG_PUBLISH_DATES` in `blog-publish-dates.ts`, or explicit `date` on the post / `postPair()` | `datePublished` | **Once**, when the article is first published. Never bump on edits. |
+| `updated` | `BLOG_CONTENT_UPDATED` in `blog-publish-dates.ts`, or explicit `updated` on `postPair()` | `dateModified` | **Only** when article content changes (title, excerpt, or `sections`). Do not set when wiring imports, reordering, or updating sitemap/`llms.txt` alone. |
+
+**Adding a new article**
+
+1. Write content in `blog-posts-*.ts` (or inline in `blog.ts` for legacy posts).
+2. Add the slug and first-publication date to `BLOG_PUBLISH_DATES`.
+3. Wire the post in `blog.ts`, and update `sitemap.xml` + `llms.txt`.
+4. Do **not** add a `BLOG_CONTENT_UPDATED` entry yet.
+
+**Editing article content**
+
+1. Change title, excerpt, or sections.
+2. Add or update `BLOG_CONTENT_UPDATED[slug]` with the edit date (`YYYY-MM-DD`).
+3. Optionally align `sitemap.xml` `<lastmod>` with `updated` (not required for JSON-LD).
+
+`postPair()` resolves `date` and `updated` from the maps by default. Inline posts in `blog.ts` / `blog-posts-3-10.ts` must set `date: getBlogPublishDate(slug)` manually; add `updated` only after a content edit.
+
+Run `pnpm test` — `blog-jsonld.test.ts` asserts every slug has valid `datePublished` / `dateModified`.
+
 ### Styling
 
 NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`). Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `apps/mobile/lib/theme.ts` exports hex literals for JS consumers. Shared UI components in `apps/mobile/components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.

@@ -4,6 +4,7 @@ import {
   buildBlogPostingNode,
   buildPostJsonLd,
   extractArticleBody,
+  getBlogPosts,
   getBlogSlugs,
   getLandingBlogPosts,
   LANDING_BLOG_SLUGS,
@@ -131,8 +132,34 @@ describe("buildBlogJsonLd", () => {
 
 describe("getBlogSlugs", () => {
   it("lists all published post slugs for static export", () => {
-    expect(getBlogSlugs()).toHaveLength(68);
+    expect(getBlogSlugs()).toHaveLength(74);
     expect(getBlogSlugs()).toContain("excel-vs-application-mariage");
+  });
+});
+
+describe("blog JSON-LD dates for all posts", () => {
+  it("every post has datePublished and dateModified in BlogPosting JSON-LD", () => {
+    for (const slug of getBlogSlugs()) {
+      const post = getBlogPosts("fr").find((p) => p.slug === slug);
+      expect(post, `missing post: ${slug}`).toBeDefined();
+      expect(post!.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+      const node = buildBlogPostingNode(post!, "fr") as Record<string, string>;
+      expect(node.datePublished).toBe(`${post!.date}T08:00:00Z`);
+      expect(node.dateModified).toBe(
+        toSchemaDateTime(post!.updated ?? post!.date)
+      );
+    }
+  });
+
+  it("sets dateModified after content edits via BLOG_CONTENT_UPDATED", () => {
+    const post = getBlogPosts("fr").find(
+      (p) => p.slug === "fiance-vs-mariages-net"
+    )!;
+    expect(post.updated).toBe("2026-07-10");
+    const node = buildBlogPostingNode(post, "fr") as Record<string, string>;
+    expect(node.datePublished).toBe("2026-07-02T08:00:00Z");
+    expect(node.dateModified).toBe("2026-07-10T08:00:00Z");
   });
 });
 
