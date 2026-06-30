@@ -54,8 +54,6 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   return (
     <Sheet visible={visible} onDismiss={onClose}>
       <View className="bg-accent-card rounded-t-3xl px-6 pt-6 pb-10">
-        <View className="w-10 h-1 rounded-full bg-hair self-center mb-5" />
-
         {state === "generating" && (
           <View className="items-center py-12 gap-4">
             <ActivityIndicator size="large" color="#b96a4a" />

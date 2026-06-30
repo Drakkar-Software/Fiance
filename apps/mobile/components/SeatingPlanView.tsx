@@ -7,7 +7,7 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
+import { Sheet } from "@drakkar.software/seahorse/components";
 import type { Table, Guest } from "@/db/schema";
 
 const CANVAS_W = 700;
@@ -162,17 +162,9 @@ export function PlanView({ tables, guests, updateTable }: Props) {
     autoPositions ? autoPositions[t.id] : { x: t.positionX ?? 0, y: t.positionY ?? 0 };
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const sheetRef = useRef<BottomSheetModal>(null);
 
   const selectedTable = selectedId ? tables.find((t) => t.id === selectedId) : null;
   const selectedGuests = selectedId ? guests.filter((g) => g.tableId === selectedId) : [];
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
-    ),
-    [],
-  );
 
   return (
     <View className="flex-1">
@@ -213,7 +205,6 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                   initialY={y}
                   onSelect={() => {
                     setSelectedId(table.id);
-                    sheetRef.current?.present();
                   }}
                   onDragEnd={(newX, newY) => {
                     if (allAtOrigin && autoPositions) {
@@ -232,19 +223,8 @@ export function PlanView({ tables, guests, updateTable }: Props) {
         </ScrollView>
       </ScrollView>
 
-      <BottomSheetModal
-        ref={sheetRef}
-        enableDynamicSizing
-        enablePanDownToClose
-        backdropComponent={renderBackdrop}
-        onDismiss={() => setSelectedId(null)}
-        backgroundStyle={{ backgroundColor: "transparent" }}
-        handleComponent={() => null}
-      >
-        <BottomSheetView>
-          <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
-            <View className="w-10 h-1 rounded-full bg-hair self-center mb-4" />
-
+      <Sheet visible={!!selectedId} onDismiss={() => setSelectedId(null)}>
+        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
             {selectedTable && (
               <>
                 <Text className="text-lg font-bold text-ink">
@@ -306,9 +286,8 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                 </ScrollView>
               </>
             )}
-          </View>
-        </BottomSheetView>
-      </BottomSheetModal>
+        </View>
+      </Sheet>
     </View>
   );
 }

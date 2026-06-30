@@ -43,7 +43,6 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
 import { theme as GP } from "@/lib/theme";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLockEnabled } from "@/lib/app-lock";
 import { LockScreen } from "@/components/LockScreen";
@@ -220,7 +219,6 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ForgeThemeProvider theme={{ colors: { primary: GP.clay } }}>
-        <BottomSheetModalProvider>
           <StatusBar style="auto" />
           {!fontsLoaded || locked === null ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -235,7 +233,6 @@ export default function RootLayout() {
               </SunglassesGlobalErrorBoundary>
             </SunglassesProvider>
           )}
-        </BottomSheetModalProvider>
         </ForgeThemeProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>

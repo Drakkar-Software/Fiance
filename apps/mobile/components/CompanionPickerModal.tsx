@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/components";
 import { useWindowDimensions } from "react-native";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useGuestsStore } from "@/store/useGuestsStore";
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
+import { Sheet } from "@drakkar.software/seahorse/components";
 
 interface CompanionPickerModalProps {
   visible: boolean;
@@ -25,7 +25,6 @@ export function CompanionPickerModal({
 }: CompanionPickerModalProps) {
   const { t } = useTranslation("guests");
   const guests = useGuestsStore((s) => s.guests);
-  const ref = useRef<BottomSheetModal>(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(currentCompanionId);
 
@@ -33,9 +32,6 @@ export function CompanionPickerModal({
     if (visible) {
       setSelected(currentCompanionId);
       setSearch("");
-      ref.current?.present();
-    } else {
-      ref.current?.dismiss();
     }
   }, [visible, currentCompanionId]);
 
@@ -55,99 +51,80 @@ export function CompanionPickerModal({
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * 0.6;
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior="close" />
-    ),
-    []
-  );
-
   return (
-    <BottomSheetModal
-      ref={ref}
-      enableDynamicSizing
-      enablePanDownToClose
-      backdropComponent={renderBackdrop}
-      onDismiss={onClose}
-      backgroundStyle={{ backgroundColor: "transparent" }}
-      handleComponent={() => null}
-    >
-      <BottomSheetView>
-        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
-          <View className="w-10 h-1 rounded-full bg-hair self-center mb-4" />
+    <Sheet visible={visible} onDismiss={onClose}>
+      <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
+        <Text className="text-lg font-bold text-ink mb-3">
+          {t("companionLabel")}
+        </Text>
 
-          <Text className="text-lg font-bold text-ink mb-3">
-            {t("companionLabel")}
-          </Text>
-
-          {/* Search */}
-          <View className="flex-row items-center bg-accent-paper rounded-xl px-3 py-2 mb-3">
-            <Search size={16} color="#9CA3AF" />
-            <TextInput
-              className="flex-1 ml-2 text-base text-ink"
-              placeholder={t("searchCompanion")}
-              placeholderTextColor="#9CA3AF"
-              value={search}
-              onChangeText={setSearch}
-              autoCapitalize="none"
-            />
-          </View>
-
-          {/* Guest list */}
-          <ScrollView style={{ maxHeight }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-            {filteredGuests.map((g) => (
-              <Pressable
-                key={g.id}
-                onPress={() => setSelected(selected === g.id ? null : g.id)}
-                className={`flex-row items-center px-3 py-3 rounded-xl mb-1 ${
-                  selected === g.id
-                    ? "bg-primary-50 dark:bg-primary-950"
-                    : "active:bg-accent-paper dark:active:bg-accent-card"
-                }`}
-              >
-                <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
-                  <Text className="text-primary-500 font-bold text-xs">
-                    {g.firstName[0]}
-                    {g.lastName[0]}
-                  </Text>
-                </View>
-                <Text className="flex-1 text-base text-ink">
-                  {g.firstName} {g.lastName}
-                </Text>
-                {selected === g.id && <Check size={18} color="#EC4899" />}
-              </Pressable>
-            ))}
-            {filteredGuests.length === 0 && (
-              <Text className="text-center text-mute py-6">
-                {t("noGuests")}
-              </Text>
-            )}
-          </ScrollView>
-
-          {/* Footer buttons */}
-          <View className="flex-row gap-3 mt-4">
-            <Pressable
-              onPress={() => {
-                if (selected) onSelect(selected);
-                else onClear();
-              }}
-              className="flex-1 py-3.5 rounded-2xl items-center bg-primary-500 active:opacity-80"
-            >
-              <Text className="text-white font-semibold text-base">
-                {t("common:confirm")}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={onClose}
-              className="flex-1 py-3.5 rounded-2xl items-center bg-accent-paper active:opacity-80"
-            >
-              <Text className="text-ink-soft font-medium text-base">
-                {t("common:cancel")}
-              </Text>
-            </Pressable>
-          </View>
+        {/* Search */}
+        <View className="flex-row items-center bg-accent-paper rounded-xl px-3 py-2 mb-3">
+          <Search size={16} color="#9CA3AF" />
+          <TextInput
+            className="flex-1 ml-2 text-base text-ink"
+            placeholder={t("searchCompanion")}
+            placeholderTextColor="#9CA3AF"
+            value={search}
+            onChangeText={setSearch}
+            autoCapitalize="none"
+          />
         </View>
-      </BottomSheetView>
-    </BottomSheetModal>
+
+        {/* Guest list */}
+        <ScrollView style={{ maxHeight }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+          {filteredGuests.map((g) => (
+            <Pressable
+              key={g.id}
+              onPress={() => setSelected(selected === g.id ? null : g.id)}
+              className={`flex-row items-center px-3 py-3 rounded-xl mb-1 ${
+                selected === g.id
+                  ? "bg-primary-50 dark:bg-primary-950"
+                  : "active:bg-accent-paper dark:active:bg-accent-card"
+              }`}
+            >
+              <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-3">
+                <Text className="text-primary-500 font-bold text-xs">
+                  {g.firstName[0]}
+                  {g.lastName[0]}
+                </Text>
+              </View>
+              <Text className="flex-1 text-base text-ink">
+                {g.firstName} {g.lastName}
+              </Text>
+              {selected === g.id && <Check size={18} color="#EC4899" />}
+            </Pressable>
+          ))}
+          {filteredGuests.length === 0 && (
+            <Text className="text-center text-mute py-6">
+              {t("noGuests")}
+            </Text>
+          )}
+        </ScrollView>
+
+        {/* Footer buttons */}
+        <View className="flex-row gap-3 mt-4">
+          <Pressable
+            onPress={() => {
+              if (selected) onSelect(selected);
+              else onClear();
+            }}
+            className="flex-1 py-3.5 rounded-2xl items-center bg-primary-500 active:opacity-80"
+          >
+            <Text className="text-white font-semibold text-base">
+              {t("common:confirm")}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={onClose}
+            className="flex-1 py-3.5 rounded-2xl items-center bg-accent-paper active:opacity-80"
+          >
+            <Text className="text-ink-soft font-medium text-base">
+              {t("common:cancel")}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </Sheet>
   );
 }

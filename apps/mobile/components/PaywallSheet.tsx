@@ -80,8 +80,6 @@ export function PaywallSheet({ visible, onClose, userId, weddingId }: PaywallShe
   return (
     <Sheet visible={visible} onDismiss={onClose}>
       <View className="bg-accent-card rounded-t-3xl px-6 pt-6 pb-10">
-        <View className="w-10 h-1 rounded-full bg-hair self-center mb-5" />
-
         <View className="items-center mb-4">
           <View className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-900 items-center justify-center mb-3">
             <Sparkles size={28} color="#EC4899" />
