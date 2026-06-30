@@ -19,7 +19,9 @@ design-package/
 .DS_Store
 
 # Build artifacts
-build-*.apk
+*.apk
+*.aab
+*.ipa
 .pnpm-debug.log
 # Workspace node_modules at sub-package level
 apps/mobile/node_modules
