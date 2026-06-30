@@ -38,14 +38,14 @@ importers:
         specifier: 0.9.0
         version: 0.9.0
       '@drakkar.software/sunglasses-core':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.14.0
+        version: 0.14.0
       '@drakkar.software/sunglasses-react-native':
-        specifier: 0.13.0
-        version: 0.13.0(expo-router@56.2.11)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+        specifier: 0.14.0
+        version: 0.14.0(expo-router@56.2.11)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       '@drakkar.software/sunglasses-storage-async-storage':
-        specifier: 0.9.0
-        version: 0.9.0(@react-native-async-storage/async-storage@2.2.0(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)))
+        specifier: 0.9.1
+        version: 0.9.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)))
       '@expo-google-fonts/caveat':
         specifier: ^0.3.0
         version: 0.3.0
@@ -870,11 +870,11 @@ packages:
   '@drakkar.software/sunglasses-core@0.10.0':
     resolution: {integrity: sha512-rIhRZbu1tdStrFUnATsVS7271hnvbSY50C1Z3vosqGXcXAzvTqL5a0IeVGG3BlM27Zp81ymAWCIDDpjVz58w7g==}
 
-  '@drakkar.software/sunglasses-core@0.13.0':
-    resolution: {integrity: sha512-qf9wSeixFBf6piCAbtkfVlq7bFOjeVTWuD/MZrp9CqI6ZwgY11KpTF5SP0RnGZRr5mIkWWInAkui7789tozVOg==}
+  '@drakkar.software/sunglasses-core@0.14.0':
+    resolution: {integrity: sha512-JKKJGQP2KKrWhY2EdAQtAIHnH9taRZ8Hi4uU7g8NkCRb5ZAt7sBmT7AjiK+VAswBjq3zQqfpgjcHzetrjrZDAg==}
 
-  '@drakkar.software/sunglasses-react-native@0.13.0':
-    resolution: {integrity: sha512-6B11eDUiCXgoftqrNWg/5zVuTn5Hrd5hYKdMzyKxqccNSVuUJncEp+yIlo/WYLo6xARXNRoy5xy0Cyq/2n/Yyg==}
+  '@drakkar.software/sunglasses-react-native@0.14.0':
+    resolution: {integrity: sha512-wECjkNzMhpdow+mzBqgzOKS0M3Gi2VUFf3MPyGlau+i92RCyiTYa5e7D3ViFcS/kNWKMv9Z5CCGe1BphunNoFg==}
     peerDependencies:
       expo-router: '>=3.0.0'
       react: '>=18.0.0'
@@ -883,8 +883,8 @@ packages:
       expo-router:
         optional: true
 
-  '@drakkar.software/sunglasses-storage-async-storage@0.9.0':
-    resolution: {integrity: sha512-0rdgPmzZVzwkDvymcRO6erp1fRi/TB9ZPm5UuSO4tYgsBphziXDy0ubfgAh5cSZ6sYtFF1zluu4PdAxNJN85Dg==}
+  '@drakkar.software/sunglasses-storage-async-storage@0.9.1':
+    resolution: {integrity: sha512-il9ESkMo02VS6XhmXBZvhd2HFaEGDiogn+RfcySjzpIc6VyRrqfy3GGfgl1yOQ2fX/MQNeJ41c+lguiEpdBLyQ==}
     peerDependencies:
       '@react-native-async-storage/async-storage': '>=1.x'
 
@@ -7284,19 +7284,19 @@ snapshots:
 
   '@drakkar.software/sunglasses-core@0.10.0': {}
 
-  '@drakkar.software/sunglasses-core@0.13.0': {}
+  '@drakkar.software/sunglasses-core@0.14.0': {}
 
-  '@drakkar.software/sunglasses-react-native@0.13.0(expo-router@56.2.11)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)':
+  '@drakkar.software/sunglasses-react-native@0.14.0(expo-router@56.2.11)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.13.0
+      '@drakkar.software/sunglasses-core': 0.14.0
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
     optionalDependencies:
       expo-router: 56.2.11(be4e47ad1b3f91f8ed8c525970598deb)
 
-  '@drakkar.software/sunglasses-storage-async-storage@0.9.0(@react-native-async-storage/async-storage@2.2.0(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)))':
+  '@drakkar.software/sunglasses-storage-async-storage@0.9.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)))':
     dependencies:
-      '@drakkar.software/sunglasses-core': 0.10.0
+      '@drakkar.software/sunglasses-core': 0.14.0
       '@react-native-async-storage/async-storage': 2.2.0(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
 
   '@egjs/hammerjs@2.0.17':
@@ -8544,7 +8544,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-color@2.1.0': {}
 
