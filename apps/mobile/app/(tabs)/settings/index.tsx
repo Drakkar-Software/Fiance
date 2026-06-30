@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
-import * as Linking from "expo-linking";
 import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
 import { analytics } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
+import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
@@ -21,9 +21,8 @@ import {
 } from "@/lib/starfish";
 import { activateSync } from "@/lib/providers";
 import { generatePassphrase } from "@/lib/identity";
-import { resolveServerConfig, resolveServerUrl, resolveSessionConfig } from "@/lib/server";
-import { createSpaceInviteLink } from "@fiance/sdk";
-import { ensureSpaceProvisioned } from "@/lib/space-provision";
+import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
+import { createInviteLink } from "@/lib/invite-link";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -170,42 +169,18 @@ export default function SettingsScreen() {
   }, [syncEnabled, activeEntry, premium, wedding, router, t]);
 
   const [showInviteQR, setShowInviteQR] = useState(false);
-  const [inviteUrl, setInviteUrl] = useState("");
 
-  const handleInvite = useCallback(async () => {
+  const handleInvite = useCallback(() => {
     if (!premium) { setShowPaywall(true); return; }
-    if (!activeEntry?.seedPhrase) {
-      Alert.alert(t("common:error"), t("noPassword"));
-      return;
-    }
-    if (!syncEnabled) {
-      Alert.alert(t("common:error"), t("enableSyncToShare"));
-      return;
-    }
-
-    try {
-      const sessionConfig = await resolveSessionConfig(activeEntry);
-      if (!sessionConfig) {
-        Alert.alert(t("common:error"), t("noPassword"));
-        return;
-      }
-      const { session } = sessionConfig;
-      const spaceId = await ensureSpaceProvisioned(session, activeEntry);
-      const origin = Linking.createURL("").replace(/\/$/, "");
-      const { link } = await createSpaceInviteLink(
-        session,
-        spaceId,
-        activeEntry.label,
-        true,
-        origin,
-      );
-      setInviteUrl(link);
-      setShowInviteQR(true);
-    } catch (err: any) {
-      console.error("[invite] createSpaceInviteLink failed:", err);
-      Alert.alert(t("common:error"), err?.message ?? String(err));
-    }
+    if (!activeEntry?.seedPhrase) { toast.error(t("noPassword")); return; }
+    if (!syncEnabled) { toast.error(t("enableSyncToShare")); return; }
+    setShowInviteQR(true);
   }, [activeEntry, syncEnabled, premium, t]);
+
+  const generateInvite = useCallback(
+    () => createInviteLink(activeEntry!),
+    [activeEntry],
+  );
 
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
 
@@ -640,7 +615,7 @@ export default function SettingsScreen() {
     <InviteQRSheet
       visible={showInviteQR}
       onClose={() => setShowInviteQR(false)}
-      inviteUrl={inviteUrl}
+      generate={generateInvite}
     />
 
     <PaywallSheet
