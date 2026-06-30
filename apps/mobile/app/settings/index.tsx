@@ -40,7 +40,6 @@ import { IconCard } from "@/components/IconCard";
 import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
 import { Display } from "@/components/Display";
-import { Postit } from "@/components/Postit";
 import { Label } from "@/components/Label";
 import { PageHeader } from "@/components/PageHeader";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -241,20 +240,17 @@ export default function SettingsScreen() {
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
     >
-      {/* Page header */}
-      <View className="px-4 pt-5 pb-3 flex-row items-start">
-        <View style={{ flex: 1 }}>
-          {Platform.OS === 'web' && (
-            <PageHeader
-              eyebrow={t("common:tabs.settings")}
-              title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
-              titleSize={28}
-              style={{ paddingHorizontal: 0, paddingTop: 0 }}
-            />
-          )}
+      {/* Page header (web only) */}
+      {Platform.OS === 'web' && (
+        <View className="px-4 pt-5 pb-3">
+          <PageHeader
+            eyebrow={t("common:tabs.settings")}
+            title={partner1 && partner2 ? `${partner1} & ${partner2}` : t("title")}
+            titleSize={28}
+            style={{ paddingHorizontal: 0, paddingTop: 0 }}
+          />
         </View>
-        <Postit angle={-3} style={{ marginTop: 2 }}>{t("postit")}</Postit>
-      </View>
+      )}
 
       {/* Premium */}
       <View className="px-4 pt-2">
