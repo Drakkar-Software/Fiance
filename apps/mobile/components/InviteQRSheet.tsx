@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native-css/components";
-import { ActivityIndicator } from "react-native";
+import { View, Pressable, Text, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { shareLink } from "@/lib/share";
 import { Sheet } from "@drakkar.software/seahorse/components";
-import { AlertCircle } from "lucide-react-native";
+import { AlertCircle, Link2 } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
+import { theme } from "@/lib/theme";
 
 interface InviteQRSheetProps {
   visible: boolean;
@@ -40,7 +40,6 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
     if (visible) {
       run();
     } else {
-      // Reset so next open starts fresh
       setState("generating");
       setUrl("");
       setDetail("");
@@ -52,12 +51,16 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   };
 
   return (
-    <Sheet visible={visible} onDismiss={onClose}>
-      <View className="bg-accent-card rounded-t-3xl px-6 pt-6 pb-10">
+    <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card}>
+      {/* paddingHorizontal: BottomSheet already adds 16px iOS insets; 8px adds a bit more breathing room.
+          paddingTop: BottomSheet handles drag indicator + 16px top chrome — no extra top padding needed.
+          Web fallback: these insets substitute for the BottomSheet chrome that only exists on native. */}
+      <View style={{ backgroundColor: theme.card, paddingHorizontal: 8, paddingTop: 8, paddingBottom: 40 }}>
+
         {state === "generating" && (
-          <View className="items-center py-12 gap-4">
-            <ActivityIndicator size="large" color="#b96a4a" />
-            <Text className="text-sm text-mute text-center">
+          <View style={{ alignItems: "center", paddingVertical: 48, gap: 16 }}>
+            <ActivityIndicator size="large" color={theme.clay} />
+            <Text style={{ fontSize: 14, color: theme.mute, textAlign: "center" }}>
               {t("inviteGenerating")}
             </Text>
           </View>
@@ -65,80 +68,138 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
 
         {state === "ready" && (
           <>
-            <Text className="text-xl font-bold text-ink mb-1">
-              {t("shareInviteLink")}
-            </Text>
-            <Text className="text-sm text-mute mb-6">
-              {t("scanFromOtherDevice")}
-            </Text>
-
-            <View className="items-center mb-4">
-              <View className="bg-white p-3 rounded-2xl shadow-sm">
-                <QRCode value={url} size={160} />
+            {/* Header row */}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24 }}>
+              <View style={{
+                width: 44, height: 44, borderRadius: 14,
+                backgroundColor: theme.claySoft,
+                alignItems: "center", justifyContent: "center",
+              }}>
+                <Link2 size={20} color={theme.clay} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 18, fontWeight: "700", color: theme.ink, letterSpacing: -0.3 }}>
+                  {t("shareInviteLink")}
+                </Text>
+                <Text style={{ fontSize: 13, color: theme.mute, marginTop: 2 }}>
+                  {t("scanFromOtherDevice")}
+                </Text>
               </View>
             </View>
 
-            <View className="overflow-hidden mb-6">
+            {/* QR code card */}
+            <View style={{ alignItems: "center", marginBottom: 20 }}>
+              <View style={{
+                backgroundColor: "#ffffff",
+                padding: 16,
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: theme.hair,
+              }}>
+                <QRCode value={url} size={184} />
+              </View>
+            </View>
+
+            {/* URL pill */}
+            <View style={{
+              backgroundColor: theme.paper,
+              borderRadius: 12,
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+              marginBottom: 20,
+              overflow: "hidden",
+            }}>
               <Text
                 selectable
-                className="text-xs text-mute text-center font-mono"
                 numberOfLines={1}
                 ellipsizeMode="middle"
+                style={{ fontSize: 11, color: theme.mute, textAlign: "center" }}
               >
                 {url}
               </Text>
             </View>
 
+            {/* Share button */}
             <Pressable
               onPress={handleShare}
-              className="bg-primary-500 rounded-2xl py-3.5 items-center active:opacity-80"
+              style={({ pressed }) => ({
+                backgroundColor: theme.clay,
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                opacity: pressed ? 0.8 : 1,
+              })}
             >
-              <Text className="text-white font-semibold text-base">{t("shareLink")}</Text>
+              <Text style={{ color: "#ffffff", fontWeight: "600", fontSize: 16 }}>
+                {t("shareLink")}
+              </Text>
             </Pressable>
           </>
         )}
 
         {state === "error" && (
           <>
-            <View className="flex-row items-center gap-3 mb-4">
-              <View className="w-10 h-10 rounded-xl bg-red-50 items-center justify-center">
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <View style={{
+                width: 44, height: 44, borderRadius: 14,
+                backgroundColor: "#fef2f2",
+                alignItems: "center", justifyContent: "center",
+              }}>
                 <AlertCircle size={20} color="#EF4444" />
               </View>
-              <Text className="text-lg font-bold text-ink flex-1">
+              <Text style={{ fontSize: 18, fontWeight: "700", color: theme.ink, flex: 1 }}>
                 {t("inviteErrorTitle")}
               </Text>
             </View>
 
-            <Text className="text-sm text-mute leading-5 mb-4">
+            <Text style={{ fontSize: 14, color: theme.mute, lineHeight: 20, marginBottom: 16 }}>
               {t("inviteErrorBody")}
             </Text>
 
             {detail ? (
-              <View className="bg-accent-paper rounded-xl px-3 py-2 mb-6">
+              <View style={{
+                backgroundColor: theme.paper,
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                marginBottom: 24,
+                overflow: "hidden",
+              }}>
                 <Text
                   selectable
-                  className="text-xs text-mute font-mono leading-4"
                   numberOfLines={4}
+                  style={{ fontSize: 11, color: theme.mute, lineHeight: 16 }}
                 >
                   {detail}
                 </Text>
               </View>
             ) : (
-              <View className="mb-6" />
+              <View style={{ marginBottom: 24 }} />
             )}
 
             <Pressable
               onPress={run}
-              className="bg-primary-500 rounded-2xl py-3.5 items-center active:opacity-80 mb-3"
+              style={({ pressed }) => ({
+                backgroundColor: theme.clay,
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                opacity: pressed ? 0.8 : 1,
+                marginBottom: 12,
+              })}
             >
-              <Text className="text-white font-semibold text-base">{t("inviteRetry")}</Text>
+              <Text style={{ color: "#ffffff", fontWeight: "600", fontSize: 16 }}>
+                {t("inviteRetry")}
+              </Text>
             </Pressable>
 
             <Pressable
               onPress={onClose}
-              className="items-center py-2 active:opacity-60"
+              style={({ pressed }) => ({ alignItems: "center", paddingVertical: 8, opacity: pressed ? 0.6 : 1 })}
             >
-              <Text className="text-sm text-mute">{t("cancel")}</Text>
+              <Text style={{ fontSize: 14, color: theme.mute }}>
+                {t("cancel")}
+              </Text>
             </Pressable>
           </>
         )}
