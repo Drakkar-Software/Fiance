@@ -4,7 +4,7 @@ import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets, initialWindowMetrics } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -35,7 +35,9 @@ export default function HomeScreen() {
 function DashboardScreen() {
   const { t } = useTranslation("dashboard");
   const insets = useSafeAreaInsets();
-  const topInset = insets.top || RNStatusBar.currentHeight || 0;
+  // NativeTabs (UITabBarController) zeroes the top inset in child VCs — fall back to
+  // device-level initialWindowMetrics which is unaffected by the native VC hierarchy.
+  const topInset = insets.top || initialWindowMetrics?.insets.top || RNStatusBar.currentHeight || 0;
   const router = useRouter();
   const isWide = useIsWideScreen();
   const syncDotColor = useSyncStatusDot();
