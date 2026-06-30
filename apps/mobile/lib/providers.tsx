@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, discoverOwnerWeddingRoot } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
@@ -196,6 +196,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       if (fgSession && fgSpaceId) {
         refreshRsvpInbox(fgSession, fgSpaceId).catch(() => {});
       }
+      // Pull peers' content changes on foreground (tab refocus / app resume) — content
+      // sync otherwise only re-hydrates on cold boot/wedding switch (see space-sync.ts).
+      refreshFromSpaceIfIdle().catch(() => {});
     });
 
     return () => {

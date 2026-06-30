@@ -15,6 +15,8 @@ import {
   objDocPush,
   objDocPull,
   objInvPull,
+  deepMerge,
+  stableStringify,
   FIANCE_TYPES,
   weddingToNode, weddingFromDoc,
   guestGroupToNode, guestGroupFromDoc,
@@ -57,6 +59,21 @@ import { withIndexLock } from '@/lib/index-lock';
 let _pushTimer: ReturnType<typeof setTimeout> | null = null;
 let _isHydrating = false;
 
+/**
+ * Dirty-push tracking: node id → stableStringify() of the content last successfully
+ * pushed (or hydrated) for that node. pushSpaceSnapshot only re-pushes nodes whose
+ * current content differs from this baseline, so an edit to one guest doesn't re-push
+ * (and clobber) every other node's content on the next debounced push.
+ */
+const _lastPushedJson = new Map<string, string>();
+
+/** Domain node types managed wholesale by buildAllNodes/pushSpaceSnapshot — excludes the
+ *  guest-surface synthetic nodes (publicPage, rsvp) which are written by other code paths
+ *  and must survive a snapshot push untouched. */
+const MANAGED_TYPES = new Set<string>(
+  Object.values(FIANCE_TYPES).filter((t) => t !== FIANCE_TYPES.publicPage && t !== FIANCE_TYPES.rsvp),
+);
+
 /** Called from registerPull('*') in providers.tsx after initSync(). Debounced 2s. */
 export function scheduleSyncPush(): void {
   if (_isHydrating) return;
@@ -87,6 +104,13 @@ export function suppressSyncPush(): void {
 /** Re-enable push scheduling after a legacy import. */
 export function restoreSyncPush(): void {
   _isHydrating = false;
+}
+
+/** Clears the dirty-push baseline. hydrateFromSpace already reseeds it correctly in
+ *  production (cold boot / wedding switch); exported so tests can isolate consecutive
+ *  pushSpaceSnapshot calls from each other's dirty-tracking state. */
+export function resetDirtyPushBaseline(): void {
+  _lastPushedJson.clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -219,12 +243,18 @@ async function pushNodeContent(
   spaceId: string,
   node: ObjectNode,
   content: Record<string, unknown>,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const handle = await getNodeAccess(spaceId, node.id, node, session, null);
-    await handle.push(objDocPull(spaceId, node.id), objDocPush(spaceId, node.id), () => content);
+    // Conflict-retry mutator: `cur` is the remote doc the SDK's CAS retry pulled and
+    // decrypted (space-access.ts) when this push lost a race against a peer's push.
+    // Deep-merge so a field this device never touched is reconciled from the peer's
+    // version instead of being clobbered by a stale whole-tree push.
+    await handle.push(objDocPull(spaceId, node.id), objDocPush(spaceId, node.id), (cur) => deepMerge(cur, content));
+    return true;
   } catch (err) {
     console.warn(`[space-sync] pushNodeContent ${node.id}:`, err);
+    return false;
   }
 }
 
@@ -238,18 +268,38 @@ export async function pushSpaceSnapshot(
 
   await withIndexLock(spaceId, () =>
     updateObjectIndex(session, spaceId, (prev, now) => {
-      const domainIds = new Set(nodes.map((n) => n.id));
-      const nonDomain = prev.filter((n) => !domainIds.has(n.id));
-      return [...nodes.map((n) => ({ ...n, updatedAt: now })), ...nonDomain];
+      // Keep prev entries of non-managed types (publicPage, rsvp) untouched. Drop ALL
+      // prev entries of managed types — `nodes` above is the complete current set for
+      // every managed type, so a managed node missing from it was deleted locally and
+      // must not be re-added (this is what made deletions never propagate to peers).
+      const nonManaged = prev.filter((n) => !MANAGED_TYPES.has(n.type));
+      return [...nodes.map((n) => ({ ...n, updatedAt: now })), ...nonManaged];
     }),
   );
 
+  // Only push nodes whose content actually changed since the last successful push/hydrate.
+  // Without this, every snapshot re-pushes the entire tree, and last-writer-wins at the
+  // node level means an unrelated push from this device can clobber a peer's newer edit
+  // to a node this device never touched.
+  const dirtyNodes = nodes.filter((n) => {
+    const content = contentMap.get(n.id);
+    return content !== undefined && stableStringify(content) !== _lastPushedJson.get(n.id);
+  });
+
   await Promise.allSettled(
-    nodes.map((n) => {
-      const content = contentMap.get(n.id);
-      return content ? pushNodeContent(session, spaceId, n, content) : Promise.resolve();
+    dirtyNodes.map((n) => {
+      const content = contentMap.get(n.id)!;
+      return pushNodeContent(session, spaceId, n, content).then((ok) => {
+        if (ok) _lastPushedJson.set(n.id, stableStringify(content));
+      });
     }),
   );
+
+  // Prune baseline entries for nodes that no longer exist locally (deleted).
+  const currentIds = new Set(nodes.map((n) => n.id));
+  for (const id of _lastPushedJson.keys()) {
+    if (!currentIds.has(id)) _lastPushedJson.delete(id);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -406,10 +456,37 @@ export async function hydrateFromSpace(
     // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
     await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
 
+    // Seed the dirty-push baseline from what we just hydrated, so the next debounced
+    // push only sends nodes genuinely edited locally after this point (see
+    // _lastPushedJson / pushSpaceSnapshot above) instead of re-pushing everything.
+    const { nodes: builtNodes, contentMap: builtContent } = buildAllNodes(weddingNodeId);
+    _lastPushedJson.clear();
+    for (const n of builtNodes) {
+      const content = builtContent.get(n.id);
+      if (content) _lastPushedJson.set(n.id, stableStringify(content));
+    }
+
     return nodes.length;
   } finally {
     _isHydrating = false;
   }
+}
+
+/**
+ * Re-hydrates from the space if no local push is in flight or pending — called on
+ * app/tab foreground so this device picks up peers' changes without a full reload.
+ * No-ops while hydrating or while a debounced local push is queued, so it never
+ * clobbers an edit this device hasn't flushed yet.
+ */
+export async function refreshFromSpaceIfIdle(): Promise<void> {
+  if (_isHydrating || _pushTimer) return;
+  const session = getActiveSession();
+  const spaceId = getActiveSpaceId();
+  const weddingNodeId = getActiveWeddingNodeId();
+  if (!session || !spaceId || !weddingNodeId) return;
+  await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
+    console.warn('[space-sync] refreshFromSpaceIfIdle failed:', err);
+  });
 }
 
 // ---------------------------------------------------------------------------

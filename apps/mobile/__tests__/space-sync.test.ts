@@ -209,10 +209,14 @@ describe("scheduleSyncPush / _isHydrating timer guard", () => {
 // that its internal client.push receives the server hash (not null) as baseHash.
 
 describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
     mockWeddingData = { id: "w1", name: "Test Wedding" };
+    // Dirty-tracking is shared module state — reset so this describe block's pushes
+    // aren't skipped as "unchanged" by a previous describe block's identical content.
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
     mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
     mockClientPush = vi.fn(async () => ({ hash: "H2" }));
     mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
@@ -445,10 +449,12 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
 // still runs. The node is created with baseHash = null (not swallowed with a throw).
 
 describe("pushNodeContent succeeds for a missing encrypted node (Bug B regression)", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
     mockWeddingData = { id: "w1", name: "Test Wedding" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
     // Pull returns the "missing doc" response: truthy {} data with empty hash.
     mockClientPull = vi.fn(async () => ({ data: {}, hash: "" }));
     mockClientPush = vi.fn(async () => ({ hash: "H_created" }));
@@ -487,6 +493,153 @@ describe("pushNodeContent succeeds for a missing encrypted node (Bug B regressio
       expect.stringContaining("w1"),
       expect.any(Object),
       "",
+    );
+  });
+});
+
+// ─── Regression: dirty-tracking skips unchanged nodes ─────────────────────────
+//
+// Before the fix, pushSpaceSnapshot re-pushed every node on every call (no content
+// diff). Combined with node-level last-writer-wins, a push triggered by editing one
+// guest could clobber a peer's newer edit to a node this device never touched. The
+// fix tracks each node's last-pushed content and only re-pushes when it changed.
+
+describe("pushSpaceSnapshot — dirty-tracking skips unchanged nodes", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("a second push with unchanged content does not re-push the node", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(mockClientPush).toHaveBeenCalledTimes(1);
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(mockClientPush).toHaveBeenCalledTimes(1); // still 1 — unchanged node skipped
+  });
+
+  it("a push after the node's content changes re-pushes it", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(mockClientPush).toHaveBeenCalledTimes(1);
+
+    mockWeddingData = { id: "w1", name: "Renamed Wedding" };
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(mockClientPush).toHaveBeenCalledTimes(2);
+  });
+});
+
+// ─── Regression: deleted nodes drop out of the index instead of lingering ─────
+//
+// Before the fix, the index updater kept any prev node whose id wasn't in the
+// freshly-built node set — which is true for a node deleted locally, so it never
+// left the index and kept reappearing for peers. The fix drops prev nodes of a
+// managed (domain) type that are missing from the fresh set, while leaving
+// non-managed nodes (publicPage, rsvp) — owned by other code paths — untouched.
+
+describe("pushSpaceSnapshot — deletion propagation", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("drops a managed node missing from the snapshot, keeps a non-managed (rsvp) node", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(mockUpdateObjectIndex).toHaveBeenCalledTimes(1);
+    const updater = mockUpdateObjectIndex.mock.calls[0][2] as (prev: { id: string; type: string }[], now: number) => { id: string }[];
+    const prev = [
+      { id: "w1", type: "wedding" },
+      { id: "deleted-guest", type: "guest" }, // no longer in the local store → must be dropped
+      { id: "rsvp-1", type: "rsvp" },         // non-managed type → must survive untouched
+    ];
+    const next = updater(prev, Date.now());
+    const ids = next.map((n) => n.id);
+    expect(ids).not.toContain("deleted-guest");
+    expect(ids).toContain("rsvp-1");
+    expect(ids).toContain("w1");
+  });
+});
+
+// ─── Regression: conflict-retry mutator deep-merges instead of clobbering ─────
+//
+// Before the fix, pushNodeContent's mutator was `() => content` — it ignored `cur`,
+// the remote doc the SDK's CAS retry pulls and decrypts on a 409 conflict, and just
+// re-pushed the local snapshot. A field a peer wrote and this device never touched
+// was silently overwritten. The fix's mutator is `(cur) => deepMerge(cur, content)`.
+
+describe("pushNodeContent conflict mutator — deep-merges remote content instead of clobbering", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Local Name" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    // Simulates a conflict-retry pull: the server has a field this device never touched.
+    mockClientPull = vi.fn(async () => ({ data: { existing: true, untouchedField: "fromRemote" }, hash: "H1" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("merges the remote doc's untouched field into the pushed payload instead of dropping it", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(mockClientPush).toHaveBeenCalledWith(
+      expect.stringContaining("w1"),
+      expect.objectContaining({ untouchedField: "fromRemote", name: "Local Name" }),
+      "H1",
     );
   });
 });
