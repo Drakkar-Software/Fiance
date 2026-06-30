@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
@@ -13,8 +13,6 @@ import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
-import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { ProgressBar } from "@/components/ProgressBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
@@ -72,11 +70,12 @@ function DashboardScreen() {
       .slice(0, 3);
   }, [tasks]);
   const criticalUnstarted = React.useMemo(
-    () => tasks.filter((task) => {
-      if (task.priority !== "CRITICAL" || task.status !== "TODO" || !task.dueDate) return false;
-      const days = differenceInDays(new Date(task.dueDate), new Date());
-      return days >= 0 && days <= 30;
-    }),
+    () =>
+      tasks.filter((task) => {
+        if (task.priority !== "CRITICAL" || task.status !== "TODO" || !task.dueDate) return false;
+        const days = differenceInDays(new Date(task.dueDate), new Date());
+        return days >= 0 && days <= 30;
+      }),
     [tasks]
   );
   const completionRate = React.useMemo(() => {
@@ -87,35 +86,23 @@ function DashboardScreen() {
   const budget = useBudgetSummary();
   const ideaCount = useIdeasStore((s) => s.ideas.length);
 
-  const weddingDate = wedding?.weddingDate
-    ? new Date(wedding.weddingDate)
-    : null;
-  const daysUntil = weddingDate
-    ? differenceInDays(weddingDate, new Date())
-    : null;
-
-  const bookedVendors = vendors.filter((v) => v.status === "BOOKED");
+  const weddingDate = wedding?.weddingDate ? new Date(wedding.weddingDate) : null;
+  const daysUntil = weddingDate ? differenceInDays(weddingDate, new Date()) : null;
 
   const urgentDeposits = vendors.filter((v) => {
     if (!v.depositDueDate || v.depositPaid) return false;
     const days = differenceInDays(new Date(v.depositDueDate), new Date());
     return days >= 0 && days <= 7;
   });
-
   const expiringQuotes = vendors.filter((v) => {
-    if (!v.validityDate || v.status === "BOOKED" || v.status === "CANCELLED")
-      return false;
+    if (!v.validityDate || v.status === "BOOKED" || v.status === "CANCELLED") return false;
     const days = differenceInDays(new Date(v.validityDate), new Date());
     return days >= 0 && days <= 7;
   });
-
   const hasUrgent =
-    urgentDeposits.length > 0 ||
-    expiringQuotes.length > 0 ||
-    criticalUnstarted.length > 0;
+    urgentDeposits.length > 0 || expiringQuotes.length > 0 || criticalUnstarted.length > 0;
 
   const { canInstall, install: installPwa, isIosSafari, dismissIosBanner } = usePwaInstall();
-
   const install = useCallback(() => {
     analytics.capture("pwa_install_clicked");
     installPwa();
@@ -128,8 +115,15 @@ function DashboardScreen() {
     }
   }, [daysUntil]);
 
-  const registry = useWeddingRegistryStore((s) => s.registry);
-  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
+  const coupleNames = [wedding?.partner1Name, wedding?.partner2Name].filter(Boolean).join(" & ");
+
+  const guestPct =
+    counts.total > 0 ? Math.min(Math.round((counts.accepted / counts.total) * 100), 100) : 0;
+  const budgetPct =
+    budget.budgetTarget > 0
+      ? Math.min(Math.round((budget.totalEngaged / budget.budgetTarget) * 100), 100)
+      : 0;
+  const budgetOverflow = budget.remaining < 0;
 
   return (
     <ScrollView
@@ -137,7 +131,7 @@ function DashboardScreen() {
       showsVerticalScrollIndicator={false}
       contentInsetAdjustmentBehavior="never"
     >
-      {/* Header / Countdown */}
+      {/* ── Hero ── */}
       <View
         className="px-6 pb-10 relative"
         style={{
@@ -178,9 +172,18 @@ function DashboardScreen() {
             </Pressable>
           </View>
         )}
-        <View style={{ position: "absolute", top: topInset + 14, right: 58, opacity: 0.4, pointerEvents: "none" }}>
+        <View
+          style={{ position: "absolute", top: topInset + 14, right: 58, opacity: 0.4, pointerEvents: "none" }}
+        >
           <Sprig size={22} color="#fff" angle={16} />
         </View>
+
+        {coupleNames ? (
+          <Script size={19} color="rgba(255,255,255,0.8)" style={{ marginBottom: 2 }}>
+            {coupleNames}
+          </Script>
+        ) : null}
+
         {daysUntil != null && daysUntil >= 0 ? (
           <>
             <PageHeader
@@ -216,76 +219,54 @@ function DashboardScreen() {
             </Display>
           </>
         )}
+
         {wedding?.venueName && (
           <View className="flex-row items-center mt-3 bg-white/10 self-start px-3 py-1.5 rounded-full">
             <MapPin size={14} color="rgba(255,255,255,0.8)" />
-            <Text className="text-white/80 ml-1.5 text-sm">
-              {wedding.venueName}
-            </Text>
+            <Text className="text-white/80 ml-1.5 text-sm">{wedding.venueName}</Text>
           </View>
         )}
       </View>
 
-      {/* Quick action strip */}
-      <View className="flex-row px-4 gap-2 -mt-5 mb-3">
-        <Pressable
-          onPress={() => router.push("/(tabs)/guests")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
-        >
-          <Users size={18} color={GP.clay} />
-          <Text className="text-xs font-medium text-ink-soft mt-1">
-            {t("quickAddGuest")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push("/(tabs)/planning")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
-        >
-          <Calendar size={18} color="#F59E0B" />
-          <Text className="text-xs font-medium text-ink-soft mt-1">
-            {t("quickAddTask")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push("/(tabs)/budget")}
-          className="flex-1 bg-accent-card rounded-2xl py-3 items-center border border-hair active:opacity-70"
-        >
-          <PieChart size={18} color="#10B981" />
-          <Text className="text-xs font-medium text-ink-soft mt-1">
-            {t("quickAddExpense")}
-          </Text>
-        </Pressable>
-      </View>
-
-      <View className="px-4">
+      {/* ── Content — overlaps hero by 20px ── */}
+      <View className="px-4 -mt-5">
         {/* Urgent actions */}
         {hasUrgent && (
-          <View className="bg-red-50 dark:bg-red-950 rounded-2xl p-4 mb-3 border border-red-100 dark:border-red-900">
+          <View
+            className="rounded-2xl p-4 mb-3 border"
+            style={{ backgroundColor: GP.claySoft, borderColor: `${GP.clay}33` }}
+          >
             <View className="flex-row items-center mb-2.5">
-              <View className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900 items-center justify-center mr-2">
-                <AlertTriangle size={14} color="#EF4444" />
+              <View
+                className="w-6 h-6 rounded-full items-center justify-center mr-2"
+                style={{ backgroundColor: `${GP.clay}22` }}
+              >
+                <AlertTriangle size={14} color={GP.clay} />
               </View>
-              <Text className="text-sm font-semibold text-red-700 dark:text-red-300">
+              <Text className="text-sm font-semibold" style={{ color: GP.clay }}>
                 {t("urgentActions")}
               </Text>
             </View>
             {urgentDeposits.map((v) => (
               <View key={v.id} className="flex-row items-center mb-1.5 ml-8">
-                <Text className="text-sm text-red-600 dark:text-red-400 flex-1">
-                  {t("deposit", { name: v.name, date: v.depositDueDate ? format(new Date(v.depositDueDate), "dd/MM") : "" })}
+                <Text className="text-sm flex-1" style={{ color: GP.inkSoft }}>
+                  {t("deposit", {
+                    name: v.name,
+                    date: v.depositDueDate ? format(new Date(v.depositDueDate), "dd/MM") : "",
+                  })}
                 </Text>
               </View>
             ))}
             {expiringQuotes.map((v) => (
               <View key={v.id} className="flex-row items-center mb-1.5 ml-8">
-                <Text className="text-sm text-amber-600 dark:text-amber-400 flex-1">
+                <Text className="text-sm flex-1" style={{ color: GP.mustard }}>
                   {t("quoteExpiring", { name: v.name })}
                 </Text>
               </View>
             ))}
             {criticalUnstarted.map((task) => (
               <View key={task.id} className="flex-row items-center mb-1.5 ml-8">
-                <Text className="text-sm text-red-600 dark:text-red-400 flex-1">
+                <Text className="text-sm flex-1" style={{ color: GP.inkSoft }}>
                   {task.title}
                 </Text>
               </View>
@@ -299,21 +280,21 @@ function DashboardScreen() {
             onPress={install}
             className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
           >
-            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+            <View className="w-10 h-10 rounded-xl bg-accent-clay-soft items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
             </View>
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">{t("installApp")}</Text>
               <Text className="text-xs text-mute mt-0.5">{t("installAppDesc")}</Text>
             </View>
-            <ChevronRight size={18} color="#C0C0C8" />
+            <ChevronRight size={18} color={GP.mute} />
           </Pressable>
         )}
 
         {/* PWA install banner — iOS Safari */}
         {isIosSafari && (
           <View className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center">
-            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center mr-3">
+            <View className="w-10 h-10 rounded-xl bg-accent-clay-soft items-center justify-center mr-3">
               <Download size={20} color={GP.clay} />
             </View>
             <View className="flex-1">
@@ -321,137 +302,258 @@ function DashboardScreen() {
               <Text className="text-xs text-mute mt-0.5">{t("installIosSteps")}</Text>
             </View>
             <Pressable onPress={dismissIosBanner} className="p-1">
-              <X size={18} color="#C0C0C8" />
+              <X size={18} color={GP.mute} />
             </Pressable>
           </View>
         )}
 
-        {/* Budget summary card */}
+        {/* Progression: Invités · Budget · Tâches */}
+        <View className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair">
+          <Label style={{ marginBottom: 12 }}>{t("progress")}</Label>
+          <View className="flex-row">
+            {/* Invités */}
+            <Pressable
+              onPress={() => router.push("/(tabs)/guests")}
+              className="flex-1 active:opacity-70"
+              style={{ paddingRight: 12 }}
+            >
+              <Label color={GP.olive} style={{ marginBottom: 6 }}>
+                {t("guests")}
+              </Label>
+              <Display size={24} weight="500" color={GP.ink}>
+                {counts.accepted}
+                <Text style={{ fontSize: 14, color: GP.mute, fontFamily: "Inter_400Regular" }}>
+                  /{counts.total}
+                </Text>
+              </Display>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: GP.hair,
+                  borderRadius: 2,
+                  marginTop: 8,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    width: `${guestPct}%`,
+                    height: "100%",
+                    backgroundColor: GP.olive,
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+              {counts.no_table_count > 0 && (
+                <Text className="text-[10px] font-medium mt-1.5" style={{ color: GP.mustard }}>
+                  {t("noTable", { count: counts.no_table_count })}
+                </Text>
+              )}
+            </Pressable>
+
+            <View style={{ width: 1, backgroundColor: GP.hair }} />
+
+            {/* Budget */}
+            <Pressable
+              onPress={() => router.push("/(tabs)/budget")}
+              className="flex-1 active:opacity-70"
+              style={{ paddingHorizontal: 12 }}
+            >
+              <Label color={GP.mustard} style={{ marginBottom: 6 }}>
+                {t("budget")}
+              </Label>
+              <Display size={24} weight="500" color={GP.ink}>
+                {budgetPct}
+                <Text style={{ fontSize: 14, color: GP.mute, fontFamily: "Inter_400Regular" }}>%</Text>
+              </Display>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: GP.hair,
+                  borderRadius: 2,
+                  marginTop: 8,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    width: `${budgetPct}%`,
+                    height: "100%",
+                    backgroundColor: budgetOverflow ? GP.clay : GP.mustard,
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+              {budgetOverflow ? (
+                <Text className="text-[10px] font-medium mt-1.5" style={{ color: GP.clay }}>
+                  {t("overBudget", { amount: formatMoney(Math.abs(budget.remaining)) })}
+                </Text>
+              ) : (
+                <Text className="text-[10px] mt-1.5" style={{ color: GP.mute }} numberOfLines={1}>
+                  {formatMoney(budget.totalEngaged)} / {formatMoney(budget.budgetTarget)}
+                </Text>
+              )}
+            </Pressable>
+
+            <View style={{ width: 1, backgroundColor: GP.hair }} />
+
+            {/* Tâches */}
+            <Pressable
+              onPress={() => router.push("/(tabs)/planning")}
+              className="flex-1 active:opacity-70"
+              style={{ paddingLeft: 12 }}
+            >
+              <Label color={GP.clay} style={{ marginBottom: 6 }}>
+                {t("planning")}
+              </Label>
+              <Display size={24} weight="500" color={GP.ink}>
+                {completionRate}
+                <Text style={{ fontSize: 14, color: GP.mute, fontFamily: "Inter_400Regular" }}>%</Text>
+              </Display>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: GP.hair,
+                  borderRadius: 2,
+                  marginTop: 8,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    width: `${completionRate}%`,
+                    height: "100%",
+                    backgroundColor: GP.clay,
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+              {overdueTasks.length > 0 && (
+                <Text className="text-[10px] font-medium mt-1.5" style={{ color: GP.clay }}>
+                  {t("overdue", { count: overdueTasks.length })}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+
+        {/* À venir: appointments + tasks merged */}
         <Pressable
-          onPress={() => router.push("/(tabs)/budget")}
+          onPress={() =>
+            router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })
+          }
           className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-accent-sage-light dark:bg-emerald-900 items-center justify-center mr-2.5">
-                <PieChart size={16} color="#7B9A7B" />
-              </View>
-              <Text className="text-base font-semibold text-ink">
-                {t("budget")}
-              </Text>
-            </View>
-            <Text className="text-xs text-mute">
-              {t("booked", { count: bookedVendors.length })}
-            </Text>
+            <Label>{t("upcoming")}</Label>
+            <ChevronRight size={16} color={GP.mute} />
           </View>
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-sm text-mute">{t("committed")}</Text>
-            <Text className="text-sm font-semibold text-ink">
-              {formatMoney(budget.totalEngaged)} /{" "}
-              {formatMoney(budget.budgetTarget)}
-            </Text>
-          </View>
-          <ProgressBar
-            value={budget.totalEngaged}
-            max={budget.budgetTarget}
-            colorScheme="budget"
-            showPercentage={false}
-          />
-          {budget.remaining < 0 && (
-            <Text className="text-xs text-red-500 mt-2 font-medium">
-              {t("overBudget", { amount: formatMoney(Math.abs(budget.remaining)) })}
-            </Text>
+          {next3Events.length === 0 && next3Tasks.length === 0 ? (
+            <Text className="text-sm text-mute">{t("nothingUpcoming")}</Text>
+          ) : (
+            <>
+              {next3Events.length > 0 && (
+                <View className="gap-3">
+                  {next3Events.map((event) => (
+                    <TimelineItem
+                      key={event.id}
+                      left={
+                        <>
+                          <Display size={20} weight="500" color={GP.clay}>
+                            {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
+                          </Display>
+                          <Text className="text-xs text-mute capitalize">
+                            {safeFormat(new Date(event.date + "T00:00:00"), "EEE", {
+                              locale: getDateLocale(),
+                            })}
+                          </Text>
+                        </>
+                      }
+                    >
+                      <Text className="text-sm font-medium text-ink">{event.title}</Text>
+                      <View className="flex-row items-center gap-3 mt-0.5 flex-wrap">
+                        {event.time && (
+                          <View className="flex-row items-center gap-1">
+                            <Clock size={11} color={GP.mute} />
+                            <Text className="text-xs text-mute">
+                              {event.time}
+                              {event.endTime ? ` - ${event.endTime}` : ""}
+                            </Text>
+                          </View>
+                        )}
+                        {event.location && (
+                          <View className="flex-row items-center gap-1">
+                            <MapPin size={11} color={GP.mute} />
+                            <Text className="text-xs text-mute" numberOfLines={1}>
+                              {event.location}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </TimelineItem>
+                  ))}
+                </View>
+              )}
+              {next3Events.length > 0 && next3Tasks.length > 0 && (
+                <View style={{ height: 1, backgroundColor: GP.hair, marginVertical: 12 }} />
+              )}
+              {next3Tasks.length > 0 && (
+                <View className="gap-2.5">
+                  {next3Tasks.map((task) => (
+                    <View key={task.id} className="flex-row items-center">
+                      <Circle size={14} color={GP.mute} />
+                      <View className="flex-1 ml-3">
+                        <Text className="text-sm text-ink" numberOfLines={1}>
+                          {task.title}
+                        </Text>
+                        {task.dueDate && (
+                          <Text className="text-xs text-mute mt-0.5">
+                            {safeFormat(new Date(task.dueDate + "T00:00:00"), "d MMM", {
+                              locale: getDateLocale(),
+                            })}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </>
           )}
         </Pressable>
 
-        {/* Guests + Planning row */}
-        <View className="flex-row gap-3 mb-3">
-          <Pressable
-            onPress={() => router.push("/(tabs)/guests")}
-            className="flex-1 bg-accent-card rounded-2xl p-4 border border-hair"
-          >
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 rounded-full bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2.5">
-                <Users size={16} color="#b96a4a" />
-              </View>
-              <Text className="text-sm font-semibold text-ink">
-                {t("guests")}
-              </Text>
-            </View>
-            <Display size={36} weight="400">
-              {counts.accepted}
-              <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>/{counts.total}</Text>
-            </Display>
-            <Text className="text-xs text-mute mt-1">{t("confirmed")}</Text>
-            {counts.no_table_count > 0 && (
-              <View className="mt-2 bg-amber-50 dark:bg-amber-900 px-2 py-1 rounded-lg self-start">
-                <Text className="text-xs text-amber-600 dark:text-amber-300 font-medium">
-                  {t("noTable", { count: counts.no_table_count })}
-                </Text>
-              </View>
-            )}
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/(tabs)/planning")}
-            className="flex-1 bg-accent-card rounded-2xl p-4 border border-hair"
-          >
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
-                <Calendar size={16} color="#C9956B" />
-              </View>
-              <Text className="text-sm font-semibold text-ink">
-                {t("planning")}
-              </Text>
-            </View>
-            <Display size={36} weight="400">
-              {completionRate}
-              <Text style={{ fontSize: 18, color: "#D1D5DB", fontFamily: "Inter_400Regular" }}>%</Text>
-            </Display>
-            <Text className="text-xs text-mute mt-1">{t("completed")}</Text>
-            {overdueTasks.length > 0 && (
-              <View className="mt-2 bg-red-50 dark:bg-red-900 px-2 py-1 rounded-lg self-start">
-                <Text className="text-xs text-red-500 dark:text-red-300 font-medium">
-                  {t("overdue", { count: overdueTasks.length })}
-                </Text>
-              </View>
-            )}
-          </Pressable>
-        </View>
-
-
-        {/* Vendors summary */}
+        {/* Prestataires */}
         <Pressable
           onPress={() => router.push("/(tabs)/vendors")}
           className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center mb-3">
-            <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
-              <Briefcase size={16} color={GP.clay} />
+            <View className="w-7 h-7 rounded-full bg-accent-clay-soft items-center justify-center mr-2.5">
+              <Briefcase size={14} color={GP.clay} />
             </View>
-            <Text className="text-base font-semibold text-ink">
-              {t("vendors")}
-            </Text>
+            <Text className="text-sm font-semibold text-ink flex-1">{t("vendors")}</Text>
+            <ChevronRight size={16} color={GP.mute} />
           </View>
           <View className="flex-row">
             <StatPill
               value={vendors.filter((v) => v.status === "BOOKED").length}
               label={t("statusBooked")}
-              color="#10B981"
+              color={GP.olive}
             />
             <StatPill
               value={vendors.filter((v) => v.status === "NEGOTIATING").length}
               label={t("statusNegotiating")}
-              color="#F59E0B"
+              color={GP.mustard}
             />
             <StatPill
               value={vendors.filter((v) => v.status === "QUOTE_RECEIVED").length}
               label={t("statusQuote")}
-              color="#3B82F6"
+              color={GP.blue}
             />
             <StatPill
               value={vendors.filter((v) => v.status === "PROSPECT").length}
               label={t("statusProspect")}
-              color="#9CA3AF"
+              color={GP.mute}
             />
           </View>
         </Pressable>
@@ -461,119 +563,12 @@ function DashboardScreen() {
           onPress={() => router.push("/ideas")}
           className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
         >
-          <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center mr-3">
-            <Sparkles size={20} color="#A855F7" />
+          <View className="w-8 h-8 rounded-full bg-accent-mustard-soft items-center justify-center mr-3">
+            <Sparkles size={16} color={GP.mustard} />
           </View>
-          <View className="flex-1">
-            <Text className="text-sm font-semibold text-ink">{t("myInspirations")}</Text>
-            <Text className="text-xs text-mute mt-0.5">{t("idea", { count: ideaCount })}</Text>
-          </View>
-          <ChevronRight size={18} color="#C0C0C8" />
-        </Pressable>
-
-        {/* Next appointments */}
-        <Pressable
-          onPress={() => router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
-        >
-          <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 items-center justify-center mr-2.5">
-                <Calendar size={16} color={GP.clay} />
-              </View>
-              <Text className="text-base font-semibold text-ink">
-                {t("nextAppointments")}
-              </Text>
-            </View>
-            <ChevronRight size={18} color="#C0C0C8" />
-          </View>
-          {next3Events.length > 0 ? (
-            <View className="gap-3">
-              {next3Events.map((event) => (
-                <TimelineItem
-                  key={event.id}
-                  left={
-                    <>
-                      <Display size={20} weight="500" color="#b96a4a">
-                        {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
-                      </Display>
-                      <Text className="text-xs text-mute capitalize">
-                        {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
-                      </Text>
-                    </>
-                  }
-                >
-                  <Text className="text-base font-medium text-ink">
-                    {event.title}
-                  </Text>
-                  <View className="flex-row items-center gap-3 mt-1 flex-wrap">
-                    {event.time && (
-                      <View className="flex-row items-center gap-1">
-                        <Clock size={12} color="#9CA3AF" />
-                        <Text className="text-xs text-mute">
-                          {event.time}
-                          {event.endTime ? ` - ${event.endTime}` : ""}
-                        </Text>
-                      </View>
-                    )}
-                    {event.location && (
-                      <View className="flex-row items-center gap-1">
-                        <MapPin size={12} color="#9CA3AF" />
-                        <Text className="text-xs text-mute" numberOfLines={1}>
-                          {event.location}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </TimelineItem>
-              ))}
-            </View>
-          ) : (
-            <Text className="text-sm text-mute">
-              {t("noUpcomingAppointment")}
-            </Text>
-          )}
-        </Pressable>
-
-        {/* Next tasks */}
-        <Pressable
-          onPress={() => router.push("/(tabs)/planning")}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
-        >
-          <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-accent-gold-light dark:bg-amber-900 items-center justify-center mr-2.5">
-                <Circle size={16} color="#C9956B" />
-              </View>
-              <Text className="text-base font-semibold text-ink">
-                {t("nextTasks")}
-              </Text>
-            </View>
-            <ChevronRight size={18} color="#C0C0C8" />
-          </View>
-          {next3Tasks.length > 0 ? (
-            <View className="gap-2.5">
-              {next3Tasks.map((task) => (
-                <View key={task.id} className="flex-row items-center">
-                  <Circle size={16} color="#D1D5DB" />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-sm font-medium text-ink" numberOfLines={1}>
-                      {task.title}
-                    </Text>
-                    {task.dueDate && (
-                      <Text className="text-xs text-mute mt-0.5">
-                        {safeFormat(new Date(task.dueDate + "T00:00:00"), "d MMM", { locale: getDateLocale() })}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <Text className="text-sm text-mute">
-              {t("noUpcomingTask")}
-            </Text>
-          )}
+          <Text className="text-sm font-semibold text-ink flex-1">{t("myInspirations")}</Text>
+          <Text className="text-xs text-mute mr-2">{t("idea", { count: ideaCount })}</Text>
+          <ChevronRight size={16} color={GP.mute} />
         </Pressable>
       </View>
 

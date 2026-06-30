@@ -33,14 +33,13 @@
   "installApp": "Installer l'application",
   "installAppDesc": "Accédez à Fiancé depuis votre écran d'accueil",
   "installIosSteps": "Appuyez sur le bouton Partager puis « Sur l'écran d'accueil »",
+  "progress": "Progression",
+  "upcoming": "À venir",
+  "nothingUpcoming": "Rien de prévu",
   "charts": "Statistiques",
   "rsvpChart": "Réponses RSVP",
   "dietChart": "Régimes alimentaires",
   "inviteTypeChart": "Types d'invitation",
   "thankYouPending_one": "{{count}} remerciement à envoyer",
-  "thankYouPending_other": "{{count}} remerciements à envoyer",
-  "quickActions": "Actions rapides",
-  "quickAddGuest": "Invité",
-  "quickAddTask": "Tâche",
-  "quickAddExpense": "Dépense"
+  "thankYouPending_other": "{{count}} remerciements à envoyer"
 }

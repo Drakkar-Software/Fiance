@@ -33,14 +33,13 @@
   "installApp": "Install the app",
   "installAppDesc": "Access Fiancé from your home screen",
   "installIosSteps": "Tap the Share button then \"Add to Home Screen\"",
+  "progress": "Progress",
+  "upcoming": "Upcoming",
+  "nothingUpcoming": "Nothing coming up",
   "charts": "Statistics",
   "rsvpChart": "RSVP responses",
   "dietChart": "Dietary requirements",
   "inviteTypeChart": "Invitation types",
   "thankYouPending_one": "{{count}} thank-you to send",
-  "thankYouPending_other": "{{count}} thank-yous to send",
-  "quickActions": "Quick actions",
-  "quickAddGuest": "Guest",
-  "quickAddTask": "Task",
-  "quickAddExpense": "Expense"
+  "thankYouPending_other": "{{count}} thank-yous to send"
 }
