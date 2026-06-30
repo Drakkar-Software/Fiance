@@ -1,6 +1,10 @@
 /**
  * Web stub for wedding-registry — identical to native except deleteDatabaseAsync
- * is a no-op (no SQLite file system on web).
+ * is replaced by purgeStorage (no SQLite file system on web).
+ *
+ * IMPORTANT: WeddingRegistryEntry, createWeddingEntry, and updateWeddingEntry
+ * MUST stay in sync with wedding-registry.ts. The only intentional difference is
+ * deleteWeddingEntry. Drift here caused the "join mints a new space" bug (2026-06).
  */
 
 import * as Crypto from "expo-crypto";
@@ -18,6 +22,14 @@ export interface WeddingRegistryEntry {
   seedPhrase?: string;
   serverUrl?: string;
   syncDisabled?: boolean;
+  /** Provisioned starfish-spaces space ID (sp-{id}) for this wedding's object tree. */
+  spaceId?: string;
+  /**
+   * "owner" = this device created the space (default).
+   * "member" = this device joined via a space-invite link and must not
+   * run owner-only provisioning steps (writeSpaceAccess / ownerEnsureSpaceKeyring).
+   */
+  role?: "owner" | "member";
 }
 
 export interface WeddingRegistry {
@@ -47,7 +59,9 @@ export async function saveRegistry(registry: WeddingRegistry): Promise<void> {
 export async function createWeddingEntry(
   label: string,
   seedPhrase?: string,
-  serverUrl?: string
+  serverUrl?: string,
+  spaceId?: string,
+  role?: "owner" | "member",
 ): Promise<WeddingRegistryEntry> {
   const id = Crypto.randomUUID();
   const entry: WeddingRegistryEntry = {
@@ -57,6 +71,8 @@ export async function createWeddingEntry(
     createdAt: new Date().toISOString(),
     seedPhrase,
     serverUrl: resolveServerUrl(serverUrl),
+    spaceId,
+    role,
   };
 
   const registry = await loadRegistry();
@@ -89,7 +105,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);
