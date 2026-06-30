@@ -6,6 +6,7 @@ import {
   removeCommunication,
   toggleRecipient,
   setRecipientDate,
+  bulkSetRecipients,
   removeGuestFromAll,
 } from './communications.js';
 
@@ -81,6 +82,33 @@ describe('setRecipientDate', () => {
     const comms = [makeComm({ recipients: [{ guestId: 'g1', sentAt: null }] })];
     const result = setRecipientDate(comms, 'c1', 'g1', '2026-06-20');
     expect(result[0].recipients[0].sentAt).toBe('2026-06-20');
+  });
+});
+
+describe('bulkSetRecipients', () => {
+  it('marks all given guests as sent, adding missing ones', () => {
+    const comms = [makeComm({ recipients: [{ guestId: 'g1', sentAt: '2026-01-01' }] })];
+    const result = bulkSetRecipients(comms, 'c1', ['g1', 'g2'], '2026-06-28');
+    expect(result[0].recipients).toEqual(
+      expect.arrayContaining([
+        { guestId: 'g1', sentAt: '2026-06-28' },
+        { guestId: 'g2', sentAt: '2026-06-28' },
+      ])
+    );
+  });
+
+  it('clears given guests when sentAt is null', () => {
+    const comms = [makeComm({
+      recipients: [{ guestId: 'g1', sentAt: '2026-01-01' }, { guestId: 'g2', sentAt: '2026-01-01' }],
+    })];
+    const result = bulkSetRecipients(comms, 'c1', ['g1'], null);
+    expect(result[0].recipients).toEqual([{ guestId: 'g2', sentAt: '2026-01-01' }]);
+  });
+
+  it('does not touch other communications', () => {
+    const comms = [makeComm({ id: 'c1' }), makeComm({ id: 'c2', label: 'Menu' })];
+    const result = bulkSetRecipients(comms, 'c1', ['g1'], '2026-06-28');
+    expect(result[1].recipients).toHaveLength(0);
   });
 });
 

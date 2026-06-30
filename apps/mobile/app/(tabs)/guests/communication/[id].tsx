@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { EmptyState } from "@/components/EmptyState";
 import { DateRow } from "@/components/FormSection";
 import { Avatar } from "@/components/Avatar";
+import { ScreenSearch } from "@/components/ScreenSearch";
 import { theme as GP } from "@/lib/theme";
 import { Users } from "lucide-react-native";
 
@@ -17,7 +18,29 @@ export default function CommunicationRosterScreen() {
   const comm = useCommunicationsStore((s) => s.communications.find((c) => c.id === id));
   const toggleRecipient = useCommunicationsStore((s) => s.toggleRecipient);
   const setRecipientDate = useCommunicationsStore((s) => s.setRecipientDate);
+  const bulkSetRecipients = useCommunicationsStore((s) => s.bulkSetRecipients);
   const guests = useGuestsStore((s) => s.guests);
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "SENT" | "NOT_SENT">("ALL");
+
+  const today = new Date().toISOString().slice(0, 10);
+  const recipientIds = useMemo(
+    () => new Set((comm?.recipients ?? []).map((r) => r.guestId)),
+    [comm?.recipients]
+  );
+
+  const filteredGuests = useMemo(() => {
+    return guests.filter((g) => {
+      if (statusFilter === "SENT" && !recipientIds.has(g.id)) return false;
+      if (statusFilter === "NOT_SENT" && recipientIds.has(g.id)) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return `${g.firstName} ${g.lastName}`.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [guests, search, statusFilter, recipientIds]);
 
   if (!comm) {
     return (
@@ -27,7 +50,14 @@ export default function CommunicationRosterScreen() {
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const sentCount = comm.recipients.length;
+  const notSentCount = guests.length - sentCount;
+
+  const statusTabs: { key: "ALL" | "SENT" | "NOT_SENT"; label: string; count: number }[] = [
+    { key: "ALL", label: t("all"), count: guests.length },
+    { key: "SENT", label: t("sent"), count: sentCount },
+    { key: "NOT_SENT", label: t("notSent"), count: notSentCount },
+  ];
 
   return (
     <View className="flex-1 bg-accent-paper">
@@ -51,11 +81,60 @@ export default function CommunicationRosterScreen() {
           onAction={() => {}}
         />
       ) : (
-        <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false}>
+        <>
+          <ScreenSearch
+            value={search}
+            onChangeText={setSearch}
+            placeholder={t("searchGuest")}
+            className="px-4 pt-3"
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-2"
+            style={{ flexGrow: 0 }}
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+          >
+            {statusTabs.map((tab) => {
+              const isActive = tab.key === statusFilter;
+              return (
+                <Pressable
+                  key={tab.key}
+                  onPress={() => setStatusFilter(tab.key)}
+                  className={`px-4 py-2 rounded-full border ${
+                    isActive ? "bg-primary-500 border-primary-500" : "bg-accent-card border-hair"
+                  }`}
+                >
+                  <Text className={`text-sm font-medium ${isActive ? "text-white" : "text-mute"}`}>
+                    {tab.label} ({tab.count})
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+
+          {filteredGuests.length > 0 && (
+            <View className="flex-row gap-2 px-4 mt-3">
+              <Pressable
+                onPress={() => bulkSetRecipients(comm.id, filteredGuests.map((g) => g.id), today)}
+                className="flex-1 bg-accent-card py-2 rounded-xl items-center border border-hair active:opacity-70"
+              >
+                <Text className="text-xs font-semibold text-ink-soft">{t("markAllSent")}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => bulkSetRecipients(comm.id, filteredGuests.map((g) => g.id), null)}
+                className="flex-1 bg-accent-card py-2 rounded-xl items-center border border-hair active:opacity-70"
+              >
+                <Text className="text-xs font-semibold text-ink-soft">{t("markAllNotSent")}</Text>
+              </Pressable>
+            </View>
+          )}
+
+          <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false}>
           <Text className="text-xs font-semibold text-mute uppercase tracking-wider mb-3">
             {t("communicationRecipients")} — {comm.recipients.length}/{guests.length}
           </Text>
-          {guests.map((guest) => {
+          {filteredGuests.map((guest) => {
             const recipient = comm.recipients.find((r) => r.guestId === guest.id);
             const received = !!recipient;
             const initials = `${guest.firstName[0] ?? ""}${guest.lastName[0] ?? ""}`.toUpperCase();
@@ -92,7 +171,8 @@ export default function CommunicationRosterScreen() {
             );
           })}
           <View className="h-10" />
-        </ScrollView>
+          </ScrollView>
+        </>
       )}
     </View>
   );

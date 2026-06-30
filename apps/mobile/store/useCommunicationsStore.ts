@@ -6,6 +6,7 @@ import {
   removeCommunication as sdkRemove,
   toggleRecipient as sdkToggle,
   setRecipientDate as sdkSetDate,
+  bulkSetRecipients as sdkBulkSet,
 } from "@fiance/sdk";
 import { getStorage } from "@/lib/kv-storage";
 import { persistCommunications } from "@/lib/persistence";
@@ -19,6 +20,7 @@ interface CommunicationsState {
   removeCommunication: (id: string) => void;
   toggleRecipient: (commId: string, guestId: string, today: string) => void;
   setRecipientDate: (commId: string, guestId: string, sentAt: string | null) => void;
+  bulkSetRecipients: (commId: string, guestIds: string[], sentAt: string | null) => void;
 }
 
 export const useCommunicationsStore = create<CommunicationsState>((set) => ({
@@ -50,6 +52,12 @@ export const useCommunicationsStore = create<CommunicationsState>((set) => ({
   },
   setRecipientDate: (commId, guestId, sentAt) => {
     set((s) => ({ communications: sdkSetDate(s.communications, commId, guestId, sentAt) }));
+    const storage = getStorage();
+    if (storage) persistCommunications(storage);
+    notifySync();
+  },
+  bulkSetRecipients: (commId, guestIds, sentAt) => {
+    set((s) => ({ communications: sdkBulkSet(s.communications, commId, guestIds, sentAt) }));
     const storage = getStorage();
     if (storage) persistCommunications(storage);
     notifySync();

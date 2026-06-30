@@ -48,6 +48,26 @@ export function setRecipientDate(
   });
 }
 
+export function bulkSetRecipients(
+  communications: Communication[],
+  commId: string,
+  guestIds: string[],
+  sentAt: string | null,
+): Communication[] {
+  const now = new Date().toISOString();
+  const idSet = new Set(guestIds);
+  return communications.map((c) => {
+    if (c.id !== commId) return c;
+    if (sentAt === null) {
+      return { ...c, recipients: c.recipients.filter((r) => !idSet.has(r.guestId)), updatedAt: now };
+    }
+    const existingIds = new Set(c.recipients.map((r) => r.guestId));
+    const updated = c.recipients.map((r) => (idSet.has(r.guestId) ? { ...r, sentAt } : r));
+    const toAdd = guestIds.filter((id) => !existingIds.has(id)).map((guestId) => ({ guestId, sentAt }));
+    return { ...c, recipients: [...updated, ...toAdd], updatedAt: now };
+  });
+}
+
 export function removeGuestFromAll(communications: Communication[], guestId: string): Communication[] {
   const now = new Date().toISOString();
   return communications.map((c) => {
