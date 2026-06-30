@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Platform, StatusBar as RNStatusBar } from "react-native";
+import { Platform, StatusBar as RNStatusBar, NativeModules } from "react-native";
 import { useRouter } from "expo-router";
 import { Settings, MapPin, AlertTriangle, PieChart, Users, Calendar, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets, initialWindowMetrics } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -35,9 +35,13 @@ export default function HomeScreen() {
 function DashboardScreen() {
   const { t } = useTranslation("dashboard");
   const insets = useSafeAreaInsets();
-  // NativeTabs (UITabBarController) zeroes the top inset in child VCs — fall back to
-  // device-level initialWindowMetrics which is unaffected by the native VC hierarchy.
-  const topInset = insets.top || initialWindowMetrics?.insets.top || RNStatusBar.currentHeight || 0;
+  // NativeTabs (UITabBarController) may zero the safe-area top in child VCs.
+  // StatusBarManager.HEIGHT reads the actual device status bar height directly
+  // from UIKit, bypassing the React context hierarchy entirely.
+  const iosStatusBarHeight: number = Platform.OS === 'ios'
+    ? (NativeModules.StatusBarManager?.HEIGHT ?? 0)
+    : 0;
+  const topInset = insets.top || RNStatusBar.currentHeight || iosStatusBarHeight;
   const router = useRouter();
   const isWide = useIsWideScreen();
   const syncDotColor = useSyncStatusDot();
