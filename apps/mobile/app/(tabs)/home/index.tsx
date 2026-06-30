@@ -135,6 +135,7 @@ function DashboardScreen() {
     <ScrollView
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="never"
     >
       {/* Header / Countdown */}
       <View
