@@ -7,6 +7,8 @@ import type {
 import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
 import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
 import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
+import { POSTS_51_68_EN, POSTS_51_68_FR } from "./blog-posts-51-68";
+import { getBlogPublishDate } from "./blog-publish-dates";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
 
@@ -35,7 +37,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
       title: "Les premières étapes pour organiser votre mariage",
       excerpt:
         "Vous venez de vous fiancer. Par où commencer sans vous noyer ? Date, budget, invités : l'ordre compte autant que la checklist.",
-      date: "2026-06-29",
+      date: getBlogPublishDate("premieres-etapes-organiser-mariage"),
       readingMinutes: 5,
       heroImage: `${BASE_URL}/assets/og-image.png`,
       heroImageAlt: "Organisation de mariage — Fiancé",
@@ -121,7 +123,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
         "Combien de temps faut-il pour organiser un mariage en France ?",
       excerpt:
         "12 à 18 mois en moyenne, mais la vraie question est : quand réserver le lieu, les faire-part et le plan de table ? Un rétroplanning réaliste.",
-      date: "2026-06-29",
+      date: getBlogPublishDate("combien-temps-organiser-mariage"),
       readingMinutes: 6,
       heroImage: `${BASE_URL}/assets/og-image.png`,
       heroImageAlt: "Rétroplanning mariage — Fiancé",
@@ -237,6 +239,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_3_10_FR,
     ...POSTS_11_30_FR,
     ...POSTS_31_50_FR,
+    ...POSTS_51_68_FR,
   ],
   en: [
     {
@@ -246,7 +249,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
       title: "First steps to planning your wedding",
       excerpt:
         "Just got engaged. Where do you start without drowning in details? Date, budget, guests: the order matters as much as the checklist.",
-      date: "2026-06-29",
+      date: getBlogPublishDate("premieres-etapes-organiser-mariage"),
       readingMinutes: 5,
       heroImage: `${BASE_URL}/assets/og-image.png`,
       heroImageAlt: "Wedding planning — Fiancé",
@@ -331,7 +334,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
       title: "How long does it take to plan a wedding in France?",
       excerpt:
         "12 to 18 months on average, but the real question is when to book the venue, invitations, and seating chart. A realistic timeline.",
-      date: "2026-06-29",
+      date: getBlogPublishDate("combien-temps-organiser-mariage"),
       readingMinutes: 6,
       heroImage: `${BASE_URL}/assets/og-image.png`,
       heroImageAlt: "Wedding timeline — Fiancé",
@@ -447,6 +450,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_3_10_EN,
     ...POSTS_11_30_EN,
     ...POSTS_31_50_EN,
+    ...POSTS_51_68_EN,
   ],
 };
 

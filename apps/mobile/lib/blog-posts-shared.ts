@@ -1,4 +1,5 @@
 import type { BlogSection, BlogPost } from "./blog-types";
+import { getBlogPublishDate } from "./blog-publish-dates";
 
 export const BLOG_HERO =
   "https://fiance.drakkar.software/assets/og-image.png";
@@ -38,7 +39,7 @@ export interface PostPairInput {
 }
 
 export function postPair(input: PostPairInput): { fr: BlogPost; en: BlogPost } {
-  const date = input.date ?? "2026-06-29";
+  const date = input.date ?? getBlogPublishDate(input.slug);
   const base = {
     slug: input.slug,
     categoryKey: input.categoryKey,

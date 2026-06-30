@@ -131,7 +131,7 @@ describe("buildBlogJsonLd", () => {
 
 describe("getBlogSlugs", () => {
   it("lists all published post slugs for static export", () => {
-    expect(getBlogSlugs()).toHaveLength(50);
+    expect(getBlogSlugs()).toHaveLength(68);
     expect(getBlogSlugs()).toContain("excel-vs-application-mariage");
   });
 });
