@@ -9,7 +9,7 @@
  * and onboarding.tsx without React context.
  */
 
-import { joinSpaceByLink, type SpaceInviteLinkToken } from "@fiance/sdk";
+import { joinSpaceByLink, hydrateSpaceAccessStore, type SpaceInviteLinkToken } from "@fiance/sdk";
 import { generatePassphrase, deriveSessionFromPhrase } from "@/lib/identity";
 import { resolveServerUrl } from "@/lib/server";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -41,6 +41,16 @@ export async function joinWeddingByToken(token: SpaceInviteLinkToken): Promise<v
   if (!serverUrl) throw new Error("[join-space] No server URL configured");
 
   const { session } = await deriveSessionFromPhrase(seed, serverUrl);
+
+  // Pin the access-store identity to the joiner BEFORE calling joinSpaceByLink.
+  // joinSpaceByLink calls saveSpaceAccessEntry(spaceId, …) which writes to
+  // _cache2 under the store's current _activeKey. If _activeKey is still set
+  // to a *previous* user's id (or null), the entry is saved under the wrong key,
+  // then wiped when hydrateSpaceAccessStore(newUserId) runs at member-boot and
+  // resets _cache2. Pinning first ensures the credential is stored under the
+  // joiner's namespace and is later reloaded from KV without depending on
+  // a server read-after-write of _spaces.pubAccess.
+  await hydrateSpaceAccessStore(session.userId, {}, {});
 
   // Register the link credential in the space-access store BEFORE the wedding
   // becomes active so boot hydrate can decrypt content from the first launch.

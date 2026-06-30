@@ -10,7 +10,7 @@
  * See `apps/mobile/lib/server.ts` for how `clientOpts` is assembled.
  */
 
-import { configureSpaces, type KvAdapter } from '@drakkar.software/starfish-spaces';
+import { configureSpaces, configureSpaceAccessStore, type KvAdapter } from '@drakkar.software/starfish-spaces';
 
 export type { KvAdapter };
 
@@ -22,4 +22,9 @@ export type { KvAdapter };
  */
 export function configureFiance(kv: KvAdapter): void {
   configureSpaces({ kvAdapter: kv });
+  // Wire the space-access-store KV so link credentials survive app restarts.
+  // Without this, persist() is a no-op and joinSpaceByLink credentials are
+  // memory-only — wiped on the next identity switch / cold boot.
+  // KV keys are namespaced "starfish.spaceaccess.<userId>" (no collision).
+  configureSpaceAccessStore({ kvAdapter: kv });
 }

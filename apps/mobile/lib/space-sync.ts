@@ -266,7 +266,10 @@ async function pullNodeContent(
     const result = await handle.client.pull(objDocPull(spaceId, node.id)) as { data: Record<string, unknown> | null };
     if (!result?.data) return null;
     return handle.encryptor ? await handle.encryptor.decrypt(result.data) : result.data;
-  } catch {
+  } catch (err) {
+    // Log once per node so a missing space-access credential is visible in the console
+    // rather than presenting as a mysteriously empty wedding (silent return null path).
+    console.warn(`[space-sync] pullNodeContent ${node.type}:${node.id} failed:`, err instanceof Error ? err.message : String(err));
     return null;
   }
 }

@@ -106,8 +106,32 @@ function AutoJoin({
   token: SpaceInviteLinkToken;
   onJoin: (token: SpaceInviteLinkToken) => Promise<void>;
 }) {
+  const { t } = useTranslation("common");
+  const [error, setError] = useState<string | null>(null);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { onJoin(token); }, []);
+  useEffect(() => {
+    onJoin(token).catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : String(err));
+    });
+  }, []);
+
+  if (error) {
+    return (
+      <View className="flex-1 bg-accent-paper justify-center px-6">
+        <View className="items-center mb-10">
+          <AlertCircle size={36} color="#EF4444" />
+        </View>
+        <PageHeader
+          eyebrow={t("join.eyebrow")}
+          title={t("onboarding.inviteFailed")}
+          tagline={error}
+          titleSize={24}
+          style={{ paddingHorizontal: 0, paddingTop: 0 }}
+        />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-accent-paper items-center justify-center">
