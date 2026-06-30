@@ -1,14 +1,11 @@
 import React from "react";
-import { Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
-import { Sprig } from "@/components/Sprig";
 import { Avatar } from "@/components/Avatar";
-import { Postit } from "@/components/Postit";
 import { Seo } from "@/components/Seo";
 import {
   getBlogPost,
@@ -170,90 +167,58 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
       />
 
       {/* Article hero */}
-      <View className="w-full pt-12 pb-8 px-6 bg-accent-cream">
+      <View className="w-full pt-10 pb-10 px-6 bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>
-          {/* Back / breadcrumb */}
+          {/* Back */}
           <Pressable
             onPress={() => router.push("/blog" as any)}
             className="active:opacity-60"
-            style={{ marginBottom: 24 }}
+            style={{ marginBottom: 20 }}
           >
             <Text className="text-sm text-primary-500 font-semibold">
               {t("blog.backToBlog")}
             </Text>
           </Pressable>
 
-          {/* Category postit */}
-          <View style={{ marginBottom: 18, alignItems: "flex-start" }}>
-            <Postit size="sm" angle={-1.5}>
+          {/* Category chip */}
+          <View
+            className="border border-accent-rose-light rounded-full"
+            style={{ alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 4, marginBottom: 14 }}
+          >
+            <Text className="text-xs font-semibold text-typography-500 uppercase tracking-wide">
               {post.category}
-            </Postit>
+            </Text>
           </View>
 
           {/* Title */}
           <Display
-            size={44}
+            size={40}
             weight="700"
-            style={{ marginBottom: 20, lineHeight: 52 }}
+            style={{ marginBottom: 14, lineHeight: 48 }}
           >
             {post.title}
           </Display>
 
-          {/* Excerpt / chapeau — Inter body, not Script (reserved for short eyebrows) */}
-          <Text
-            className="text-typography-600"
-            style={{
-              fontSize: 18,
-              lineHeight: 30,
-              marginBottom: 28,
-              maxWidth: 640,
-            }}
-          >
+          {/* Excerpt */}
+          <Script size={18} style={{ marginBottom: 20, lineHeight: 27 }}>
             {post.excerpt}
-          </Text>
+          </Script>
 
-          {/* Byline */}
-          <View
-            className="flex-row items-center gap-3"
-            style={{ marginBottom: 6 }}
-          >
-            <Avatar ini={BLOG_AUTHOR.avatarInitials} size={36} />
-            <View>
-              <Text className="text-sm font-semibold text-typography-900">
-                {BLOG_AUTHOR.name}
-              </Text>
-              <Text className="text-xs text-typography-400" style={{ marginTop: 1 }}>
-                {t("blog.authorRole")}
-              </Text>
-            </View>
+          {/* Compact meta row */}
+          <View className="flex-row items-center flex-wrap gap-2">
+            <Avatar ini={BLOG_AUTHOR.avatarInitials} size={28} />
+            <Text className="text-sm font-semibold text-typography-700">
+              {BLOG_AUTHOR.name}
+            </Text>
+            <Text className="text-xs text-typography-400">·</Text>
+            <Text className="text-xs text-typography-400">
+              {formatBlogDate(post.date, lang)}
+            </Text>
+            <Text className="text-xs text-typography-400">·</Text>
+            <Text className="text-xs text-typography-400">
+              {t("blog.readingTime", { count: post.readingMinutes })}
+            </Text>
           </View>
-
-          {/* Date + reading time */}
-          <Text
-            className="text-xs font-semibold text-typography-400 uppercase tracking-widest"
-            style={{ marginBottom: 28 }}
-          >
-            {t("blog.publishedOn")} {formatBlogDate(post.date, lang)}
-            {" · "}
-            {t("blog.readingTime", { count: post.readingMinutes })}
-          </Text>
-
-          {/* Botanical divider */}
-          <View className="items-center">
-            <Sprig size={22} />
-          </View>
-        </View>
-      </View>
-
-      {/* Hero image */}
-      <View className="w-full px-6 bg-accent-cream" style={{ paddingBottom: 0 }}>
-        <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>
-          <Image
-            source={{ uri: post.heroImage }}
-            style={{ width: "100%", height: 380, borderRadius: 16 }}
-            resizeMode="cover"
-            accessibilityLabel={post.heroImageAlt}
-          />
         </View>
       </View>
 
