@@ -194,15 +194,23 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
           <Display
             size={44}
             weight="700"
-            style={{ marginBottom: 16, lineHeight: 52 }}
+            style={{ marginBottom: 20, lineHeight: 52 }}
           >
             {post.title}
           </Display>
 
-          {/* Excerpt / dek */}
-          <Script size={19} style={{ marginBottom: 24, lineHeight: 28 }}>
+          {/* Excerpt / chapeau — Inter body, not Script (reserved for short eyebrows) */}
+          <Text
+            className="text-typography-600"
+            style={{
+              fontSize: 18,
+              lineHeight: 30,
+              marginBottom: 28,
+              maxWidth: 640,
+            }}
+          >
             {post.excerpt}
-          </Script>
+          </Text>
 
           {/* Byline */}
           <View
