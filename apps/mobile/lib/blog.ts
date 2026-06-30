@@ -599,7 +599,8 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
   const canonical = postCanonicalUrl(post.slug);
   const blogName = blogNameForLang(lang);
   const inLanguage = inLanguageForLang(lang);
-  const dateModified = post.updated ?? post.date;
+  const datePublished = toSchemaDateTime(post.date);
+  const dateModified = toSchemaDateTime(post.updated ?? post.date);
 
   return {
     "@type": "BlogPosting",
@@ -617,8 +618,8 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
       caption: post.heroImageAlt,
     },
     thumbnailUrl: post.heroImage,
-    datePublished: toSchemaDateTime(post.date),
-    dateModified: toSchemaDateTime(dateModified),
+    datePublished,
+    dateModified,
     author: { "@id": AUTHOR_ID },
     publisher: { "@id": ORG_ID },
     inLanguage,
