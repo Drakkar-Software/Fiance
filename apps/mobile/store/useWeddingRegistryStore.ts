@@ -14,10 +14,10 @@ interface WeddingRegistryState {
   isLoaded: boolean;
 
   load: () => Promise<void>;
-  createWedding: (label: string, seedPhrase?: string, serverUrl?: string, memberId?: string) => Promise<WeddingRegistryEntry>;
+  createWedding: (label: string, seedPhrase?: string, serverUrl?: string, spaceId?: string, role?: "owner" | "member") => Promise<WeddingRegistryEntry>;
   switchWedding: (id: string) => Promise<void>;
   deleteWedding: (id: string) => Promise<void>;
-  updateWedding: (id: string, updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "memberId" | "groupKeyring">>) => Promise<void>;
+  updateWedding: (id: string, updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role">>) => Promise<void>;
 }
 
 export const useWeddingRegistryStore = create<WeddingRegistryState>((set, get) => ({
@@ -29,8 +29,8 @@ export const useWeddingRegistryStore = create<WeddingRegistryState>((set, get) =
     set({ registry, isLoaded: true });
   },
 
-  createWedding: async (label, seedPhrase, serverUrl, memberId) => {
-    const entry = await createWeddingEntry(label, seedPhrase, serverUrl, memberId);
+  createWedding: async (label, seedPhrase, serverUrl, spaceId, role) => {
+    const entry = await createWeddingEntry(label, seedPhrase, serverUrl, spaceId, role);
     const registry = await loadRegistry();
     set({ registry });
     return entry;

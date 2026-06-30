@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
+import * as Linking from "expo-linking";
 import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
 import { analytics } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
@@ -19,9 +20,10 @@ import {
   subscribeSyncStatus,
 } from "@/lib/starfish";
 import { activateSync } from "@/lib/providers";
-import { buildInviteUrl, generatePassphrase } from "@/lib/identity";
-import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
-import { createGroupInvite } from "@/lib/group-crypto";
+import { generatePassphrase } from "@/lib/identity";
+import { resolveServerConfig, resolveServerUrl, resolveSessionConfig } from "@/lib/server";
+import { createSpaceInviteLink } from "@fiance/sdk";
+import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -176,33 +178,34 @@ export default function SettingsScreen() {
       Alert.alert(t("common:error"), t("noPassword"));
       return;
     }
-
-    // Group-crypto invite: create/reuse keyring when sync is configured
-    if (syncEnabled && activeEntry) {
-      try {
-        const config = await resolveServerConfig(activeEntry);
-        if (config) {
-          // Reuse existing keyring if present (admin already created one)
-          if (!activeEntry.groupKeyring) {
-            const result = await createGroupInvite(activeEntry, config);
-            updateRegistryWedding(activeEntry.id, { groupKeyring: result.groupKeyringJson });
-            setInviteUrl(result.inviteUrl);
-          } else {
-            // Rebuild invite URL from existing keyring (same admin+partner already set)
-            setInviteUrl(buildInviteUrl(activeEntry.label, activeEntry.seedPhrase));
-          }
-          setShowInviteQR(true);
-          return;
-        }
-      } catch (err) {
-        console.warn("[invite] Group-crypto setup failed, falling back:", err);
-      }
+    if (!syncEnabled) {
+      Alert.alert(t("common:error"), t("enableSyncToShare"));
+      return;
     }
 
-    // Legacy fallback: share seedPhrase directly (no group keyring)
-    setInviteUrl(buildInviteUrl(activeEntry.label, activeEntry.seedPhrase));
-    setShowInviteQR(true);
-  }, [activeEntry, syncEnabled, updateRegistryWedding, t]);
+    try {
+      const sessionConfig = await resolveSessionConfig(activeEntry);
+      if (!sessionConfig) {
+        Alert.alert(t("common:error"), t("noPassword"));
+        return;
+      }
+      const { session } = sessionConfig;
+      const spaceId = await ensureSpaceProvisioned(session, activeEntry);
+      const origin = Linking.createURL("").replace(/\/$/, "");
+      const { link } = await createSpaceInviteLink(
+        session,
+        spaceId,
+        activeEntry.label,
+        true,
+        origin,
+      );
+      setInviteUrl(link);
+      setShowInviteQR(true);
+    } catch (err: any) {
+      console.error("[invite] createSpaceInviteLink failed:", err);
+      Alert.alert(t("common:error"), err?.message ?? String(err));
+    }
+  }, [activeEntry, syncEnabled, premium, t]);
 
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
 
@@ -344,7 +347,7 @@ export default function SettingsScreen() {
           enabled={syncEnabled && premium}
           onToggle={handleToggleSync}
         />
-        {activeEntry?.seedPhrase && (
+        {activeEntry?.seedPhrase && activeEntry.role !== "member" && (
           <IconCard
             icon={
               <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">

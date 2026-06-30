@@ -1,44 +1,22 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { Seo } from "@/components/Seo";
 import { View, Text, Pressable, ActivityIndicator } from "react-native-css/components";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Linking from "expo-linking";
 import { Heart, PlusCircle, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { decodeInviteToken, parseInviteUrl } from "@/lib/identity";
+import { parseSpaceInviteUrl } from "@/lib/identity";
+import { joinWeddingByToken } from "@/lib/join-space";
+import type { SpaceInviteLinkToken } from "@fiance/sdk";
 
 // Captured at module-load time — before Expo Router mounts and rewrites web
 // history (replaceState strips the fragment). null on native (no window).
 const bootHref = typeof window !== "undefined" ? window.location.href : null;
 
-function useJoinAndNavigate() {
-  const router = useRouter();
-  const registry = useWeddingRegistryStore((s) => s.registry);
-  const createWedding = useWeddingRegistryStore((s) => s.createWedding);
-  const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
-
-  return useCallback(
-    async (label: string, password: string, memberId?: string) => {
-      const existing = registry?.weddings.find(
-        (w) => w.seedPhrase === password,
-      );
-      if (existing) {
-        await switchWedding(existing.id);
-      } else {
-        await createWedding(label, password, undefined, memberId);
-      }
-      router.replace("/home" as any);
-    },
-    [registry, createWedding, switchWedding, router],
-  );
-}
-
 export default function JoinScreen() {
-  const { t: queryToken } = useLocalSearchParams<{ t?: string }>();
-
   // undefined = still resolving; null = resolved but no URL; string = resolved URL
   const [url, setUrl] = useState<string | null | undefined>(undefined);
   useEffect(() => {
@@ -50,18 +28,24 @@ export default function JoinScreen() {
     return () => sub.remove();
   }, []);
 
-  // Payload lives in the URL fragment (#), not a query param — mirrors onboarding.tsx
-  const invite = useMemo(
-    () => (url ? parseInviteUrl(url) : null) ?? decodeInviteToken(queryToken),
-    [url, queryToken],
+  // Token lives in the URL fragment (#)
+  const token = useMemo<SpaceInviteLinkToken | null>(
+    () => (url ? parseSpaceInviteUrl(url) : null),
+    [url],
   );
 
   const registry = useWeddingRegistryStore((s) => s.registry);
+  const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
   const [confirmed, setConfirmed] = useState(false);
-  const joinAndNavigate = useJoinAndNavigate();
+  const router = useRouter();
+
+  const joinAndNavigate = useCallback(async (t: SpaceInviteLinkToken) => {
+    await joinWeddingByToken(t);
+    router.replace("/home" as any);
+  }, [router]);
 
   // Still resolving the initial URL — avoid flashing the error screen
-  if (url === undefined && !queryToken) {
+  if (url === undefined) {
     return (
       <View className="flex-1 bg-accent-paper items-center justify-center">
         <ActivityIndicator size="large" color="#b96a4a" />
@@ -70,67 +54,60 @@ export default function JoinScreen() {
   }
 
   // No valid invite token → show error
-  if (!invite) {
+  if (!token) {
     return <InvalidInvite />;
   }
 
-  const name = invite.name;
-  const password = invite.password;
-
-  const alreadyJoined = registry?.weddings.some((w) => w.seedPhrase === password);
+  const alreadyJoined = registry?.weddings.some((w) => w.spaceId === token.spaceId);
   const hasWeddings = registry != null && registry.weddings.length > 0;
 
-  // Already joined this wedding — switch to it and go home
+  // Already joined this space — switch to it and go home
   if (alreadyJoined) {
-    return <AlreadyJoinedRedirect password={password} />;
+    return <AlreadyJoinedRedirect spaceId={token.spaceId} />;
   }
 
   // Always show the confirmation screen before joining — lets the user review
-  // the wedding name and decide. First-time users skip the "you already have a
-  // wedding" copy; users with existing weddings see the conflict warning too.
+  // the wedding name and decide. First-time users see a simpler prompt;
+  // users with existing weddings see the conflict warning too.
   if (!confirmed) {
     return (
       <ConfirmJoin
-        weddingName={name}
+        weddingName={token.spaceName}
         hasOtherWeddings={hasWeddings}
         onConfirm={() => setConfirmed(true)}
       />
     );
   }
 
-  return <AutoJoin name={name} password={password} memberId={invite.memberId} onJoin={joinAndNavigate} />;
+  return <AutoJoin token={token} onJoin={joinAndNavigate} />;
 }
 
-function AlreadyJoinedRedirect({ password }: { password: string }) {
+function AlreadyJoinedRedirect({ spaceId }: { spaceId: string }) {
   const router = useRouter();
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
 
   useEffect(() => {
-    const existing = registry?.weddings.find((w) => w.seedPhrase === password);
+    const existing = registry?.weddings.find((w) => w.spaceId === spaceId);
     if (existing) {
-      switchWedding(existing.id).then(() => router.replace("/"));
+      switchWedding(existing.id).then(() => router.replace("/home" as any));
     } else {
-      router.replace("/");
+      router.replace("/home" as any);
     }
-  }, [registry, switchWedding, router, password]);
+  }, [registry, switchWedding, router, spaceId]);
 
   return null;
 }
 
 function AutoJoin({
-  name,
-  password,
-  memberId,
+  token,
   onJoin,
 }: {
-  name: string;
-  password: string;
-  memberId?: string;
-  onJoin: (label: string, password: string, memberId?: string) => Promise<void>;
+  token: SpaceInviteLinkToken;
+  onJoin: (token: SpaceInviteLinkToken) => Promise<void>;
 }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { onJoin(name, password, memberId); }, []);
+  useEffect(() => { onJoin(token); }, []);
 
   return (
     <View className="flex-1 bg-accent-paper items-center justify-center">
@@ -158,7 +135,7 @@ function InvalidInvite() {
         />
       </View>
       <Pressable
-        onPress={() => router.replace("/")}
+        onPress={() => router.replace("/" as any)}
         className="bg-accent-card rounded-2xl py-4 items-center border border-hair active:opacity-80"
       >
         <View className="flex-row items-center">
@@ -224,7 +201,7 @@ function ConfirmJoin({
       </Pressable>
 
       <Pressable
-        onPress={() => router.replace("/")}
+        onPress={() => router.replace("/" as any)}
         className="bg-accent-card rounded-2xl py-4 items-center border border-hair active:opacity-80"
       >
         <View className="flex-row items-center">

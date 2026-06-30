@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
-import { configureFiance } from "@fiance/sdk";
+import { configureFiance, recoverSpaceAccess, readSpaces } from "@fiance/sdk";
 import { getStorage } from "@/lib/kv-storage";
 import {
   initSync,
@@ -139,15 +139,25 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       const weddingNodeId = getActiveWeddingNodeId();
       if (!session || !spaceId || !weddingNodeId) return;
 
+      // B5: for member-role entries, restore the link credential from _spaces so
+      // the space-access store has the ephemeral kemPriv needed for decryption.
+      // Must happen before hydrateFromSpace so the first pull can decrypt.
+      if (!cancelled && wedding.role === "member") {
+        await readSpaces(session.spacesRegistryClient, session)
+          .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
+          .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
+      }
+
       // B3: hydrate stores from ObjectNode server data (boot pull).
       if (!cancelled) {
         const nodeCount = await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
           console.warn("[providers] hydrateFromSpace failed:", err);
           return -1;
         });
-        // Auto-migrate legacy users: space is empty but local stores have data.
+        // Auto-migrate legacy users (owners only): space is empty but local stores have data.
         // This happens on first launch after upgrading from Starfish 2.x.
-        if (!cancelled && nodeCount === 0 && useWeddingStore.getState().wedding) {
+        // Guard: never let a member-role entry overwrite the owner's space with empty local data.
+        if (!cancelled && nodeCount === 0 && useWeddingStore.getState().wedding && wedding.role !== "member") {
           await pushSpaceSnapshot(session, spaceId, weddingNodeId).catch((err) => {
             console.warn("[providers] auto-migrate push failed:", err);
           });

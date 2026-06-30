@@ -1,12 +1,10 @@
 /**
- * Tests for lib/identity.ts — invite token encode/decode, passphrase generation,
+ * Tests for lib/identity.ts — passphrase generation, space invite URL parsing,
  * and wedding page URL building.
  *
- * v3 migration notes:
- * - generatePassphrase() now returns space-separated BIP-39 words (not hyphens).
- * - deriveAuthToken() / deriveEncryptionKey() are deprecated stubs returning "".
- * - buildInviteUrl() now encodes payload in URL fragment (#) via encodeLinkFragment.
- * - Use parseInviteUrl() for full round-trip tests.
+ * v3: `buildInviteUrl` / `parseInviteUrl` / `decodeInviteToken` removed.
+ * Use `parseSpaceInviteUrl` + `encodeSpaceInviteLink` from @fiance/sdk for
+ * invite link round-trip tests.
  */
 import { describe, it, expect, vi } from "vitest";
 
@@ -19,13 +17,23 @@ vi.mock("expo-linking", () => ({
 
 import {
   generatePassphrase,
-  deriveAuthToken,
-  deriveEncryptionKey,
-  buildInviteUrl,
   buildWeddingPageUrl,
-  decodeInviteToken,
-  parseInviteUrl,
+  parseSpaceInviteUrl,
 } from "@/lib/identity";
+import { encodeSpaceInviteLink, type SpaceInviteLinkToken } from "@fiance/sdk";
+
+function makeTestToken(spaceId = "sp-test", spaceName = "Alice & Bob"): SpaceInviteLinkToken {
+  return {
+    v: 1,
+    spaceId,
+    spaceName,
+    cap: {},
+    key: "a".repeat(64),
+    kemPriv: "b".repeat(64),
+    kemPub: "c".repeat(64),
+    write: true,
+  };
+}
 
 describe("generatePassphrase", () => {
   it("generates a 12-word passphrase separated by spaces", () => {
@@ -42,63 +50,36 @@ describe("generatePassphrase", () => {
   });
 });
 
-describe("deriveAuthToken (deprecated stub)", () => {
-  it("returns empty string (deprecated — Bearer auth removed in v3)", async () => {
-    const token = await deriveAuthToken("test-password");
-    expect(token).toBe("");
+describe("parseSpaceInviteUrl", () => {
+  it("returns null for URL with no fragment", () => {
+    expect(parseSpaceInviteUrl("https://fiance.drakkar.software/join")).toBeNull();
   });
 
-  it("always returns the same empty string regardless of input", async () => {
-    const a = await deriveAuthToken("password-a");
-    const b = await deriveAuthToken("password-b");
-    expect(a).toBe(b);
-    expect(a).toBe("");
-  });
-});
-
-describe("deriveEncryptionKey (deprecated stub)", () => {
-  it("returns empty string (deprecated — space keyring handles E2EE in v3)", async () => {
-    const key = await deriveEncryptionKey("pass", "salt");
-    expect(key).toBe("");
-  });
-});
-
-describe("buildInviteUrl / decodeInviteToken / parseInviteUrl", () => {
-  it("round-trips name and password via parseInviteUrl", () => {
-    const url = buildInviteUrl("Alice & Bob", "super-secret-phrase");
-    const decoded = parseInviteUrl(url);
-    expect(decoded).toEqual({
-      name: "Alice & Bob",
-      password: "super-secret-phrase",
-    });
+  it("returns null for garbage fragment", () => {
+    expect(parseSpaceInviteUrl("https://fiance.drakkar.software/join#!!!garbage")).toBeNull();
   });
 
-  it("round-trips through fragment decodeInviteToken", () => {
-    const url = buildInviteUrl("Test Name", "some-pass");
-    // Fragment is everything after '#'
-    const fragment = url.includes("#") ? url.split("#")[1] : "";
-    expect(fragment).not.toBe("");
-    const decoded = decodeInviteToken(fragment);
-    expect(decoded?.name).toBe("Test Name");
-    expect(decoded?.password).toBe("some-pass");
+  it("round-trips spaceId and spaceName via encodeSpaceInviteLink", () => {
+    const token = makeTestToken("sp-abc", "Éloïse & François");
+    const link = encodeSpaceInviteLink("https://fiance.drakkar.software", token);
+    const result = parseSpaceInviteUrl(link);
+    expect(result?.spaceId).toBe("sp-abc");
+    expect(result?.spaceName).toBe("Éloïse & François");
+    expect(result?.write).toBe(true);
   });
 
-  it("returns null for undefined token", () => {
-    expect(decodeInviteToken(undefined)).toBeNull();
+  it("tolerates polluted fragment (share target appended extra text)", () => {
+    const token = makeTestToken();
+    const link = encodeSpaceInviteLink("https://fiance.drakkar.software", token);
+    const polluted = `${link}%20extra%20text%20${link}`;
+    const result = parseSpaceInviteUrl(polluted);
+    expect(result?.spaceId).toBe(token.spaceId);
   });
 
-  it("returns null for empty string token", () => {
-    expect(decodeInviteToken("")).toBeNull();
-  });
-
-  it("returns null for malformed token", () => {
-    expect(decodeInviteToken("not-valid-base64!!!")).toBeNull();
-  });
-
-  it("handles special characters in name", () => {
-    const url = buildInviteUrl("Éloïse & François", "pass");
-    const decoded = parseInviteUrl(url);
-    expect(decoded?.name).toBe("Éloïse & François");
+  it("returns null for a legacy seed-phrase invite token (old { n, p } format)", () => {
+    const legacy = btoa(JSON.stringify({ n: "Alice", p: "word1 word2" }))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    expect(parseSpaceInviteUrl(`https://fiance.drakkar.software/join#${legacy}`)).toBeNull();
   });
 });
 

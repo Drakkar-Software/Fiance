@@ -5,8 +5,10 @@ import { Alert, Platform, ActivityIndicator } from "react-native";
 import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
-import { generatePassphrase, parseInviteUrl } from "@/lib/identity";
+import { generatePassphrase, parseSpaceInviteUrl } from "@/lib/identity";
+import { joinWeddingByToken } from "@/lib/join-space";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import type { SpaceInviteLinkToken } from "@fiance/sdk";
 import { QRScannerScreen } from "@/components/QRScannerScreen";
 import { analytics } from "@/lib/analytics";
 import { Display } from "@/components/Display";
@@ -17,15 +19,15 @@ type Mode = "choose" | "create" | "join";
 
 export default function OnboardingScreen() {
   const [mode, setMode] = useState<Mode>("choose");
-  const [inviteParams, setInviteParams] = useState<{ name: string; password: string } | null>(null);
+  const [inviteToken, setInviteToken] = useState<SpaceInviteLinkToken | null>(null);
   const createWedding = useWeddingRegistryStore((s) => s.createWedding);
 
   // Handle invite deep links
   useEffect(() => {
     function handleUrl({ url }: { url: string }) {
-      const params = parseInviteUrl(url);
-      if (!params) return;
-      setInviteParams(params);
+      const token = parseSpaceInviteUrl(url);
+      if (!token) return;
+      setInviteToken(token);
       setMode("join");
     }
 
@@ -58,10 +60,9 @@ export default function OnboardingScreen() {
   return (
     <JoinWeddingForm
       onBack={() => setMode("choose")}
-      initialName={inviteParams?.name}
-      initialPassword={inviteParams?.password}
-      onJoin={async (label, password) => {
-        await createWedding(label, password);
+      inviteToken={inviteToken}
+      onJoin={async (token) => {
+        await joinWeddingByToken(token);
         analytics.capture("wedding_created", { method: "invite" });
         // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
       }}
@@ -202,24 +203,20 @@ function CreateWeddingForm({
 function JoinWeddingForm({
   onBack,
   onJoin,
-  initialName,
-  initialPassword,
+  inviteToken,
 }: {
   onBack: () => void;
-  onJoin: (label: string, password: string) => Promise<void>;
-  initialName?: string;
-  initialPassword?: string;
+  onJoin: (token: SpaceInviteLinkToken) => Promise<void>;
+  inviteToken?: SpaceInviteLinkToken | null;
 }) {
   const { t } = useTranslation("common");
-  const [label, setLabel] = useState(initialName || "");
-  const [password] = useState(initialPassword || "");
   const [saving, setSaving] = useState(false);
   const [scanning, setScanning] = useState(false);
 
-  const handleJoin = async (name: string, pwd: string) => {
+  const handleJoin = async (token: SpaceInviteLinkToken) => {
     setSaving(true);
     try {
-      await onJoin(name.trim(), pwd.trim());
+      await onJoin(token);
     } catch (e: any) {
       Alert.alert(t("error"), e.message);
     } finally {
@@ -229,16 +226,16 @@ function JoinWeddingForm({
 
   const handleScanned = async (url: string) => {
     setScanning(false);
-    const params = parseInviteUrl(url);
-    if (!params) {
+    const token = parseSpaceInviteUrl(url);
+    if (!token) {
       Alert.alert(t("error"), t("onboarding.invalidQR"));
       return;
     }
-    await handleJoin(params.name, params.password);
+    await handleJoin(token);
   };
 
-  // Deep link path: pre-filled from invite URL
-  if (initialPassword) {
+  // Deep link / QR pre-filled path
+  if (inviteToken) {
     return (
       <KeyboardAvoidingView
         className="flex-1 bg-accent-paper"
@@ -254,22 +251,11 @@ function JoinWeddingForm({
             </Pressable>
 
             <PageHeader
-              eyebrow={t("onboarding.joinEyebrow")}
-              title={t("onboarding.joinTitle")}
-              tagline={t("onboarding.joinTagline")}
+              eyebrow={t("join.inviteEyebrow")}
+              title={t("join.joinThisWedding")}
+              tagline={inviteToken.spaceName}
               titleSize={28}
               style={{ paddingHorizontal: 0, paddingTop: 0, marginBottom: 8 }}
-            />
-
-            <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
-              {t("onboarding.weddingNameLabel")}
-            </Text>
-            <TextInput
-              className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-4"
-              placeholder={t("onboarding.weddingNamePlaceholder")}
-              placeholderTextColor="#C0C0C8"
-              value={label}
-              onChangeText={setLabel}
             />
 
             <View className="flex-row items-center gap-3 bg-emerald-50 dark:bg-emerald-950 border border-emerald-100 dark:border-emerald-900 rounded-xl px-4 py-3.5 mb-8">
@@ -280,7 +266,7 @@ function JoinWeddingForm({
             </View>
 
             <Pressable
-              onPress={() => handleJoin(label, password)}
+              onPress={() => handleJoin(inviteToken)}
               disabled={saving}
               style={{ opacity: saving ? 0.6 : 1 }}
               className="bg-primary-500 rounded-2xl py-4 items-center active:bg-primary-600"
@@ -288,7 +274,7 @@ function JoinWeddingForm({
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 {saving && <ActivityIndicator size="small" color="#fff" />}
                 <Text className="text-white font-semibold text-base">
-                  {saving ? t("onboarding.joining") : t("onboarding.join")}
+                  {saving ? t("onboarding.joining") : t("join.yesJoin")}
                 </Text>
               </View>
             </Pressable>

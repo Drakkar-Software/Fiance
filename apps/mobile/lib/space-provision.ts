@@ -29,13 +29,23 @@ import { withIndexLock } from '@/lib/index-lock';
  * Idempotent: returns the existing `spaceId` if already provisioned, otherwise
  * creates the space (_access, objindex seed, _keyring, _spaces entry) and persists
  * the returned `sp-` id on the registry entry.
+ *
+ * For member-role entries (joined via invite link), `spaceId` is always set at
+ * join time — the fast-path short-circuits and owner provisioning never runs.
  */
 export async function ensureSpaceProvisioned(
   session: Session,
   wedding: WeddingRegistryEntry,
 ): Promise<string> {
-  // Already done — fast path.
+  // Fast path: spaceId already set (always true for member-role entries joined via link).
   if (wedding.spaceId) return wedding.spaceId;
+
+  // Guard: members must never run owner provisioning steps.
+  if (wedding.role === "member") {
+    throw new Error(
+      `[space-provision] member entry ${wedding.id} has no spaceId — invite join did not persist spaceId`,
+    );
+  }
 
   const spaceId = `${session.spaceIdPrefix}${Crypto.randomUUID().replace(/-/g, '')}`;
   const name = wedding.label;
