@@ -14,8 +14,8 @@ importers:
         specifier: ^7.29.2
         version: 7.29.7
       '@drakkar.software/seahorse':
-        specifier: 0.8.1
-        version: 0.8.1(a4c1ef88ae2077855b49628d8c63eaac)
+        specifier: 0.9.0
+        version: 0.9.0(a4c1ef88ae2077855b49628d8c63eaac)
       '@drakkar.software/starfish-client':
         specifier: 3.0.0-alpha.51
         version: 3.0.0-alpha.51(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -740,8 +740,8 @@ packages:
   '@craftzdog/react-native-buffer@6.1.2':
     resolution: {integrity: sha512-KV1HitN05FHLLDG7Zb/yftDsa+mKBYBzFMQ0PMldvUicq6vWOtAvz9mDavt7Fzozh+WNqORE+yFDkkdWysZ/SA==}
 
-  '@drakkar.software/seahorse@0.8.1':
-    resolution: {integrity: sha512-t4ix/FeaqVRu1ReMYTFEQITtGUqXL5b8HdPGMNNxgPynqaquGCXy2ITiUrgohgZr/D3bXy2mc20dPYWRxbzXNQ==}
+  '@drakkar.software/seahorse@0.9.0':
+    resolution: {integrity: sha512-FFCnmn+Lj6pvLykbBRsfgW1ueY6WwEm0uge3krWv1z65L54iHhU2iy8BaH6uDC7x9OiniueED2GBOaVkDVm0wg==}
     peerDependencies:
       '@expo/html-elements': ^55.0.0
       '@expo/ui': '>=56.0.0'
@@ -7155,7 +7155,7 @@ snapshots:
       - react
       - react-native
 
-  '@drakkar.software/seahorse@0.8.1(a4c1ef88ae2077855b49628d8c63eaac)':
+  '@drakkar.software/seahorse@0.9.0(a4c1ef88ae2077855b49628d8c63eaac)':
     dependencies:
       clsx: 2.1.1
       lucide-react-native: 1.21.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
