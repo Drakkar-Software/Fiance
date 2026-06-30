@@ -187,14 +187,14 @@ export async function initStarfish(
  * Tear down the sync layer — stops SSE, clears all listeners.
  */
 export function teardownSync(): void {
-  clearLiveSyncBus();
   _session = null;
   _baseUrl = null;
   _spaceId = null;
   _weddingNodeId = null;
   _active = false;
   _lastUp = null;
-  emitSseStatus(false);
+  emitSseStatus(false); // notify subscribers while _sseListeners still populated
+  clearLiveSyncBus();   // then remove all listeners
 }
 
 /** Legacy alias. */

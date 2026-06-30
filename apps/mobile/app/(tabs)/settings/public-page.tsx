@@ -13,7 +13,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { isSyncActive } from "@/lib/starfish";
+import { isSyncActive, onSyncStatusChange } from "@/lib/starfish";
 import { resolvePublicPageUrl } from "@/lib/public-page";
 import { toast } from "@/lib/toast/sonner";
 import { recalculateDueDates } from "@/lib/planning";
@@ -120,12 +120,21 @@ export default function PublicPageScreen() {
   const infoComplete = partner1.trim().length > 0 && partner2.trim().length > 0;
 
   // Track live sync state so buttons only appear (and work) when sync is active.
+  // Uses two signals that together cover all transitions without polling:
+  // 1. syncActive (runtime _active flag) — catches async init via SSE subscription.
+  // 2. activeEntry?.syncDisabled (Zustand) — reactive, updates immediately when the
+  //    user toggles sync off, before teardownSync() propagates to the runtime flag.
   const [syncActive, setSyncActive] = useState(isSyncActive);
+  useEffect(() => {
+    setSyncActive(isSyncActive());
+    return onSyncStatusChange(() => setSyncActive(isSyncActive()));
+  }, []);
   useFocusEffect(
     useCallback(() => {
       setSyncActive(isSyncActive());
     }, []),
   );
+  const syncEnabled = syncActive && !activeEntry?.syncDisabled;
 
   // Share — mint a v3 page-read invite link.
   const handleShare = useCallback(async () => {
@@ -262,62 +271,56 @@ export default function PublicPageScreen() {
       {/* Preview + Share */}
       {activeEntry?.seedPhrase && (
         <View className="px-4 mt-2 gap-2">
-          {syncActive ? (
-            <View style={{ position: "relative" }}>
-              <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
-                {t("sharePublicPage")}
-              </Postit>
-              <View className="gap-2">
-                {!infoComplete && (
-                  <Text className="text-xs text-mute text-center mb-1">
-                    {t("publicPageIncompleteHint")}
-                  </Text>
-                )}
-                <Pressable
-                  disabled={!infoComplete}
-                  style={{ opacity: infoComplete ? 1 : 0.4 }}
-                  onPress={async () => {
-                    if (!infoComplete) return;
-                    try {
-                      const url = await resolvePublicPageUrl();
-                      if (!url) return;
-                      const fragment = url.includes("/wedding/") ? url.split("/wedding/")[1] : null;
-                      if (!fragment) return;
-                      if (Platform.OS === "web") {
-                        router.push(`/wedding/${fragment}`);
-                      } else {
-                        await Linking.openURL(url);
-                      }
-                    } catch (err) {
-                      console.warn("[public-page] preview failed:", err);
-                      toast.error(t("shareError"));
+          <View style={{ position: "relative" }}>
+            <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
+              {t("sharePublicPage")}
+            </Postit>
+            <View className="gap-2">
+              {(!syncEnabled || !infoComplete) && (
+                <Text className="text-xs text-mute text-center mb-1">
+                  {!syncEnabled ? t("syncRequiredShare") : t("publicPageIncompleteHint")}
+                </Text>
+              )}
+              <Pressable
+                disabled={!syncEnabled || !infoComplete}
+                style={{ opacity: syncEnabled && infoComplete ? 1 : 0.4 }}
+                onPress={async () => {
+                  if (!syncEnabled || !infoComplete) return;
+                  try {
+                    const url = await resolvePublicPageUrl();
+                    if (!url) return;
+                    const fragment = url.includes("/wedding/") ? url.split("/wedding/")[1] : null;
+                    if (!fragment) return;
+                    if (Platform.OS === "web") {
+                      router.push(`/wedding/${fragment}`);
+                    } else {
+                      await Linking.openURL(url);
                     }
-                  }}
-                  className="bg-accent-card rounded-2xl py-3.5 flex-row items-center justify-center border border-hair active:opacity-80"
-                >
-                  <Eye size={18} color="#6B7280" />
-                  <Text className="text-mute dark:text-mute font-medium text-base ml-2">
-                    {t("previewPage")}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  disabled={!infoComplete}
-                  style={{ opacity: infoComplete ? 1 : 0.4 }}
-                  onPress={infoComplete ? handleShare : undefined}
-                  className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"
-                >
-                  <Globe size={20} color="#fff" />
-                  <Text className="text-white font-semibold text-base ml-2">
-                    {t("sharePublicPage")}
-                  </Text>
-                </Pressable>
-              </View>
+                  } catch (err) {
+                    console.warn("[public-page] preview failed:", err);
+                    toast.error(t("shareError"));
+                  }
+                }}
+                className="bg-accent-card rounded-2xl py-3.5 flex-row items-center justify-center border border-hair active:opacity-80"
+              >
+                <Eye size={18} color="#6B7280" />
+                <Text className="text-mute dark:text-mute font-medium text-base ml-2">
+                  {t("previewPage")}
+                </Text>
+              </Pressable>
+              <Pressable
+                disabled={!syncEnabled || !infoComplete}
+                style={{ opacity: syncEnabled && infoComplete ? 1 : 0.4 }}
+                onPress={syncEnabled && infoComplete ? handleShare : undefined}
+                className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"
+              >
+                <Globe size={20} color="#fff" />
+                <Text className="text-white font-semibold text-base ml-2">
+                  {t("sharePublicPage")}
+                </Text>
+              </Pressable>
             </View>
-          ) : (
-            <Text className="text-sm text-mute leading-5 mb-3">
-              {t("syncRequiredShare")}
-            </Text>
-          )}
+          </View>
         </View>
       )}
 
