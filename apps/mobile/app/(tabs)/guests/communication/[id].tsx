@@ -126,7 +126,7 @@ export default function CommunicationRosterScreen() {
           keyExtractor={(guest: Guest) => guest.id}
           estimatedItemSize={68}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingTop: 16 }}
+          contentContainerStyle={{ paddingTop: 24 }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <>
