@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
-import { getStarfishStore, onSyncStatusChange, subscribeSyncStatus, type SyncStatus } from "@/lib/starfish";
+import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
 import type { WeddingRegistryEntry } from "@fiance/sdk";
 
 interface NavItem {
@@ -47,42 +47,11 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
   const { t } = useTranslation("common");
   const router = useRouter();
   const segments = useSegments();
-  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const syncDotColor = useSyncStatusDot();
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    let unsubStore: (() => void) | null = null;
-
-    const attach = (enabled: boolean) => {
-      unsubStore?.();
-      unsubStore = null;
-      if (enabled) {
-        const sf = getStarfishStore();
-        if (sf) {
-          unsubStore = subscribeSyncStatus(sf, setSyncStatus);
-        }
-      } else {
-        setSyncStatus(null);
-      }
-    };
-
-    attach(!!getStarfishStore());
-    const unsubInit = onSyncStatusChange(attach);
-
-    return () => {
-      unsubInit();
-      unsubStore?.();
-    };
-  }, []);
 
   // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...]
   const activeKey = (segments[1] as string | undefined) ?? "home";
-
-  const syncDotColor =
-    syncStatus === "synced" ? GP.olive :
-    syncStatus === "error" ? "#EF4444" :
-    syncStatus === "syncing" || syncStatus === "pending" ? GP.mustard :
-    null;
 
   const bg = isDark ? GP.cardDark : GP.card;
   const borderColor = isDark ? GP.hairStrong : GP.hair;

@@ -30,7 +30,7 @@ export default function BudgetScreen() {
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [showTargets, setShowTargets] = useState(!wedding?.budgetTarget);
+  const [showTargets, setShowTargets] = useState(wedding !== null && !wedding.budgetTarget);
 
   const categoryBudgetsRaw = useWeddingStore((s) => s.wedding?.categoryBudgets);
   const categoryBudgets: Record<string, number> = useMemo(() => {
@@ -239,7 +239,7 @@ export default function BudgetScreen() {
         {showTargets ? <ChevronUp size={18} color="#C0C0C8" /> : <ChevronDown size={18} color="#C0C0C8" />}
       </Pressable>
 
-      {showTargets && (
+      {showTargets && !!wedding && (
         <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-hair">
           {/* Template picker */}
           <View className="mb-4">
