@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { View, Text, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
+import { LegendList } from "@legendapp/list";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Briefcase, Ellipsis } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS } from "@/db/types";
 import type { VendorType } from "@/db/types";
+import type { Vendor } from "@/db/schema";
 import { VENDOR_TYPE_ICONS } from "@/lib/vendor-icons";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -14,7 +16,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterTabs } from "@/components/FilterTabs";
-import { ScreenSearch } from "@/components/ScreenSearch";
+import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { PageHeader } from "@/components/PageHeader";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -72,32 +74,13 @@ export default function VendorsListScreen() {
           <ProgressBar value={bookedVendors.length} max={vendors.length} />
         </View>
       )}
-      <ScreenSearch
-        value={search}
-        onChangeText={setSearch}
-        placeholder={t("searchVendor")}
-        className="px-4 pt-2"
-      />
-
-      {/* Type filter tabs */}
-      <View className="mt-3">
-        <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
-      </View>
 
       {/* Vendor list */}
-      {filteredVendors.length === 0 ? (
-        <EmptyState
-          icon={Briefcase}
-          title={t("noVendors")}
-          description={t("addFirstVendor")}
-          actionLabel={t("addVendor")}
-          onAction={handleAdd}
-        />
-      ) : (
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          {filteredVendors.map((vendor) => (
+      <LegendList
+        data={filteredVendors}
+        renderItem={({ item: vendor }) => (
+          <View className="px-4">
             <Pressable
-              key={vendor.id}
               onPress={() =>
                 router.push({
                   pathname: "/(tabs)/vendors/[type]/[id]",
@@ -140,10 +123,36 @@ export default function VendorsListScreen() {
                 </View>
               )}
             </Pressable>
-          ))}
-          <View className="h-24" />
-        </ScrollView>
-      )}
+          </View>
+        )}
+        keyExtractor={(vendor: Vendor) => vendor.id}
+        estimatedItemSize={88}
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <SearchBar
+              value={search}
+              onChangeText={setSearch}
+              placeholder={t("searchVendor")}
+              className="px-4 pt-2"
+            />
+            <View className="mt-3">
+              <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
+            </View>
+          </>
+        }
+        ListEmptyComponent={
+          <EmptyState
+            icon={Briefcase}
+            title={t("noVendors")}
+            description={t("addFirstVendor")}
+            actionLabel={t("addVendor")}
+            onAction={handleAdd}
+          />
+        }
+        ListFooterComponent={<View className="h-24" />}
+      />
 
       {isWide && <FAB onPress={handleAdd} />}
     </View>

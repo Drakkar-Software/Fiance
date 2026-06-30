@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
+import { LegendList } from "@legendapp/list";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Users } from "lucide-react-native";
+import { Users, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import {
@@ -15,10 +16,14 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { FAB } from "@/components/FAB";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { EmptyState } from "@/components/EmptyState";
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { ScreenSearch } from "@/components/ScreenSearch";
+import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
 import type { Guest } from "@/db/schema";
+import type { GuestGroup } from "@fiance/sdk";
+
+type GuestListItem =
+  | { kind: "guest"; guest: Guest }
+  | { kind: "group-header"; group: GuestGroup; count: number; collapsed: boolean };
 
 export default function GuestsListScreen() {
   return (
@@ -154,6 +159,70 @@ function GuestsView() {
     return { ungrouped, byGroup };
   }, [filteredGuests, groups]);
 
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const toggleGroup = useCallback((groupId: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) next.delete(groupId);
+      else next.add(groupId);
+      return next;
+    });
+  }, []);
+
+  // Flatten grouped/ungrouped guests into a single virtualizable list,
+  // expanding group headers into the stream and skipping a group's guests
+  // while it's collapsed.
+  const listData = useMemo<GuestListItem[]>(() => {
+    if (!groupedGuests) {
+      return filteredGuests.map((guest) => ({ kind: "guest" as const, guest }));
+    }
+    const items: GuestListItem[] = groupedGuests.ungrouped.map((guest) => ({ kind: "guest" as const, guest }));
+    for (const { group, guests: gList } of groupedGuests.byGroup) {
+      const collapsed = collapsedGroups.has(group.id);
+      items.push({ kind: "group-header", group, count: gList.length, collapsed });
+      if (!collapsed) {
+        for (const guest of gList) items.push({ kind: "guest", guest });
+      }
+    }
+    return items;
+  }, [groupedGuests, filteredGuests, collapsedGroups]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: GuestListItem }) => {
+      if (item.kind === "group-header") {
+        const Chevron = item.collapsed ? ChevronDown : ChevronUp;
+        return (
+          <View className="px-4">
+            <Pressable
+              onPress={() => toggleGroup(item.group.id)}
+              className="flex-row items-center justify-between mt-3 mb-2"
+            >
+              <Text className="text-xs font-semibold text-typography-400 uppercase tracking-wider">
+                {item.group.name}
+                <Text className="text-xs text-typography-300"> ({item.count})</Text>
+              </Text>
+              <Chevron size={14} color="#9CA3AF" />
+            </Pressable>
+          </View>
+        );
+      }
+      return (
+        <View className="px-4">
+          <GuestCard
+            guest={item.guest}
+            invitationTypeLabel={typeLabels.get(item.guest.invitationType) ?? item.guest.invitationType}
+          />
+        </View>
+      );
+    },
+    [toggleGroup, typeLabels]
+  );
+
+  const keyExtractor = useCallback(
+    (item: GuestListItem) => (item.kind === "group-header" ? `g-${item.group.id}` : `u-${item.guest.id}`),
+    []
+  );
+
   const rsvpTabs = [
     { key: "ALL", label: t("all"), count: counts.total },
     { key: "ACCEPTED", label: t("confirmed"), count: counts.accepted },
@@ -180,20 +249,20 @@ function GuestsView() {
     count: typeCounts.get(it.id) ?? 0,
   }));
 
-  return (
-    <View className="relative flex-1">
-      <ScreenSearch
+  const listHeader = (
+    <>
+      <SearchBar
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchGuest")}
-        className="px-4 pt-3"
+        className="px-4 pt-5 pb-2"
       />
 
       {/* Filters — single row: RSVP (filled) + separator + Type (outline, toggle) */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="mt-2 mb-3"
+        className="mt-6 mb-10"
         style={{ flexGrow: 0 }}
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: "center" }}
       >
@@ -245,7 +314,11 @@ function GuestsView() {
           );
         })}
       </ScrollView>
+    </>
+  );
 
+  return (
+    <View className="relative flex-1">
       {/* Guest list */}
       {filteredGuests.length === 0 ? (
         <EmptyState
@@ -256,34 +329,16 @@ function GuestsView() {
           onAction={() => router.push("/(tabs)/guests/new" as any)}
         />
       ) : (
-        <ScrollView
-          className="flex-1 px-4"
+        <LegendList
+          data={listData}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          estimatedItemSize={84}
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
-        >
-          {groupedGuests ? (
-            <>
-              {groupedGuests.ungrouped.map((guest) => (
-                <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
-              ))}
-              {groupedGuests.byGroup.map(({ group, guests: gList }) => (
-                <CollapsibleSection
-                  key={group.id}
-                  title={group.name}
-                  count={gList.length}
-                >
-                  {gList.map((guest) => (
-                    <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
-                  ))}
-                </CollapsibleSection>
-              ))}
-            </>
-          ) : (
-            filteredGuests.map((guest) => (
-              <GuestCard key={guest.id} guest={guest} invitationTypeLabel={typeLabels.get(guest.invitationType) ?? guest.invitationType} />
-            ))
-          )}
-          <View className="h-24" />
-        </ScrollView>
+          ListHeaderComponent={listHeader}
+          ListFooterComponent={<View className="h-24" />}
+        />
       )}
 
       {isWide && (

@@ -1,5 +1,5 @@
 <resources>
   <string name="app_name">Fiancé</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
-  <string name="expo_runtime_version">1.4.0</string>
+  <string name="expo_runtime_version">1.5.0</string>
 </resources>
