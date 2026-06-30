@@ -3,7 +3,7 @@ import { useColorScheme } from "react-native";
 import { View } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { BedDouble, Tag, Mail } from "lucide-react-native";
+import { BedDouble, Tag, Mail, FolderOpen, LayoutGrid } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { StackMenu } from "@/components/StackMenu";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
@@ -43,6 +43,16 @@ export default function InvitesLayout() {
               <StackMenu
                 items={[
                   {
+                    label: t("groups"),
+                    icon: FolderOpen,
+                    onPress: () => router.push("/(tabs)/guests/groups"),
+                  },
+                  {
+                    label: t("tables"),
+                    icon: LayoutGrid,
+                    onPress: () => router.push("/(tabs)/guests/table-management"),
+                  },
+                  {
                     label: t("accommodations"),
                     icon: BedDouble,
                     onPress: () => router.push("/(tabs)/guests/accommodations"),
@@ -64,6 +74,8 @@ export default function InvitesLayout() {
         }}
       />
       <Stack.Screen name="[id]" options={{ title: t("guestDetailScreen") }} />
+      <Stack.Screen name="groups" options={{ title: t("groups") }} />
+      <Stack.Screen name="table-management" options={{ title: t("tables") }} />
       <Stack.Screen name="tables" options={{ title: t("tablesPlanScreen") }} />
       <Stack.Screen name="accommodations" options={{ title: t("accommodations") }} />
       <Stack.Screen name="invitation-types" options={{ title: t("invitationTypesScreen") }} />

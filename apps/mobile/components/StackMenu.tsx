@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, View, Text, Pressable } from "react-native-css/components";
 import { EllipsisVertical } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface StackMenuItem {
   label: string;
@@ -15,6 +16,7 @@ interface StackMenuProps {
 
 export function StackMenu({ items }: StackMenuProps) {
   const [open, setOpen] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleItem = (onPress: () => void) => {
     setOpen(false);
@@ -42,8 +44,12 @@ export function StackMenu({ items }: StackMenuProps) {
           className="flex-1"
           onPress={() => setOpen(false)}
         >
-          {/* Menu card — top-right of screen, aligned under header */}
-          <View className="absolute top-14 right-4 bg-accent-card rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]">
+          {/* Menu card — top-right of screen, aligned under header (Modal ignores
+              safe area, so offset by the notch/Dynamic Island inset + header height) */}
+          <View
+            className="absolute right-4 bg-accent-card rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]"
+            style={{ top: insets.top + 48 }}
+          >
             {items.map((item, index) => {
               const Icon = item.icon;
               return (
