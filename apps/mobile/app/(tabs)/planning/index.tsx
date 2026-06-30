@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert } from "react-native";
 import { shareLink } from "@/lib/share";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
@@ -37,6 +37,8 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { buildWeddingPageUrl } from "@/lib/identity";
 import { deriveUserId } from "@/lib/server";
 import { analytics } from "@/lib/analytics";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { HeaderAddButton } from "@/components/HeaderAddButton";
 
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
@@ -64,8 +66,28 @@ export default function PlanningScreen() {
     }
   }, [params.aspect]);
 
+  const handleAdd = useCallback(() => {
+    if (aspect === "agenda") {
+      router.push({ pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } });
+    } else if (aspect === "day-of") {
+      router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } });
+    } else {
+      router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } });
+    }
+  }, [aspect, router]);
+
   return (
     <View className="flex-1 bg-accent-paper">
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <HeaderAddButton
+              accessibilityLabel={t("common:add")}
+              onPress={handleAdd}
+            />
+          ),
+        }}
+      />
 
       <SegmentedControl
         segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
@@ -85,6 +107,7 @@ export default function PlanningScreen() {
 function PreparationView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const tasks = usePlanningStore((s) => s.tasks);
   const categories = usePlanningStore((s) => s.categories);
   const setTasks = usePlanningStore((s) => s.setTasks);
@@ -327,11 +350,13 @@ function PreparationView() {
         </ScrollView>
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } })
-        }
-      />
+      {isWide && (
+        <FAB
+          onPress={() =>
+            router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } })
+          }
+        />
+      )}
     </View>
   );
 }
@@ -341,6 +366,7 @@ function PreparationView() {
 function AgendaView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const events = usePlanningStore((s) => s.agendaEvents);
   const vendors = useVendorsStore((s) => s.vendors);
 
@@ -466,11 +492,13 @@ function AgendaView() {
         </ScrollView>
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({ pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } })
-        }
-      />
+      {isWide && (
+        <FAB
+          onPress={() =>
+            router.push({ pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } })
+          }
+        />
+      )}
     </View>
   );
 }
@@ -480,6 +508,7 @@ function AgendaView() {
 function DayOfView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const items = usePlanningStore((s) => s.dayOfItems);
   const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -591,11 +620,13 @@ function DayOfView() {
         </ScrollView>
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })
-        }
-      />
+      {isWide && (
+        <FAB
+          onPress={() =>
+            router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })
+          }
+        />
+      )}
     </View>
   );
 }

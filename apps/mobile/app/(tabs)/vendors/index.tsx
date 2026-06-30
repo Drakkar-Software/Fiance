@@ -8,6 +8,7 @@ import { useVendorsStore } from "@/store/useVendorsStore";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS } from "@/db/types";
 import type { VendorType } from "@/db/types";
 import { VENDOR_TYPE_ICONS } from "@/lib/vendor-icons";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
@@ -23,6 +24,7 @@ const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
 export default function VendorsListScreen() {
   const { t } = useTranslation("vendors");
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const vendors = useVendorsStore((s) => s.vendors);
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
@@ -143,7 +145,7 @@ export default function VendorsListScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={handleAdd} />
+      {isWide && <FAB onPress={handleAdd} />}
     </View>
   );
 }

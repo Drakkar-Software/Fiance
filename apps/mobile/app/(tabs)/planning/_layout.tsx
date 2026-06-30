@@ -17,7 +17,15 @@ export default function PlanningLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Planning", headerShown: !isWide }} />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "",
+          headerShown: !isWide,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+        }}
+      />
       <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
       <Stack.Screen name="categories" options={{ title: "Catégories" }} />
       <Stack.Screen name="agenda-event" options={{ title: "Rendez-vous" }} />

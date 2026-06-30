@@ -19,6 +19,7 @@ import {
 import type { RsvpStatus } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FAB } from "@/components/FAB";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -116,6 +117,7 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
 function GuestsView() {
   const { t } = useTranslation("guests");
   const router = useRouter();
+  const isWide = useIsWideScreen();
   const guests = useGuestsStore((s) => s.guests);
   const groups = useGuestsStore((s) => s.groups);
   const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
@@ -224,7 +226,7 @@ function GuestsView() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="mt-3 mb-4"
+        className="mt-2 mb-3"
         style={{ flexGrow: 0 }}
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: "center" }}
       >
@@ -317,14 +319,16 @@ function GuestsView() {
         </ScrollView>
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({
-            pathname: "/(tabs)/guests/[id]",
-            params: { id: "new" },
-          })
-        }
-      />
+      {isWide && (
+        <FAB
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/guests/[id]",
+              params: { id: "new" },
+            })
+          }
+        />
+      )}
 
     </View>
   );
