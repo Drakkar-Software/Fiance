@@ -1,4 +1,5 @@
 import type { BlogPost, BlogSection } from "./blog-types";
+import { getBlogPublishDate } from "./blog-publish-dates";
 
 const BASE_URL = "https://fiance.drakkar.software";
 const HERO = `${BASE_URL}/assets/og-image.png`;
@@ -27,7 +28,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Rétroplanning mariage : le calendrier mois par mois",
     excerpt:
       "De 12 mois à J-7 : quoi faire à chaque étape pour ne rien oublier. Un calendrier concret, pas une liste vague.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("retroplanning-mariage-mois-par-mois"),
     readingMinutes: 7,
     heroImage: HERO,
     heroImageAlt: "Rétroplanning mariage mois par mois",
@@ -112,7 +113,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Organiser son mariage en 10 étapes (dans le bon ordre)",
     excerpt:
       "Ce n'est pas une checklist à cocher au hasard. Dix étapes avec des dépendances : budget avant lieu, lieu avant faire-part, RSVP avant plan de table.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("organiser-mariage-10-etapes"),
     readingMinutes: 6,
     heroImage: HERO,
     heroImageAlt: "Organiser son mariage en 10 étapes",
@@ -168,7 +169,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Mariage en 6 mois : checklist accélérée",
     excerpt:
       "Date dans six mois ? C'est serré mais faisable. Voici quoi prioriser, quoi simplifier, et ce qui ne se négocie pas.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("mariage-6-mois-checklist"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Organiser un mariage en 6 mois",
@@ -231,7 +232,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Mariage en 18 à 24 mois : par où commencer ?",
     excerpt:
       "Vous avez le luxe du temps. Voici ce qu'il vaut la peine de réserver tôt, et ce qu'il vaut mieux garder flexible.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("mariage-18-24-mois-premieres-actions"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Préparer un mariage sur 18 à 24 mois",
@@ -283,7 +284,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Les 7 décisions qui conditionnent tout le reste",
     excerpt:
       "Budget, date, invités, lieu, format, financement, priorités : sept choix structurants. Tout le reste en découle.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("sept-decisions-mariage"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Décisions clés pour organiser un mariage",
@@ -331,7 +332,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Checklist mariage : 50 tâches à ne pas oublier",
     excerpt:
       "Une liste complète par thème : admin, lieu, invités, tenues, jour J. À adapter, pas à suivre aveuglément.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("checklist-mariage-50-taches"),
     readingMinutes: 8,
     heroImage: HERO,
     heroImageAlt: "Checklist complète mariage",
@@ -438,7 +439,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Comment répartir les tâches entre les deux futurs mariés",
     excerpt:
       "Sans répartition claire, tout retombe sur une personne. Voici un modèle simple par domaines, pas par égalité ligne à ligne.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("repartir-taches-mariage-deux"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Répartir les tâches mariage entre partenaires",
@@ -491,7 +492,7 @@ export const POSTS_3_10_FR: BlogPost[] = [
     title: "Excel vs application mariage : quel outil choisir en 2026 ?",
     excerpt:
       "Tableur ou app dédiée ? Les deux fonctionnent au début. Voici où Excel atteint ses limites, et quand une app vaut le switch.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("excel-vs-application-mariage"),
     readingMinutes: 6,
     heroImage: HERO,
     heroImageAlt: "Excel ou application pour organiser son mariage",
@@ -560,7 +561,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "Wedding timeline: month-by-month calendar",
     excerpt:
       "From 12 months out to 1 week before: what to do at each stage. A concrete calendar, not a vague list.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("retroplanning-mariage-mois-par-mois"),
     readingMinutes: 7,
     heroImage: HERO,
     heroImageAlt: "Wedding month-by-month timeline",
@@ -645,7 +646,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "Plan your wedding in 10 steps (in the right order)",
     excerpt:
           "Not a random checklist. Ten steps with dependencies: budget before venue, venue before invitations, RSVPs before seating chart.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("organiser-mariage-10-etapes"),
     readingMinutes: 6,
     heroImage: HERO,
     heroImageAlt: "Plan a wedding in 10 steps",
@@ -701,7 +702,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "Wedding in 6 months: accelerated checklist",
     excerpt:
       "Date in six months? Tight but doable. What to prioritize, what to simplify, and what cannot be shortened.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("mariage-6-mois-checklist"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Plan a wedding in 6 months",
@@ -764,7 +765,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "18 to 24 month wedding: where to start",
     excerpt:
       "You have time. Here is what to book early, and what to keep flexible.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("mariage-18-24-mois-premieres-actions"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Plan a wedding over 18 to 24 months",
@@ -816,7 +817,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "7 decisions that drive everything else",
     excerpt:
       "Budget, date, guests, venue, format, funding, priorities: seven structural choices. Everything else follows.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("sept-decisions-mariage"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Key wedding planning decisions",
@@ -864,7 +865,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "Wedding checklist: 50 tasks not to forget",
     excerpt:
       "A full list by theme: admin, venue, guests, attire, day-of. Adapt it, do not follow it blindly.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("checklist-mariage-50-taches"),
     readingMinutes: 8,
     heroImage: HERO,
     heroImageAlt: "Complete wedding checklist",
@@ -971,7 +972,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "How to split wedding tasks between partners",
     excerpt:
           "Without a clear split, one person carries everything. A simple model by domain, not line-by-line equality.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("repartir-taches-mariage-deux"),
     readingMinutes: 5,
     heroImage: HERO,
     heroImageAlt: "Split wedding tasks between partners",
@@ -1024,7 +1025,7 @@ export const POSTS_3_10_EN: BlogPost[] = [
     title: "Excel vs wedding app: which tool to pick in 2026?",
     excerpt:
       "Spreadsheet or dedicated app? Both work at first. Where Excel hits limits, and when an app is worth the switch.",
-    date: "2026-06-29",
+    date: getBlogPublishDate("excel-vs-application-mariage"),
     readingMinutes: 6,
     heroImage: HERO,
     heroImageAlt: "Excel or wedding app comparison",
