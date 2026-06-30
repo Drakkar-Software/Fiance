@@ -72,19 +72,22 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
               {t("scanFromOtherDevice")}
             </Text>
 
-            <View className="items-center mb-6">
-              <View className="bg-white p-4 rounded-2xl shadow-sm">
-                <QRCode value={url} size={200} />
+            <View className="items-center mb-4">
+              <View className="bg-white p-3 rounded-2xl shadow-sm">
+                <QRCode value={url} size={160} />
               </View>
             </View>
 
-            <Text
-              selectable
-              className="text-xs text-mute dark:text-mute text-center mb-6 font-mono"
-              numberOfLines={2}
-            >
-              {url}
-            </Text>
+            <View className="overflow-hidden mb-6">
+              <Text
+                selectable
+                className="text-xs text-mute text-center font-mono"
+                numberOfLines={1}
+                ellipsizeMode="middle"
+              >
+                {url}
+              </Text>
+            </View>
 
             <Pressable
               onPress={handleShare}
