@@ -8,6 +8,7 @@ import { POSTS_3_10_EN, POSTS_3_10_FR } from "./blog-posts-3-10";
 import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
 import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
 import { POSTS_51_68_EN, POSTS_51_68_FR } from "./blog-posts-51-68";
+import { POSTS_69_74_EN, POSTS_69_74_FR } from "./blog-posts-69-74";
 import { getBlogPublishDate } from "./blog-publish-dates";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
@@ -240,6 +241,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_11_30_FR,
     ...POSTS_31_50_FR,
     ...POSTS_51_68_FR,
+    ...POSTS_69_74_FR,
   ],
   en: [
     {
@@ -451,6 +453,7 @@ const POSTS: Record<"fr" | "en", BlogPost[]> = {
     ...POSTS_11_30_EN,
     ...POSTS_31_50_EN,
     ...POSTS_51_68_EN,
+    ...POSTS_69_74_EN,
   ],
 };
 
