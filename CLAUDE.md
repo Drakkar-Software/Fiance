@@ -50,6 +50,12 @@ pnpm test                       # all tests must pass (mobile + SDK)
 pnpm --filter fiance build:web  # web export must succeed (catches Metro config errors, bundler issues)
 ```
 
+## Dependency management rules
+
+- **NEVER use `pnpm.overrides`** in package.json to force dependency versions.
+- **NEVER run `pnpm install --force`** — it reinstalls packages into workspace-local node_modules, creating stale nested copies that shadow the root.
+- When bumping starfish-* versions, bump **both** `apps/mobile/package.json` AND `packages/fiance-sdk/package.json` to the same version set so pnpm can deduplicate to a single instance.
+
 ## Architecture
 
 **Fiancé** is a privacy-first, offline-first wedding planning app built as a pnpm workspace monorepo. The Expo app (`apps/mobile/`) targets iOS, Android, and web. All user-facing text is in French.
