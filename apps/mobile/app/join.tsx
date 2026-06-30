@@ -30,7 +30,7 @@ function useJoinAndNavigate() {
       } else {
         await createWedding(label, password, undefined, memberId);
       }
-      router.replace("/");
+      router.replace("/home" as any);
     },
     [registry, createWedding, switchWedding, router],
   );
