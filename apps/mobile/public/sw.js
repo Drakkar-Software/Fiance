@@ -1,4 +1,4 @@
-const CACHE_NAME = "fiance-v2";
+const CACHE_NAME = "fiance-v3";
 const PRECACHE = ["/", "/manifest.json"];
 
 self.addEventListener("install", (e) => {
@@ -33,6 +33,12 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
+
+  // Bypass cache for cross-origin requests (sync API, CDN) and for
+  // any same-origin /pull/ or /push/ path — those are network API calls
+  // whose response hash must never be served stale (causes CAS 409 loops).
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin || /\/(pull|push)\//.test(url.pathname)) return;
 
   // Static assets are content-hashed and immutable: cache-first.
   // Always resolve to a valid Response — never respondWith(undefined).

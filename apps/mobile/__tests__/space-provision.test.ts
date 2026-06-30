@@ -5,8 +5,8 @@
  *   1. writeSpaceAccess (fiance _access) — TOFU bootstrap write, must be FIRST
  *   2. seedSpaceObjectIndex (fiance content) — only runs after _access exists
  *   3. ownerEnsureSpaceKeyring (fiance _keyring) — idem
- *   4. readSpaces / writeSpaces (_spaces list) — idem
- *   5. updateWeddingEntry — persist spaceId locally
+ *   4. readSpaces / writeSpaces (_spaces list) — best-effort (try/catch)
+ *   5. updateWedding store action — persist spaceId to KV + live Zustand registry
  *
  * Ordering matters for the server's allowTofu design: the fiance enricher
  * gets allowTofu:true so step 1 can succeed with no prior _access doc. Steps 2-4
@@ -32,10 +32,14 @@ vi.mock("@fiance/sdk", () => ({
   buildSpace: (...args: unknown[]) => mockBuildSpace(...args),
 }));
 
-const mockUpdateWeddingEntry = vi.fn().mockResolvedValue(undefined);
+// space-provision now calls the Zustand store action (not updateWeddingEntry directly)
+// so we can update the in-memory registry alongside KV persistence.
+const mockUpdateWedding = vi.fn().mockResolvedValue(undefined);
 
-vi.mock("@/lib/wedding-registry", () => ({
-  updateWeddingEntry: (...args: unknown[]) => mockUpdateWeddingEntry(...args),
+vi.mock("@/store/useWeddingRegistryStore", () => ({
+  useWeddingRegistryStore: {
+    getState: () => ({ updateWedding: mockUpdateWedding }),
+  },
 }));
 
 vi.mock("expo-crypto", () => ({
@@ -74,6 +78,7 @@ describe("ensureSpaceProvisioned", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockReadSpaces.mockResolvedValue({ spaces: [] });
+    mockUpdateWedding.mockResolvedValue(undefined);
   });
 
   it("fast-paths when spaceId already set", async () => {
@@ -90,7 +95,7 @@ describe("ensureSpaceProvisioned", () => {
     mockOwnerEnsureSpaceKeyring.mockImplementation(async () => { callOrder.push("ownerEnsureSpaceKeyring"); });
     mockReadSpaces.mockImplementation(async () => { callOrder.push("readSpaces"); return { spaces: [] }; });
     mockWriteSpaces.mockImplementation(async () => { callOrder.push("writeSpaces"); });
-    mockUpdateWeddingEntry.mockImplementation(async () => { callOrder.push("updateWeddingEntry"); });
+    mockUpdateWedding.mockImplementation(async () => { callOrder.push("updateWedding"); });
 
     await ensureSpaceProvisioned(session, freshWedding);
 
@@ -100,7 +105,7 @@ describe("ensureSpaceProvisioned", () => {
       "ownerEnsureSpaceKeyring",
       "readSpaces",
       "writeSpaces",
-      "updateWeddingEntry",
+      "updateWedding",
     ]);
   });
 
@@ -116,11 +121,11 @@ describe("ensureSpaceProvisioned", () => {
     expect(opts).toMatchObject({ name: "Notre mariage" });
   });
 
-  it("persists spaceId on the registry entry", async () => {
+  it("persists spaceId on the registry entry via the store action", async () => {
     const result = await ensureSpaceProvisioned(session, freshWedding);
 
-    expect(mockUpdateWeddingEntry).toHaveBeenCalledOnce();
-    const [id, patch] = mockUpdateWeddingEntry.mock.calls[0];
+    expect(mockUpdateWedding).toHaveBeenCalledOnce();
+    const [id, patch] = mockUpdateWedding.mock.calls[0];
     expect(id).toBe("w1");
     expect(patch).toMatchObject({ spaceId: result });
   });
@@ -134,5 +139,14 @@ describe("ensureSpaceProvisioned", () => {
     const [, , writtenSpaces] = mockWriteSpaces.mock.calls[0];
     expect(writtenSpaces).toHaveLength(2);
     expect(writtenSpaces[0]).toEqual(existing[0]);
+  });
+
+  it("continues to step 5 even if writeSpaces (step 4) throws (best-effort)", async () => {
+    mockWriteSpaces.mockRejectedValue(new Error("409 hash_mismatch"));
+
+    // Must not throw — the try/catch makes _spaces registration non-fatal.
+    await expect(ensureSpaceProvisioned(session, freshWedding)).resolves.toMatch(/^sp-/);
+    // Step 5 must still run despite step 4 failing.
+    expect(mockUpdateWedding).toHaveBeenCalledOnce();
   });
 });

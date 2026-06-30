@@ -22,7 +22,8 @@ import {
   buildSpace,
   type Session,
 } from '@fiance/sdk';
-import { updateWeddingEntry, type WeddingRegistryEntry } from '@/lib/wedding-registry';
+import { type WeddingRegistryEntry } from '@/lib/wedding-registry';
+import { useWeddingRegistryStore } from '@/store/useWeddingRegistryStore';
 import { withIndexLock } from '@/lib/index-lock';
 
 /**
@@ -73,12 +74,22 @@ export async function ensureSpaceProvisioned(
   await ownerEnsureSpaceKeyring(session, spaceId);
 
   // 4. Register the space in the user's _spaces list (fiance).
+  //    Best-effort: a CAS 409 here must not abort provisioning — the spaceId is
+  //    persisted below and sync uses it directly, not _spaces. The SDK fix
+  //    (updateSpacesDoc hardening) makes this converge; the try/catch is a safety net.
   const { spaces } = await readSpaces(session.spacesRegistryClient, session);
   const space = buildSpace(spaceId, name);
-  await writeSpaces(session.spacesRegistryClient, session, [...spaces, space]);
+  try {
+    await writeSpaces(session.spacesRegistryClient, session, [...spaces, space]);
+  } catch (err) {
+    console.warn('[space-provision] _spaces registration failed (non-fatal):', err);
+  }
 
   // 5. Persist so subsequent sessions skip provisioning.
-  await updateWeddingEntry(wedding.id, { spaceId });
+  //    Use the store action (not the raw KV writer) so the in-memory registry is
+  //    updated immediately — the fast-path at the top of this function then holds
+  //    on the next activation and prevents orphan-space churn.
+  await useWeddingRegistryStore.getState().updateWedding(wedding.id, { spaceId });
 
   return spaceId;
 }

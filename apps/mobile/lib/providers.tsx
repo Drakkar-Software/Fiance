@@ -190,7 +190,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
           useEntitlementsStore.getState().setFeatures(features);
         }
       }
-    })();
+    })().catch((err) => console.warn("[providers] sync init failed:", err));
 
     // Re-pull entitlements on foreground.
     const foregroundSub = AppState.addEventListener("change", (state) => {
