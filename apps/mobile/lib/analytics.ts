@@ -57,7 +57,7 @@ export type FianceEvents = {
 export const analytics = createLazyClient<FianceEvents>();
 
 const ANALYTICS_BASE =
-  process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "http://localhost:8787";
+  process.env.EXPO_PUBLIC_ANALYTICS_URL;
 const ANALYTICS_APP = "fiance";
 
 // Guard against double-init (React StrictMode double-effects, fast-refresh, HMR module re-eval, etc.)
