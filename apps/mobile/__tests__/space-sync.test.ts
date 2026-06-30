@@ -254,6 +254,190 @@ describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () =>
   });
 });
 
+// ─── discoverOwnerWeddingRoot ─────────────────────────────────────────────────
+//
+// Finds the pre-existing wedding root in a shared space so a joiner can adopt the
+// owner's node id instead of pushing a second, divergent root.
+// Mirrors the reconciliation in fiance-sdk/src/sync/import-legacy.ts:123-124.
+
+describe("discoverOwnerWeddingRoot", () => {
+  afterEach(() => {
+    mockReadObjectTreeImpl = async () => [];
+  });
+
+  it("returns the single root when there is exactly one wedding node", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "owner-root", type: "wedding", parentId: null, updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBe("owner-root");
+  });
+
+  it("excludes this device's own root and returns the other (common 2-root case)", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "joiner-own", type: "wedding", parentId: null, updatedAt: 2000 },
+      { id: "owner-root", type: "wedding", parentId: null, updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBe("owner-root");
+  });
+
+  it("with 3 roots (polluted space), picks oldest updatedAt after excluding own id", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "joiner-own",   type: "wedding", parentId: null, updatedAt: 3000 },
+      { id: "joiner2",      type: "wedding", parentId: null, updatedAt: 2000 },
+      { id: "owner-root",   type: "wedding", parentId: null, updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBe("owner-root");
+  });
+
+  it("returns null when space has no wedding nodes", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "guest-1", type: "guest", parentId: "some-root", updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBeNull();
+  });
+
+  it("returns null for an empty space", async () => {
+    mockReadObjectTreeImpl = async () => [];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBeNull();
+  });
+
+  it("swallows readObjectTree errors and returns null (network-safe)", async () => {
+    mockReadObjectTreeImpl = async () => { throw new Error("network error"); };
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    await expect(discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).resolves.toBeNull();
+  });
+
+  it("does NOT treat wedding nodes with non-null parentId as roots", async () => {
+    // A wedding node that is a child of another node must not be picked as the root.
+    mockReadObjectTreeImpl = async () => [
+      { id: "non-root-wedding", type: "wedding", parentId: "some-parent", updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "joiner-own")).toBeNull();
+  });
+
+  it("when only own root present (owner's first boot), returns own root as fallback", async () => {
+    // No other roots → pool falls back to roots (including ownId) → returns it.
+    // This is the owner boot path: no adoption needed, but discovery doesn't break.
+    mockReadObjectTreeImpl = async () => [
+      { id: "my-root", type: "wedding", parentId: null, updatedAt: 1000 },
+    ];
+    const { discoverOwnerWeddingRoot } = await import("@/lib/space-sync");
+    // Returns my-root (the only candidate); providers.tsx guards adopted !== wedding.id,
+    // so this is a no-op — the owner never persists a redundant weddingNodeId.
+    expect(await discoverOwnerWeddingRoot({} as never, "sp-1", "my-root")).toBe("my-root");
+  });
+});
+
+// ─── hydrateFromSpace: wedding doc selected by weddingNodeId, not index [0] ──
+//
+// Before the fix, `hydrateFromSpace` called `pullAll("wedding")` and used
+// `weddingDocs[0]`, ignoring the active wedding node id entirely. With two wedding
+// roots in a shared space this could hydrate the wrong wedding header doc.
+// The fix: select the matching node at the index level (where id is known), then
+// pull only that one node's content.
+
+describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index [0]", () => {
+  afterEach(() => {
+    mockReadObjectTreeImpl = async () => [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null, hash: null })) },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+  });
+
+  it("pulls the content doc for the node matching weddingNodeId, not the first node", async () => {
+    // Space has two wedding roots: node-A (older, index[0]) and node-B (active).
+    mockReadObjectTreeImpl = async () => [
+      { id: "node-A", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+      { id: "node-B", type: "wedding", parentId: null, updatedAt: 2000, contentKind: "merge", access: "space", enc: false },
+    ];
+
+    const pulledPaths: string[] = [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async (path: string) => {
+          pulledPaths.push(path);
+          return { data: { marker: path }, hash: "h" };
+        }),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-B");
+
+    // Exactly one wedding content pull, and it's for node-B (not node-A).
+    const weddingPulls = pulledPaths.filter((p) => p.includes("node-A") || p.includes("node-B"));
+    expect(weddingPulls).toHaveLength(1);
+    expect(weddingPulls[0]).toContain("node-B");
+  });
+
+  it("falls back to the first node when no node matches weddingNodeId", async () => {
+    // Only one wedding root in the space; active weddingNodeId is unknown (e.g. first boot).
+    mockReadObjectTreeImpl = async () => [
+      { id: "node-A", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+
+    const pulledPaths: string[] = [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async (path: string) => {
+          pulledPaths.push(path);
+          return { data: { marker: path }, hash: "h" };
+        }),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    // Active id not in the space → falls back to node-A (the only candidate).
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-UNKNOWN");
+
+    const weddingPulls = pulledPaths.filter((p) => p.includes("node-A"));
+    expect(weddingPulls).toHaveLength(1);
+  });
+
+  it("does not pull any wedding doc when the space has no wedding nodes", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "guest-1", type: "guest", parentId: "node-A", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+
+    const pulledPaths: string[] = [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async (path: string) => { pulledPaths.push(path); return { data: null, hash: null }; }),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    // The only pull is for the guest node, not a wedding node.
+    const weddingPulls = pulledPaths.filter((p) => p.includes("node-A"));
+    // One pull: the guest "guest-1" references "node-A" as parentId, but the
+    // content is pulled for node "guest-1", not "node-A". No wedding pulls.
+    expect(pulledPaths.some((p) => p.includes("guest-1"))).toBe(true);
+  });
+});
+
 // ─── Regression: encrypted nodes must not be silently dropped (Bug B) ─────────
 //
 // When a doc does not exist the server returns { data: {}, hash: "" }. The fixed

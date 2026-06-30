@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, discoverOwnerWeddingRoot } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
@@ -25,6 +25,7 @@ import { handleReturnFromCheckout } from "@/lib/stripe";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 /** Strip legacy `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/` prefix. */
@@ -81,7 +82,31 @@ export function activateSync(
     if (!sessionConfig) return null;
     const { session, userId, serverUrl } = sessionConfig;
     const spaceId = await ensureSpaceProvisioned(session, wedding);
-    await initSync({ session, spaceId, serverUrl, weddingNodeId: wedding.id });
+
+    // For member entries: restore the link credential first (member cap needed for
+    // readObjectTree), then discover and adopt the owner's wedding root node id so
+    // both devices converge on the same sync tree.
+    // Moving recoverSpaceAccess here (from SyncInitializer) also covers the
+    // settings sync-toggle path, which previously never restored member credentials.
+    let weddingNodeId = wedding.weddingNodeId ?? wedding.id;
+    if (wedding.role === "member") {
+      await readSpaces(session.spacesRegistryClient, session)
+        .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
+        .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
+
+      if (!wedding.weddingNodeId) {
+        const adopted = await discoverOwnerWeddingRoot(session, spaceId, wedding.id)
+          .catch((err) => { console.warn("[providers] discoverOwnerWeddingRoot failed:", err); return null; });
+        if (adopted && adopted !== wedding.id) {
+          weddingNodeId = adopted;
+          // Persist so subsequent boots skip the discovery round-trip.
+          await useWeddingRegistryStore.getState().updateWedding(wedding.id, { weddingNodeId: adopted })
+            .catch((err) => console.warn("[providers] persist weddingNodeId failed:", err));
+        }
+      }
+    }
+
+    await initSync({ session, spaceId, serverUrl, weddingNodeId });
     return { userId };
   })();
 
@@ -111,16 +136,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       const weddingNodeId = getActiveWeddingNodeId();
       if (!session || !spaceId || !weddingNodeId) return;
 
-      // B5: for member-role entries, restore the link credential from _spaces so
-      // the space-access store has the ephemeral kemPriv needed for decryption.
-      // Must happen before hydrateFromSpace so the first pull can decrypt.
-      if (!cancelled && wedding.role === "member") {
-        await readSpaces(session.spacesRegistryClient, session)
-          .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
-          .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
-      }
-
       // B3: hydrate stores from ObjectNode server data (boot pull).
+      // recoverSpaceAccess + discoverOwnerWeddingRoot run inside activateSync (above),
+      // so the adopted weddingNodeId is already in effect via getActiveWeddingNodeId().
       if (!cancelled) {
         const nodeCount = await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
           console.warn("[providers] hydrateFromSpace failed:", err);

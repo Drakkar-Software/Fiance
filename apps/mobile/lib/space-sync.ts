@@ -274,11 +274,46 @@ async function pullNodeContent(
   }
 }
 
+/**
+ * Discovers the owner's wedding root ObjectNode id from the shared space index.
+ * Called once per member device on first boot (before initSync) so the joiner
+ * converges on the same root as the owner and the trees don't diverge.
+ *
+ * Heuristic for polluted spaces (multiple wedding/parentId:null roots):
+ *   1. Exclude this device's own freshly-minted root id.
+ *   2. Among the remaining candidates, prefer the oldest by updatedAt (= original owner).
+ *
+ * Returns null when the space is empty, unreachable, or only contains this device's root.
+ * In that case the caller should fall back to wedding.id and not persist a weddingNodeId.
+ *
+ * Mirrors the proven reconciliation in fiance-sdk/src/sync/import-legacy.ts:123-124.
+ */
+export async function discoverOwnerWeddingRoot(
+  session: Session,
+  spaceId: string,
+  ownId: string,
+): Promise<string | null> {
+  try {
+    const nodes = await readObjectTree(session, spaceId);
+    const roots = nodes.filter(
+      (n) => n.type === FIANCE_TYPES.wedding && n.parentId === null,
+    );
+    if (!roots.length) return null;
+    // Exclude this device's own minted root so we don't adopt ourselves.
+    const others = roots.filter((r) => r.id !== ownId);
+    const pool = others.length ? others : roots;
+    // Oldest updatedAt = the original owner's root (joiners were created later).
+    return pool.reduce((a, b) => (b.updatedAt < a.updatedAt ? b : a)).id;
+  } catch {
+    return null;
+  }
+}
+
 /** Returns the number of nodes pulled from the server (0 = space was empty). */
 export async function hydrateFromSpace(
   session: Session,
   spaceId: string,
-  _weddingNodeId: string,
+  weddingNodeId: string,
 ): Promise<number> {
   _isHydrating = true;
   try {
@@ -298,8 +333,14 @@ export async function hydrateFromSpace(
       return results.filter((r): r is Record<string, unknown> => r !== null);
     };
 
+    // Select the active wedding node at index level (node ids are available here but
+    // lost after pullNodeContent decryption — this is the correct place to filter).
+    // Fall back to first node when no match (owner's own boot, only one root present).
+    const weddingNodes = byType.get(FIANCE_TYPES.wedding) ?? [];
+    const weddingNode = weddingNodes.find((n) => n.id === weddingNodeId) ?? weddingNodes[0] ?? null;
+
     const [
-      weddingDocs,
+      weddingDoc,
       guestGroupDocs,
       guestDocs,
       tableDocs,
@@ -317,7 +358,7 @@ export async function hydrateFromSpace(
       ideaCollectionDocs,
       ideaDocs,
     ] = await Promise.all([
-      pullAll(FIANCE_TYPES.wedding),
+      weddingNode ? pullNodeContent(session, spaceId, weddingNode) : Promise.resolve(null),
       pullAll(FIANCE_TYPES.guestGroup),
       pullAll(FIANCE_TYPES.guest),
       pullAll(FIANCE_TYPES.table),
@@ -336,8 +377,15 @@ export async function hydrateFromSpace(
       pullAll(FIANCE_TYPES.idea),
     ]);
 
+    // Diagnostic: if the space has content nodes but decryption yielded 0 guests,
+    // a credential or space-access failure is the most likely cause.
+    const totalGuestNodes = byType.get(FIANCE_TYPES.guest)?.length ?? 0;
+    if (totalGuestNodes > 0 && guestDocs.length === 0) {
+      console.warn(`[space-sync] decrypted 0/${totalGuestNodes} guest nodes — check space-access credential`);
+    }
+
     // Feed into stores — setters do NOT call notifySync, so no circular dispatch.
-    if (weddingDocs.length) useWeddingStore.getState().setWedding(weddingFromDoc(weddingDocs[0]) as Parameters<ReturnType<typeof useWeddingStore.getState>['setWedding']>[0]);
+    if (weddingDoc) useWeddingStore.getState().setWedding(weddingFromDoc(weddingDoc) as Parameters<ReturnType<typeof useWeddingStore.getState>['setWedding']>[0]);
     if (guestGroupDocs.length) useGuestsStore.getState().setGroups(guestGroupDocs.map(guestGroupFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGroups']>[0]);
     if (tableDocs.length) useGuestsStore.getState().setTables(tableDocs.map(tableFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setTables']>[0]);
     if (guestDocs.length) useGuestsStore.getState().setGuests(guestDocs.map(guestFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGuests']>[0]);

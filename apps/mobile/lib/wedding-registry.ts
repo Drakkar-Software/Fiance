@@ -26,6 +26,14 @@ export interface WeddingRegistryEntry {
    * run owner-only provisioning steps (writeSpaceAccess / ownerEnsureSpaceKeyring).
    */
   role?: "owner" | "member";
+  /**
+   * The adopted wedding root ObjectNode id in the shared space.
+   * For owners: undefined (wedding.id is used directly as the root node id).
+   * For members: the owner's root node id, discovered via readObjectTree at first
+   *   boot and persisted here so subsequent boots skip the network round-trip.
+   * Effective node id = weddingNodeId ?? id.
+   */
+  weddingNodeId?: string;
 }
 
 export interface WeddingRegistry {
@@ -104,7 +112,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);
