@@ -10,6 +10,11 @@ import {
   Sparkles,
   PieChart,
   Settings,
+  FolderOpen,
+  LayoutGrid,
+  BedDouble,
+  Tag,
+  Mail,
   type LucideIcon,
 } from "lucide-react-native";
 import { theme as GP } from "@/lib/theme";
@@ -37,6 +42,21 @@ const NAV_ITEMS: NavItem[] = [
 
 const SETTINGS_ITEM: NavItem = { key: "settings", route: "/settings", icon: Settings, labelKey: "tabs.settings" };
 
+interface SubNavItem {
+  key: string;
+  route: string;
+  icon: LucideIcon;
+  labelKey: string;
+}
+
+const GUESTS_SUBNAV: SubNavItem[] = [
+  { key: "groups", route: "/(tabs)/guests/groups", icon: FolderOpen, labelKey: "groups" },
+  { key: "table-management", route: "/(tabs)/guests/table-management", icon: LayoutGrid, labelKey: "tables" },
+  { key: "accommodations", route: "/(tabs)/guests/accommodations", icon: BedDouble, labelKey: "accommodations" },
+  { key: "invitation-types", route: "/(tabs)/guests/invitation-types", icon: Tag, labelKey: "invitationTypesScreen" },
+  { key: "communications", route: "/(tabs)/guests/communications", icon: Mail, labelKey: "communicationsScreen" },
+];
+
 interface Props {
   isDark: boolean;
   overdueCount: number;
@@ -45,6 +65,7 @@ interface Props {
 
 export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
   const { t } = useTranslation("common");
+  const { t: tg } = useTranslation("guests");
   const router = useRouter();
   const segments = useSegments();
   const syncDotColor = useSyncStatusDot();
@@ -52,6 +73,8 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
 
   // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...]
   const activeKey = (segments[1] as string | undefined) ?? "home";
+  // segments[2] = active guests sub-route key, e.g. ["(tabs)", "guests", "groups"]
+  const activeSubKey = segments[2] as string | undefined;
 
   const bg = isDark ? GP.cardDark : GP.card;
   const borderColor = isDark ? GP.hairStrong : GP.hair;
@@ -92,27 +115,59 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
             "transparent";
 
           return (
-            <Pressable
-              key={item.key}
-              onPress={() => router.push(item.route as any)}
-              // @ts-ignore — web-only hover events
-              onHoverIn={() => setHoveredKey(item.key)}
-              onHoverOut={() => setHoveredKey(null)}
-              style={[styles.row, { backgroundColor: rowBg }]}
-            >
-              {isActive ? <View style={styles.ribbon} /> : <View style={styles.ribbonSpacer} />}
-              <View style={styles.rowInner}>
-                <Icon size={20} color={iconColor} />
-                <Text style={[styles.rowLabel, { color: labelColor }]}>
-                  {t(item.labelKey)}
-                </Text>
-                {item.key === "planning" && overdueCount > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{overdueCount}</Text>
-                  </View>
-                )}
-              </View>
-            </Pressable>
+            <View key={item.key}>
+              <Pressable
+                onPress={() => router.push(item.route as any)}
+                // @ts-ignore — web-only hover events
+                onHoverIn={() => setHoveredKey(item.key)}
+                onHoverOut={() => setHoveredKey(null)}
+                style={[styles.row, { backgroundColor: rowBg }]}
+              >
+                {isActive ? <View style={styles.ribbon} /> : <View style={styles.ribbonSpacer} />}
+                <View style={styles.rowInner}>
+                  <Icon size={20} color={iconColor} />
+                  <Text style={[styles.rowLabel, { color: labelColor }]}>
+                    {t(item.labelKey)}
+                  </Text>
+                  {item.key === "planning" && overdueCount > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{overdueCount}</Text>
+                    </View>
+                  )}
+                </View>
+              </Pressable>
+
+              {item.key === "guests" && isActive && (
+                <View style={styles.subNav}>
+                  {GUESTS_SUBNAV.map((sub) => {
+                    const isSubActive = activeSubKey === sub.key;
+                    const isSubHovered = hoveredKey === `guests:${sub.key}`;
+                    const SubIcon = sub.icon;
+                    const subColor = isSubActive ? GP.clay : isDark ? GP.inkDark : mutedText;
+                    const subBg =
+                      isSubActive ? GP.claySoft :
+                      isSubHovered ? (isDark ? "rgba(42,36,24,0.10)" : GP.paper) :
+                      "transparent";
+
+                    return (
+                      <Pressable
+                        key={sub.key}
+                        onPress={() => router.push(sub.route as any)}
+                        // @ts-ignore — web-only hover events
+                        onHoverIn={() => setHoveredKey(`guests:${sub.key}`)}
+                        onHoverOut={() => setHoveredKey(null)}
+                        style={[styles.subRow, { backgroundColor: subBg }]}
+                      >
+                        <SubIcon size={16} color={subColor} />
+                        <Text style={[styles.subRowLabel, { color: subColor }]}>
+                          {tg(sub.labelKey)}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
           );
         })}
       </View>
@@ -215,6 +270,24 @@ const styles = StyleSheet.create({
   rowLabel: {
     flex: 1,
     fontSize: 14,
+    fontFamily: "Inter_500Medium",
+  },
+  subNav: {
+    gap: 2,
+    paddingBottom: 4,
+  },
+  subRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 8,
+    height: 34,
+    paddingLeft: 38,
+    paddingRight: 12,
+    gap: 8,
+  },
+  subRowLabel: {
+    flex: 1,
+    fontSize: 13,
     fontFamily: "Inter_500Medium",
   },
   badge: {
