@@ -116,6 +116,9 @@ export default function PublicPageScreen() {
   // RSVP
   const guestCount = useGuestsStore((s) => s.guests.length);
 
+  // Both partner names must be filled before Preview / Share are enabled.
+  const infoComplete = partner1.trim().length > 0 && partner2.trim().length > 0;
+
   // Track live sync state so buttons only appear (and work) when sync is active.
   const [syncActive, setSyncActive] = useState(isSyncActive);
   useFocusEffect(
@@ -265,8 +268,16 @@ export default function PublicPageScreen() {
                 {t("sharePublicPage")}
               </Postit>
               <View className="gap-2">
+                {!infoComplete && (
+                  <Text className="text-xs text-mute text-center mb-1">
+                    {t("publicPageIncompleteHint")}
+                  </Text>
+                )}
                 <Pressable
+                  disabled={!infoComplete}
+                  style={{ opacity: infoComplete ? 1 : 0.4 }}
                   onPress={async () => {
+                    if (!infoComplete) return;
                     try {
                       const url = await resolvePublicPageUrl();
                       if (!url) return;
@@ -290,7 +301,9 @@ export default function PublicPageScreen() {
                   </Text>
                 </Pressable>
                 <Pressable
-                  onPress={handleShare}
+                  disabled={!infoComplete}
+                  style={{ opacity: infoComplete ? 1 : 0.4 }}
+                  onPress={infoComplete ? handleShare : undefined}
                   className="bg-primary-500 rounded-2xl py-4 flex-row items-center justify-center active:bg-primary-600"
                 >
                   <Globe size={20} color="#fff" />

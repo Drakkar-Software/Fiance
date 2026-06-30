@@ -206,6 +206,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
   }, [wedding.id]);
 
   // Re-push public page when day-of items or wedding info change (B5).
+  // Debounced: collapses rapid per-keystroke changes into one network push.
   useEffect(() => {
     function pushPublicPageContentIfActive() {
       const session = getActiveSession();
@@ -216,22 +217,28 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       pushPublicPageContent(session, spaceId, pageId).catch(() => {});
     }
 
+    let pushTimer: ReturnType<typeof setTimeout> | null = null;
+    function schedulePublicPagePush() {
+      if (pushTimer) clearTimeout(pushTimer);
+      pushTimer = setTimeout(() => { pushTimer = null; pushPublicPageContentIfActive(); }, 2000);
+    }
+
     let prevDayOfItems = usePlanningStore.getState().dayOfItems;
     let prevWedding = useWeddingStore.getState().wedding;
 
     const unsubPlanning = usePlanningStore.subscribe((state) => {
       if (state.dayOfItems !== prevDayOfItems) {
         prevDayOfItems = state.dayOfItems;
-        pushPublicPageContentIfActive();
+        schedulePublicPagePush();
       }
     });
     const unsubWedding = useWeddingStore.subscribe((state) => {
       if (state.wedding !== prevWedding) {
         prevWedding = state.wedding;
-        pushPublicPageContentIfActive();
+        schedulePublicPagePush();
       }
     });
-    return () => { unsubPlanning(); unsubWedding(); };
+    return () => { unsubPlanning(); unsubWedding(); if (pushTimer) clearTimeout(pushTimer); };
   }, []);
 
   return null;

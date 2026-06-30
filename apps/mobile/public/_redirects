@@ -1,3 +1,6 @@
+# Guest pages (page-share + RSVP links) carry the token in the path → SPA fallback
+/wedding/* /index.html 200
+
 # Legacy flat .html paths → clean URLs (301 consolidates SEO signals)
 /blog/:slug.html /blog/:slug 301
 /tools/:slug.html /tools/:slug 301

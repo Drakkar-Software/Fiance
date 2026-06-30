@@ -181,6 +181,7 @@
   "rsvpCount": "{{count}} invité(s) dans la liste",
   "syncRequiredRsvp": "Activez la synchronisation pour gérer les RSVP en ligne",
   "syncRequiredShare": "Activez la synchronisation pour partager votre page publique",
+  "publicPageIncompleteHint": "Renseignez les noms des mariés pour partager la page.",
   "shareError": "Impossible de générer le lien, réessayez",
   "previewPage": "Aperçu de la page",
   "manageDayOf": "Gérer le programme",
