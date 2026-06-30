@@ -8,6 +8,7 @@
   "weddingDate": "Date",
   "loading": "Loading...",
   "error": "Could not load the page. The link may be invalid.",
+  "notPublished": "This page hasn't been published yet.",
   "noTimeline": "The schedule is not available yet.",
   "until": "until {{time}}",
   "printSchedule": "Print",

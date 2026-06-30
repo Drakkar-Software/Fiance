@@ -68,6 +68,7 @@ export default function WeddingPublicPage() {
   const [page, setPage] = useState<PublicWeddingPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [notPublished, setNotPublished] = useState(false);
   // v3 RSVP state — populated when `id` is a combined guest link.
   const [rsvpToken, setRsvpToken] = useState<NodeInviteLinkToken | null>(null);
   const [rsvpSeed, setRsvpSeed] = useState<RsvpSubmission | null>(null);
@@ -91,18 +92,18 @@ export default function WeddingPublicPage() {
         // Try combined guest link first ({ v:1, p: pageToken, r: rsvpToken }).
         const combined = decodeGuestLink(id);
         if (combined) {
-          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
-          if (result?.data) {
-            setPage(result.data as PublicWeddingPage);
-            setOgMeta(result.data as PublicWeddingPage, t);
+          // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
+          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
+          if (result) {
+            setPage(result);
+            setOgMeta(result, t);
           } else {
-            setError(true);
+            setNotPublished(true);
             return;
           }
           // Read rsvp node to get seed data (guest name, companion info).
-          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
-          const seed = rsvpResult?.data as RsvpSubmission | null;
-          if (seed?.guestId) setRsvpSeed(seed);
+          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: "fiance" }) as RsvpSubmission | null;
+          if (rsvpResult?.guestId) setRsvpSeed(rsvpResult);
           setRsvpToken(combined.rsvp);
           return;
         }
@@ -110,12 +111,13 @@ export default function WeddingPublicPage() {
         // Plain page-only link (bare NodeInviteLinkToken from getPublicPageInviteLink).
         try {
           const pageToken = decodeNodeInviteLink(id);
-          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: "fiance" }) as { data?: unknown } | null;
-          if (result?.data) {
-            setPage(result.data as PublicWeddingPage);
-            setOgMeta(result.data as PublicWeddingPage, t);
+          // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
+          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
+          if (result) {
+            setPage(result);
+            setOgMeta(result, t);
           } else {
-            setError(true);
+            setNotPublished(true);
           }
         } catch {
           setError(true);
@@ -172,6 +174,20 @@ export default function WeddingPublicPage() {
         />
         <ActivityIndicator size="small" color="#b96a4a" className="mt-4" />
         <Text className="text-sm text-mute mt-2">{t("loading")}</Text>
+      </View>
+    );
+  }
+
+  if (notPublished) {
+    return (
+      <View className="flex-1 bg-accent-cream items-center justify-center px-6">
+        <Stack.Screen options={{ headerShown: false }} />
+        <Image
+          source={require("@/assets/icon.png")}
+          style={{ width: 64, height: 64, borderRadius: 16, opacity: 0.4 }}
+          resizeMode="contain"
+        />
+        <Text className="text-base text-mute text-center mt-4">{t("notPublished")}</Text>
       </View>
     );
   }
