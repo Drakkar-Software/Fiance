@@ -55,8 +55,9 @@ function resolveJoinScreen(
   if (!invite) return "invalid";
   const alreadyJoined = !!findExisting(registry, invite.password);
   if (alreadyJoined) return "already_joined";
-  const hasWeddings = (registry?.weddings.length ?? 0) > 0;
-  if (hasWeddings && !confirmed) return "confirm";
+  // Always confirm before joining — first-time users see a simpler prompt,
+  // users with existing weddings see the conflict warning too.
+  if (!confirmed) return "confirm";
   return "form";
 }
 
@@ -94,6 +95,20 @@ describe("decodeInviteToken", () => {
     // Exercises the full builder → fragment → reader path (the path join.tsx now uses)
     const url = buildInviteUrl("Alice & Bob", "my-secret-pass");
     expect(parseInviteUrl(url)).toEqual({ name: "Alice & Bob", password: "my-secret-pass" });
+  });
+
+  it("parseInviteUrl tolerates a polluted fragment (share target appended text + duplicate url)", () => {
+    // Reproduces the exact production bug: navigator.share({ url, text: message }) on web
+    // caused the share target to produce: <url>#<payload>%20descriptive%20text%20<url>
+    // Only the leading base64url token should be decoded.
+    const url = buildInviteUrl("Test app", "my-secret-pass");
+    const fragment = url.split("#")[1];
+    // Simulate what the browser puts in the address bar after sharing (spaces → %20)
+    const polluted = `${url}%20Rejoins%20notre%20mariage%20!%20${url}`;
+    expect(parseInviteUrl(polluted)).toEqual({ name: "Test app", password: "my-secret-pass" });
+    // Also works when the original clean URL is used
+    expect(parseInviteUrl(url)).toEqual({ name: "Test app", password: "my-secret-pass" });
+    void fragment; // used above for context only
   });
 
   it("handles special characters in wedding name", () => {
@@ -239,13 +254,22 @@ describe("resolveJoinScreen", () => {
     expect(resolveJoinScreen(validInvite, registry, true)).toBe("form");
   });
 
-  it("shows 'form' when registry is null (first-time user)", () => {
-    expect(resolveJoinScreen(validInvite, null, false)).toBe("form");
+  it("shows 'confirm' when registry is null (first-time user — always confirm)", () => {
+    expect(resolveJoinScreen(validInvite, null, false)).toBe("confirm");
   });
 
-  it("shows 'form' when registry has no weddings", () => {
+  it("shows 'confirm' when registry has no weddings", () => {
     const registry: Registry = { weddings: [], activeWeddingId: "" };
-    expect(resolveJoinScreen(validInvite, registry, false)).toBe("form");
+    expect(resolveJoinScreen(validInvite, registry, false)).toBe("confirm");
+  });
+
+  it("shows 'form' when registry is null and user has confirmed", () => {
+    expect(resolveJoinScreen(validInvite, null, true)).toBe("form");
+  });
+
+  it("shows 'form' when registry has no weddings and user has confirmed", () => {
+    const registry: Registry = { weddings: [], activeWeddingId: "" };
+    expect(resolveJoinScreen(validInvite, registry, true)).toBe("form");
   });
 
   it("'already_joined' takes priority over 'confirm'", () => {

@@ -177,12 +177,17 @@ export function decodeInviteToken(
 /**
  * Parse invite params from a deep link URL.
  * Returns null if the URL does not contain a valid invite token.
+ *
+ * Tolerant of polluted fragments: some share targets append human-readable text
+ * and a duplicate URL after the payload (e.g. `#<payload>%20Join%20us!%20https://…`).
+ * Only the leading base64url token is decoded so such links still resolve.
  */
 export function parseInviteUrl(url: string): InvitePayload | null {
   try {
-    const parsed = new URL(url);
-    const fragment = parsed.hash.slice(1); // strip leading '#'
-    return fragment ? decodeInviteToken(fragment) : null;
+    const hash = new URL(url).hash.slice(1); // strip leading '#'
+    // `new URL().hash` percent-encodes spaces → %20, which terminates the base64url run
+    const token = hash.match(/^[A-Za-z0-9_-]+/)?.[0];
+    return token ? decodeInviteToken(token) : null;
   } catch {
     return null;
   }

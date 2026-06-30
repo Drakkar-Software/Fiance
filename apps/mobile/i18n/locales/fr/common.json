@@ -73,7 +73,10 @@
     "eyebrow": "Jumeler un appareil",
     "title": "Sur l'autre téléphone,",
     "tagline": "scannez ce code",
-    "postit": "les codes expirent vite — par sécurité 🌿"
+    "postit": "les codes expirent vite — par sécurité 🌿",
+    "inviteEyebrow": "Invitation",
+    "joinThisWedding": "Rejoindre ce mariage ?",
+    "joinThisWeddingFirst": "Vous êtes invité(e) à rejoindre ce mariage."
   },
   "homeEyebrow": "Accueil",
   "homeTagline": "jours",

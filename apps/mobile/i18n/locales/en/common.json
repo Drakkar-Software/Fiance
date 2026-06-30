@@ -73,7 +73,10 @@
     "eyebrow": "Pair a device",
     "title": "On the other phone,",
     "tagline": "scan this code",
-    "postit": "codes expire fast — for safety 🌿"
+    "postit": "codes expire fast — for safety 🌿",
+    "inviteEyebrow": "Invitation",
+    "joinThisWedding": "Join this wedding?",
+    "joinThisWeddingFirst": "You've been invited to join this wedding."
   },
   "homeEyebrow": "Home",
   "homeTagline": "days",

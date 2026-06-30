@@ -85,8 +85,17 @@ export default function JoinScreen() {
     return <AlreadyJoinedRedirect password={password} />;
   }
 
-  if (hasWeddings && !confirmed) {
-    return <ConfirmJoin weddingName={name} onConfirm={() => setConfirmed(true)} />;
+  // Always show the confirmation screen before joining — lets the user review
+  // the wedding name and decide. First-time users skip the "you already have a
+  // wedding" copy; users with existing weddings see the conflict warning too.
+  if (!confirmed) {
+    return (
+      <ConfirmJoin
+        weddingName={name}
+        hasOtherWeddings={hasWeddings}
+        onConfirm={() => setConfirmed(true)}
+      />
+    );
   }
 
   return <AutoJoin name={name} password={password} memberId={invite.memberId} onJoin={joinAndNavigate} />;
@@ -165,9 +174,11 @@ function InvalidInvite() {
 
 function ConfirmJoin({
   weddingName,
+  hasOtherWeddings,
   onConfirm,
 }: {
   weddingName?: string;
+  hasOtherWeddings: boolean;
   onConfirm: () => void;
 }) {
   const { t } = useTranslation("common");
@@ -181,16 +192,23 @@ function ConfirmJoin({
           <Heart size={36} color="#b96a4a" />
         </View>
         <PageHeader
-          eyebrow={t("join.eyebrow")}
-          title={t("join.title")}
-          tagline={t("join.tagline")}
+          eyebrow={t("join.inviteEyebrow")}
+          title={t("join.joinThisWedding")}
+          tagline={weddingName}
           titleSize={26}
           style={{ paddingHorizontal: 0, paddingTop: 0 }}
         />
-        <Text className="text-base text-mute mt-2 text-center">
-          {t("join.alreadyHaveWedding")}{"\n"}
-          {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}
-        </Text>
+        {hasOtherWeddings && (
+          <Text className="text-base text-mute mt-2 text-center">
+            {t("join.alreadyHaveWedding")}{"\n"}
+            {t("join.confirmJoin", { name: weddingName ? ` (${weddingName})` : "" })}
+          </Text>
+        )}
+        {!hasOtherWeddings && (
+          <Text className="text-base text-mute mt-2 text-center">
+            {t("join.joinThisWeddingFirst")}
+          </Text>
+        )}
       </View>
 
       <Pressable

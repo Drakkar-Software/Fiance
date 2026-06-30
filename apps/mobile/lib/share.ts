@@ -10,7 +10,10 @@ export async function shareLink(url: string, message: string, copiedText: string
   if (Platform.OS === "web") {
     try {
       if (typeof navigator !== "undefined" && navigator.share) {
-        await navigator.share({ url, text: message });
+        // message already ends with the url (from the i18n template), so do NOT
+        // also pass `url` as a separate field — share targets concatenate them,
+        // producing a duplicate url that pollutes the #fragment of the first link.
+        await navigator.share({ text: message });
       } else if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(url);
         toast.success(copiedText);
