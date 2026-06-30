@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
 import { configureFiance, recoverSpaceAccess, readSpaces } from "@fiance/sdk";
-import { getStorage } from "@/lib/kv-storage";
+import { makeGlobalKvAdapter } from "@/lib/global-kv";
 import {
   initSync,
   teardownSync,
@@ -27,33 +27,6 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
-// ---------------------------------------------------------------------------
-// Boot: configure the Fiancé SDK once per process lifetime.
-// The KV adapter bridges the seahorse MMKV/AsyncStorage store to the
-// starfish-spaces KvAdapter interface { getItem, setItem, removeItem }.
-// ---------------------------------------------------------------------------
-
-function makeKvAdapter() {
-  return {
-    getItem: async (key: string): Promise<string | null> => {
-      const storage = getStorage();
-      if (!storage) return null;
-      // Synchronous MMKV read (native) or web-cache read (web)
-      return storage.getItemSync?.(key) ?? null;
-    },
-    setItem: async (key: string, value: string): Promise<void> => {
-      const storage = getStorage();
-      if (!storage) return;
-      storage.setItemSync?.(key, value);
-    },
-    removeItem: async (key: string): Promise<void> => {
-      const storage = getStorage();
-      if (!storage) return;
-      storage.removeItemSync?.(key);
-    },
-  };
-}
-
 /** Strip legacy `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/` prefix. */
 function normalizeSyncBase(url: string): string {
   return url.replace(/\/v1\/?$/, "");
@@ -76,7 +49,7 @@ export function configureOnBoot(): void {
     configurePlatform({ crypto: QuickCrypto });
   }
 
-  configureFiance(makeKvAdapter());
+  configureFiance(makeGlobalKvAdapter());
 }
 
 // ---------------------------------------------------------------------------

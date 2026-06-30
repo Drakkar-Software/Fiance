@@ -147,6 +147,100 @@ describe("identity pinning before joinSpaceByLink (Bug B fix)", () => {
   });
 });
 
+// ─── Web-prefixed adapter: reproduces the "neither sees the other" bug ────────
+//
+// The flat-Map KV above never exposes the bug because it has no activePrefix and
+// no gate. This suite uses a KV that mimics kv-storage.web.ts: writes are dropped
+// when no wedding is active, and keys are prefixed with the active wedding ID when
+// one is active. This is the exact behavior that silently lost the credential.
+
+describe("web-prefixed adapter reproduces the bug; flat global adapter fixes it", () => {
+  /** Mimics apps/mobile/lib/kv-storage.web.ts behaviour (simplified). */
+  function makeWebPrefixedKv(initialActiveWeddingId: string | null = null) {
+    const store = new Map<string, string>();
+    let activeWeddingId = initialActiveWeddingId;
+    const prefix = () => activeWeddingId ? `wedding_${activeWeddingId}.db::` : null;
+
+    return {
+      getItem: vi.fn(async (key: string) => {
+        const p = prefix();
+        if (!p) return null; // no active wedding → gate blocks read
+        return store.get(p + key) ?? null;
+      }),
+      setItem: vi.fn(async (key: string, value: string) => {
+        const p = prefix();
+        if (!p) return; // no active wedding → gate blocks write (the bug)
+        store.set(p + key, value);
+      }),
+      removeItem: vi.fn(async (key: string) => {
+        const p = prefix();
+        if (!p) return;
+        store.delete(p + key);
+      }),
+      /** Simulate switching the active wedding (different prefix). */
+      setActiveWedding: (id: string | null) => { activeWeddingId = id; },
+      store,
+    };
+  }
+
+  it("BUG: web-prefixed adapter drops write at join time (no active wedding) → credential lost on reload", async () => {
+    // At /join there is no active wedding → prefix gate blocks writes
+    const webKv = makeWebPrefixedKv(null /* no active wedding */);
+    clearSpaceAccessStore();
+    configureSpaceAccessStore({ kvAdapter: webKv });
+
+    await hydrateSpaceAccessStore(NEW_USER, {}, {});
+    saveSpaceAccessEntry(SPACE_ID, makeLinkEntry());
+
+    // The setItem call was made but the gate dropped it — nothing in the store
+    expect(webKv.store.size).toBe(0);
+
+    // Simulate reload: clear in-memory cache, reload from KV (which has nothing)
+    clearSpaceAccessStore();
+    const webKv2 = makeWebPrefixedKv("some-wedding-id"); // now has active wedding
+    configureSpaceAccessStore({ kvAdapter: webKv2 });
+    await hydrateSpaceAccessStore(NEW_USER, {}, {});
+
+    // Credential is gone — this is the bug
+    expect(getSpaceAccessEntry(SPACE_ID)).toBeNull();
+  });
+
+  it("FIX: flat global adapter persists write at join time → credential survives reload", async () => {
+    // Flat store simulates global-kv.web.ts: no prefix, no gate
+    const globalStore = new Map<string, string>();
+    const globalKv = {
+      getItem: vi.fn(async (k: string) => globalStore.get(k) ?? null),
+      setItem: vi.fn(async (k: string, v: string) => { globalStore.set(k, v); }),
+      removeItem: vi.fn(async (k: string) => { globalStore.delete(k); }),
+    };
+
+    clearSpaceAccessStore();
+    configureSpaceAccessStore({ kvAdapter: globalKv });
+
+    // Join: no active wedding in the app, but global adapter always accepts writes
+    await hydrateSpaceAccessStore(NEW_USER, {}, {});
+    saveSpaceAccessEntry(SPACE_ID, makeLinkEntry());
+
+    expect(globalStore.size).toBeGreaterThan(0);
+
+    // Simulate reload: clear in-memory cache, same KV data
+    clearSpaceAccessStore();
+    const globalKv2 = {
+      getItem: vi.fn(async (k: string) => globalStore.get(k) ?? null),
+      setItem: vi.fn(async (k: string, v: string) => { globalStore.set(k, v); }),
+      removeItem: vi.fn(async (k: string) => { globalStore.delete(k); }),
+    };
+    configureSpaceAccessStore({ kvAdapter: globalKv2 });
+    await hydrateSpaceAccessStore(NEW_USER, {}, {});
+
+    // Credential is restored — the fix
+    const entry = getSpaceAccessEntry(SPACE_ID);
+    expect(entry).not.toBeNull();
+    expect(entry?.kind).toBe("link");
+    expect(entry?.kemPriv).toBe("f".repeat(64));
+  });
+});
+
 // ─── KV-backed cold-boot reload ───────────────────────────────────────────────
 
 describe("KV-backed reload across process restarts", () => {
