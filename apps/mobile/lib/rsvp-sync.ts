@@ -18,6 +18,7 @@ import {
   updateObjectIndex,
   getNodeAccess,
   objInvPush,
+  objInvPull,
   createNodeInviteLink,
   rsvpToNode,
   type Session,
@@ -180,10 +181,15 @@ export async function seedRsvpNodeContent(
     rsvpStatus: null,
     submittedAt: null,
   };
+  // Seed-if-absent: never clobber a guest's already-submitted RSVP.
+  const existing = await handle.client
+    .pull(objInvPull(spaceId, nodeId))
+    .catch(() => null) as { hash?: string } | null;
+  if (existing?.hash) return;
   await handle.client.push(
     objInvPush(spaceId, nodeId),
     initial as unknown as Record<string, unknown>,
-    null,
+    "",  // "" not null: creates when absent; heals a degraded stored hash
   );
 }
 

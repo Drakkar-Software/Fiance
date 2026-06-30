@@ -16,6 +16,7 @@ import { Platform } from "react-native";
 import {
   getNodeAccess,
   objInvPush,
+  objInvPull,
   updateObjectIndex,
   createNodeInviteLink,
   encodeNodeInviteLink,
@@ -147,10 +148,10 @@ export async function pushPublicPageContent(
     session,
     null,
   );
-  await handle.client.push(
+  await handle.push(
+    objInvPull(spaceId, pageNodeId),
     objInvPush(spaceId, pageNodeId),
-    content as unknown as Record<string, unknown>,
-    null,
+    () => content as unknown as Record<string, unknown>,
   );
 }
 
