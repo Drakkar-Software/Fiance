@@ -1,6 +1,8 @@
 import { postPair, pairsToArrays } from "./blog-posts-shared";
 import type { BlogSection } from "./blog-types";
 
+const POST_DATE = "2026-07-01";
+
 const fiancePlanningFr = (paragraphs: string[]): BlogSection => ({
   type: "text",
   title: "Comment Fiancé peut vous aider",
@@ -77,6 +79,7 @@ const pairs = [
   // ─── Planning (3) ────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "dossier-mairie-bans-mariage-delais",
     categoryKey: "planning",
     categoryFr: "Préparatifs",
@@ -168,6 +171,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "ceremonie-laique-choisir-officiant",
     categoryKey: "planning",
     categoryFr: "Préparatifs",
@@ -258,6 +262,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "choisir-temoins-role-mariage",
     categoryKey: "planning",
     categoryFr: "Préparatifs",
@@ -338,6 +343,7 @@ const pairs = [
   // ─── Budget (3) ──────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "assurance-annulation-mariage",
     categoryKey: "budget",
     categoryFr: "Budget",
@@ -435,6 +441,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "pourboires-enveloppes-mariage-jour-j",
     categoryKey: "budget",
     categoryFr: "Budget",
@@ -510,6 +517,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "budget-mariage-par-region-france",
     categoryKey: "budget",
     categoryFr: "Budget",
@@ -595,6 +603,7 @@ const pairs = [
   // ─── Guests (3) ──────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "faire-part-parents-divorces",
     categoryKey: "guests",
     categoryFr: "Invités",
@@ -667,6 +676,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "remerciements-apres-mariage",
     categoryKey: "guests",
     categoryFr: "Invités",
@@ -745,6 +755,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "protocole-invitations-qui-inviter",
     categoryKey: "guests",
     categoryFr: "Invités",
@@ -825,6 +836,7 @@ const pairs = [
   // ─── Seating (3) ─────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "table-honneur-formats-mariage",
     categoryKey: "seating",
     categoryFr: "Plan de table",
@@ -893,6 +905,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "plan-de-table-enfants-mariage",
     categoryKey: "seating",
     categoryFr: "Plan de table",
@@ -969,6 +982,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "placement-libre-ou-assigne-mariage",
     categoryKey: "seating",
     categoryFr: "Plan de table",
@@ -1059,6 +1073,7 @@ const pairs = [
   // ─── Vendors (3) ─────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "choisir-photographe-mariage",
     categoryKey: "vendors",
     categoryFr: "Prestataires",
@@ -1141,6 +1156,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "choisir-dj-mariage",
     categoryKey: "vendors",
     categoryFr: "Prestataires",
@@ -1219,6 +1235,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "choisir-fleuriste-mariage",
     categoryKey: "vendors",
     categoryFr: "Prestataires",
@@ -1301,6 +1318,7 @@ const pairs = [
   // ─── Ideas (3) ───────────────────────────────────────────────────────────
 
   postPair({
+    date: POST_DATE,
     slug: "tendances-mariage-2026",
     categoryKey: "ideas",
     categoryFr: "Inspiration",
@@ -1381,6 +1399,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "palette-couleurs-mariage",
     categoryKey: "ideas",
     categoryFr: "Inspiration",
@@ -1451,6 +1470,7 @@ const pairs = [
   }),
 
   postPair({
+    date: POST_DATE,
     slug: "choisir-alliances-mariage",
     categoryKey: "ideas",
     categoryFr: "Inspiration",
