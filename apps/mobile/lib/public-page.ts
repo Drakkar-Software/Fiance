@@ -18,12 +18,13 @@ import {
   objInvPush,
   objInvPull,
   updateObjectIndex,
-  createNodeInviteLink,
+  ephemeralSubject,
   encodeNodeInviteLink,
   publicPageToNode,
   type Session,
   type ObjectNode,
 } from "@fiance/sdk";
+import { mintMemberCap } from "@drakkar.software/starfish-sharing";
 import { withIndexLock } from "@/lib/index-lock";
 
 function getAppOrigin(): string {
@@ -170,15 +171,45 @@ export async function getPublicPageInviteLink(
   pageNodeId: string,
 ): Promise<string> {
   const origin = getAppOrigin();
-  const { token } = await createNodeInviteLink(
-    session,
-    spaceId,
-    pageNodeId,
-    "Page mariage",
-    { enc: false },
-    false, // read-only
-    origin,
+
+  // Mint a long-lived cap directly so shared links don't rot.
+  // createNodeInviteLink uses DEFAULT_TTL_SEC = 30 days with no override hook,
+  // causing links to 401 after a month. We replicate its enc:false / non-isolated
+  // path using exported primitives and set a 5-year TTL.
+  // nbf is backdated 1 h to absorb owner-side clock skew at mint time.
+  const { ek, subject } = await ephemeralSubject(session);
+  const nbf = Math.floor(Date.now() / 1000) - 3600;
+  const ttlSec = 5 * 365 * 24 * 3600; // 5 years
+  const capOpts = { nbf, ttlSec };
+
+  const cap = await mintMemberCap(
+    session.keys.edPriv,
+    session.keys.edPub,
+    subject,
+    "objinv",
+    session.layout.nodeMemberScope(spaceId, pageNodeId, false),
+    capOpts,
   );
+  const streamCap = await mintMemberCap(
+    session.keys.edPriv,
+    session.keys.edPub,
+    subject,
+    "objinvlog",
+    session.layout.nodeStreamScope(spaceId, pageNodeId, false),
+    capOpts,
+  );
+
+  const token = {
+    v: 1 as const,
+    spaceId,
+    nodeId: pageNodeId,
+    nodeName: "Page mariage",
+    cap,
+    streamCap,
+    key: ek.edPriv,
+    write: false,
+  };
+
   const encoded = encodeNodeInviteLink(origin, token);
   // Extract the fragment (everything after '#') and use it as the path segment.
   const fragment = encoded.includes("#") ? encoded.split("#")[1] : encoded;
