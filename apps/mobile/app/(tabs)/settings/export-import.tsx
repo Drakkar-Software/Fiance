@@ -25,6 +25,7 @@ import {
   buildPaymentsCsv,
 } from "@/lib/pdf-export";
 import { rescheduleAllNotifications } from "@/lib/notifications";
+import { analytics } from "@/lib/analytics";
 import { SectionTitle, FormCard } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
@@ -56,6 +57,7 @@ export default function ExportImportScreen() {
     setExporting(true);
     try {
       await exportWedding(activeEntry?.label || "wedding");
+      analytics.capture("export_data", { format: "json", kind: "backup" });
     } catch (e: any) {
       Alert.alert(t("common:error"), e.message);
     } finally {
@@ -79,6 +81,7 @@ export default function ExportImportScreen() {
       const result = await applyBackup(pickedJson);
       setPickedJson(null);
       if (result === true) {
+        analytics.capture("import_data", { source: "backup" });
         toast.success(t("importSuccessMsg"));
         if (useSettingsStore.getState().notificationsEnabled) {
           const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
@@ -123,6 +126,7 @@ export default function ExportImportScreen() {
           : "invalidBackup";
         toast.error(t(msgKey));
       } else {
+        analytics.capture("import_data", { source: "legacy" });
         toast.success(t("importToSpaceSuccessMsg", { count: result.result.nodeCount }));
       }
     } catch (e: any) {
@@ -156,6 +160,7 @@ export default function ExportImportScreen() {
             break;
         }
         await exportToPdf(html, filename);
+        analytics.capture("export_data", { format: "pdf", kind: type });
       } catch (e: any) {
         Alert.alert(t("common:error"), e.message);
       }
@@ -179,6 +184,7 @@ export default function ExportImportScreen() {
             break;
         }
         await exportToCsv(csv, filename);
+        analytics.capture("export_data", { format: "csv", kind: type });
       } catch (e: any) {
         Alert.alert(t("common:error"), e.message);
       }

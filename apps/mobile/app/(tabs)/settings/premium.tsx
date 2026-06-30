@@ -13,6 +13,7 @@ import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduc
 import { redirectToCheckout } from "@/lib/stripe";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { resolveServerConfig } from "@/lib/server";
+import { analytics } from "@/lib/analytics";
 
 type PurchaseState = "idle" | "loading" | "unlocking" | "success" | "error";
 
@@ -46,6 +47,7 @@ export default function PremiumScreen() {
 
   const handlePurchase = useCallback(async () => {
     if (Platform.OS === "web") {
+      analytics.capture("premium_checkout_started", { platform: "web" });
       try {
         redirectToCheckout(userId, activeEntry?.id);
       } catch {
@@ -54,9 +56,11 @@ export default function PremiumScreen() {
       }
       return;
     }
+    analytics.capture("premium_checkout_started", { platform: Platform.OS as "ios" | "android" });
     setState("loading");
     try {
       await purchasePremium(userId);
+      analytics.capture("premium_purchased", { platform: Platform.OS as "ios" | "android" });
       setState("unlocking");
       await refreshEntitlements(userId);
       setState("success");
@@ -71,6 +75,7 @@ export default function PremiumScreen() {
     setState("unlocking");
     try {
       await restorePurchases(userId);
+      analytics.capture("premium_restored");
       setState("success");
       setTimeout(() => setState("idle"), 2000);
     } catch {

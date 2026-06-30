@@ -12,6 +12,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow } from "@/components/FormSection";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
+import { analytics } from "@/lib/analytics";
 import { Sprig } from "@/components/Sprig";
 import type { Accommodation } from "@/db/schema";
 
@@ -80,6 +81,7 @@ export default function AccommodationsScreen() {
       createdAt: now,
       updatedAt: now,
     } as Accommodation);
+    analytics.capture("accommodation_added");
     resetForm();
   };
 
@@ -307,7 +309,10 @@ export default function AccommodationsScreen() {
         confirmLabel={t("common:delete")}
         destructive
         onConfirm={() => {
-          if (deleteId) removeAccommodation(deleteId);
+          if (deleteId) {
+            removeAccommodation(deleteId);
+            analytics.capture("accommodation_deleted");
+          }
           setDeleteId(null);
         }}
         onCancel={() => setDeleteId(null)}

@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow } from "@/components/FormSection";
 import { theme as GP } from "@/lib/theme";
+import { analytics } from "@/lib/analytics";
 import type { Communication } from "@/db/schema";
 
 type FormState = { label: string; date: string; notes: string };
@@ -54,6 +55,7 @@ export default function CommunicationsScreen() {
       createdAt: now,
       updatedAt: now,
     } as Communication);
+    analytics.capture("communication_added");
     resetForm();
   };
 

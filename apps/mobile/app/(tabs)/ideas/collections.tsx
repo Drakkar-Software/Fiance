@@ -8,6 +8,7 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { PageHeader } from "@/components/PageHeader";
 import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { analytics } from "@/lib/analytics";
 
 export default function CollectionsScreen() {
   const { t } = useTranslation("ideas");
@@ -35,6 +36,7 @@ export default function CollectionsScreen() {
       createdAt: now,
       updatedAt: now,
     });
+    analytics.capture("collection_added");
     setNewName("");
     setNewDescription("");
     setShowAdd(false);

@@ -11,6 +11,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { PlanView } from "@/components/SeatingPlanView";
 import { PageHeader } from "@/components/PageHeader";
 import { Script } from "@/components/Script";
+import { analytics } from "@/lib/analytics";
 
 export default function TablesScreen() {
   const { t } = useTranslation("guests");
@@ -37,6 +38,7 @@ export default function TablesScreen() {
       positionY: null,
       shape: null,
     });
+    analytics.capture("table_added");
     setNewTableName("");
     setNewTableCapacity("");
     setShowAdd(false);
@@ -120,7 +122,10 @@ export default function TablesScreen() {
         confirmLabel={t("common:delete")}
         destructive
         onConfirm={() => {
-          if (deleteId) removeTable(deleteId);
+          if (deleteId) {
+            removeTable(deleteId);
+            analytics.capture("table_deleted");
+          }
           setDeleteId(null);
         }}
         onCancel={() => setDeleteId(null)}

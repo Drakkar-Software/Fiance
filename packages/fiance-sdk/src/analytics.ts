@@ -10,6 +10,7 @@ export type FianceEvents = {
   // Lifecycle
   wedding_created:             { method: "new" | "import" | "invite" };
   wedding_switched:            undefined;
+  wedding_deleted:             undefined;
   // Home
   home_opened:                 { days_until?: number };
   rsvp_sync_triggered:         undefined;
@@ -18,9 +19,16 @@ export type FianceEvents = {
   guest_added:                 undefined;
   guest_deleted:               undefined;
   guest_rsvp_shared:           undefined;
+  accommodation_added:         undefined;
+  accommodation_deleted:       undefined;
+  invitation_type_added:       undefined;
+  communication_added:         undefined;
+  table_added:                 undefined;
+  table_deleted:               undefined;
   // Vendors
   vendor_added:                { category: string };
   vendor_deleted:              { category: string };
+  vendor_payment_added:        undefined;
   // Planning
   task_added:                  undefined;
   task_deleted:                undefined;
@@ -33,11 +41,19 @@ export type FianceEvents = {
   // Ideas
   idea_added:                  undefined;
   idea_deleted:                undefined;
+  collection_added:            undefined;
   // Settings
   sync_enabled:                undefined;
   sync_disabled:               undefined;
-  export_data:                 undefined;
-  import_data:                 undefined;
+  export_data:                 { format: "json" | "pdf" | "csv"; kind?: string };
+  import_data:                 { source: "backup" | "legacy" };
+  public_page_shared:          undefined;
+  gift_added:                  undefined;
+  gift_deleted:                undefined;
+  // Monetization
+  premium_checkout_started:    { platform: "ios" | "android" | "web" };
+  premium_purchased:           { platform: "ios" | "android" };
+  premium_restored:            undefined;
 };
 
 // ─── Adapter interface ────────────────────────────────────────────────────────

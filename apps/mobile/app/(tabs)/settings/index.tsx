@@ -210,6 +210,7 @@ export default function SettingsScreen() {
     setShowCreateConfirm(false);
     const passphrase = generatePassphrase();
     await createWedding(t("myWedding"), passphrase);
+    analytics.capture("wedding_created", { method: "new" });
     router.replace("/(tabs)");
   }, [createWedding, t, router]);
 
@@ -591,7 +592,10 @@ export default function SettingsScreen() {
       confirmLabel={t("delete")}
       destructive
       onConfirm={() => {
-        if (deleteWeddingId) deleteWedding(deleteWeddingId);
+        if (deleteWeddingId) {
+          deleteWedding(deleteWeddingId);
+          analytics.capture("wedding_deleted");
+        }
         setDeleteWeddingId(null);
       }}
       onCancel={() => setDeleteWeddingId(null)}

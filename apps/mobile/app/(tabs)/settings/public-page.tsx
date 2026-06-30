@@ -28,6 +28,7 @@ import {
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { Postit } from "@/components/Postit";
+import { analytics } from "@/lib/analytics";
 
 export default function PublicPageScreen() {
   const router = useRouter();
@@ -129,6 +130,7 @@ export default function PublicPageScreen() {
       const url = await resolvePublicPageUrl();
       if (!url) return;
       await shareLink(url, t("sharePublicPageMsg", { url }), t("linkCopied"));
+      analytics.capture("public_page_shared");
     } catch (err) {
       console.warn("[public-page] handleShare failed:", err);
       toast.error(t("shareError"));

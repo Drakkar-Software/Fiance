@@ -10,6 +10,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { theme as GP } from "@/lib/theme";
+import { analytics } from "@/lib/analytics";
 import type { InvitationTypeEntity } from "@/db/schema";
 
 function NeedsSleepingToggle({
@@ -84,6 +85,7 @@ export default function InvitationTypesScreen() {
       createdAt: now,
       updatedAt: now,
     } as InvitationTypeEntity);
+    analytics.capture("invitation_type_added");
     resetForm();
   };
 

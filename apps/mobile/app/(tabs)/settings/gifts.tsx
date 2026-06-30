@@ -11,6 +11,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle, FormCard, InputRow, ChipSelect } from "@/components/FormSection";
+import { analytics } from "@/lib/analytics";
 
 const CATEGORIES = ["maison", "voyage", "experience", "autre"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -76,6 +77,7 @@ export default function GiftsScreen() {
         createdAt: now,
         updatedAt: now,
       });
+      analytics.capture("gift_added");
     }
     setShowForm(false);
   };
@@ -168,7 +170,7 @@ export default function GiftsScreen() {
         message=""
         confirmLabel={t("delete")}
         destructive
-        onConfirm={() => { if (deleteId) removeGift(deleteId); setDeleteId(null); }}
+        onConfirm={() => { if (deleteId) { removeGift(deleteId); analytics.capture("gift_deleted"); } setDeleteId(null); }}
         onCancel={() => setDeleteId(null)}
       />
     </View>

@@ -352,6 +352,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       createdAt: now,
       updatedAt: now,
     } as VendorPayment);
+    analytics.capture("vendor_payment_added");
     setAmount("");
     setPaidDate("");
     setMethod("transfer");
