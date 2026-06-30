@@ -12,12 +12,6 @@ interface SeoProps {
   jsonLd?: object | object[];
 }
 
-/**
- * Per-page SEO head tags. Renders via expo-router/head (react-helmet-async),
- * which runs at render time — works during static export so crawlers see it.
- *
- * Usage: place as first child in each marketing page / layout branch.
- */
 export function Seo({
   title,
   description,
@@ -45,7 +39,6 @@ export function Seo({
       {ogImage && <meta property="og:image" content={ogImage} />}
       {ogImage && <meta name="twitter:image" content={ogImage} />}
       {jsonLd && (
-        // react-helmet-async serializes script innerHTML via text children (not dangerouslySetInnerHTML)
         // eslint-disable-next-line react/no-danger
         <script type="application/ld+json">
           {JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}

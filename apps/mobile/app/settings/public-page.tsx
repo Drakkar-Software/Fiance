@@ -242,7 +242,7 @@ export default function PublicPageScreen() {
           title={t("eventPhotosTitle")}
           subtitle={t("eventPhotosDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/event-photos")}
+          onPress={() => router.push("/settings/event-photos")}
         />
         <IconCard
           icon={
@@ -253,7 +253,7 @@ export default function PublicPageScreen() {
           title={t("configureFaq")}
           subtitle={t("configureFaqDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/faq")}
+          onPress={() => router.push("/settings/faq")}
         />
         <IconCard
           icon={
@@ -264,7 +264,7 @@ export default function PublicPageScreen() {
           title={t("giftRegistry")}
           subtitle={t("giftRegistryDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/gifts")}
+          onPress={() => router.push("/settings/gifts")}
         />
       </View>
 

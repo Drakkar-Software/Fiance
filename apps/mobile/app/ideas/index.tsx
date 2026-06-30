@@ -114,7 +114,7 @@ export default function IdeasScreen() {
 
   const navigateToIdea = useCallback(
     (id: string) =>
-      router.push({ pathname: "/(tabs)/ideas/[id]", params: { id } }),
+      router.push({ pathname: "/ideas/[id]", params: { id } }),
     [router]
   );
 

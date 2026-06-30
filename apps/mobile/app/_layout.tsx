@@ -52,7 +52,9 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
 import { SunglassesProvider, SunglassesGlobalErrorBoundary, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
 import { analytics, initAnalytics } from "@/lib/analytics";
-import { configureOnBoot } from "@/lib/providers";
+import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
+import { DatabaseProvider } from "@/db/provider";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { UpdateBanner } from "@/components/UpdateBanner";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -101,25 +103,39 @@ function AppContent() {
     );
   }
 
-  // Show spinner while loading OR while the /onboarding redirect is in flight.
-  // Prevents a one-frame flash of the empty dashboard on first load when there
-  // is no wedding yet and the useEffect hasn't fired yet.
-  const hasWedding = isLoaded && !!registry?.weddings.length;
-  if (!hasWedding && !isOnboardingLike) {
+  // Show spinner only while the store hasn't hydrated yet.
+  // Once loaded, always render the Stack so Expo Router can handle the
+  // /onboarding redirect properly — calling router.replace() without a mounted
+  // Stack races against the initial route resolution on iOS and gets stuck.
+  if (!isLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Loading Fiancé...</Text>
       </View>
     );
   }
 
+  const activeWedding =
+    registry?.weddings.find((w) => w.id === registry.activeWeddingId) ??
+    registry?.weddings[0] ??
+    null;
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="onboarding" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="wedding/[id]" />
-    </Stack>
+    <DatabaseProvider dbFileName={activeWedding?.dbFileName}>
+      {activeWedding && <SyncInitializer wedding={activeWedding} />}
+      {activeWedding && <NotificationInitializer />}
+      {activeWedding && <IAPInitializer wedding={activeWedding} />}
+      <>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="ideas" />
+          <Stack.Screen name="wedding/[id]" />
+        </Stack>
+        {activeWedding && <OfflineBanner />}
+      </>
+    </DatabaseProvider>
   );
 }
 

@@ -26,6 +26,7 @@ import { Label } from "@/components/Label";
 import { Sprig } from "@/components/Sprig";
 import { PageHeader } from "@/components/PageHeader";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -37,6 +38,7 @@ function DashboardScreen() {
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const router = useRouter();
   const isWide = useIsWideScreen();
+  const syncDotColor = useSyncStatusDot();
   const wedding = useWeddingStore((s) => s.wedding);
   const vendors = useVendorsStore((s) => s.vendors);
   const guests = useGuestsStore((s) => s.guests);
@@ -149,12 +151,29 @@ function DashboardScreen() {
             <Pressable
               onPress={(e) => {
                 if (Platform.OS === "web") (e.currentTarget as any)?.blur?.();
-                router.push("/(tabs)/settings");
+                router.push("/settings");
               }}
               className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Settings size={22} color="rgba(255,255,255,0.85)" />
+              <View style={{ width: 22, height: 22 }}>
+                <Settings size={22} color="rgba(255,255,255,0.85)" />
+                {syncDotColor && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      right: -2,
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: syncDotColor,
+                      borderWidth: 1.5,
+                      borderColor: "rgba(255,255,255,0.3)",
+                    }}
+                  />
+                )}
+              </View>
             </Pressable>
           </View>
         )}
@@ -438,7 +457,7 @@ function DashboardScreen() {
 
         {/* Inspirations */}
         <Pressable
-          onPress={() => router.push("/(tabs)/ideas")}
+          onPress={() => router.push("/ideas")}
           className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
         >
           <View className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900 items-center justify-center mr-3">

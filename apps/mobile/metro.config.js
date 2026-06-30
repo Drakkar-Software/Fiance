@@ -37,12 +37,16 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return resolve(context, moduleName.replace('@babel/runtime/helpers/esm/', '@babel/runtime/helpers/'), platform)
 
   // hash-wasm (Argon2id in starfish-identities) requires a WebAssembly global —
-  // absent on Hermes ("WebAssembly is not supported in this environment"). Redirect
-  // to a pure-JS @noble/hashes shim on every platform so native and web derive
-  // identical identities. A package exports map can't remap a third-party specifier
-  // imported deep inside a dependency, so the alias must live here.
-  if (moduleName === 'hash-wasm')
-    return { type: 'sourceFile', filePath: path.resolve(projectRoot, 'lib/hash-wasm-shim.ts') }
+  // absent on Hermes ("WebAssembly is not supported in this environment"). On native
+  // (iOS/Android) redirect to a shim that delegates to react-native-quick-crypto's
+  // native Argon2id binding (OpenSSL, ~150 ms vs ~15–45 s pure JS). On web keep the
+  // original @noble/hashes shim. A package exports map can't remap a third-party
+  // specifier imported deep inside a dependency, so the alias must live here.
+  if (moduleName === 'hash-wasm') {
+    const isNative = platform === 'ios' || platform === 'android'
+    const shimFile = isNative ? 'lib/hash-wasm-shim.native.ts' : 'lib/hash-wasm-shim.ts'
+    return { type: 'sourceFile', filePath: path.resolve(projectRoot, shimFile) }
+  }
 
   // Workspace SDK packages (packages/*) use NodeNext-style .js extensions in
   // source imports for ESM/tsup compatibility. Metro resolves directly from TS

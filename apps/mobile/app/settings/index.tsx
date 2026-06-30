@@ -162,7 +162,7 @@ export default function SettingsScreen() {
         t("migrationDetectedMsg"),
         [
           { text: t("migrationLater"), style: "cancel" },
-          { text: t("migrationNow"), onPress: () => router.push("/(tabs)/settings/export-import") },
+          { text: t("migrationNow"), onPress: () => router.push("/settings/export-import") },
         ],
       );
     }
@@ -267,7 +267,7 @@ export default function SettingsScreen() {
           title={premium ? t("premiumUnlocked") : t("premiumTitle")}
           subtitle={premium ? t("premiumPitch") : t("premiumSectionDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/premium")}
+          onPress={() => router.push("/settings/premium")}
         />
       </View>
 
@@ -282,7 +282,7 @@ export default function SettingsScreen() {
           title={t("publicPageTitle")}
           subtitle={t("publicPageDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/public-page")}
+          onPress={() => router.push("/settings/public-page")}
         />
       </View>
 
@@ -346,7 +346,7 @@ export default function SettingsScreen() {
           title={t("exportImportTitle")}
           subtitle={t("exportImportDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/(tabs)/settings/export-import")}
+          onPress={() => router.push("/settings/export-import")}
         />
       </View>
 
