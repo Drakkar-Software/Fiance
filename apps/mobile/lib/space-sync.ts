@@ -67,6 +67,16 @@ let _isHydrating = false;
  */
 const _lastPushedJson = new Map<string, string>();
 
+/**
+ * Ids this device has deleted locally (no longer in buildAllNodes' output) but may not
+ * yet be reflected on the server. pushSpaceSnapshot's index merge drops a remote-only
+ * managed node when its id is here (this device deleted it), but KEEPS a remote-only
+ * managed node whose id is unknown (a peer added it and this device hasn't hydrated it
+ * yet) — distinguishing "deleted by me" from "added by a peer" requires this baseline,
+ * since both cases look identical (managed node present in `prev`, absent locally).
+ */
+const _deletedNodeIds = new Set<string>();
+
 /** Domain node types managed wholesale by buildAllNodes/pushSpaceSnapshot — excludes the
  *  guest-surface synthetic nodes (publicPage, rsvp) which are written by other code paths
  *  and must survive a snapshot push untouched. */
@@ -106,11 +116,12 @@ export function restoreSyncPush(): void {
   _isHydrating = false;
 }
 
-/** Clears the dirty-push baseline. hydrateFromSpace already reseeds it correctly in
- *  production (cold boot / wedding switch); exported so tests can isolate consecutive
- *  pushSpaceSnapshot calls from each other's dirty-tracking state. */
+/** Clears the dirty-push baseline and deletion tombstones. hydrateFromSpace already
+ *  reseeds these correctly in production (cold boot / wedding switch); exported so
+ *  tests can isolate consecutive pushSpaceSnapshot calls from each other's state. */
 export function resetDirtyPushBaseline(): void {
   _lastPushedJson.clear();
+  _deletedNodeIds.clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -266,14 +277,31 @@ export async function pushSpaceSnapshot(
   const { nodes, contentMap } = buildAllNodes(weddingNodeId);
   if (!nodes.length) return;
 
+  // Diff against the dirty-push baseline to find ids this device deleted locally since
+  // its last successful push/hydrate. Tombstoned so a delete still propagates below even
+  // though it's no longer distinguishable from "never seen" once _lastPushedJson is
+  // pruned at the end of this function.
+  const localIds = new Set(nodes.map((n) => n.id));
+  for (const id of _lastPushedJson.keys()) {
+    if (!localIds.has(id)) _deletedNodeIds.add(id);
+  }
+
   await withIndexLock(spaceId, () =>
     updateObjectIndex(session, spaceId, (prev, now) => {
-      // Keep prev entries of non-managed types (publicPage, rsvp) untouched. Drop ALL
-      // prev entries of managed types — `nodes` above is the complete current set for
-      // every managed type, so a managed node missing from it was deleted locally and
-      // must not be re-added (this is what made deletions never propagate to peers).
-      const nonManaged = prev.filter((n) => !MANAGED_TYPES.has(n.type));
-      return [...nodes.map((n) => ({ ...n, updatedAt: now })), ...nonManaged];
+      // Union-merge instead of replace: `prev` is the authoritative current remote index
+      // (CAS-pulled), so a managed node present there but absent locally is either (a) a
+      // peer's addition this device hasn't hydrated yet — must KEEP, or (b) a node this
+      // device deleted — must DROP. _deletedNodeIds disambiguates the two; without it,
+      // replacing wholesale silently discards concurrent peer additions.
+      const localById = new Map(nodes.map((n) => [n.id, n]));
+      const merged = nodes.map((n) => ({ ...n, updatedAt: now }));
+      for (const r of prev) {
+        if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; } // publicPage/rsvp untouched
+        if (localById.has(r.id)) continue; // local copy already included above
+        if (_deletedNodeIds.has(r.id)) continue; // deleted locally → propagate the deletion
+        merged.push(r); // unknown id → peer added it, keep
+      }
+      return merged;
     }),
   );
 
@@ -459,8 +487,14 @@ export async function hydrateFromSpace(
     // Seed the dirty-push baseline from what we just hydrated, so the next debounced
     // push only sends nodes genuinely edited locally after this point (see
     // _lastPushedJson / pushSpaceSnapshot above) instead of re-pushing everything.
+    // Also clear deletion tombstones: we just pulled fresh remote truth, so there are
+    // no pending local-only deletes left to reconcile (a delete-in-flight can't race
+    // this, since deleting schedules a push that keeps _pushTimer set, and
+    // refreshFromSpaceIfIdle — the only caller that can hydrate mid-session — no-ops
+    // while a push is pending).
     const { nodes: builtNodes, contentMap: builtContent } = buildAllNodes(weddingNodeId);
     _lastPushedJson.clear();
+    _deletedNodeIds.clear();
     for (const n of builtNodes) {
       const content = builtContent.get(n.id);
       if (content) _lastPushedJson.set(n.id, stableStringify(content));
