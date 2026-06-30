@@ -10,6 +10,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { decodeInviteToken, parseInviteUrl } from "@/lib/identity";
 
+// Captured at module-load time — before Expo Router mounts and rewrites web
+// history (replaceState strips the fragment). null on native (no window).
+const bootHref = typeof window !== "undefined" ? window.location.href : null;
+
 function useJoinAndNavigate() {
   const router = useRouter();
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -38,7 +42,10 @@ export default function JoinScreen() {
   // undefined = still resolving; null = resolved but no URL; string = resolved URL
   const [url, setUrl] = useState<string | null | undefined>(undefined);
   useEffect(() => {
-    Linking.getInitialURL().then((u) => setUrl(u ?? null));
+    // On web, bootHref is captured before Expo Router rewrites history (strips #fragment).
+    // On native, fall back to getInitialURL() which receives the deep-link URL from the OS.
+    if (bootHref) setUrl(bootHref);
+    else Linking.getInitialURL().then((u) => setUrl(u ?? null));
     const sub = Linking.addEventListener("url", ({ url: incoming }) => setUrl(incoming));
     return () => sub.remove();
   }, []);
