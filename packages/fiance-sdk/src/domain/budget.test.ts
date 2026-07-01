@@ -9,8 +9,12 @@ import {
   calculateVendorTotal,
   calculateCatererTotal,
   calculateCatererScore,
+  parseContributorAllocations,
+  resolveAllocationAmount,
+  calculateContributorTotal,
 } from './budget.js';
 import type { GuestCounts } from './guests.js';
+import type { Contributor } from './schema.js';
 
 const baseCounts: GuestCounts = {
   total: 100,
@@ -143,5 +147,75 @@ describe("calculateCatererScore", () => {
     const cheapScore = calculateCatererScore(cheap, cheapP, baseCounts, all);
     const expensiveScore = calculateCatererScore(expensive, expensiveP, baseCounts, all);
     expect(cheapScore).toBeGreaterThan(expensiveScore);
+  });
+});
+
+describe("parseContributorAllocations", () => {
+  it("returns [] for null", () => {
+    expect(parseContributorAllocations(null)).toEqual([]);
+  });
+
+  it("returns [] for invalid JSON", () => {
+    expect(parseContributorAllocations("not json")).toEqual([]);
+  });
+
+  it("returns [] when JSON is not an array", () => {
+    expect(parseContributorAllocations('{"scope":"global","share":50}')).toEqual([]);
+  });
+
+  it("parses a valid allocations array", () => {
+    const json = JSON.stringify([{ scope: "global", share: 50 }]);
+    expect(parseContributorAllocations(json)).toEqual([{ scope: "global", share: 50 }]);
+  });
+});
+
+describe("resolveAllocationAmount", () => {
+  it("resolves a global allocation against the budget target", () => {
+    // Regression: 50% of a 30000 target must be 15000, not 0.
+    expect(resolveAllocationAmount({ scope: "global", share: 50 }, 30_000, {})).toBe(15_000);
+  });
+
+  it("resolves a category allocation against categoryAmounts", () => {
+    expect(
+      resolveAllocationAmount({ scope: "catering", share: 50 }, 30_000, { catering: 12_000 })
+    ).toBe(6_000);
+  });
+
+  it("treats an unknown category scope as 0", () => {
+    expect(resolveAllocationAmount({ scope: "catering", share: 50 }, 30_000, {})).toBe(0);
+  });
+});
+
+describe("calculateContributorTotal", () => {
+  const baseContributor: Contributor = {
+    id: "c1",
+    name: "Famille Martin",
+    allocations: null,
+    createdAt: null,
+    updatedAt: null,
+  };
+
+  it("returns 0 when allocations is null", () => {
+    expect(calculateContributorTotal(baseContributor, 30_000, {})).toBe(0);
+  });
+
+  it("sums a single global allocation", () => {
+    const contributor = {
+      ...baseContributor,
+      allocations: JSON.stringify([{ scope: "global", share: 50 }]),
+    };
+    expect(calculateContributorTotal(contributor, 30_000, {})).toBe(15_000);
+  });
+
+  it("sums mixed global and category allocations", () => {
+    const contributor = {
+      ...baseContributor,
+      allocations: JSON.stringify([
+        { scope: "global", share: 50 },
+        { scope: "catering", share: 50 },
+      ]),
+    };
+    // 50% of 30000 (global) + 50% of 12000 (catering) = 15000 + 6000
+    expect(calculateContributorTotal(contributor, 30_000, { catering: 12_000 })).toBe(21_000);
   });
 });

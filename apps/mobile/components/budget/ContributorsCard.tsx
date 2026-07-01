@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
-import { Users, ChevronUp, ChevronDown, Plus, X, Check } from "lucide-react-native";
+import { Users, ChevronUp, ChevronDown, Plus, X } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { Sheet } from "@fiance/ui/components";
 import {
@@ -16,19 +16,8 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { MoneyDisplay, formatMoney } from "@/components/MoneyDisplay";
 import { useContributorsStore } from "@/store/useContributorsStore";
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from "@/db/types";
-import type { Contributor, ContributorAllocation } from "@/db/schema";
+import type { Contributor } from "@/db/schema";
 import type { BudgetCategoryItem } from "@/store/useBudgetStore";
-
-const CONTRIBUTOR_COLORS = [
-  "#6e7a4a", // olive
-  "#c9922f", // mustard
-  "#6b8aa3", // blue
-  "#b96a4a", // clay
-  "#8a6bb1", // purple
-  "#5b9a8b", // teal
-  "#d98a9d", // pink
-  "#a6483a", // rust
-];
 
 interface ContributorsCardProps {
   target: number;
@@ -135,15 +124,12 @@ export function ContributorsCard({ target, categories, categoryBudgets }: Contri
                       idx < contributorTotals.length - 1 ? "border-b border-hair" : ""
                     }`}
                   >
-                    <Avatar ini={contributor.name.slice(0, 2)} size={32} tone={contributor.color ?? undefined} />
+                    <Avatar ini={contributor.name.slice(0, 2)} size={32} />
                     <View className="flex-1 ml-3">
                       <Text className="text-sm font-medium text-ink">{contributor.name}</Text>
-                      {contributor.phone ? (
-                        <Text className="text-xs text-mute mt-0.5">{contributor.phone}</Text>
-                      ) : null}
                       <View className="flex-row flex-wrap gap-1 mt-1.5">
                         {parseContributorAllocations(contributor.allocations).map((allocation, i) => (
-                          <Chip key={i} color={contributor.color ?? undefined}>
+                          <Chip key={i}>
                             {`${allocation.share}% ${
                               allocation.scope === "global"
                                 ? t("contributors.global")
@@ -229,9 +215,16 @@ export function ContributorsCard({ target, categories, categoryBudgets }: Contri
 
 interface ContributorFormData {
   name: string;
-  color: string | null;
-  phone: string | null;
   allocations: string | null;
+}
+
+/** Allocation row while being edited: `share` stays a raw string bound to the input,
+ * only parsed to a number for the live preview and on save — mirrors how every other
+ * numeric field in this app (targetBudget, gift price, ...) avoids round-tripping a
+ * parsed number back through the controlled `value`, which drops digits mid-typing. */
+interface AllocationDraft {
+  scope: string;
+  share: string;
 }
 
 function ContributorSheet({
@@ -253,18 +246,18 @@ function ContributorSheet({
 }) {
   const { t } = useTranslation("budget");
   const [name, setName] = useState("");
-  const [color, setColor] = useState<string>(CONTRIBUTOR_COLORS[0]);
-  const [phone, setPhone] = useState("");
-  const [rows, setRows] = useState<ContributorAllocation[]>([{ scope: "global", share: 0 }]);
+  const [rows, setRows] = useState<AllocationDraft[]>([{ scope: "global", share: "" }]);
 
   // Reset local form state whenever the sheet opens (create, or edit of a given contributor).
   useEffect(() => {
     if (!visible) return;
     setName(contributor?.name ?? "");
-    setColor(contributor?.color ?? CONTRIBUTOR_COLORS[0]);
-    setPhone(contributor?.phone ?? "");
     const parsed = contributor ? parseContributorAllocations(contributor.allocations) : [];
-    setRows(parsed.length > 0 ? parsed : [{ scope: "global", share: 0 }]);
+    setRows(
+      parsed.length > 0
+        ? parsed.map((a) => ({ scope: a.scope, share: a.share ? a.share.toString() : "" }))
+        : [{ scope: "global", share: "" }]
+    );
   }, [visible, contributor]);
 
   const scopeOptions = useMemo(() => ["global", ...Object.keys(BUDGET_CATEGORIES)], []);
@@ -276,23 +269,23 @@ function ContributorSheet({
     return labels;
   }, [t]);
 
-  const updateRow = (index: number, updates: Partial<ContributorAllocation>) => {
+  const updateRow = (index: number, updates: Partial<AllocationDraft>) => {
     setRows((prev) => prev.map((r, i) => (i === index ? { ...r, ...updates } : r)));
   };
   const removeRow = (index: number) => {
     setRows((prev) => prev.filter((_, i) => i !== index));
   };
-  const addRow = () => setRows((prev) => [...prev, { scope: "global", share: 0 }]);
+  const addRow = () => setRows((prev) => [...prev, { scope: "global", share: "" }]);
 
   const canSave = name.trim().length > 0;
 
   const handleSave = () => {
     if (!canSave) return;
-    const cleanRows = rows.filter((r) => r.share > 0);
+    const cleanRows = rows
+      .map((r) => ({ scope: r.scope, share: parseFloat(r.share) || 0 }))
+      .filter((r) => r.share > 0);
     onSave({
       name: name.trim(),
-      color,
-      phone: phone.trim() || null,
       allocations: cleanRows.length > 0 ? JSON.stringify(cleanRows) : null,
     });
   };
@@ -311,42 +304,14 @@ function ContributorSheet({
             placeholder={t("contributors.namePlaceholder")}
           />
 
-          <View className="py-3">
-            <Text className="text-xs text-mute mb-2 font-medium">{t("contributors.color")}</Text>
-            <View className="flex-row flex-wrap gap-2">
-              {CONTRIBUTOR_COLORS.map((c) => (
-                <Pressable
-                  key={c}
-                  onPress={() => setColor(c)}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
-                    backgroundColor: c,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: color === c ? 2 : 0,
-                    borderColor: "#2a2418",
-                  }}
-                >
-                  {color === c && <Check size={16} color="#fff" />}
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          <InputRow
-            label={t("contributors.phone")}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder={t("contributors.phonePlaceholder")}
-            keyboardType="phone-pad"
-          />
-
           <View className="pt-3">
             <Text className="text-xs text-mute mb-2 font-medium">{t("contributors.allocations")}</Text>
             {rows.map((row, index) => {
-              const amount = resolveAllocationAmount(row, globalTarget, categoryAmounts);
+              const amount = resolveAllocationAmount(
+                { scope: row.scope, share: parseFloat(row.share) || 0 },
+                globalTarget,
+                categoryAmounts
+              );
               return (
                 <View key={index} className="mt-1">
                   <View className="flex-row items-center justify-between">
@@ -365,8 +330,8 @@ function ContributorSheet({
                   />
                   <InputRow
                     label={t("contributors.share")}
-                    value={row.share ? row.share.toString() : ""}
-                    onChangeText={(v) => updateRow(index, { share: parseFloat(v) || 0 })}
+                    value={row.share}
+                    onChangeText={(v) => updateRow(index, { share: v })}
                     keyboardType="numeric"
                     placeholder="50"
                   />

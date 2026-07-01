@@ -164,8 +164,6 @@ export interface ContributorAllocation {
 export interface Contributor {
   id: string;
   name: string;
-  color: string | null;
-  phone: string | null;
   allocations: string | null; // JSON: ContributorAllocation[]
   createdAt: string | null;
   updatedAt: string | null;
