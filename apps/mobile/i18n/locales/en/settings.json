@@ -168,6 +168,24 @@
   "migrationImportDesc": "Pick the file and upload it to your sync space",
   "backupSection": "JSON Backup",
   "backupSectionDesc": "Export or import all your data",
+  "samplesSection": "Sample weddings",
+  "samplesSectionDesc": "Import a pre-filled wedding to explore the app (intimate, classic, or large).",
+  "samplesImportConfirmTitle": "Import sample?",
+  "samplesImportConfirmMsg": "The \"{{label}}\" sample will replace all current data for this wedding. Continue?",
+  "samples": {
+    "small": {
+      "label": "Intimate wedding",
+      "description": "28 guests · €10,000 · Loire Valley"
+    },
+    "medium": {
+      "label": "Classic wedding",
+      "description": "72 guests · €22,000 · Provence"
+    },
+    "big": {
+      "label": "Large wedding",
+      "description": "145 guests · €45,000 · Paris"
+    }
+  },
   "pdfSection": "Export as PDF",
   "csvSection": "Export as CSV",
   "exportGuestList": "Guest list",

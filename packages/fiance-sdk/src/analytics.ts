@@ -46,7 +46,7 @@ export type FianceEvents = {
   sync_enabled:                undefined;
   sync_disabled:               undefined;
   export_data:                 { format: "json" | "pdf" | "csv"; kind?: string };
-  import_data:                 { source: "backup" | "legacy" };
+  import_data:                 { source: "backup" | "legacy" | "sample"; sample?: string };
   public_page_shared:          undefined;
   gift_added:                  undefined;
   gift_deleted:                undefined;

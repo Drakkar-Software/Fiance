@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Download, Upload, FileText, Table2 } from "lucide-react-native";
+import { ChevronRight, Download, Upload, FileText, Table2, Sparkles } from "lucide-react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -12,6 +12,7 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useBudgetSummary } from "@/store/useBudgetStore";
 import { exportWedding, pickBackupJson, applyBackup, applyLegacyToSpace } from "@/lib/export-import";
+import { WEDDING_SAMPLES, getSampleBackupJson, type SampleSize } from "@/samples";
 import { getActiveWeddingNodeId } from "@/lib/starfish";
 import { ArrowRightLeft } from "lucide-react-native";
 import {
@@ -52,6 +53,9 @@ export default function ExportImportScreen() {
   const [importingToSpace, setImportingToSpace] = useState(false);
   const [pickedLegacyJson, setPickedLegacyJson] = useState<string | null>(null);
   const [showImportToSpaceConfirm, setShowImportToSpaceConfirm] = useState(false);
+  const [selectedSampleId, setSelectedSampleId] = useState<SampleSize | null>(null);
+  const [showSampleConfirm, setShowSampleConfirm] = useState(false);
+  const [importingSample, setImportingSample] = useState(false);
 
   const handleExportJson = useCallback(async () => {
     setExporting(true);
@@ -135,6 +139,43 @@ export default function ExportImportScreen() {
       setImportingToSpace(false);
     }
   }, [pickedLegacyJson, t]);
+
+  const selectedSample = selectedSampleId
+    ? WEDDING_SAMPLES.find((sample) => sample.id === selectedSampleId)
+    : undefined;
+
+  const handlePickSample = useCallback((sampleId: SampleSize) => {
+    setSelectedSampleId(sampleId);
+    setShowSampleConfirm(true);
+  }, []);
+
+  const doImportSample = useCallback(async () => {
+    if (!selectedSampleId) return;
+    setShowSampleConfirm(false);
+    setImportingSample(true);
+    try {
+      const result = await applyBackup(getSampleBackupJson(selectedSampleId));
+      setSelectedSampleId(null);
+      if (result === true) {
+        analytics.capture("import_data", { source: "sample", sample: selectedSampleId });
+        toast.success(t("importSuccessMsg"));
+        if (useSettingsStore.getState().notificationsEnabled) {
+          const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
+          rescheduleAllNotifications(newTasks, newEvents).catch((err) =>
+            console.warn("[notifications] Reschedule failed:", err)
+          );
+        }
+      } else if (result === "invalid_json") {
+        toast.error(t("invalidJson"));
+      } else if (result === "invalid_backup") {
+        toast.error(t("invalidBackup"));
+      }
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setImportingSample(false);
+    }
+  }, [selectedSampleId, t]);
 
   const handleExportPdf = useCallback(
     async (type: "guests" | "budget" | "timeline" | "vendors") => {
@@ -279,6 +320,26 @@ export default function ExportImportScreen() {
           </View>
         )}
 
+        {/* Sample weddings */}
+        <View className="px-4">
+          <SectionTitle>{t("samplesSection")}</SectionTitle>
+          <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
+            {t("samplesSectionDesc")}
+          </Text>
+          <FormCard>
+            {WEDDING_SAMPLES.map((sample, index) => (
+              <ExportRow
+                key={sample.id}
+                icon={<Sparkles size={18} color="#6e7a4a" />}
+                label={importingSample && selectedSampleId === sample.id ? t("importing") : t(sample.labelKey)}
+                sublabel={t(sample.descriptionKey)}
+                onPress={() => handlePickSample(sample.id)}
+                last={index === WEDDING_SAMPLES.length - 1}
+              />
+            ))}
+          </FormCard>
+        </View>
+
         {/* JSON Backup */}
         <View className="px-4">
           <SectionTitle>{t("backupSection")}</SectionTitle>
@@ -323,6 +384,21 @@ export default function ExportImportScreen() {
         destructive
         onConfirm={doImport}
         onCancel={() => setShowImportConfirm(false)}
+      />
+
+      <ConfirmSheet
+        visible={showSampleConfirm}
+        title={t("samplesImportConfirmTitle")}
+        message={t("samplesImportConfirmMsg", {
+          label: selectedSample ? t(selectedSample.labelKey) : "",
+        })}
+        confirmLabel={t("import")}
+        destructive
+        onConfirm={doImportSample}
+        onCancel={() => {
+          setShowSampleConfirm(false);
+          setSelectedSampleId(null);
+        }}
       />
 
       <ConfirmSheet
