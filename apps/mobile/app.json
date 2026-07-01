@@ -20,9 +20,6 @@
         "NSCameraUsageDescription": "Fiancé a besoin de l'appareil photo pour capturer vos inspirations mariage.",
         "NSFaceIDUsageDescription": "Utilisez Face ID pour déverrouiller Fiancé.",
         "ITSAppUsesNonExemptEncryption": false
-      },
-      "config": {
-        "usesNonExemptEncryption": false
       }
     },
     "android": {
