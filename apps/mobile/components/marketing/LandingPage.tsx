@@ -1,66 +1,249 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
+import Svg, { Rect, Circle, Path, Text as SvgText } from "react-native-svg";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  LayoutGrid, Store, CalendarCheck, Camera, Globe,
+  Store, CalendarCheck, Camera,
   WifiOff, Lock, ShieldCheck, HeartHandshake,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
-import { Sprig } from "@/components/Sprig";
 import { Underline } from "@/components/Underline";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import { Seal } from "@/components/Seal";
 import { Postit } from "@/components/Postit";
 import { Avatar } from "@/components/Avatar";
-import { MoneyDisplay } from "@/components/MoneyDisplay";
-import { ProgressBar } from "@/components/ProgressBar";
+import { formatMoney } from "@/components/MoneyDisplay";
 import { theme as GP } from "@/lib/theme";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getLandingBlogPosts } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
+/** Shared depth treatment for every app-peek/illustration card — real shadow + softer
+ *  edge so the card reads as a distinct floating object against the near-identical
+ *  page background, instead of a flat hairline-bordered rectangle. */
+const vignetteCardStyle = {
+  borderRadius: 18,
+  borderColor: "rgba(42,36,24,0.08)",
+  shadowColor: GP.ink,
+  shadowOffset: { width: 0, height: 14 },
+  shadowOpacity: 0.18,
+  shadowRadius: 28,
+  elevation: 10,
+  padding: 24,
+} as const;
+
 /** Budget preview — reused in the hero app-peek card and the Budget spotlight row. */
 const BudgetPeek = React.memo(function BudgetPeek({ compact }: { compact?: boolean }) {
   const { t } = useTranslation("marketing");
+  const spent = 8400;
+  const max = 12000;
+  const pct = Math.round((spent / max) * 100);
   return (
-    <View style={{ width: "100%", gap: compact ? 10 : 14 }}>
-      <Chip color={GP.mustard}>{t("landing.hero.peek.budgetLabel")}</Chip>
-      <MoneyDisplay amount={8400} size={compact ? "md" : "lg"} />
-      <ProgressBar value={8400} max={12000} label={t("landing.hero.peek.budgetSpent")} />
+    <View style={{ width: "100%", gap: compact ? 12 : 16 }}>
+      <View>
+        <Text
+          className="text-accent-gold"
+          style={{ fontFamily: "Inter_600SemiBold", fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase" }}
+        >
+          {t("landing.hero.peek.budgetLabel")}
+        </Text>
+        <View className="flex-row items-baseline" style={{ gap: 6, marginTop: 4 }}>
+          <Display size={compact ? 28 : 32} weight="600">
+            {formatMoney(spent)}
+          </Display>
+          <Text className="text-typography-400" style={{ fontFamily: "Inter_500Medium", fontSize: 13 }}>
+            / {formatMoney(max)}
+          </Text>
+        </View>
+      </View>
+      <View>
+        <View className="flex-row justify-between" style={{ marginBottom: 8 }}>
+          <Text className="text-mute" style={{ fontSize: 12 }}>
+            {t("landing.hero.peek.budgetSpent")}
+          </Text>
+          <Text className="text-typography-900" style={{ fontSize: 12, fontFamily: "Inter_600SemiBold" }}>
+            {pct}%
+          </Text>
+        </View>
+        <View style={{ position: "relative" }}>
+          <View style={{ height: 10, borderRadius: 5, overflow: "hidden", backgroundColor: "rgba(42,36,24,0.08)" }}>
+            <View style={{ width: `${pct}%`, height: "100%", borderRadius: 5, backgroundColor: GP.clay }}>
+              <View
+                style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 5,
+                  borderTopLeftRadius: 5, borderTopRightRadius: 5,
+                  backgroundColor: "rgba(255,255,255,0.18)",
+                }}
+              />
+            </View>
+          </View>
+          {compact && (
+            <View
+              style={{
+                position: "absolute", top: -2, left: `${pct}%`, marginLeft: -7,
+                width: 14, height: 14, borderRadius: 7,
+                backgroundColor: GP.card, borderWidth: 2, borderColor: GP.clay,
+                shadowColor: GP.ink, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.25, shadowRadius: 3, elevation: 2,
+              }}
+            />
+          )}
+        </View>
+      </View>
+      {!compact && (
+        <Text className="text-mute" style={{ fontSize: 12 }}>
+          {t("landing.hero.peek.budgetRemaining", { amount: formatMoney(max - spent) })}
+        </Text>
+      )}
+    </View>
+  );
+});
+
+const RsvpPill = React.memo(function RsvpPill({ color, label }: { color: string; label: string }) {
+  return (
+    <View
+      className="flex-row items-center"
+      style={{ gap: 6, backgroundColor: GP.paper, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 4 }}
+    >
+      <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color }} />
+      <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 11, color: GP.inkSoft }}>{label}</Text>
     </View>
   );
 });
 
 /** Guest-list preview — reused in the hero app-peek card and the Guests spotlight row. */
-const GuestsPeek = React.memo(function GuestsPeek() {
+const GuestsPeek = React.memo(function GuestsPeek({ variant = "compact" }: { variant?: "compact" | "full" }) {
   const { t } = useTranslation("marketing");
+  const avatars = [
+    { ini: "M", tone: GP.claySoft },
+    { ini: "J", tone: GP.oliveSoft },
+    { ini: "L", tone: GP.mustardSoft },
+  ];
   return (
     <View style={{ alignItems: "center", gap: 14 }}>
       <View className="flex-row items-center">
-        <Avatar ini="M" tone={GP.claySoft} />
-        <View style={{ marginLeft: -10 }}>
-          <Avatar ini="J" tone={GP.oliveSoft} />
-        </View>
-        <View style={{ marginLeft: -10 }}>
-          <Avatar ini="L" tone={GP.mustardSoft} />
+        {avatars.map((a, i) => (
+          <View
+            key={a.ini}
+            style={{
+              marginLeft: i === 0 ? 0 : -12,
+              zIndex: avatars.length - i,
+              borderRadius: 21,
+              borderWidth: 3,
+              borderColor: GP.card,
+              backgroundColor: GP.card,
+              shadowColor: GP.ink,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 5,
+              elevation: 2,
+            }}
+          >
+            <Avatar ini={a.ini} tone={a.tone} size={36} />
+          </View>
+        ))}
+        <View
+          style={{
+            marginLeft: -12, width: 36, height: 36, borderRadius: 21,
+            backgroundColor: GP.paper, borderWidth: 3, borderColor: GP.card,
+            alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 12, color: GP.inkSoft }}>+21</Text>
         </View>
       </View>
-      <Chip color={GP.olive}>{t("landing.hero.peek.rsvp")}</Chip>
+      {variant === "compact" ? (
+        <View className="flex-row items-center" style={{ gap: 6 }}>
+          <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: GP.olive }} />
+          <Chip color={GP.olive}>{t("landing.hero.peek.rsvp")}</Chip>
+        </View>
+      ) : (
+        <View className="flex-row flex-wrap items-center justify-center" style={{ gap: 8 }}>
+          <RsvpPill color={GP.olive} label={t("landing.features.guests.peek.yes", { count: 24 })} />
+          <RsvpPill color={GP.clay} label={t("landing.features.guests.peek.no", { count: 3 })} />
+          <RsvpPill color={GP.mustard} label={t("landing.features.guests.peek.maybe", { count: 5 })} />
+        </View>
+      )}
     </View>
   );
 });
 
-/** Plain icon + Sprig vignette for spotlight rows that don't need a data preview. */
-const IconVignette = React.memo(function IconVignette({ icon }: { icon: React.ReactNode }) {
+/** Top-down seating-canvas mini-illustration — mirrors the real seating plan (paper canvas,
+ *  hair-dot grid, card-colored round table) instead of a generic icon-in-a-box. */
+const SeatingVignette = React.memo(function SeatingVignette() {
+  const { t } = useTranslation("marketing");
+  const seatColors = [GP.clay, GP.olive, GP.mustard, GP.blue, GP.claySoft, GP.oliveSoft];
+  const seats = Array.from({ length: 8 }, (_, i) => {
+    const angle = (i * Math.PI * 2) / 8 - Math.PI / 2;
+    const r = 44;
+    return {
+      cx: 90 + r * Math.cos(angle),
+      cy: 78 + r * Math.sin(angle),
+      filled: i < 6,
+      color: seatColors[i % seatColors.length],
+    };
+  });
   return (
-    <View className="items-center" style={{ gap: 12 }}>
-      <View className="w-16 h-16 rounded-2xl bg-accent-blush items-center justify-center">{icon}</View>
-      <Sprig size={18} />
+    <View style={{ alignItems: "center", gap: 10 }}>
+      <Svg width={180} height={150} viewBox="0 0 180 150">
+        <Rect x={6} y={6} width={168} height={138} rx={12} fill={GP.paper} />
+        {Array.from({ length: 36 }, (_, idx) => {
+          const row = Math.floor(idx / 6);
+          const col = idx % 6;
+          return <Circle key={idx} cx={18 + col * 26} cy={18 + row * 26} r={1} fill="rgba(42,36,24,0.14)" />;
+        })}
+        <Circle cx={90} cy={78} r={27} fill={GP.card} stroke="rgba(42,36,24,0.24)" strokeWidth={1.5} />
+        <SvgText x={90} y={82} fontSize={10} fill={GP.mute} textAnchor="middle">
+          6/8
+        </SvgText>
+        {seats.map((s, i) =>
+          s.filled ? (
+            <Circle key={i} cx={s.cx} cy={s.cy} r={7} fill={s.color} stroke={GP.card} strokeWidth={2} />
+          ) : (
+            <Circle key={i} cx={s.cx} cy={s.cy} r={7} fill={GP.card} stroke={GP.olive} strokeWidth={1.3} strokeDasharray="2 2" />
+          )
+        )}
+      </Svg>
+      <Postit size="sm" angle={-4}>
+        {t("landing.features.seatingChart.peek.dragDrop")}
+      </Postit>
+    </View>
+  );
+});
+
+/** Wedding-website mini mock — browser chrome + cover band + a handwritten couple-name
+ *  overlay, so this reads as "a real site" instead of a bare Globe icon. */
+const WebsiteVignette = React.memo(function WebsiteVignette() {
+  const { t } = useTranslation("marketing");
+  return (
+    <View style={{ width: 200, height: 150, position: "relative" }}>
+      <Svg width={200} height={150} viewBox="0 0 200 150">
+        <Rect x={4} y={4} width={192} height={142} rx={12} fill={GP.card} stroke="rgba(42,36,24,0.14)" />
+        <Rect x={4} y={4} width={192} height={24} fill={GP.paper} />
+        <Circle cx={16} cy={16} r={3} fill={GP.clay} />
+        <Circle cx={26} cy={16} r={3} fill={GP.mustard} />
+        <Circle cx={36} cy={16} r={3} fill={GP.olive} />
+        <Rect x={52} y={10} width={120} height={12} rx={6} fill={GP.card} stroke="rgba(42,36,24,0.14)" />
+        <Rect x={14} y={38} width={172} height={52} rx={8} fill={GP.oliveSoft} />
+        <Path
+          d="M100 70 C 96 63, 86 63, 86 71 C 86 78, 100 87, 100 87 C 100 87, 114 78, 114 71 C 114 63, 104 63, 100 70 Z"
+          fill={GP.clay}
+        />
+        <Rect x={66} y={100} width={68} height={5} rx={2.5} fill="rgba(42,36,24,0.18)" />
+        <Rect x={78} y={114} width={44} height={16} rx={8} fill={GP.mustard} />
+        <SvgText x={100} y={125} fontSize={8} fill={GP.card} textAnchor="middle" fontWeight="700">
+          {t("landing.features.publicPage.peek.rsvp")}
+        </SvgText>
+      </Svg>
+      <View style={{ position: "absolute", top: 44, left: 0, right: 0, alignItems: "center" }}>
+        <Script size={13} color={GP.clay}>
+          {t("landing.features.publicPage.peek.coupleNames")}
+        </Script>
+      </View>
     </View>
   );
 });
@@ -96,7 +279,7 @@ const FlagshipRow = React.memo(function FlagshipRow({
   );
   const box = (
     <View key="box" style={{ flexGrow: 1, flexBasis: 260, minWidth: 240, maxWidth: 420 }}>
-      <Card tinted={tint} style={{ padding: 26, minHeight: 190, alignItems: "center", justifyContent: "center" }}>
+      <Card tinted={tint} style={[vignetteCardStyle, { minHeight: 190, alignItems: "center", justifyContent: "center" }]}>
         {vignette}
       </Card>
     </View>
@@ -147,9 +330,9 @@ export function LandingPage() {
 
   const flagshipFeatures = [
     { key: "budget", tint: undefined, vignette: <BudgetPeek /> },
-    { key: "seatingChart", tint: GP.paper, vignette: <IconVignette icon={<LayoutGrid size={28} className="text-accent-gold" />} /> },
-    { key: "guests", tint: undefined, vignette: <GuestsPeek /> },
-    { key: "publicPage", tint: GP.paper, vignette: <IconVignette icon={<Globe size={28} className="text-accent-gold" />} /> },
+    { key: "seatingChart", tint: GP.paper, vignette: <SeatingVignette /> },
+    { key: "guests", tint: undefined, vignette: <GuestsPeek variant="full" /> },
+    { key: "publicPage", tint: GP.paper, vignette: <WebsiteVignette /> },
   ] as const;
 
   const compactFeatures = [
@@ -214,17 +397,31 @@ export function LandingPage() {
           {/* App-peek vignette column */}
           <View style={{ flexGrow: 1, flexBasis: 320, minWidth: 280, maxWidth: 380, alignSelf: "center" }}>
             <View style={{ position: "relative" }}>
-              <Card style={{ padding: 22, gap: 18 }}>
+              <Card style={[vignetteCardStyle, { gap: 18 }]}>
                 <BudgetPeek compact />
-                <View className="border-t border-accent-rose-light" style={{ paddingTop: 16 }}>
+                <View style={{ borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(42,36,24,0.18)", paddingTop: 16 }}>
                   <GuestsPeek />
                 </View>
               </Card>
-              <View style={{ position: "absolute", top: -16, right: -12 }}>
-                <Seal label={t("landing.hero.peek.sealLabel")} angle={-8} />
+              <View style={{ position: "absolute", top: -20, right: -14 }}>
+                <Seal
+                  label={t("landing.hero.peek.sealLabel")}
+                  angle={-10}
+                  size={58}
+                  style={{
+                    shadowColor: GP.ink, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 6,
+                  }}
+                />
               </View>
-              <View style={{ position: "absolute", bottom: -18, left: -16 }}>
-                <Postit angle={-3}>{t("landing.hero.peek.postit")}</Postit>
+              <View style={{ position: "absolute", bottom: -12, left: -14 }}>
+                <Postit
+                  angle={-4}
+                  style={{
+                    shadowColor: GP.ink, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 7,
+                  }}
+                >
+                  {t("landing.hero.peek.postit")}
+                </Postit>
               </View>
             </View>
           </View>

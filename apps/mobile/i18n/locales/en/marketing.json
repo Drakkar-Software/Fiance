@@ -56,6 +56,7 @@
       "peek": {
         "budgetLabel": "Budget",
         "budgetSpent": "Spent",
+        "budgetRemaining": "{{amount}} left",
         "guestsLabel": "Guests",
         "rsvp": "24 confirmed",
         "sealLabel": "0 ads",
@@ -72,11 +73,19 @@
       },
       "guests": {
         "title": "Guest List & RSVP",
-        "description": "Manage your guests, track RSVPs and organize plus-ones."
+        "description": "Manage your guests, track RSVPs and organize plus-ones.",
+        "peek": {
+          "yes": "{{count}} yes",
+          "no": "{{count}} no",
+          "maybe": "{{count}} maybe"
+        }
       },
       "seatingChart": {
         "title": "Seating Chart",
-        "description": "Create your seating chart with round or rectangular tables via drag and drop."
+        "description": "Create your seating chart with round or rectangular tables via drag and drop.",
+        "peek": {
+          "dragDrop": "drag & drop"
+        }
       },
       "vendors": {
         "title": "Vendors",
@@ -92,7 +101,11 @@
       },
       "publicPage": {
         "title": "Wedding Website",
-        "description": "Create your personalized wedding web page to share details with your guests."
+        "description": "Create your personalized wedding web page to share details with your guests.",
+        "peek": {
+          "coupleNames": "Alex & Sam",
+          "rsvp": "RSVP"
+        }
       },
       "offline": {
         "title": "Offline & Sync",

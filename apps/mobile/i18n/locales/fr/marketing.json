@@ -56,6 +56,7 @@
       "peek": {
         "budgetLabel": "Budget",
         "budgetSpent": "Dépensé",
+        "budgetRemaining": "{{amount}} restants",
         "guestsLabel": "Invités",
         "rsvp": "24 confirmés",
         "sealLabel": "0 pub",
@@ -72,11 +73,19 @@
       },
       "guests": {
         "title": "Liste d'invités & RSVP",
-        "description": "Gérez vos invités, suivez les confirmations et organisez les accompagnants."
+        "description": "Gérez vos invités, suivez les confirmations et organisez les accompagnants.",
+        "peek": {
+          "yes": "{{count}} oui",
+          "no": "{{count}} non",
+          "maybe": "{{count}} peut-être"
+        }
       },
       "seatingChart": {
         "title": "Plan de table",
-        "description": "Créez votre plan de table avec des tables rondes ou rectangulaires par glisser-déposer."
+        "description": "Créez votre plan de table avec des tables rondes ou rectangulaires par glisser-déposer.",
+        "peek": {
+          "dragDrop": "glisser-déposer"
+        }
       },
       "vendors": {
         "title": "Prestataires",
@@ -92,7 +101,11 @@
       },
       "publicPage": {
         "title": "Site de mariage",
-        "description": "Créez votre page web de mariage personnalisée pour partager les infos avec vos invités."
+        "description": "Créez votre page web de mariage personnalisée pour partager les infos avec vos invités.",
+        "peek": {
+          "coupleNames": "Marie & Jean",
+          "rsvp": "RSVP"
+        }
       },
       "offline": {
         "title": "Hors ligne & Synchronisation",
