@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Platform } from "react-native";
 import { View, Text, ScrollView } from "react-native-css/components";
+import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Pressable } from "../../primitives/pressable";
 import { Button } from "../../primitives/button";
 import { BottomSheet } from "../../primitives/bottom-sheet";
+import { useForgeTheme } from "../../theme/context";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
 const MINUTES = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0"));
@@ -31,6 +35,7 @@ export function TimePickerModal({
   hoursLabel = "Hours",
   minutesLabel = "Minutes",
 }: TimePickerModalProps) {
+  const { colors } = useForgeTheme();
   const hourRef = useRef<React.ElementRef<typeof ScrollView>>(null);
   const minuteRef = useRef<React.ElementRef<typeof ScrollView>>(null);
 
@@ -73,6 +78,61 @@ export function TimePickerModal({
     onClear();
     onClose();
   };
+
+  // Mobile: native @expo/ui DateTimePicker instead of the hand-rolled scroll
+  // wheels — web keeps the exact implementation below. Reuses the same
+  // selectedHour/selectedMinute state and handleConfirm/handleClear (the
+  // native wheel fires onValueChange continuously while scrolling, so unlike
+  // DatePickerModal this must NOT auto-close — commit only on Confirm).
+  // Minutes are rounded to the nearest 5 to match the original MINUTES step;
+  // the community module doesn't support a minuteInterval prop.
+  if (Platform.OS !== "web") {
+    const timeValue = new Date();
+    timeValue.setHours(parseInt(selectedHour, 10), parseInt(selectedMinute, 10), 0, 0);
+
+    return (
+      <BottomSheet
+        visible={visible}
+        onDismiss={onClose}
+        snapPoints={Platform.OS === "ios" ? ["45%"] : undefined}
+        backgroundColor={colors.surface}
+      >
+        <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+          <DateTimePicker
+            value={timeValue}
+            mode="time"
+            display="spinner"
+            onValueChange={(_event, date) => {
+              if (!date) return;
+              setSelectedHour(date.getHours().toString().padStart(2, "0"));
+              setSelectedMinute(((Math.round(date.getMinutes() / 5) * 5) % 60).toString().padStart(2, "0"));
+            }}
+          />
+          <View className="flex-row gap-3 mt-4">
+            <View className="flex-1">
+              <Button
+                fill
+                variant="text"
+                label={confirmLabel}
+                onPress={handleConfirm}
+                modifiers={[foregroundStyle(colors.onPrimary)]}
+                style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                fill
+                variant="outlined"
+                label={clearLabel}
+                onPress={handleClear}
+                style={{ paddingVertical: 12, borderRadius: 16 }}
+              />
+            </View>
+          </View>
+        </View>
+      </BottomSheet>
+    );
+  }
 
   return (
     <BottomSheet visible={visible} onDismiss={onClose}>
@@ -134,14 +194,17 @@ export function TimePickerModal({
         <View className="flex-row gap-3 mt-4">
           <View className="flex-1">
             <Button
-              variant="filled"
+              fill
+              variant="text"
               label={confirmLabel}
               onPress={handleConfirm}
-              style={{ paddingVertical: 12, borderRadius: 16 }}
+              modifiers={[foregroundStyle("#FFFFFF")]}
+              style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
             />
           </View>
           <View className="flex-1">
             <Button
+              fill
               variant="outlined"
               label={clearLabel}
               onPress={handleClear}

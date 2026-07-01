@@ -35,7 +35,10 @@ function TextInput({ value, onChangeText, selectionColor, cursorColor, ...rest }
       cursorColor={cursorColor ?? colors.primary}
     />
   )
-  return useHostWrap(element)
+  // Host defaults to non-content-hugging sizing on all axes, which collapses this
+  // field's RN-side view to zero effective size. matchContents.vertical hugs height
+  // to content while still filling the row's width — the doc-recommended pattern.
+  return useHostWrap(element, { matchContents: { vertical: true } })
 }
 
 TextInput.displayName = 'TextInput'

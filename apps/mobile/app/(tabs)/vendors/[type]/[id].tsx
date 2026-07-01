@@ -24,6 +24,7 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { Display } from "@/components/Display";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { StatusSelector } from "@/components/StatusSelector";
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { PageHeader } from "@/components/PageHeader";
 import { Seal } from "@/components/Seal";
 import type { Vendor, VendorPayment } from "@/db/schema";
@@ -157,21 +158,16 @@ export default function VendorDetailScreen() {
       />
 
       {/* Tab bar */}
-      <View className="flex-row mx-4 mt-3 bg-accent-paper rounded-xl p-1">
-        {(["infos", "tarif", ...(isNew ? [] : ["paiements", "documents"])] as ("infos" | "tarif" | "paiements" | "documents")[]).map((tab) => {
-          const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments", documents: "tabDocuments" } as const;
-          return (
-            <Pressable
-              key={tab}
-              onPress={() => setActiveTab(tab)}
-              className={`flex-1 py-2 rounded-lg items-center ${activeTab === tab ? "bg-accent-card shadow-sm" : ""}`}
-            >
-              <Text className={`text-sm font-medium ${activeTab === tab ? "text-primary-500" : "text-mute"}`}>
-                {t(tabKeys[tab])}
-              </Text>
-            </Pressable>
-          );
-        })}
+      <View className="mx-4 mt-3">
+        <SegmentedControl
+          compact
+          segments={(["infos", "tarif", ...(isNew ? [] : ["paiements", "documents"])] as ("infos" | "tarif" | "paiements" | "documents")[]).map((tab) => {
+            const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments", documents: "tabDocuments" } as const;
+            return { key: tab, label: t(tabKeys[tab]) };
+          })}
+          activeKey={activeTab}
+          onSelect={(key) => setActiveTab(key as "infos" | "tarif" | "paiements" | "documents")}
+        />
       </View>
 
       <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false}>

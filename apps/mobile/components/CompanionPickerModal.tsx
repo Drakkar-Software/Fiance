@@ -16,6 +16,7 @@ import {
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { Sheet } from "@fiance/ui/components";
 import { ForgeHost } from "@fiance/ui/primitives/host";
+import { theme } from "@/lib/theme";
 
 interface CompanionPickerModalProps {
   visible: boolean;
@@ -76,7 +77,7 @@ export function CompanionPickerModal({
   // trailing slots are the one bridge point @expo/ui itself wraps safely.
   if (Platform.OS === "ios") {
     return (
-      <Sheet visible={visible} onDismiss={onClose}>
+      <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card}>
         <ForgeHost style={{ flex: 1 }} useViewportSizeMeasurement>
           <Column style={{ padding: 20 }} spacing={12}>
             <UIText textStyle={{ fontSize: 18, fontWeight: "700" }}>

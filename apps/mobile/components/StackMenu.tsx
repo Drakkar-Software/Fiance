@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Modal, View, Text, Pressable } from "react-native-css/components";
+import React from "react";
+import { Pressable } from "react-native-css/components";
+import MenuView from "@expo/ui/community/menu";
 import { EllipsisVertical } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface StackMenuItem {
   label: string;
@@ -14,66 +14,27 @@ interface StackMenuProps {
   items: StackMenuItem[];
 }
 
+// Native @expo/ui MenuView (SwiftUI Menu / Compose DropdownMenu) instead of a
+// hand-rolled RN Modal + absolute-positioned card — same StackMenuProps shape,
+// so callers don't change. Icons are dropped for now: MenuAction.image wants an
+// SF Symbol name on iOS, and mapping lucide icons to the right symbol names
+// without visual verification risks shipping wrong icons; text-only native
+// items already resolve the "not native" complaint.
 export function StackMenu({ items }: StackMenuProps) {
-  const [open, setOpen] = useState(false);
-  const insets = useSafeAreaInsets();
-
-  const handleItem = (onPress: () => void) => {
-    setOpen(false);
-    onPress();
-  };
-
   return (
-    <>
+    <MenuView
+      actions={items.map((item, index) => ({ id: String(index), title: item.label }))}
+      onPressAction={(event) => {
+        const item = items[Number(event.nativeEvent.event)];
+        item?.onPress();
+      }}
+    >
       <Pressable
-        onPress={() => setOpen(true)}
         className="w-9 h-9 items-center justify-center rounded-lg active:opacity-60 mr-1"
         hitSlop={8}
       >
         <EllipsisVertical size={20} color="#6B7280" />
       </Pressable>
-
-      <Modal
-        visible={open}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setOpen(false)}
-      >
-        {/* Overlay — tap outside to dismiss */}
-        <Pressable
-          className="flex-1"
-          onPress={() => setOpen(false)}
-        >
-          {/* Menu card — top-right of screen, aligned under header (Modal ignores
-              safe area, so offset by the notch/Dynamic Island inset + header height) */}
-          <View
-            className="absolute right-4 bg-accent-card rounded-2xl shadow-lg border border-hair overflow-hidden min-w-[180px]"
-            style={{ top: insets.top + 48 }}
-          >
-            {items.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <Pressable
-                  key={index}
-                  onPress={() => handleItem(item.onPress)}
-                  className={`flex-row items-center px-4 py-3.5 active:bg-accent-paper dark:active:bg-accent-card ${
-                    index > 0 ? "border-t border-hair" : ""
-                  }`}
-                >
-                  {Icon && (
-                    <View className="mr-3">
-                      <Icon size={16} color="#6B7280" />
-                    </View>
-                  )}
-                  <Text className="text-sm font-medium text-ink-soft">
-                    {item.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </Pressable>
-      </Modal>
-    </>
+    </MenuView>
   );
 }

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Pressable } from "../../primitives/pressable";
 import { Input } from "../../primitives/input";
 import { Checkbox } from "../../primitives/checkbox";
 import { Card } from "../../primitives/card";
 import { Calendar, Clock } from "lucide-react-native";
 import { format, parseISO } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enUS, fr } from "date-fns/locale";
 import type { Locale } from "date-fns";
 import { DatePickerModal } from "../sheets/DatePickerModal";
 import { TimePickerModal } from "../sheets/TimePickerModal";
@@ -86,30 +88,80 @@ export function DateRow({
 }) {
   const [open, setOpen] = useState(false);
 
+  const selectedDate = value ? parseISO(value) : null;
   let displayValue: string | null = null;
-  if (value) {
-    const parsed = parseISO(value);
-    if (!isNaN(parsed.getTime())) {
-      displayValue = format(parsed, "d MMM yyyy", { locale: dateLocale });
-    }
+  if (value && selectedDate && !isNaN(selectedDate.getTime())) {
+    displayValue = format(selectedDate, "d MMM yyyy", { locale: dateLocale });
+  }
+
+  const row = (
+    <Pressable
+      onPress={() => setOpen(!open)}
+      className="flex-row items-center justify-between border-b border-outline-50 py-3"
+    >
+      <View className="flex-1">
+        <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
+        <Text
+          className={`text-base ${displayValue ? "text-typography-900" : "text-typography-300"}`}
+        >
+          {displayValue ?? placeholder ?? selectDateLabel}
+        </Text>
+      </View>
+      <Calendar size={18} className="text-typography-400" />
+    </Pressable>
+  );
+
+  // iOS: the native picker doesn't need its own bottom sheet — expand it
+  // inline under the row (matches common iOS form patterns). Android/web
+  // keep the sheet-based DatePickerModal.
+  if (Platform.OS === "ios") {
+    return (
+      <>
+        {row}
+        {open && (
+          <View className="pb-3 border-b border-outline-50">
+            <DateTimePicker
+              value={selectedDate ?? new Date()}
+              mode="date"
+              display="inline"
+              locale={dateLocale === fr ? "fr_FR" : "en_US"}
+              onValueChange={(_event, date) => {
+                if (!date) return;
+                onChange(format(date, "yyyy-MM-dd"));
+                setOpen(false);
+              }}
+            />
+            <View className="flex-row justify-between px-1 mt-1">
+              <Pressable
+                onPress={() => {
+                  onChange(format(new Date(), "yyyy-MM-dd"));
+                  setOpen(false);
+                }}
+              >
+                <Text className="text-xs font-medium text-primary-500">
+                  {todayLabel ?? "Today"}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  onChange("");
+                  setOpen(false);
+                }}
+              >
+                <Text className="text-xs font-medium text-typography-400">
+                  {clearLabel ?? "Clear"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+      </>
+    );
   }
 
   return (
     <>
-      <Pressable
-        onPress={() => setOpen(true)}
-        className="flex-row items-center justify-between border-b border-outline-50 py-3"
-      >
-        <View className="flex-1">
-          <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
-          <Text
-            className={`text-base ${displayValue ? "text-typography-900" : "text-typography-300"}`}
-          >
-            {displayValue ?? placeholder ?? selectDateLabel}
-          </Text>
-        </View>
-        <Calendar size={18} className="text-typography-400" />
-      </Pressable>
+      {row}
       <DatePickerModal
         visible={open}
         value={value}
@@ -147,23 +199,86 @@ export function TimeRow({
   minutesLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
+  // Local buffer for the iOS inline wheel — mirrors TimePickerModal's pattern:
+  // the native wheel fires onValueChange continuously while scrolling, so it
+  // must not commit until Confirm is tapped.
+  const [pickedTime, setPickedTime] = useState(value || "12:00");
+
+  const row = (
+    <Pressable
+      onPress={() => {
+        setPickedTime(value || "12:00");
+        setOpen(!open);
+      }}
+      className="flex-row items-center justify-between border-b border-outline-50 py-3"
+    >
+      <View className="flex-1">
+        <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
+        <Text
+          className={`text-base ${value ? "text-typography-900" : "text-typography-300"}`}
+        >
+          {value || placeholder || selectTimeLabel}
+        </Text>
+      </View>
+      <Clock size={18} className="text-typography-400" />
+    </Pressable>
+  );
+
+  // iOS: the native picker doesn't need its own bottom sheet — expand it
+  // inline under the row. Android/web keep the sheet-based TimePickerModal.
+  if (Platform.OS === "ios") {
+    const [hh, mm] = pickedTime.split(":");
+    const timeValue = new Date();
+    timeValue.setHours(parseInt(hh, 10) || 12, parseInt(mm, 10) || 0, 0, 0);
+
+    return (
+      <>
+        {row}
+        {open && (
+          <View className="pb-3 border-b border-outline-50">
+            <DateTimePicker
+              value={timeValue}
+              mode="time"
+              display="spinner"
+              onValueChange={(_event, date) => {
+                if (!date) return;
+                const minutes = (Math.round(date.getMinutes() / 5) * 5) % 60;
+                setPickedTime(
+                  `${date.getHours().toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
+                );
+              }}
+            />
+            <View className="flex-row justify-between px-1 mt-1">
+              <Pressable
+                onPress={() => {
+                  onChange(pickedTime);
+                  setOpen(false);
+                }}
+              >
+                <Text className="text-xs font-medium text-primary-500">
+                  {confirmLabel ?? "Confirm"}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  onChange("");
+                  setOpen(false);
+                }}
+              >
+                <Text className="text-xs font-medium text-typography-400">
+                  {clearLabel ?? "Clear"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
-      <Pressable
-        onPress={() => setOpen(true)}
-        className="flex-row items-center justify-between border-b border-outline-50 py-3"
-      >
-        <View className="flex-1">
-          <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
-          <Text
-            className={`text-base ${value ? "text-typography-900" : "text-typography-300"}`}
-          >
-            {value || placeholder || selectTimeLabel}
-          </Text>
-        </View>
-        <Clock size={18} className="text-typography-400" />
-      </Pressable>
+      {row}
       <TimePickerModal
         visible={open}
         value={value}

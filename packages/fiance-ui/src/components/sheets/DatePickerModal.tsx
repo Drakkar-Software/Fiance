@@ -1,7 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
+import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Pressable } from "../../primitives/pressable";
 import { Button } from "../../primitives/button";
+import { useForgeTheme } from "../../theme/context";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import {
   format,
@@ -17,7 +21,7 @@ import {
   isSameDay,
   isToday,
 } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enUS, fr } from "date-fns/locale";
 import type { Locale } from "date-fns";
 import { BottomSheet } from "../../primitives/bottom-sheet";
 
@@ -43,6 +47,7 @@ export function DatePickerModal({
   todayLabel = "Today",
   clearLabel = "Clear",
 }: DatePickerModalProps) {
+  const { colors } = useForgeTheme();
   const selectedDate = value ? parseISO(value) : null;
   const [displayMonth, setDisplayMonth] = useState(selectedDate ?? new Date());
 
@@ -90,8 +95,57 @@ export function DatePickerModal({
     onClose();
   };
 
+  // Mobile: native @expo/ui DateTimePicker instead of the hand-rolled calendar
+  // grid — web keeps the exact implementation below (the community module
+  // doesn't render reliably on web, matching SegmentedControl's split).
+  if (Platform.OS !== "web") {
+    return (
+      <BottomSheet
+        visible={visible}
+        onDismiss={onClose}
+        snapPoints={Platform.OS === "ios" ? ["55%"] : undefined}
+        backgroundColor={colors.surface}
+      >
+        <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+          <DateTimePicker
+            value={selectedDate ?? new Date()}
+            mode="date"
+            display="inline"
+            locale={dateLocale === fr ? "fr_FR" : "en_US"}
+            onValueChange={(_event, date) => {
+              if (!date) return;
+              onSelect(format(date, "yyyy-MM-dd"));
+              onClose();
+            }}
+          />
+          <View className="flex-row gap-3 mt-4">
+            <View className="flex-1">
+              <Button
+                fill
+                variant="text"
+                label={todayLabel}
+                onPress={handleToday}
+                modifiers={[foregroundStyle(colors.onPrimary)]}
+                style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                fill
+                variant="outlined"
+                label={clearLabel}
+                onPress={handleClear}
+                style={{ paddingVertical: 12, borderRadius: 16 }}
+              />
+            </View>
+          </View>
+        </View>
+      </BottomSheet>
+    );
+  }
+
   return (
-    <BottomSheet visible={visible} onDismiss={onClose}>
+    <BottomSheet visible={visible} onDismiss={onClose} backgroundColor={colors.surface}>
       <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
         {/* Month navigation */}
         <View className="flex-row items-center justify-between mb-3">
@@ -166,14 +220,17 @@ export function DatePickerModal({
         <View className="flex-row gap-3 mt-4">
           <View className="flex-1">
             <Button
-              variant="filled"
+              fill
+              variant="text"
               label={todayLabel}
               onPress={handleToday}
-              style={{ paddingVertical: 12, borderRadius: 16 }}
+              modifiers={[foregroundStyle(colors.onPrimary)]}
+              style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
             />
           </View>
           <View className="flex-1">
             <Button
+              fill
               variant="outlined"
               label={clearLabel}
               onPress={handleClear}

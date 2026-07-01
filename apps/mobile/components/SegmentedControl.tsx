@@ -19,9 +19,11 @@ interface SegmentedControlProps {
   segments: Segment[];
   activeKey: string;
   onSelect: (key: string) => void;
+  /** Skip the full-width page-header padding/background — for inline use next to other controls. */
+  compact?: boolean;
 }
 
-export function SegmentedControl({ segments, activeKey, onSelect }: SegmentedControlProps) {
+export function SegmentedControl({ segments, activeKey, onSelect, compact = false }: SegmentedControlProps) {
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
@@ -30,18 +32,20 @@ export function SegmentedControl({ segments, activeKey, onSelect }: SegmentedCon
     segments.findIndex((s) => s.key === activeKey)
   );
 
-  return (
-    <View className="px-4 pt-3 pb-2 bg-accent-paper">
-      <NativeSegmentedControl
-        values={segments.map((s) => s.label)}
-        selectedIndex={selectedIndex}
-        onChange={(event: NativeSegmentedControlChangeEvent) => {
-          onSelect(segments[event.nativeEvent.selectedSegmentIndex].key);
-        }}
-        tintColor="#b96a4a"
-        appearance={isDark ? "dark" : "light"}
-        style={{ height: 36 }}
-      />
-    </View>
+  const control = (
+    <NativeSegmentedControl
+      values={segments.map((s) => s.label)}
+      selectedIndex={selectedIndex}
+      onChange={(event: NativeSegmentedControlChangeEvent) => {
+        onSelect(segments[event.nativeEvent.selectedSegmentIndex].key);
+      }}
+      tintColor="#b96a4a"
+      appearance={isDark ? "dark" : "light"}
+      style={{ height: 36 }}
+    />
   );
+
+  if (compact) return control;
+
+  return <View className="px-4 pt-3 pb-2 bg-accent-paper">{control}</View>;
 }

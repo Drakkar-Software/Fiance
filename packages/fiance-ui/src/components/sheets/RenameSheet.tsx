@@ -1,8 +1,11 @@
 import React, { useEffect, useCallback, useState } from "react";
+import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
+import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { Input } from "../../primitives/input";
 import { Button } from "../../primitives/button";
 import { BottomSheet } from "../../primitives/bottom-sheet";
+import { useForgeTheme } from "../../theme/context";
 
 interface RenameSheetProps {
   visible: boolean;
@@ -25,6 +28,7 @@ export function RenameSheet({
   onConfirm,
   onCancel,
 }: RenameSheetProps) {
+  const { colors } = useForgeTheme();
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -36,7 +40,12 @@ export function RenameSheet({
   }, [value, onConfirm]);
 
   return (
-    <BottomSheet visible={visible} onDismiss={onCancel}>
+    <BottomSheet
+      visible={visible}
+      onDismiss={onCancel}
+      snapPoints={Platform.OS === "ios" ? ["40%"] : undefined}
+      backgroundColor={colors.surface}
+    >
       <View className="bg-background-0 rounded-t-3xl px-6 pt-6 pb-10">
         <Text className="text-xl font-bold text-typography-900 mb-4">{title}</Text>
         <View className="mb-4">
@@ -62,12 +71,15 @@ export function RenameSheet({
         </View>
         <View className="gap-3">
           <Button
-            variant="filled"
+            fill
+            variant="text"
             label={saveLabel}
             onPress={handleConfirm}
-            style={{ paddingVertical: 14, borderRadius: 16 }}
+            modifiers={[foregroundStyle(colors.onPrimary)]}
+            style={{ backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16 }}
           />
           <Button
+            fill
             variant="outlined"
             label={cancelLabel}
             onPress={onCancel}

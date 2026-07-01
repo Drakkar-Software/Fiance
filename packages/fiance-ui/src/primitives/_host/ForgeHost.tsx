@@ -29,11 +29,16 @@ function ForgeHost({ children, seedColor, ...rest }: ForgeHostProps) {
 /**
  * Wraps `node` in a `ForgeHost` unless it is already inside one — collapses a
  * tree of self-hosting seahorse native primitives (Row/Column/leaves) down to a
- * single native Host bridge.
+ * single native Host bridge. `hostProps` (e.g. `matchContents`) is only applied
+ * when this call creates the Host; it's ignored when collapsing into an
+ * ancestor's, since a Host's sizing is fixed at mount.
  */
-function useHostWrap(node: React.ReactElement): React.ReactElement {
+function useHostWrap(
+  node: React.ReactElement,
+  hostProps?: Partial<UniversalHostProps>
+): React.ReactElement {
   const insideHost = useContext(HostContext)
-  return insideHost ? node : <ForgeHost>{node}</ForgeHost>
+  return insideHost ? node : <ForgeHost {...hostProps}>{node}</ForgeHost>
 }
 
 export { ForgeHost, HostContext, useHostWrap }

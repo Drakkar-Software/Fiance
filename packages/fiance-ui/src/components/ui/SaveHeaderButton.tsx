@@ -1,7 +1,6 @@
 import React from "react";
 import { View } from "react-native-css/components";
 import { Button } from "../../primitives/button";
-import { useForgeTheme } from "../../theme/context";
 
 interface SaveHeaderButtonProps {
   label: string;
@@ -9,22 +8,18 @@ interface SaveHeaderButtonProps {
   onPress: () => void;
 }
 
+// Nav-bar action, not a body pill: plain/tinted text like a native iOS header
+// button (no custom background/pill — "filled" fought its own native chrome
+// here, and a stack header button doesn't need that styling anyway).
 export function SaveHeaderButton({ label, enabled, onPress }: SaveHeaderButtonProps) {
-  const { colors } = useForgeTheme();
   return (
     <View style={{ marginRight: 8 }}>
       <Button
-        variant="filled"
+        variant="text"
         label={label}
         onPress={onPress}
         disabled={!enabled}
-        style={{
-          backgroundColor: enabled ? colors.primary : "rgb(163, 163, 163)",
-          borderRadius: 999,
-          paddingHorizontal: 16,
-          paddingVertical: 6,
-          opacity: enabled ? 1 : 0.4,
-        }}
+        style={{ opacity: enabled ? 1 : 0.4 }}
       />
     </View>
   );

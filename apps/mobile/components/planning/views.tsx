@@ -5,9 +5,10 @@ import { shareLink } from "@/lib/share";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  List, LayoutGrid, Calendar, CheckCircle2, Circle, Sparkles,
+  Calendar, CheckCircle2, Circle, Sparkles,
   Clock, MapPin, User, Share2,
 } from "lucide-react-native";
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { isBefore } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -169,24 +170,15 @@ export function PreparationView() {
               <Sparkles size={14} color="#b96a4a" />
               <Text className="text-xs font-medium text-primary-500">{t("generate")}</Text>
             </Pressable>
-            <View className="flex-row bg-accent-paper rounded-lg p-0.5 border border-hair">
-              <Pressable
-                onPress={() => setViewMode("timeline")}
-                className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "timeline" ? "bg-accent-card shadow-soft-1" : ""
-                }`}
-              >
-                <List size={16} color={viewMode === "timeline" ? "#b96a4a" : "#9CA3AF"} />
-              </Pressable>
-              <Pressable
-                onPress={() => setViewMode("kanban")}
-                className={`px-3 py-1.5 rounded-md ${
-                  viewMode === "kanban" ? "bg-accent-card shadow-soft-1" : ""
-                }`}
-              >
-                <LayoutGrid size={16} color={viewMode === "kanban" ? "#b96a4a" : "#9CA3AF"} />
-              </Pressable>
-            </View>
+            <SegmentedControl
+              compact
+              segments={[
+                { key: "timeline", label: t("viewTimeline") },
+                { key: "kanban", label: t("viewKanban") },
+              ]}
+              activeKey={viewMode}
+              onSelect={(key) => setViewMode(key as ViewMode)}
+            />
           </View>
         </View>
         <ProgressBar

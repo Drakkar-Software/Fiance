@@ -68,6 +68,7 @@ import {
 } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { theme as GP } from "@/lib/theme";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
 import { PageHeader } from "@/components/PageHeader";
@@ -396,40 +397,43 @@ export default function GuestDetailScreen() {
           onPress={() => setActiveSheet("notes")}
         />
 
-        {!isNew && activeEntry?.seedPhrase && (
-          <Pressable
-            onPress={async () => {
-              const url = rsvpUrl;
-              if (!url) return;
-              analytics.capture("guest_rsvp_shared");
-              if (Platform.OS === "web") {
-                try {
-                  if (navigator.share) {
-                    await navigator.share({ url });
-                  } else {
-                    await navigator.clipboard.writeText(url);
-                    toast.success(t("linkCopied"));
-                  }
-                } catch {
-                  // share dismissed or clipboard blocked — silently ignore
-                }
-              } else {
-                try {
-                  await Share.share({ message: url, url });
-                } catch {
-                  // share dismissed
-                }
-              }
-            }}
-            className="flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 mb-3 mt-1 active:opacity-70"
-          >
-            <Share2 size={16} color="#b96a4a" />
-            <Text className="text-sm font-semibold text-primary-500">{t("rsvpLink")}</Text>
-          </Pressable>
-        )}
-
         {!isNew && (
-          <DeleteButton label={t("deleteGuest")} onPress={() => setShowDelete(true)} />
+          <View className="flex-row gap-3 mb-3 mt-1">
+            {activeEntry?.seedPhrase && (
+              <Pressable
+                onPress={async () => {
+                  const url = rsvpUrl;
+                  if (!url) return;
+                  analytics.capture("guest_rsvp_shared");
+                  if (Platform.OS === "web") {
+                    try {
+                      if (navigator.share) {
+                        await navigator.share({ url });
+                      } else {
+                        await navigator.clipboard.writeText(url);
+                        toast.success(t("linkCopied"));
+                      }
+                    } catch {
+                      // share dismissed or clipboard blocked — silently ignore
+                    }
+                  } else {
+                    try {
+                      await Share.share({ message: url, url });
+                    } catch {
+                      // share dismissed
+                    }
+                  }
+                }}
+                className="flex-1 flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 active:opacity-70"
+              >
+                <Share2 size={16} color={GP.clay} />
+                <Text className="text-sm font-semibold text-primary-500">{t("rsvpLink")}</Text>
+              </Pressable>
+            )}
+            <View className="flex-1">
+              <DeleteButton compact label={t("deleteGuest")} onPress={() => setShowDelete(true)} />
+            </View>
+          </View>
         )}
 
         <View className="h-8" />
