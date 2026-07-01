@@ -19,7 +19,6 @@ import { FilterTabs } from "@/components/FilterTabs";
 import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { PageHeader } from "@/components/PageHeader";
-import { ProgressBar } from "@/components/ProgressBar";
 
 const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
 
@@ -69,12 +68,6 @@ export default function VendorsListScreen() {
           titleSize={44}
         />
       )}
-      {vendors.length > 0 && (
-        <View className="px-4 pb-2">
-          <ProgressBar value={bookedVendors.length} max={vendors.length} />
-        </View>
-      )}
-
       {/* Vendor list */}
       <LegendList
         data={filteredVendors}

@@ -155,7 +155,7 @@ export default function LiveDayOfScreen() {
             </Pressable>
           );
         })}
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
     </View>
   );

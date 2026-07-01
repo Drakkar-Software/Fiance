@@ -233,7 +233,8 @@ export default function TaskDetailScreen() {
         <FormCard>
           <View className="flex-row items-center">
             <TextInput
-              className="text-base text-ink w-16 text-center border-b border-hair"
+              className="text-base text-ink w-16 border-b border-hair"
+              textAlign="center"
               value={monthsBefore}
               onChangeText={setMonthsBefore}
               keyboardType="numeric"
@@ -293,7 +294,7 @@ export default function TaskDetailScreen() {
           <DeleteButton label={t("deleteTask")} onPress={() => setShowDelete(true)} />
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet

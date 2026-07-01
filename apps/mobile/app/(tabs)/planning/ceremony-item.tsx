@@ -186,7 +186,7 @@ export default function CeremonyItemScreen() {
 
         {!isNew && <DeleteButton label={t("ceremony.deleteItem")} onPress={() => setShowDelete(true)} />}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet

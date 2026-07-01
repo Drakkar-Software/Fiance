@@ -436,7 +436,7 @@ export default function GuestDetailScreen() {
           </View>
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet
@@ -954,7 +954,15 @@ function GuestSheet({
 }) {
   const { t } = useTranslation("common");
   return (
-    <Sheet visible={visible} onDismiss={onDismiss}>
+    <Sheet
+      visible={visible}
+      onDismiss={onDismiss}
+      // GuestSheet's content is capped by the ScrollView's own maxHeight below,
+      // so it never needs the full native medium/large fallback. Two points
+      // (compact default, draggable up) since sub-sheets vary a lot in length —
+      // role/placement/notes are short, rsvp/contact can run much longer.
+      snapPoints={Platform.OS === "ios" ? ["55%", "85%"] : undefined}
+    >
       <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
         <Text className="text-lg font-bold text-ink mb-3">{title}</Text>
         <ScrollView style={{ maxHeight: 460 }} showsVerticalScrollIndicator={false} nestedScrollEnabled>

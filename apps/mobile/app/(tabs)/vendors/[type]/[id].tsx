@@ -329,7 +329,7 @@ export default function VendorDetailScreen() {
           <DocumentsTab vendorId={id!} />
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet
@@ -470,7 +470,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       ) : (
         <Pressable
           onPress={() => setShowAdd(true)}
-          className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 items-center border border-dashed border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
+          className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 items-center border border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
         >
           <Text className="text-sm font-semibold text-primary-500">+ {t("addPayment")}</Text>
         </Pressable>
@@ -559,7 +559,7 @@ function DocumentsTab({ vendorId }: { vendorId: string }) {
 
       <Pressable
         onPress={handlePick}
-        className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 flex-row items-center justify-center gap-2 border border-dashed border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
+        className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 flex-row items-center justify-center gap-2 border border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
       >
         <Upload size={15} color="#b96a4a" />
         <Text className="text-sm font-semibold text-primary-500">{t("addDocument")}</Text>

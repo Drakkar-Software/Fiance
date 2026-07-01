@@ -127,7 +127,7 @@ export default function DayOfItemScreen() {
           <DeleteButton label={t("deleteMoment")} onPress={() => setShowDelete(true)} />
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet

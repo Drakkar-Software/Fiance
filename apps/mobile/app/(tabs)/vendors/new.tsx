@@ -64,7 +64,7 @@ export default function NewVendorPickerScreen() {
             </View>
           </View>
         ))}
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
     </View>
   );

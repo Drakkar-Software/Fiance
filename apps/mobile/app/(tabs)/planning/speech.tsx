@@ -166,7 +166,7 @@ export default function SpeechScreen() {
 
         {!isNew && <DeleteButton label={t("speeches.deleteSpeech")} onPress={() => setShowDelete(true)} />}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet

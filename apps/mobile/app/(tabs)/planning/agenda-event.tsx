@@ -132,7 +132,7 @@ export default function AgendaEventScreen() {
           <DeleteButton label={t("deleteAppointment")} onPress={() => setShowDelete(true)} />
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
 
       <ConfirmSheet
