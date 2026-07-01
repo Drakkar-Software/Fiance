@@ -217,7 +217,7 @@
     }
   },
   "weddingParty": {
-    "title": "Wedding party & roles",
+    "title": "Roles",
     "role": {
       "OFFICIANT": "Officiant",
       "WITNESS": "Witness",
