@@ -168,6 +168,24 @@
   "migrationImportDesc": "Choisir le fichier et l'envoyer vers votre espace synchronisé",
   "backupSection": "Sauvegarde JSON",
   "backupSectionDesc": "Exportez ou importez l'intégralité de vos données",
+  "samplesSection": "Exemples de mariages",
+  "samplesSectionDesc": "Importez un mariage pré-rempli pour découvrir l'application (intime, classique ou grand).",
+  "samplesImportConfirmTitle": "Importer l'exemple ?",
+  "samplesImportConfirmMsg": "L'exemple « {{label}} » remplacera toutes les données actuelles de ce mariage. Continuer ?",
+  "samples": {
+    "small": {
+      "label": "Mariage intimiste",
+      "description": "28 invités · 10 000 € · Loire"
+    },
+    "medium": {
+      "label": "Mariage classique",
+      "description": "72 invités · 22 000 € · Provence"
+    },
+    "big": {
+      "label": "Grand mariage",
+      "description": "145 invités · 45 000 € · Paris"
+    }
+  },
   "pdfSection": "Exporter en PDF",
   "csvSection": "Exporter en CSV",
   "exportGuestList": "Liste des invités",
