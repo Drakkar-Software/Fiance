@@ -15,7 +15,7 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { ChipSelect, ToggleRow } from "@/components/FormSection";
+import { ChipSelect, ToggleRow, FormActions } from "@/components/FormSection";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { printDjWitnessPack } from "@/lib/print-dj-pack";
 import { analytics } from "@/lib/analytics";
@@ -175,13 +175,13 @@ export default function SpeechesMusicScreen() {
         value={form.notes}
         onChangeText={(notes) => setForm((f) => ({ ...f, notes }))}
       />
-      <View className="flex-row gap-2 mt-4">
-        <Pressable onPress={handleSaveTrack} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
-          <Text className="text-white font-semibold text-sm">{editingId ? t("common:save") : t("common:create")}</Text>
-        </Pressable>
-        <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
-          <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-        </Pressable>
+      <View className="mt-4">
+        <FormActions
+          saveLabel={editingId ? t("common:save") : t("common:create")}
+          cancelLabel={t("common:cancel")}
+          onSave={handleSaveTrack}
+          onCancel={resetForm}
+        />
       </View>
     </View>
   );

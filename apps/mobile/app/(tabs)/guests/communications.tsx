@@ -12,7 +12,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { FormCard, DateRow, InputRow, ChipSelect } from "@/components/FormSection";
+import { FormCard, DateRow, InputRow, ChipSelect, FormActions } from "@/components/FormSection";
 import { StackMenu } from "@/components/StackMenu";
 import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
@@ -194,19 +194,13 @@ export default function CommunicationsScreen() {
                   multiline
                 />
               </FormCard>
-              <View className="flex-row gap-2 mt-4">
-                <Pressable
-                  onPress={handleAdd}
-                  className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
-                >
-                  <Text className="text-white font-semibold text-sm">{t("common:create")}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={resetForm}
-                  className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
-                >
-                  <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-                </Pressable>
+              <View className="mt-4">
+                <FormActions
+                  saveLabel={t("common:create")}
+                  cancelLabel={t("common:cancel")}
+                  onSave={handleAdd}
+                  onCancel={resetForm}
+                />
               </View>
             </View>
           )}
@@ -272,19 +266,13 @@ export default function CommunicationsScreen() {
                       multiline
                     />
                   </FormCard>
-                  <View className="flex-row gap-2 mt-4">
-                    <Pressable
-                      onPress={handleSaveEdit}
-                      className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
-                    >
-                      <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={resetForm}
-                      className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
-                    >
-                      <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-                    </Pressable>
+                  <View className="mt-4">
+                    <FormActions
+                      saveLabel={t("common:save")}
+                      cancelLabel={t("common:cancel")}
+                      onSave={handleSaveEdit}
+                      onCancel={resetForm}
+                    />
                   </View>
                 </View>
               );

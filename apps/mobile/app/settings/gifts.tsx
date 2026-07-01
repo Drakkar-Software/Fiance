@@ -10,7 +10,7 @@ import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
-import { SectionTitle, FormCard, InputRow, ChipSelect } from "@/components/FormSection";
+import { SectionTitle, FormCard, InputRow, ChipSelect, FormActions } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
 
 const CATEGORIES = ["maison", "voyage", "experience", "autre"] as const;
@@ -103,19 +103,13 @@ export default function GiftsScreen() {
             <ChipSelect options={[...CATEGORIES]} value={formCategory} onChange={setFormCategory} labels={CATEGORY_LABELS} />
           </View>
         </FormCard>
-        <View className="flex-row gap-2 mb-8">
-          <Pressable
-            onPress={handleSave}
-            className="flex-1 bg-primary-500 py-3 rounded-xl items-center active:bg-primary-600"
-          >
-            <Text className="text-white font-semibold">{t("common:save")}</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setShowForm(false)}
-            className="flex-1 bg-accent-paper py-3 rounded-xl items-center"
-          >
-            <Text className="text-mute">{t("cancel")}</Text>
-          </Pressable>
+        <View className="mb-8">
+          <FormActions
+            saveLabel={t("common:save")}
+            cancelLabel={t("cancel")}
+            onSave={handleSave}
+            onCancel={() => setShowForm(false)}
+          />
         </View>
       </ScrollView>
     );

@@ -10,6 +10,7 @@ import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FAB } from "@/components/FAB";
+import { FormActions } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
 
 export default function WeddingPartyScreen() {
@@ -77,13 +78,13 @@ export default function WeddingPartyScreen() {
         onChangeText={setName}
         autoFocus
       />
-      <View className="flex-row gap-2 mt-4">
-        <Pressable onPress={handleSave} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
-          <Text className="text-white font-semibold text-sm">{editingId ? t("common:save") : t("common:create")}</Text>
-        </Pressable>
-        <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
-          <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-        </Pressable>
+      <View className="mt-4">
+        <FormActions
+          saveLabel={editingId ? t("common:save") : t("common:create")}
+          cancelLabel={t("common:cancel")}
+          onSave={handleSave}
+          onCancel={resetForm}
+        />
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable } from "react-native-css/components";
+import { View, Text, TextInput } from "react-native-css/components";
 import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { LayoutGrid } from "lucide-react-native";
@@ -9,6 +9,7 @@ import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { FormActions } from "@/components/FormSection";
 import { PlanView } from "@/components/SeatingPlanView";
 import { PageHeader } from "@/components/PageHeader";
 import { Script } from "@/components/Script";
@@ -70,24 +71,12 @@ export default function TablesScreen() {
             onChangeText={setNewTableCapacity}
             keyboardType="numeric"
           />
-          <View className="flex-row gap-2">
-            <Pressable
-              onPress={handleAdd}
-              className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
-            >
-              <Text className="text-white font-semibold text-sm">
-                {t("createTable")}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setShowAdd(false)}
-              className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
-            >
-              <Text className="text-mute text-sm">
-                {t("common:cancel")}
-              </Text>
-            </Pressable>
-          </View>
+          <FormActions
+            saveLabel={t("createTable")}
+            cancelLabel={t("common:cancel")}
+            onSave={handleAdd}
+            onCancel={() => setShowAdd(false)}
+          />
         </View>
       )}
 

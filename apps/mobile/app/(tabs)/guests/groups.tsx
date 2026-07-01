@@ -8,6 +8,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { FormActions } from "@/components/FormSection";
 
 export default function GroupsScreen() {
   const { t } = useTranslation("guests");
@@ -79,20 +80,12 @@ export default function GroupsScreen() {
                 onChangeText={setNewGroupName}
                 autoFocus
               />
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={handleAdd}
-                  className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600"
-                >
-                  <Text className="text-white font-semibold text-sm">{t("createGroup")}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => setShowAdd(false)}
-                  className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center"
-                >
-                  <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-                </Pressable>
-              </View>
+              <FormActions
+                saveLabel={t("createGroup")}
+                cancelLabel={t("common:cancel")}
+                onSave={handleAdd}
+                onCancel={() => setShowAdd(false)}
+              />
             </View>
           )}
 

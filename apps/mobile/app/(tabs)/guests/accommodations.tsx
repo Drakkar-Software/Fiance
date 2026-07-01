@@ -9,7 +9,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { FormCard, DateRow, InputRow } from "@/components/FormSection";
+import { FormCard, DateRow, InputRow, FormActions } from "@/components/FormSection";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { analytics } from "@/lib/analytics";
@@ -185,13 +185,13 @@ export default function AccommodationsScreen() {
               <Text className="text-base font-semibold text-ink mb-3">{t("newAccommodation")}</Text>
               <FormCard>
                 {formFields}
-                <View className="flex-row gap-2 mt-2">
-                  <Pressable onPress={handleAdd} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
-                    <Text className="text-white font-semibold text-sm">{t("common:create")}</Text>
-                  </Pressable>
-                  <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
-                    <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-                  </Pressable>
+                <View className="mt-2">
+                  <FormActions
+                    saveLabel={t("common:create")}
+                    cancelLabel={t("common:cancel")}
+                    onSave={handleAdd}
+                    onCancel={resetForm}
+                  />
                 </View>
               </FormCard>
             </View>
@@ -211,13 +211,13 @@ export default function AccommodationsScreen() {
                   <Text className="text-base font-semibold text-ink mb-3">{acc.name}</Text>
                   <FormCard>
                     {formFields}
-                    <View className="flex-row gap-2 mt-2">
-                      <Pressable onPress={handleSaveEdit} className="flex-1 bg-primary-500 py-2.5 rounded-xl items-center active:bg-primary-600">
-                        <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
-                      </Pressable>
-                      <Pressable onPress={resetForm} className="flex-1 bg-accent-paper py-2.5 rounded-xl items-center">
-                        <Text className="text-mute text-sm">{t("common:cancel")}</Text>
-                      </Pressable>
+                    <View className="mt-2">
+                      <FormActions
+                        saveLabel={t("common:save")}
+                        cancelLabel={t("common:cancel")}
+                        onSave={handleSaveEdit}
+                        onCancel={resetForm}
+                      />
                     </View>
                   </FormCard>
                 </View>
