@@ -15,7 +15,6 @@ import {
   BedDouble,
   Tag,
   Mail,
-  List,
   Clock,
   type LucideIcon,
 } from "lucide-react-native";
@@ -60,11 +59,12 @@ const GUESTS_SUBNAV: SubNavItem[] = [
   { key: "communications", route: "/(tabs)/guests/communications", icon: Mail, labelKey: "communicationsScreen" },
 ];
 
-// Préparatifs/Agenda/Jour J are real routes now (see app/(tabs)/planning/) so
-// they can be linked from here; PLANNING_ASPECT_LABELS values are already
+// Agenda/Jour J are real routes now (see app/(tabs)/planning/) so they can be
+// linked from here; Préparatifs isn't listed since it's the parent "Planning"
+// row's own route (/(tabs)/planning), same as guests' main list isn't
+// duplicated in GUESTS_SUBNAV. PLANNING_ASPECT_LABELS values are already
 // namespace-qualified ("planning:aspects.xxx") so any t() resolves them.
 const PLANNING_SUBNAV: SubNavItem[] = [
-  { key: "preparation", route: "/(tabs)/planning", icon: List, labelKey: PLANNING_ASPECT_LABELS.preparation },
   { key: "agenda", route: "/(tabs)/planning/agenda", icon: Calendar, labelKey: PLANNING_ASPECT_LABELS.agenda },
   { key: "day-of", route: "/(tabs)/planning/day-of", icon: Clock, labelKey: PLANNING_ASPECT_LABELS["day-of"] },
 ];
@@ -86,10 +86,9 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
   // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...]
   const activeKey = (segments[1] as string | undefined) ?? "home";
   // segments[2] = active sub-route key, e.g. ["(tabs)", "guests", "groups"].
-  // Planning's default route (index) has no segments[2] but still maps to
-  // the "preparation" sub-item, so it needs an explicit fallback.
+  // Undefined on each section's own index route (guests list, Préparatifs),
+  // which is correct — neither subnav lists its own parent route as an item.
   const activeSubKey = segments[2] as string | undefined;
-  const effectiveSubKey = activeKey === "planning" ? activeSubKey ?? "preparation" : activeSubKey;
 
   const bg = isDark ? GP.cardDark : GP.card;
   const borderColor = isDark ? GP.hairStrong : GP.hair;
@@ -155,7 +154,7 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
               {(item.key === "guests" || item.key === "planning") && isActive && (
                 <View style={styles.subNav}>
                   {(item.key === "guests" ? GUESTS_SUBNAV : PLANNING_SUBNAV).map((sub) => {
-                    const isSubActive = effectiveSubKey === sub.key;
+                    const isSubActive = activeSubKey === sub.key;
                     const isSubHovered = hoveredKey === `${item.key}:${sub.key}`;
                     const SubIcon = sub.icon;
                     const subColor = isSubActive ? GP.clay : isDark ? GP.inkDark : mutedText;
