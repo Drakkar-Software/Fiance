@@ -23,6 +23,7 @@ import {
   publicPageToNode,
   type Session,
   type ObjectNode,
+  type PublicWeddingEvent,
 } from "@fiance/sdk";
 import { withIndexLock } from "@/lib/index-lock";
 
@@ -36,6 +37,7 @@ function getAppOrigin(): string {
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 
 // ---------------------------------------------------------------------------
 // Types — unchanged
@@ -63,7 +65,7 @@ export interface PublicGift {
 }
 
 export interface PublicWeddingPage {
-  version: 1;
+  version: 1 | 2;
   timestamp: string;
   about: {
     partner1Name?: string | null;
@@ -75,6 +77,8 @@ export interface PublicWeddingPage {
   timeline: PublicDayOfItem[];
   faq: FaqItem[];
   gifts?: PublicGift[];
+  /** v2: public sub-events (multi-day/venue). Absent on v1 documents. */
+  events?: PublicWeddingEvent[];
 }
 
 export interface FaqItem {
@@ -272,8 +276,16 @@ export function buildPublicPageDocument(): PublicWeddingPage {
     }),
   );
 
+  const weddingEvents = useWeddingEventsStore.getState().weddingEvents;
+  const publicEvents: PublicWeddingEvent[] = weddingEvents
+    .filter((e) => e.isPublic)
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.startTime || "").localeCompare(b.startTime || ""))
+    .map(({ id, type, title, date, startTime, venueName, address }) => ({
+      id, type, title, date, time: startTime, venueName, address,
+    }));
+
   return {
-    version: 1,
+    version: 2,
     timestamp: new Date().toISOString(),
     about: {
       partner1Name: wedding?.partner1Name,
@@ -287,5 +299,6 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })()
       : [],
     gifts: publicGifts.length > 0 ? publicGifts : undefined,
+    events: publicEvents.length > 0 ? publicEvents : undefined,
   };
 }

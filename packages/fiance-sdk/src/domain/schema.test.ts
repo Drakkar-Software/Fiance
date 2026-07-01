@@ -63,6 +63,13 @@ describe("Guest entity", () => {
       phone: null,
       address: null,
       notes: null,
+      shuttleVendorId: null,
+      shuttlePickupLocation: null,
+      shuttlePickupTime: null,
+      parkingNeeded: null,
+      parkingNotes: null,
+      arrivalNotes: null,
+      transportMode: null,
       createdAt: null,
       updatedAt: null,
     });
@@ -84,6 +91,7 @@ describe("DayOfItem entity", () => {
       notes: null,
       isPublic: false,
       sortOrder: null,
+      eventId: null,
       createdAt: null,
       updatedAt: null,
     });
@@ -141,6 +149,10 @@ describe("Vendor entity", () => {
       customFields: null,
       notes: null,
       rating: null,
+      eventId: null,
+      comparisonGroupId: null,
+      isSelected: null,
+      sortOrder: null,
       createdAt: null,
       updatedAt: null,
     });
@@ -160,6 +172,7 @@ describe("AgendaEvent entity", () => {
       location: null,
       vendorId: null,
       notes: null,
+      eventId: null,
       createdAt: null,
       updatedAt: null,
     });

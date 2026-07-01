@@ -4,7 +4,8 @@
  */
 
 // NodeNext .js extension required
-import { DEFAULT_INVITATION_TYPES } from '../domain/types.js';
+import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from '../domain/types.js';
+import { synthesizePrimaryEvent } from '../domain/wedding-events.js';
 import type {
   Wedding,
   Guest,
@@ -23,10 +24,28 @@ import type {
   Gift,
   InvitationTypeEntity,
   Communication,
+  WeddingRoleAssignment,
+  SeatingConstraint,
+  WeddingEvent,
+  GuestMealSelection,
+  CommunicationTemplate,
+  Document,
+  LegalMilestone,
+  HoneymoonPlan,
 } from '../domain/schema.js';
 
-// v6 → v7: added communications collection
-export const BACKUP_VERSION = 7;
+// v8 → v9: added weddingEvents + guestMealSelections collections;
+//          eventId FK on agendaEvents/dayOfItems/vendors
+// v9 → v10: added guest logistics fields (shuttleVendorId, shuttlePickupLocation,
+//           shuttlePickupTime, parkingNeeded, parkingNotes, arrivalNotes, transportMode);
+//           Communication content fields (channel/subject/body/templateId);
+//           communicationTemplates collection (seeded with 3 system templates)
+// v10 → v11: added documents collection (localUri stripped to "" on backup export —
+//            binaries never leave the device; import shows "re-attach" prompt);
+//            Vendor comparison fields (comparisonGroupId/isSelected/sortOrder)
+// v11 → v12: added legalMilestones collection (seeded with 4 FR admin defaults);
+//            honeymoonPlans collection (0–1 row, singleton)
+export const BACKUP_VERSION = 12;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -48,6 +67,14 @@ export interface WeddingSnapshot {
   gifts: Gift[];
   invitationTypes: InvitationTypeEntity[];
   communications: Communication[];
+  weddingRoleAssignments: WeddingRoleAssignment[];
+  seatingConstraints: SeatingConstraint[];
+  weddingEvents: WeddingEvent[];
+  guestMealSelections: GuestMealSelection[];
+  communicationTemplates: CommunicationTemplate[];
+  documents: Document[];
+  legalMilestones: LegalMilestone[];
+  honeymoonPlans: HoneymoonPlan[];
 }
 
 // ─── BackupData ─────────────────────────────────────────────────────────────
@@ -72,6 +99,14 @@ export interface BackupData {
   gifts: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
+  weddingRoleAssignments?: unknown[];
+  seatingConstraints?: unknown[];
+  weddingEvents?: unknown[];
+  guestMealSelections?: unknown[];
+  communicationTemplates?: unknown[];
+  documents?: unknown[];
+  legalMilestones?: unknown[];
+  honeymoonPlans?: unknown[];
 }
 
 // ─── Serialiser ─────────────────────────────────────────────────────────────
@@ -98,6 +133,16 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     gifts: snapshot.gifts,
     invitationTypes: snapshot.invitationTypes,
     communications: snapshot.communications,
+    weddingRoleAssignments: snapshot.weddingRoleAssignments,
+    seatingConstraints: snapshot.seatingConstraints,
+    weddingEvents: snapshot.weddingEvents,
+    guestMealSelections: snapshot.guestMealSelections,
+    communicationTemplates: snapshot.communicationTemplates,
+    // Binaries never leave the device: strip localUri so the exported JSON
+    // carries metadata only. Import shows a "fichier non inclus" prompt.
+    documents: snapshot.documents.map((d) => ({ ...d, localUri: '' })),
+    legalMilestones: snapshot.legalMilestones,
+    honeymoonPlans: snapshot.honeymoonPlans,
   };
 }
 
@@ -185,6 +230,14 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
   // v5 → v6: added invitationTypes collection (user-configurable)
   // v6 → v7: added communications collection (user-created, with embedded recipients)
+  // v7 → v8: added weddingRoleAssignments, seatingConstraints collections (additive, no migration)
+  // v8 → v9: added weddingEvents collection; auto-migrate a synthetic primary event
+  //          from wedding.weddingDate/venueName when no WeddingEvent rows exist yet
+  // v9 → v10: added guest logistics fields (additive, no migration needed)
+  // v10 → v11: added documents collection (localUri arrives stripped, "" means
+  //            re-attach on this device); Vendor comparison fields (additive)
+  // v11 → v12: added legalMilestones (seeded with FR defaults when empty);
+  //            honeymoonPlans (additive, 0–1 row, no migration needed)
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -193,8 +246,44 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
       ? rawInvTypes
       : DEFAULT_INVITATION_TYPES.map((t) => ({ ...t, createdAt: now, updatedAt: now }));
 
+  const wedding = (doc.wedding as Wedding | null) ?? null;
+  const rawWeddingEvents = (doc.weddingEvents || []) as unknown as WeddingEvent[];
+  const synthesizedEvent = rawWeddingEvents.length === 0 ? synthesizePrimaryEvent(wedding) : null;
+  const restoredWeddingEvents = synthesizedEvent ? [synthesizedEvent] : rawWeddingEvents;
+
+  const rawTemplates = ((doc.communicationTemplates || []) as unknown[]) as Record<string, unknown>[];
+  const restoredCommunicationTemplates =
+    rawTemplates.length > 0
+      ? rawTemplates
+      : DEFAULT_COMMUNICATION_TEMPLATES.map((tpl, i) => ({
+          id: `system-template-${i + 1}`,
+          ...tpl,
+          isSystem: true,
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+  const rawLegalMilestones = ((doc.legalMilestones || []) as unknown[]) as Record<string, unknown>[];
+  const restoredLegalMilestones =
+    rawLegalMilestones.length > 0
+      ? rawLegalMilestones
+      : DEFAULT_LEGAL_MILESTONES.map((m, i) => ({
+          id: `system-milestone-${i + 1}`,
+          type: m.type,
+          title: m.title,
+          dueDate: null,
+          completedDate: null,
+          status: 'TODO',
+          location: null,
+          notes: null,
+          documentIds: null,
+          reminderDaysBefore: null,
+          createdAt: now,
+          updatedAt: now,
+        }));
+
   return {
-    wedding: (doc.wedding as Wedding | null) ?? null,
+    wedding,
     guests: ((doc.guests || []) as unknown[] as Record<string, unknown>[]).map((g) => ({
       ...g,
       invitationType: migrateInvType(
@@ -225,6 +314,14 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     gifts: (doc.gifts || []) as unknown as Gift[],
     invitationTypes: restoredInvitationTypes as unknown as InvitationTypeEntity[],
     communications: (doc.communications || []) as unknown as Communication[],
+    weddingRoleAssignments: (doc.weddingRoleAssignments || []) as unknown as WeddingRoleAssignment[],
+    seatingConstraints: (doc.seatingConstraints || []) as unknown as SeatingConstraint[],
+    weddingEvents: restoredWeddingEvents,
+    guestMealSelections: (doc.guestMealSelections || []) as unknown as GuestMealSelection[],
+    communicationTemplates: restoredCommunicationTemplates as unknown as CommunicationTemplate[],
+    documents: (doc.documents || []) as unknown as Document[],
+    legalMilestones: restoredLegalMilestones as unknown as LegalMilestone[],
+    honeymoonPlans: (doc.honeymoonPlans || []) as unknown as HoneymoonPlan[],
   };
 }
 

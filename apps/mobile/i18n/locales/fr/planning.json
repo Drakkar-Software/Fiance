@@ -52,6 +52,7 @@
   "irreversible": "Cette action est irréversible.",
   "appointments": "rendez-vous",
   "upcoming": "à venir",
+  "past": "passés",
   "noAppointments": "Aucun rendez-vous",
   "planYourVisits": "Planifiez vos visites, essayages et rencontres",
   "addAppointment": "Ajouter un rendez-vous",
@@ -154,5 +155,70 @@
   "overdueCount_one": "{{count}} en retard",
   "overdueCount_other": "{{count}} en retard",
   "eventEyebrow": "Rendez-vous",
-  "dayOfEyebrow": "Jour J"
+  "dayOfEyebrow": "Jour J",
+  "events": {
+    "title": "Événements",
+    "type": {
+      "CIVIL": "Civil",
+      "RELIGIOUS": "Religieux",
+      "LAIC": "Laïque",
+      "COCKTAIL": "Cocktail",
+      "DINNER": "Dîner",
+      "BRUNCH": "Brunch",
+      "OTHER": "Autre"
+    },
+    "newEvent": "Nouvel événement",
+    "editEvent": "Modifier l'événement",
+    "titlePlaceholder": "Nom de l'événement",
+    "titleRequired": "Le nom est requis",
+    "venuePlaceholder": "Lieu",
+    "addressPlaceholder": "Adresse",
+    "isPrimary": "Événement principal (compte à rebours)",
+    "isPublic": "Visible sur la page publique",
+    "empty": "Aucun événement",
+    "emptyDesc": "Ajoutez la mairie, la réception, le brunch du lendemain...",
+    "deleteEvent": "Supprimer cet événement ?",
+    "deleteEventMsg": "Cette action est irréversible.",
+    "primaryBadge": "Principal"
+  },
+  "legal": {
+    "title": "Administratif",
+    "type": {
+      "PUBLICATION_BANS": "Publication des bans",
+      "CIVIL_APPOINTMENT": "RDV à la mairie",
+      "CONTRACT_SIGNING": "Signature des contrats",
+      "DOCUMENTS_DEADLINE": "Dossier de documents",
+      "CUSTOM": "Autre"
+    },
+    "status": {
+      "TODO": "À faire",
+      "DONE": "Fait",
+      "NA": "Non applicable"
+    },
+    "newMilestone": "Nouvelle étape",
+    "editMilestone": "Modifier l'étape",
+    "titlePlaceholder": "Nom de l'étape",
+    "titleRequired": "Le nom est requis",
+    "dueDate": "Date limite",
+    "locationPlaceholder": "Lieu (ex. Mairie du 11e)",
+    "empty": "Aucune étape administrative",
+    "emptyDesc": "Publication des bans, RDV mairie, dossier de documents, signature des contrats...",
+    "deleteMilestone": "Supprimer cette étape ?",
+    "deleteMilestoneMsg": "Cette action est irréversible."
+  },
+  "honeymoon": {
+    "title": "Lune de miel",
+    "newPlan": "Créer un plan",
+    "empty": "Pas encore de lune de miel",
+    "emptyDesc": "Planifiez votre destination, vos dates et votre budget.",
+    "details": "Détails",
+    "destination": "Destination",
+    "startDate": "Date de départ",
+    "endDate": "Date de retour",
+    "budgetTarget": "Budget prévu",
+    "spentAmount": "Déjà dépensé",
+    "remaining": "Restant",
+    "notes": "Notes",
+    "notesPlaceholder": "Vols, hôtels, activités à prévoir..."
+  }
 }

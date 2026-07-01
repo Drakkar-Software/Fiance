@@ -10,6 +10,8 @@ type Props = {
   title: string | number | React.ReactNode;
   tagline?: string;
   taglineColor?: string;
+  eyebrowColor?: string;
+  titleColor?: string;
   titleSize?: number;
   italic?: boolean;
   right?: React.ReactNode;
@@ -17,13 +19,13 @@ type Props = {
   style?: ViewStyle;
 };
 
-export function PageHeader({ eyebrow, title, tagline, taglineColor, titleSize = 22, italic = true, right, safeAreaTop = false, style }: Props) {
+export function PageHeader({ eyebrow, title, tagline, taglineColor, eyebrowColor, titleColor, titleSize = 22, italic = true, right, safeAreaTop = false, style }: Props) {
   const insets = useSafeAreaInsets();
   const topPad = 12 + (safeAreaTop ? insets.top : 0);
   return (
     <View style={[{ paddingHorizontal: 16, paddingTop: topPad, paddingBottom: 4, position: "relative" }, style]}>
-      <Label>{eyebrow}</Label>
-      <Display italic={italic} size={titleSize} style={right ? { paddingRight: 80 } : undefined}>
+      <Label color={eyebrowColor}>{eyebrow}</Label>
+      <Display italic={italic} size={titleSize} color={titleColor} style={right ? { paddingRight: 80 } : undefined}>
         {title}
       </Display>
       {tagline ? <Script size={19} color={taglineColor}>{tagline}</Script> : null}

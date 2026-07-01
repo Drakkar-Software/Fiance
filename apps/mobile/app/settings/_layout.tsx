@@ -5,12 +5,14 @@ import { useTranslation } from "react-i18next";
 import { ChevronLeft } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { DesktopShell } from "@/components/DesktopShell";
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
 export default function SettingsLayout() {
   const { t } = useTranslation("settings");
   const router = useRouter();
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const isWide = useIsWideScreen();
   const tintColor = isDark ? "#FFFFFF" : "#111827";
   return (
     <DesktopShell>
@@ -25,7 +27,7 @@ export default function SettingsLayout() {
           name="index"
           options={{
             title: t("settingsTitle"),
-            headerShown: true,
+            headerShown: !isWide,
             headerLeft: () => (
               <Pressable onPress={() => router.back()} style={{ padding: 4, marginLeft: -4 }}>
                 <ChevronLeft size={24} color={tintColor} />
@@ -37,6 +39,7 @@ export default function SettingsLayout() {
         <Stack.Screen name="event-photos" options={{ title: t("eventPhotosTitle") }} />
         <Stack.Screen name="faq" options={{ title: t("configureFaq") }} />
         <Stack.Screen name="gifts" options={{ title: t("giftRegistry") }} />
+        <Stack.Screen name="documents" options={{ title: t("documentsTitle") }} />
         <Stack.Screen name="export-import" options={{ title: t("exportImportTitle") }} />
         <Stack.Screen name="premium" options={{ title: t("premiumTitle") }} />
       </Stack>

@@ -9,7 +9,7 @@
 import type { ObjectType } from '@drakkar.software/starfish-spaces';
 
 export const FIANCE_TYPES = {
-  // ─── 16 admin domain entities (access:'space', enc:true) ──────────────────
+  // ─── 18 admin domain entities (access:'space', enc:true) ──────────────────
   wedding:        'wedding',
   guestGroup:     'guestGroup',
   guest:          'guest',
@@ -27,6 +27,14 @@ export const FIANCE_TYPES = {
   ideaCollection: 'ideaCollection',
   idea:           'idea',
   communication:  'communication',
+  weddingRoleAssignment: 'weddingRoleAssignment',
+  seatingConstraint:     'seatingConstraint',
+  weddingEvent:          'weddingEvent',
+  guestMealSelection:    'guestMealSelection',
+  communicationTemplate: 'communicationTemplate',
+  document:              'document',
+  legalMilestone:        'legalMilestone',
+  honeymoonPlan:         'honeymoonPlan',
   // ─── 2 guest-surface synthetic nodes (access:'invite', enc:false) ─────────
   /** Invite-only guest page (about/timeline/FAQ/gifts). One per wedding. */
   publicPage:     'publicPage',

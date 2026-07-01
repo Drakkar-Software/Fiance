@@ -25,6 +25,16 @@ export type FianceEvents = {
   communication_added:         undefined;
   table_added:                 undefined;
   table_deleted:               undefined;
+  wedding_role_assigned:       undefined;
+  seating_constraint_created:  undefined;
+  wedding_event_created:       undefined;
+  meal_choice_set:             undefined;
+  guest_logistics_updated:     undefined;
+  communication_template_used: undefined;
+  document_attached:           undefined;
+  vendor_selected_for_budget:  undefined;
+  legal_milestone_completed:   undefined;
+  honeymoon_plan_created:      undefined;
   // Vendors
   vendor_added:                { category: string };
   vendor_deleted:              { category: string };

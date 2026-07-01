@@ -1,6 +1,6 @@
 {
-  "version": 7,
-  "timestamp": "2026-07-01T09:46:52.361Z",
+  "version": 12,
+  "timestamp": "2026-07-01T13:31:55.405Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Camille",
@@ -43,6 +43,13 @@
       "phone": "0610000000",
       "address": "1 rue de la Paix, 75002 Paris",
       "notes": "Arrive en retard à la cérémonie",
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": "Train TGV 14h02",
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -72,6 +79,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": true,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -101,6 +115,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -130,6 +151,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -159,6 +187,13 @@
       "phone": "0610000004",
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -188,6 +223,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -217,6 +259,13 @@
       "phone": null,
       "address": "7 rue de la Paix, 75002 Paris",
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -246,6 +295,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": true,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -275,6 +331,13 @@
       "phone": "0610000008",
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -304,6 +367,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -333,6 +403,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -362,6 +439,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -391,6 +475,13 @@
       "phone": "0610000012",
       "address": "13 rue de la Paix, 75002 Paris",
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": "Train TGV 14h02",
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -420,6 +511,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": true,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -449,6 +547,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -478,6 +583,13 @@
       "phone": null,
       "address": null,
       "notes": "Arrive en retard à la cérémonie",
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -507,6 +619,13 @@
       "phone": "0610000016",
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -536,6 +655,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -565,6 +691,13 @@
       "phone": null,
       "address": "19 rue de la Paix, 75002 Paris",
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -594,6 +727,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": true,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -623,6 +763,13 @@
       "phone": "0610000020",
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -652,6 +799,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -681,6 +835,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -710,6 +871,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -739,6 +907,13 @@
       "phone": "0610000024",
       "address": "25 rue de la Paix, 75002 Paris",
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": "Train TGV 14h02",
+      "transportMode": "car",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -768,6 +943,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": true,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "train",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -797,6 +979,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "shuttle",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -826,6 +1015,13 @@
       "phone": null,
       "address": null,
       "notes": null,
+      "shuttleVendorId": null,
+      "shuttlePickupLocation": null,
+      "shuttlePickupTime": null,
+      "parkingNeeded": false,
+      "parkingNotes": null,
+      "arrivalNotes": null,
+      "transportMode": "taxi",
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
@@ -911,6 +1107,10 @@
       "customFields": null,
       "notes": "Contrat signé, acompte versé.",
       "rating": 4,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -936,6 +1136,10 @@
       "customFields": null,
       "notes": null,
       "rating": 5,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -961,6 +1165,10 @@
       "customFields": null,
       "notes": "Contrat signé, acompte versé.",
       "rating": 4,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -986,6 +1194,10 @@
       "customFields": null,
       "notes": null,
       "rating": null,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1011,6 +1223,10 @@
       "customFields": null,
       "notes": "Contrat signé, acompte versé.",
       "rating": 4,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1036,6 +1252,10 @@
       "customFields": null,
       "notes": null,
       "rating": 5,
+      "eventId": null,
+      "comparisonGroupId": null,
+      "isSelected": null,
+      "sortOrder": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
@@ -1306,6 +1526,7 @@
       "location": "Sur place",
       "vendorId": "small-v-001",
       "notes": null,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1318,6 +1539,7 @@
       "location": "Visioconférence",
       "vendorId": "small-v-002",
       "notes": null,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1330,6 +1552,7 @@
       "location": "Sur place",
       "vendorId": "small-v-003",
       "notes": null,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1342,6 +1565,7 @@
       "location": "Visioconférence",
       "vendorId": "small-v-004",
       "notes": null,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
@@ -1358,6 +1582,7 @@
       "notes": null,
       "isPublic": false,
       "sortOrder": 1,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1372,6 +1597,7 @@
       "notes": null,
       "isPublic": false,
       "sortOrder": 2,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1386,6 +1612,7 @@
       "notes": null,
       "isPublic": false,
       "sortOrder": 3,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1400,6 +1627,7 @@
       "notes": null,
       "isPublic": true,
       "sortOrder": 4,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1414,6 +1642,7 @@
       "notes": null,
       "isPublic": true,
       "sortOrder": 5,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1428,6 +1657,7 @@
       "notes": null,
       "isPublic": true,
       "sortOrder": 6,
+      "eventId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
@@ -1729,6 +1959,10 @@
           "sentAt": "2026-07-01T10:00:00.000Z"
         }
       ],
+      "channel": "EMAIL",
+      "subject": "Save-the-date",
+      "body": "Bonjour {{guest.firstName}}, ceci est votre message « Save-the-date ».",
+      "templateId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1759,8 +1993,191 @@
           "sentAt": "2026-07-01T10:00:00.000Z"
         }
       ],
+      "channel": "POSTAL",
+      "subject": "Faire-part officiels",
+      "body": "Bonjour {{guest.firstName}}, ceci est votre message « Faire-part officiels ».",
+      "templateId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
-  ]
+  ],
+  "weddingRoleAssignments": [
+    {
+      "id": "small-wra-001",
+      "role": "WITNESS",
+      "guestId": "small-g-001",
+      "displayName": "",
+      "phone": null,
+      "email": null,
+      "notes": null,
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-wra-002",
+      "role": "WITNESS",
+      "guestId": "small-g-002",
+      "displayName": "",
+      "phone": null,
+      "email": null,
+      "notes": null,
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "seatingConstraints": [
+    {
+      "id": "small-sc-001",
+      "type": "MUST_SIT_TOGETHER",
+      "guestIds": [
+        "small-g-001",
+        "small-g-002"
+      ],
+      "label": "Famille Dupont",
+      "isHard": true,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "weddingEvents": [
+    {
+      "id": "small-we-001",
+      "type": "CIVIL",
+      "title": "Cérémonie civile",
+      "date": "2026-09-12",
+      "startTime": "10:00",
+      "endTime": null,
+      "venueName": null,
+      "address": null,
+      "notes": null,
+      "isPrimary": false,
+      "isPublic": true,
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "guestMealSelections": [
+    {
+      "id": "small-ms-001",
+      "guestId": "small-g-001",
+      "eventId": "small-we-001",
+      "mealChoice": "VEGETARIAN",
+      "courses": "{\"starter\":\"Velouté de saison\",\"main\":\"Filet de bœuf\",\"dessert\":\"Tarte au citron\"}",
+      "notes": null,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-ms-002",
+      "guestId": "small-g-009",
+      "eventId": "small-we-001",
+      "mealChoice": "VEGAN",
+      "courses": null,
+      "notes": null,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-ms-003",
+      "guestId": "small-g-017",
+      "eventId": "small-we-001",
+      "mealChoice": "CHILD",
+      "courses": "{\"starter\":\"Velouté de saison\",\"main\":\"Filet de bœuf\",\"dessert\":\"Tarte au citron\"}",
+      "notes": null,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-ms-004",
+      "guestId": "small-g-025",
+      "eventId": "small-we-001",
+      "mealChoice": "CUSTOM",
+      "courses": null,
+      "notes": null,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "communicationTemplates": [
+    {
+      "id": "small-ct-001",
+      "name": "Save-the-date",
+      "channel": "EMAIL",
+      "subject": "Réservez la date !",
+      "body": "Bonjour {{guest.firstName}}, {{wedding.partner1Name}} & {{wedding.partner2Name}} se marient le {{wedding.weddingDate}} !",
+      "isSystem": true,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-ct-002",
+      "name": "Faire-part officiel",
+      "channel": "POSTAL",
+      "subject": "Faire-part de mariage",
+      "body": "Bonjour {{guest.firstName}}, vous êtes invité·e au mariage le {{wedding.weddingDate}} à {{wedding.venueName}}.",
+      "isSystem": true,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-ct-003",
+      "name": "Relance RSVP",
+      "channel": "EMAIL",
+      "subject": "N'oubliez pas de répondre !",
+      "body": "Bonjour {{guest.firstName}}, merci de confirmer votre présence au plus vite.",
+      "isSystem": true,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "small-doc-001",
+      "ownerType": "VENDOR",
+      "ownerId": "small-v-002",
+      "label": "Devis signé",
+      "fileName": "devis-traiteur.pdf",
+      "mimeType": "application/pdf",
+      "localUri": "",
+      "fileSize": 245000,
+      "uploadedAt": "2026-07-01T10:00:00.000Z",
+      "notes": null,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "legalMilestones": [
+    {
+      "id": "small-lm-001",
+      "type": "PUBLICATION_BANS",
+      "title": "Publication des bans",
+      "dueDate": "2026-06-12",
+      "completedDate": "2026-05-12",
+      "status": "DONE",
+      "location": null,
+      "notes": null,
+      "documentIds": null,
+      "reminderDaysBefore": 14,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-lm-002",
+      "type": "CIVIL_APPOINTMENT",
+      "title": "RDV à la mairie",
+      "dueDate": "2026-06-12",
+      "completedDate": "2026-05-12",
+      "status": "DONE",
+      "location": "Mairie du 11e",
+      "notes": null,
+      "documentIds": null,
+      "reminderDaysBefore": 14,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "honeymoonPlans": []
 }

@@ -45,6 +45,14 @@ import {
   giftToNode,
   invitationTypeToNode,
   communicationToNode,
+  weddingRoleAssignmentToNode,
+  seatingConstraintToNode,
+  weddingEventToNode,
+  guestMealSelectionToNode,
+  communicationTemplateToNode,
+  documentToNode,
+  legalMilestoneToNode,
+  honeymoonPlanToNode,
   taskCategoryToNode,
   taskToNode,
   agendaEventToNode,
@@ -280,6 +288,70 @@ export async function importLegacyBackup(
     const id = nextId(`communication:${comm.id}`, comm.id);
     allDescriptors.push(withLegacyId(communicationToNode(comm, id, resolvedWeddingId), comm.id));
     contentMap.set(id, comm);
+  }
+
+  // ── 12b. Wedding role assignments ────────────────────────────────────────
+  for (const role of (snapshot.weddingRoleAssignments ?? [])) {
+    if (alreadyImported(role.id)) continue;
+    const id = nextId(`weddingRoleAssignment:${role.id}`, role.id);
+    allDescriptors.push(withLegacyId(weddingRoleAssignmentToNode(role, id, resolvedWeddingId), role.id));
+    contentMap.set(id, role);
+  }
+
+  // ── 12c. Seating constraints ──────────────────────────────────────────────
+  for (const constraint of (snapshot.seatingConstraints ?? [])) {
+    if (alreadyImported(constraint.id)) continue;
+    const id = nextId(`seatingConstraint:${constraint.id}`, constraint.id);
+    allDescriptors.push(withLegacyId(seatingConstraintToNode(constraint, id, resolvedWeddingId), constraint.id));
+    contentMap.set(id, constraint);
+  }
+
+  // ── 12d. Wedding events ───────────────────────────────────────────────────
+  for (const event of (snapshot.weddingEvents ?? [])) {
+    if (alreadyImported(event.id)) continue;
+    const id = nextId(`weddingEvent:${event.id}`, event.id);
+    allDescriptors.push(withLegacyId(weddingEventToNode(event, id, resolvedWeddingId), event.id));
+    contentMap.set(id, event);
+  }
+
+  // ── 12e. Guest meal selections ────────────────────────────────────────────
+  for (const selection of (snapshot.guestMealSelections ?? [])) {
+    if (alreadyImported(selection.id)) continue;
+    const id = nextId(`guestMealSelection:${selection.id}`, selection.id);
+    allDescriptors.push(withLegacyId(guestMealSelectionToNode(selection, id, resolvedWeddingId), selection.id));
+    contentMap.set(id, selection);
+  }
+
+  // ── 12f. Communication templates ──────────────────────────────────────────
+  for (const template of (snapshot.communicationTemplates ?? [])) {
+    if (alreadyImported(template.id)) continue;
+    const id = nextId(`communicationTemplate:${template.id}`, template.id);
+    allDescriptors.push(withLegacyId(communicationTemplateToNode(template, id, resolvedWeddingId), template.id));
+    contentMap.set(id, template);
+  }
+
+  // ── 12g. Documents (metadata only; localUri arrives stripped from backup) ──
+  for (const document of (snapshot.documents ?? [])) {
+    if (alreadyImported(document.id)) continue;
+    const id = nextId(`document:${document.id}`, document.id);
+    allDescriptors.push(withLegacyId(documentToNode(document, id, resolvedWeddingId), document.id));
+    contentMap.set(id, document);
+  }
+
+  // ── 12h. Legal milestones ─────────────────────────────────────────────────
+  for (const milestone of (snapshot.legalMilestones ?? [])) {
+    if (alreadyImported(milestone.id)) continue;
+    const id = nextId(`legalMilestone:${milestone.id}`, milestone.id);
+    allDescriptors.push(withLegacyId(legalMilestoneToNode(milestone, id, resolvedWeddingId), milestone.id));
+    contentMap.set(id, milestone);
+  }
+
+  // ── 12i. Honeymoon plan (0–1 row) ─────────────────────────────────────────
+  for (const plan of (snapshot.honeymoonPlans ?? [])) {
+    if (alreadyImported(plan.id)) continue;
+    const id = nextId(`honeymoonPlan:${plan.id}`, plan.id);
+    allDescriptors.push(withLegacyId(honeymoonPlanToNode(plan, id, resolvedWeddingId), plan.id));
+    contentMap.set(id, plan);
   }
 
   // ── 13. Guests (after tables + accommodations are resolved in idMap) ──────

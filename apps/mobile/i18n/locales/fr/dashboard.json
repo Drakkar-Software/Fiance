@@ -19,6 +19,7 @@
   "overdue_one": "{{count}} en retard",
   "overdue_other": "{{count}} en retard",
   "vendors": "Prestataires",
+  "legalNextDeadline": "Prochaine échéance administrative",
   "statusBooked": "Réservés",
   "statusNegotiating": "En négo.",
   "statusQuote": "Devis",

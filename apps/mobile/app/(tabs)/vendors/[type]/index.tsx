@@ -45,6 +45,14 @@ export default function VendorTypeListScreen() {
             title={t("kindCount", { count: vendors.length })}
             titleSize={44}
           />
+          {vendors.length >= 2 && (
+            <Pressable
+              onPress={() => router.push({ pathname: "/(tabs)/vendors/compare", params: { type: type! } })}
+              className="mb-3"
+            >
+              <Text className="text-sm text-primary-500 font-medium">{t("comparison.viewAll")}</Text>
+            </Pressable>
+          )}
           {vendors.map((vendor) => (
             <Pressable
               key={vendor.id}
@@ -67,10 +75,15 @@ export default function VendorTypeListScreen() {
                     </Text>
                   )}
                 </View>
-                <StatusBadge
-                  label={t(VENDOR_STATUS_LABELS[vendor.status as keyof typeof VENDOR_STATUS_LABELS] || "")}
-                  color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
-                />
+                <View className="items-end gap-1">
+                  <StatusBadge
+                    label={t(VENDOR_STATUS_LABELS[vendor.status as keyof typeof VENDOR_STATUS_LABELS] || "")}
+                    color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
+                  />
+                  {vendor.isSelected === true && (
+                    <StatusBadge label={t("comparison.retainedBadge")} color="#6e7a4a" />
+                  )}
+                </View>
               </View>
               {(vendor.basePrice != null && vendor.basePrice > 0) && (
                 <Display size={18} weight="500" style={{ marginTop: 8 }}>

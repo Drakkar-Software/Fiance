@@ -91,6 +91,46 @@ export type IdeaCategory =
   | "VENUE"
   | "OTHER";
 
+export type GuestRole =
+  | "OFFICIANT"
+  | "WITNESS"
+  | "BRIDESMAID"
+  | "GROOMSMAN"
+  | "RING_BEARER"
+  | "FLOWER_GIRL"
+  | "USHER"
+  | "OTHER";
+
+export type GuestRoleCategory = "ceremony" | "party" | "other";
+
+export type SeatingConstraintType = "MUST_SIT_TOGETHER" | "MUST_NOT_SIT_TOGETHER";
+
+export type WeddingEventType =
+  | "CIVIL"
+  | "RELIGIOUS"
+  | "LAIC"
+  | "COCKTAIL"
+  | "DINNER"
+  | "BRUNCH"
+  | "OTHER";
+
+export type MealChoice = "STANDARD" | "VEGETARIAN" | "VEGAN" | "CHILD" | "CUSTOM";
+
+export type CommunicationChannel = "EMAIL" | "POSTAL" | "SMS" | "WHATSAPP" | "OTHER";
+
+export type DocumentOwnerType = "WEDDING" | "VENDOR" | "GUEST" | "LEGAL" | "HONEYMOON";
+
+export type LegalMilestoneType =
+  | "PUBLICATION_BANS"
+  | "CIVIL_APPOINTMENT"
+  | "CONTRACT_SIGNING"
+  | "DOCUMENTS_DEADLINE"
+  | "CUSTOM";
+
+export type LegalMilestoneStatus = "TODO" | "DONE" | "NA";
+
+export type TransportMode = "car" | "train" | "shuttle" | "taxi";
+
 // ─── Labels ─────────────────────────────────────────────────────────────────
 
 export const VENDOR_TYPE_LABELS: Record<VendorType, string> = {
@@ -200,6 +240,124 @@ export const IDEA_CATEGORY_LABELS: Record<IdeaCategory, string> = {
   VENUE: "ideas:categories.VENUE",
   OTHER: "ideas:categories.OTHER",
 };
+
+export const GUEST_ROLE_LABELS: Record<GuestRole, string> = {
+  OFFICIANT: "guests:weddingParty.role.OFFICIANT",
+  WITNESS: "guests:weddingParty.role.WITNESS",
+  BRIDESMAID: "guests:weddingParty.role.BRIDESMAID",
+  GROOMSMAN: "guests:weddingParty.role.GROOMSMAN",
+  RING_BEARER: "guests:weddingParty.role.RING_BEARER",
+  FLOWER_GIRL: "guests:weddingParty.role.FLOWER_GIRL",
+  USHER: "guests:weddingParty.role.USHER",
+  OTHER: "guests:weddingParty.role.OTHER",
+};
+
+export const GUEST_ROLE_CATEGORY: Record<GuestRole, GuestRoleCategory> = {
+  OFFICIANT: "ceremony",
+  WITNESS: "ceremony",
+  BRIDESMAID: "party",
+  GROOMSMAN: "party",
+  RING_BEARER: "party",
+  FLOWER_GIRL: "party",
+  USHER: "other",
+  OTHER: "other",
+};
+
+export const GUEST_ROLE_CATEGORY_LABELS: Record<GuestRoleCategory, string> = {
+  ceremony: "guests:weddingParty.category.ceremony",
+  party: "guests:weddingParty.category.party",
+  other: "guests:weddingParty.category.other",
+};
+
+export const SEATING_CONSTRAINT_TYPE_LABELS: Record<SeatingConstraintType, string> = {
+  MUST_SIT_TOGETHER: "guests:seatingConstraints.type.MUST_SIT_TOGETHER",
+  MUST_NOT_SIT_TOGETHER: "guests:seatingConstraints.type.MUST_NOT_SIT_TOGETHER",
+};
+
+export const WEDDING_EVENT_TYPE_LABELS: Record<WeddingEventType, string> = {
+  CIVIL: "planning:events.type.CIVIL",
+  RELIGIOUS: "planning:events.type.RELIGIOUS",
+  LAIC: "planning:events.type.LAIC",
+  COCKTAIL: "planning:events.type.COCKTAIL",
+  DINNER: "planning:events.type.DINNER",
+  BRUNCH: "planning:events.type.BRUNCH",
+  OTHER: "planning:events.type.OTHER",
+};
+
+export const MEAL_CHOICE_LABELS: Record<MealChoice, string> = {
+  STANDARD: "guests:mealChoice.STANDARD",
+  VEGETARIAN: "guests:mealChoice.VEGETARIAN",
+  VEGAN: "guests:mealChoice.VEGAN",
+  CHILD: "guests:mealChoice.CHILD",
+  CUSTOM: "guests:mealChoice.CUSTOM",
+};
+
+export const COMMUNICATION_CHANNEL_LABELS: Record<CommunicationChannel, string> = {
+  EMAIL: "guests:communications.channel.EMAIL",
+  POSTAL: "guests:communications.channel.POSTAL",
+  SMS: "guests:communications.channel.SMS",
+  WHATSAPP: "guests:communications.channel.WHATSAPP",
+  OTHER: "guests:communications.channel.OTHER",
+};
+
+export const DOCUMENT_OWNER_TYPE_LABELS: Record<DocumentOwnerType, string> = {
+  WEDDING: "vendors:documents.ownerType.WEDDING",
+  VENDOR: "vendors:documents.ownerType.VENDOR",
+  GUEST: "vendors:documents.ownerType.GUEST",
+  LEGAL: "vendors:documents.ownerType.LEGAL",
+  HONEYMOON: "vendors:documents.ownerType.HONEYMOON",
+};
+
+export const LEGAL_MILESTONE_TYPE_LABELS: Record<LegalMilestoneType, string> = {
+  PUBLICATION_BANS: "planning:legal.type.PUBLICATION_BANS",
+  CIVIL_APPOINTMENT: "planning:legal.type.CIVIL_APPOINTMENT",
+  CONTRACT_SIGNING: "planning:legal.type.CONTRACT_SIGNING",
+  DOCUMENTS_DEADLINE: "planning:legal.type.DOCUMENTS_DEADLINE",
+  CUSTOM: "planning:legal.type.CUSTOM",
+};
+
+export const LEGAL_MILESTONE_STATUS_LABELS: Record<LegalMilestoneStatus, string> = {
+  TODO: "planning:legal.status.TODO",
+  DONE: "planning:legal.status.DONE",
+  NA: "planning:legal.status.NA",
+};
+
+export const TRANSPORT_MODE_LABELS: Record<TransportMode, string> = {
+  car: "guests:logistics.transportMode.car",
+  train: "guests:logistics.transportMode.train",
+  shuttle: "guests:logistics.transportMode.shuttle",
+  taxi: "guests:logistics.transportMode.taxi",
+};
+
+/** FR seed data for system communication templates, mirrors DEFAULT_INVITATION_TYPES seeding pattern */
+export const DEFAULT_COMMUNICATION_TEMPLATES = [
+  {
+    name: "Save-the-date",
+    channel: "EMAIL" as const,
+    subject: "Réservez la date !",
+    body: "Bonjour {{guest.firstName}},\n\n{{wedding.partner1Name}} & {{wedding.partner2Name}} se marient le {{wedding.weddingDate}} et seraient ravis de vous compter parmi les invités. Réservez la date, les détails suivront !",
+  },
+  {
+    name: "Faire-part officiel",
+    channel: "POSTAL" as const,
+    subject: "Faire-part de mariage",
+    body: "Bonjour {{guest.firstName}},\n\n{{wedding.partner1Name}} & {{wedding.partner2Name}} ont le plaisir de vous inviter à leur mariage le {{wedding.weddingDate}} à {{wedding.venueName}}.",
+  },
+  {
+    name: "Relance RSVP",
+    channel: "EMAIL" as const,
+    subject: "N'oubliez pas de répondre !",
+    body: "Bonjour {{guest.firstName}},\n\nNous n'avons pas encore reçu votre réponse pour le mariage du {{wedding.weddingDate}}. Merci de nous faire savoir si vous serez des nôtres !",
+  },
+] as const;
+
+/** FR seed data for legal milestones, mirrors DEFAULT_INVITATION_TYPES seeding pattern */
+export const DEFAULT_LEGAL_MILESTONES = [
+  { type: "PUBLICATION_BANS" as const, title: "Publication des bans" },
+  { type: "CIVIL_APPOINTMENT" as const, title: "RDV à la mairie" },
+  { type: "DOCUMENTS_DEADLINE" as const, title: "Dossier de mariage complet" },
+  { type: "CONTRACT_SIGNING" as const, title: "Signature des contrats prestataires" },
+] as const;
 
 
 // ─── Budget categories ──────────────────────────────────────────────────────

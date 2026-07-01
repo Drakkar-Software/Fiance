@@ -16,13 +16,16 @@ import {
   Tag,
   Mail,
   Clock,
+  UsersRound,
+  CalendarRange,
+  FileCheck2,
+  Palmtree,
   type LucideIcon,
 } from "lucide-react-native";
 import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
-import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
 import { PLANNING_ASPECT_LABELS } from "@/db/types";
 import type { WeddingRegistryEntry } from "@fiance/sdk";
 
@@ -57,6 +60,8 @@ const GUESTS_SUBNAV: SubNavItem[] = [
   { key: "accommodations", route: "/(tabs)/guests/accommodations", icon: BedDouble, labelKey: "accommodations" },
   { key: "invitation-types", route: "/(tabs)/guests/invitation-types", icon: Tag, labelKey: "invitationTypesScreen" },
   { key: "communications", route: "/(tabs)/guests/communications", icon: Mail, labelKey: "communicationsScreen" },
+  { key: "wedding-party", route: "/(tabs)/guests/wedding-party", icon: UsersRound, labelKey: "weddingParty.title" },
+  { key: "seating-constraints", route: "/(tabs)/guests/seating-constraints", icon: UsersRound, labelKey: "seatingConstraints.title" },
 ];
 
 // Agenda/Jour J are real routes now (see app/(tabs)/planning/) so they can be
@@ -67,6 +72,9 @@ const GUESTS_SUBNAV: SubNavItem[] = [
 const PLANNING_SUBNAV: SubNavItem[] = [
   { key: "agenda", route: "/(tabs)/planning/agenda", icon: Calendar, labelKey: PLANNING_ASPECT_LABELS.agenda },
   { key: "day-of", route: "/(tabs)/planning/day-of", icon: Clock, labelKey: PLANNING_ASPECT_LABELS["day-of"] },
+  { key: "events", route: "/(tabs)/planning/events", icon: CalendarRange, labelKey: "planning:events.title" },
+  { key: "legal", route: "/(tabs)/planning/legal", icon: FileCheck2, labelKey: "planning:legal.title" },
+  { key: "honeymoon", route: "/(tabs)/planning/honeymoon", icon: Palmtree, labelKey: "planning:honeymoon.title" },
 ];
 
 interface Props {
@@ -80,11 +88,13 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
   const { t: tg } = useTranslation("guests");
   const router = useRouter();
   const segments = useSegments();
-  const syncDotColor = useSyncStatusDot();
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
-  // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...]
-  const activeKey = (segments[1] as string | undefined) ?? "home";
+  // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...].
+  // Top-level routes (settings, ideas) aren't nested under "(tabs)", so their
+  // key sits in segments[0] instead — fall back to that when segments[0]
+  // isn't the "(tabs)" group.
+  const activeKey = ((segments[0] === "(tabs)" ? segments[1] : segments[0]) as string | undefined) ?? "home";
   // segments[2] = active sub-route key, e.g. ["(tabs)", "guests", "groups"].
   // Undefined on each section's own index route (guests list, Préparatifs),
   // which is correct — neither subnav lists its own parent route as an item.
@@ -215,9 +225,6 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
                 <Text style={[styles.rowLabel, { color: labelColor }]}>
                   {t(item.labelKey)}
                 </Text>
-                {syncDotColor && (
-                  <View style={[styles.syncDot, { backgroundColor: syncDotColor }]} />
-                )}
               </View>
             </Pressable>
           );
@@ -318,11 +325,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 10,
     fontFamily: "Inter_500Medium",
-  },
-  syncDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
   },
   bottomNav: {
     paddingHorizontal: 8,

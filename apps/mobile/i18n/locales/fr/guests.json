@@ -35,6 +35,17 @@
   "child": "Enfant",
   "newGuest": "Nouvel invité",
   "guest": "Invité",
+  "rsvpLabel": "RSVP",
+  "sections": {
+    "contact": "Coordonnées",
+    "contactEmpty": "Ajouter email, téléphone...",
+    "rsvpInvitation": "RSVP & invitation",
+    "placement": "Placement",
+    "mealDiet": "Repas & régime",
+    "transport": "Transport & logistique",
+    "postWeddingPending": "À faire",
+    "notesEmpty": "Aucune note"
+  },
   "personalInfo": "Informations personnelles",
   "firstName": "Prénom *",
   "lastName": "Nom *",
@@ -61,6 +72,30 @@
   "table": "Table",
   "unassigned": "Non assigné",
   "dietLabel": "Régime alimentaire",
+  "mealChoiceSection": "Choix du repas",
+  "logistics": {
+    "title": "Transport & arrivée",
+    "transportModeLabel": "Moyen de transport",
+    "transportMode": {
+      "car": "Voiture",
+      "train": "Train",
+      "shuttle": "Navette",
+      "taxi": "Taxi / VTC"
+    },
+    "shuttleVendor": "Navette",
+    "shuttlePickupLocation": "Lieu de prise en charge",
+    "shuttlePickupTime": "Heure de départ",
+    "parkingNeeded": "Place de parking nécessaire",
+    "arrivalNotes": "Notes d'arrivée",
+    "arrivalNotesPlaceholder": "Ex. Train TGV 14h02"
+  },
+  "mealChoice": {
+    "STANDARD": "Standard",
+    "VEGETARIAN": "Végétarien",
+    "VEGAN": "Végan",
+    "CHILD": "Enfant",
+    "CUSTOM": "Personnalisé"
+  },
   "dietDetails": "Précisions (allergies, restrictions...)",
   "notes": "Notes",
   "freeNotes": "Notes libres...",
@@ -151,5 +186,76 @@
   "markAllSent": "Tout marquer envoyé",
   "markAllNotSent": "Tout marquer non envoyé",
   "sent": "Envoyés",
-  "notSent": "Non envoyés"
+  "notSent": "Non envoyés",
+  "communications": {
+    "templatesScreen": "Modèles de message",
+    "useTemplate": "Utiliser un modèle",
+    "subject": "Objet",
+    "body": "Message",
+    "channel": {
+      "EMAIL": "Email",
+      "POSTAL": "Courrier",
+      "SMS": "SMS",
+      "WHATSAPP": "WhatsApp",
+      "OTHER": "Autre"
+    },
+    "templates": {
+      "newTemplate": "Nouveau modèle",
+      "editTemplate": "Modifier le modèle",
+      "namePlaceholder": "Nom du modèle",
+      "bodyPlaceholder": "Contenu du message (ex. Bonjour {{guest.firstName}}...)",
+      "nameAndBodyRequired": "Le nom et le message sont requis",
+      "empty": "Aucun modèle",
+      "emptyDesc": "Créez des modèles réutilisables pour vos invitations",
+      "deleteTemplate": "Supprimer ce modèle ?",
+      "deleteTemplateMsg": "Cette action est irréversible."
+    }
+  },
+  "weddingParty": {
+    "title": "Cortège & rôles",
+    "role": {
+      "OFFICIANT": "Officiant·e",
+      "WITNESS": "Témoin",
+      "BRIDESMAID": "Demoiselle d'honneur",
+      "GROOMSMAN": "Garçon d'honneur",
+      "RING_BEARER": "Porteur d'alliances",
+      "FLOWER_GIRL": "Demoiselle de fleurs",
+      "USHER": "Placeur",
+      "OTHER": "Autre rôle"
+    },
+    "category": {
+      "ceremony": "Cérémonie",
+      "party": "Cortège",
+      "other": "Autres rôles"
+    },
+    "role_label": "Rôle",
+    "addRole": "Ajouter un rôle",
+    "newRole": "Nouveau rôle",
+    "editRole": "Modifier le rôle",
+    "existingGuest": "Invité existant",
+    "displayNamePlaceholder": "Nom complet",
+    "displayNameRequired": "Le nom est requis pour une personne externe",
+    "selectGuestRequired": "Sélectionnez un invité",
+    "empty": "Aucun rôle défini",
+    "emptyDesc": "Ajoutez témoins, officiant·e et cortège pour organiser votre cérémonie",
+    "deleteRole": "Supprimer ce rôle ?",
+    "deleteRoleMsg": "Cette action est irréversible."
+  },
+  "seatingConstraints": {
+    "title": "Contraintes de placement",
+    "type": {
+      "MUST_SIT_TOGETHER": "Ensemble",
+      "MUST_NOT_SIT_TOGETHER": "Séparés"
+    },
+    "newConstraint": "Nouvelle contrainte",
+    "editConstraint": "Modifier la contrainte",
+    "labelPlaceholder": "Nom (ex. Famille Dupont)",
+    "isHard": "Contrainte stricte",
+    "selectGuests": "Invités concernés",
+    "minGuestsRequired": "Sélectionnez au moins 2 invités",
+    "empty": "Aucune contrainte de placement",
+    "emptyDesc": "Indiquez qui doit être assis ensemble ou séparé pour le plan de table",
+    "deleteConstraint": "Supprimer cette contrainte ?",
+    "deleteConstraintMsg": "Cette action est irréversible."
+  }
 }

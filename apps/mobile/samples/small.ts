@@ -21,4 +21,9 @@ export const smallSampleBackup = buildWeddingBackup({
   giftCount: 5,
   communicationCount: 2,
   includeBothDays: false,
+  weddingPartyCount: 2,
+  seatingConstraintCount: 1,
+  weddingEventCount: 1,
+  legalMilestoneCount: 2,
+  includeHoneymoonPlan: false,
 });

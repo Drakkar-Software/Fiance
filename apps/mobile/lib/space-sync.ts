@@ -29,6 +29,14 @@ import {
   giftToNode, giftFromDoc,
   invitationTypeToNode, invitationTypeFromDoc,
   communicationToNode, communicationFromDoc,
+  weddingRoleAssignmentToNode, weddingRoleAssignmentFromDoc,
+  seatingConstraintToNode, seatingConstraintFromDoc,
+  weddingEventToNode, weddingEventFromDoc,
+  guestMealSelectionToNode, guestMealSelectionFromDoc,
+  communicationTemplateToNode, communicationTemplateFromDoc,
+  documentToNode, documentFromDoc,
+  legalMilestoneToNode, legalMilestoneFromDoc,
+  honeymoonPlanToNode, honeymoonPlanFromDoc,
   taskCategoryToNode, taskCategoryFromDoc,
   taskToNode, taskFromDoc,
   agendaEventToNode, agendaEventFromDoc,
@@ -48,6 +56,14 @@ import { useAccommodationsStore } from '@/store/useAccommodationsStore';
 import { useGiftsStore } from '@/store/useGiftsStore';
 import { useInvitationTypesStore } from '@/store/useInvitationTypesStore';
 import { useCommunicationsStore } from '@/store/useCommunicationsStore';
+import { useWeddingPartyStore } from '@/store/useWeddingPartyStore';
+import { useSeatingConstraintsStore } from '@/store/useSeatingConstraintsStore';
+import { useWeddingEventsStore } from '@/store/useWeddingEventsStore';
+import { useMealSelectionsStore } from '@/store/useMealSelectionsStore';
+import { useCommunicationTemplatesStore } from '@/store/useCommunicationTemplatesStore';
+import { useDocumentsStore } from '@/store/useDocumentsStore';
+import { useLegalStore } from '@/store/useLegalStore';
+import { useHoneymoonStore } from '@/store/useHoneymoonStore';
 import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from '@/lib/starfish';
 import { applyRsvpSubmissionsByGuestId, type RsvpSubmission } from '@/lib/rsvp-sync';
 import { withIndexLock } from '@/lib/index-lock';
@@ -206,6 +222,14 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   const { gifts } = useGiftsStore.getState();
   const { invitationTypes } = useInvitationTypesStore.getState();
   const { communications } = useCommunicationsStore.getState();
+  const { weddingRoleAssignments } = useWeddingPartyStore.getState();
+  const { seatingConstraints } = useSeatingConstraintsStore.getState();
+  const { weddingEvents } = useWeddingEventsStore.getState();
+  const { mealSelections } = useMealSelectionsStore.getState();
+  const { communicationTemplates } = useCommunicationTemplatesStore.getState();
+  const { documents } = useDocumentsStore.getState();
+  const { legalMilestones } = useLegalStore.getState();
+  const { honeymoonPlans } = useHoneymoonStore.getState();
 
   for (const a of accommodations) {
     push(accommodationToNode(a, a.id, weddingNodeId), a);
@@ -218,6 +242,33 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   }
   for (const c of communications) {
     push(communicationToNode(c, c.id, weddingNodeId), c);
+  }
+  for (const a of weddingRoleAssignments) {
+    push(weddingRoleAssignmentToNode(a, a.id, weddingNodeId), a);
+  }
+  for (const c of seatingConstraints) {
+    push(seatingConstraintToNode(c, c.id, weddingNodeId), c);
+  }
+  for (const e of weddingEvents) {
+    push(weddingEventToNode(e, e.id, weddingNodeId), e);
+  }
+  for (const s of mealSelections) {
+    push(guestMealSelectionToNode(s, s.id, weddingNodeId), s);
+  }
+  for (const tpl of communicationTemplates) {
+    push(communicationTemplateToNode(tpl, tpl.id, weddingNodeId), tpl);
+  }
+  for (const d of documents) {
+    // localUri travels as-is through the (already E2EE) multi-device sync channel —
+    // only the shareable JSON *backup* export strips it (see lib/sync.ts). A device
+    // reading another device's localUri simply finds no local file and offers re-attach.
+    push(documentToNode(d, d.id, weddingNodeId), d);
+  }
+  for (const m of legalMilestones) {
+    push(legalMilestoneToNode(m, m.id, weddingNodeId), m);
+  }
+  for (const p of honeymoonPlans) {
+    push(honeymoonPlanToNode(p, p.id, weddingNodeId), p);
   }
 
   for (const tc of categories) {
@@ -429,6 +480,14 @@ export async function hydrateFromSpace(
       giftDocs,
       invitationTypeDocs,
       communicationDocs,
+      weddingRoleAssignmentDocs,
+      seatingConstraintDocs,
+      weddingEventDocs,
+      guestMealSelectionDocs,
+      communicationTemplateDocs,
+      documentDocs,
+      legalMilestoneDocs,
+      honeymoonPlanDocs,
       taskCategoryDocs,
       taskDocs,
       agendaEventDocs,
@@ -447,6 +506,14 @@ export async function hydrateFromSpace(
       pullAll(FIANCE_TYPES.gift),
       pullAll(FIANCE_TYPES.invitationType),
       pullAll(FIANCE_TYPES.communication),
+      pullAll(FIANCE_TYPES.weddingRoleAssignment),
+      pullAll(FIANCE_TYPES.seatingConstraint),
+      pullAll(FIANCE_TYPES.weddingEvent),
+      pullAll(FIANCE_TYPES.guestMealSelection),
+      pullAll(FIANCE_TYPES.communicationTemplate),
+      pullAll(FIANCE_TYPES.document),
+      pullAll(FIANCE_TYPES.legalMilestone),
+      pullAll(FIANCE_TYPES.honeymoonPlan),
       pullAll(FIANCE_TYPES.taskCategory),
       pullAll(FIANCE_TYPES.task),
       pullAll(FIANCE_TYPES.agendaEvent),
@@ -474,6 +541,14 @@ export async function hydrateFromSpace(
     if (giftDocs.length) useGiftsStore.getState().setGifts(giftDocs.map(giftFromDoc) as Parameters<ReturnType<typeof useGiftsStore.getState>['setGifts']>[0]);
     if (invitationTypeDocs.length) useInvitationTypesStore.getState().setInvitationTypes(invitationTypeDocs.map(invitationTypeFromDoc) as Parameters<ReturnType<typeof useInvitationTypesStore.getState>['setInvitationTypes']>[0]);
     if (communicationDocs.length) useCommunicationsStore.getState().setCommunications(communicationDocs.map(communicationFromDoc) as Parameters<ReturnType<typeof useCommunicationsStore.getState>['setCommunications']>[0]);
+    if (weddingRoleAssignmentDocs.length) useWeddingPartyStore.getState().setWeddingRoleAssignments(weddingRoleAssignmentDocs.map(weddingRoleAssignmentFromDoc) as Parameters<ReturnType<typeof useWeddingPartyStore.getState>['setWeddingRoleAssignments']>[0]);
+    if (seatingConstraintDocs.length) useSeatingConstraintsStore.getState().setSeatingConstraints(seatingConstraintDocs.map(seatingConstraintFromDoc) as Parameters<ReturnType<typeof useSeatingConstraintsStore.getState>['setSeatingConstraints']>[0]);
+    if (weddingEventDocs.length) useWeddingEventsStore.getState().setWeddingEvents(weddingEventDocs.map(weddingEventFromDoc) as Parameters<ReturnType<typeof useWeddingEventsStore.getState>['setWeddingEvents']>[0]);
+    if (guestMealSelectionDocs.length) useMealSelectionsStore.getState().setMealSelections(guestMealSelectionDocs.map(guestMealSelectionFromDoc) as Parameters<ReturnType<typeof useMealSelectionsStore.getState>['setMealSelections']>[0]);
+    if (communicationTemplateDocs.length) useCommunicationTemplatesStore.getState().setCommunicationTemplates(communicationTemplateDocs.map(communicationTemplateFromDoc) as Parameters<ReturnType<typeof useCommunicationTemplatesStore.getState>['setCommunicationTemplates']>[0]);
+    if (documentDocs.length) useDocumentsStore.getState().setDocuments(documentDocs.map(documentFromDoc) as Parameters<ReturnType<typeof useDocumentsStore.getState>['setDocuments']>[0]);
+    if (legalMilestoneDocs.length) useLegalStore.getState().setLegalMilestones(legalMilestoneDocs.map(legalMilestoneFromDoc) as Parameters<ReturnType<typeof useLegalStore.getState>['setLegalMilestones']>[0]);
+    if (honeymoonPlanDocs.length) useHoneymoonStore.getState().setHoneymoonPlans(honeymoonPlanDocs.map(honeymoonPlanFromDoc) as Parameters<ReturnType<typeof useHoneymoonStore.getState>['setHoneymoonPlans']>[0]);
     if (taskCategoryDocs.length) usePlanningStore.getState().setCategories(taskCategoryDocs.map(taskCategoryFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setCategories']>[0]);
     if (taskDocs.length) usePlanningStore.getState().setTasks(taskDocs.map(taskFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setTasks']>[0]);
     if (agendaEventDocs.length) usePlanningStore.getState().setAgendaEvents(agendaEventDocs.map(agendaEventFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setAgendaEvents']>[0]);

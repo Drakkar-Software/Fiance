@@ -16,7 +16,16 @@ import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
-import { DEFAULT_INVITATION_TYPES } from "@/db/types";
+import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
+import { useMealSelectionsStore } from "@/store/useMealSelectionsStore";
+import { useCommunicationTemplatesStore } from "@/store/useCommunicationTemplatesStore";
+import { useDocumentsStore } from "@/store/useDocumentsStore";
+import { useLegalStore } from "@/store/useLegalStore";
+import { useHoneymoonStore } from "@/store/useHoneymoonStore";
+import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from "@/db/types";
+import { synthesizePrimaryEvent } from "@fiance/sdk";
 import { readCollection, writeCollection } from "./kv-storage";
 
 // ─── Clear all stores (for wedding switching) ──────────────────────────────
@@ -41,6 +50,14 @@ export function clearAllStores(): void {
   useGiftsStore.getState().setGifts([]);
   useInvitationTypesStore.getState().setInvitationTypes([]);
   useCommunicationsStore.getState().setCommunications([]);
+  useWeddingPartyStore.getState().setWeddingRoleAssignments([]);
+  useSeatingConstraintsStore.getState().setSeatingConstraints([]);
+  useWeddingEventsStore.getState().setWeddingEvents([]);
+  useMealSelectionsStore.getState().setMealSelections([]);
+  useCommunicationTemplatesStore.getState().setCommunicationTemplates([]);
+  useDocumentsStore.getState().setDocuments([]);
+  useLegalStore.getState().setLegalMilestones([]);
+  useHoneymoonStore.getState().setHoneymoonPlans([]);
 }
 
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
@@ -81,6 +98,22 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
 
   useCommunicationsStore.getState().setCommunications(readCollection<any[]>("communications") ?? []);
 
+  useWeddingPartyStore.getState().setWeddingRoleAssignments(readCollection<any[]>("weddingRoleAssignments") ?? []);
+  useSeatingConstraintsStore.getState().setSeatingConstraints(readCollection<any[]>("seatingConstraints") ?? []);
+  useMealSelectionsStore.getState().setMealSelections(readCollection<any[]>("guestMealSelections") ?? []);
+  useDocumentsStore.getState().setDocuments(readCollection<any[]>("documents") ?? []);
+  useHoneymoonStore.getState().setHoneymoonPlans(readCollection<any[]>("honeymoonPlans") ?? []);
+
+  const storedWeddingEvents = readCollection<any[]>("weddingEvents") ?? [];
+  if (storedWeddingEvents.length > 0) {
+    useWeddingEventsStore.getState().setWeddingEvents(storedWeddingEvents);
+  } else {
+    const synthesized = synthesizePrimaryEvent(wedding ?? null);
+    const events = synthesized ? [synthesized] : [];
+    useWeddingEventsStore.getState().setWeddingEvents(events);
+    if (synthesized) writeCollection("weddingEvents", events);
+  }
+
   const storedInvTypes = readCollection<any[]>("invitationTypes");
   if (storedInvTypes && storedInvTypes.length > 0) {
     useInvitationTypesStore.getState().setInvitationTypes(storedInvTypes);
@@ -89,6 +122,45 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
     const defaults = DEFAULT_INVITATION_TYPES.map((t) => ({ ...t, createdAt: now, updatedAt: now }));
     useInvitationTypesStore.getState().setInvitationTypes(defaults);
     writeCollection("invitationTypes", defaults);
+  }
+
+  const storedTemplates = readCollection<any[]>("communicationTemplates");
+  if (storedTemplates && storedTemplates.length > 0) {
+    useCommunicationTemplatesStore.getState().setCommunicationTemplates(storedTemplates);
+  } else {
+    const now = new Date().toISOString();
+    const defaultTemplates = DEFAULT_COMMUNICATION_TEMPLATES.map((tpl, i) => ({
+      id: `system-template-${i + 1}`,
+      ...tpl,
+      isSystem: true,
+      createdAt: now,
+      updatedAt: now,
+    }));
+    useCommunicationTemplatesStore.getState().setCommunicationTemplates(defaultTemplates);
+    writeCollection("communicationTemplates", defaultTemplates);
+  }
+
+  const storedMilestones = readCollection<any[]>("legalMilestones");
+  if (storedMilestones && storedMilestones.length > 0) {
+    useLegalStore.getState().setLegalMilestones(storedMilestones);
+  } else {
+    const now = new Date().toISOString();
+    const defaultMilestones = DEFAULT_LEGAL_MILESTONES.map((m, i) => ({
+      id: `system-milestone-${i + 1}`,
+      type: m.type,
+      title: m.title,
+      dueDate: null,
+      completedDate: null,
+      status: "TODO",
+      location: null,
+      notes: null,
+      documentIds: null,
+      reminderDaysBefore: null,
+      createdAt: now,
+      updatedAt: now,
+    }));
+    useLegalStore.getState().setLegalMilestones(defaultMilestones);
+    writeCollection("legalMilestones", defaultMilestones);
   }
 }
 
@@ -163,6 +235,38 @@ export function persistCommunications(_storage: SQLiteStorage): void {
   writeCollection("communications", useCommunicationsStore.getState().communications);
 }
 
+export function persistWeddingRoleAssignments(_storage: SQLiteStorage): void {
+  writeCollection("weddingRoleAssignments", useWeddingPartyStore.getState().weddingRoleAssignments);
+}
+
+export function persistSeatingConstraints(_storage: SQLiteStorage): void {
+  writeCollection("seatingConstraints", useSeatingConstraintsStore.getState().seatingConstraints);
+}
+
+export function persistWeddingEvents(_storage: SQLiteStorage): void {
+  writeCollection("weddingEvents", useWeddingEventsStore.getState().weddingEvents);
+}
+
+export function persistMealSelections(_storage: SQLiteStorage): void {
+  writeCollection("guestMealSelections", useMealSelectionsStore.getState().mealSelections);
+}
+
+export function persistCommunicationTemplates(_storage: SQLiteStorage): void {
+  writeCollection("communicationTemplates", useCommunicationTemplatesStore.getState().communicationTemplates);
+}
+
+export function persistDocuments(_storage: SQLiteStorage): void {
+  writeCollection("documents", useDocumentsStore.getState().documents);
+}
+
+export function persistLegalMilestones(_storage: SQLiteStorage): void {
+  writeCollection("legalMilestones", useLegalStore.getState().legalMilestones);
+}
+
+export function persistHoneymoonPlans(_storage: SQLiteStorage): void {
+  writeCollection("honeymoonPlans", useHoneymoonStore.getState().honeymoonPlans);
+}
+
 // ─── Bulk restore (for sync pull and import) ────────────────────────────────
 
 export function restoreAllTables(_storage: SQLiteStorage, data: {
@@ -183,6 +287,14 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   gifts?: any[];
   invitationTypes?: any[];
   communications?: any[];
+  weddingRoleAssignments?: any[];
+  seatingConstraints?: any[];
+  weddingEvents?: any[];
+  guestMealSelections?: any[];
+  communicationTemplates?: any[];
+  documents?: any[];
+  legalMilestones?: any[];
+  honeymoonPlans?: any[];
 }): void {
   writeCollection("wedding", data.wedding);
   writeCollection("guestGroups", data.guestGroups);
@@ -201,4 +313,12 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("gifts", data.gifts ?? []);
   writeCollection("invitationTypes", data.invitationTypes ?? []);
   writeCollection("communications", data.communications ?? []);
+  writeCollection("weddingRoleAssignments", data.weddingRoleAssignments ?? []);
+  writeCollection("seatingConstraints", data.seatingConstraints ?? []);
+  writeCollection("weddingEvents", data.weddingEvents ?? []);
+  writeCollection("guestMealSelections", data.guestMealSelections ?? []);
+  writeCollection("communicationTemplates", data.communicationTemplates ?? []);
+  writeCollection("documents", data.documents ?? []);
+  writeCollection("legalMilestones", data.legalMilestones ?? []);
+  writeCollection("honeymoonPlans", data.honeymoonPlans ?? []);
 }

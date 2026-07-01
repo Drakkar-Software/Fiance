@@ -97,6 +97,14 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     ideaCollections: [{ id: 'ic1', title: 'Déco' } as never],
     ideas: [{ id: 'idea1', title: 'Bougie', collectionId: 'ic1' } as never],
     communications: [{ id: 'comm1', label: 'Faire-part', date: null, notes: null, recipients: [], createdAt: null, updatedAt: null } as never],
+    weddingRoleAssignments: [{ id: 'wra1', role: 'WITNESS', guestId: 'g1', displayName: '', phone: null, email: null, notes: null, sortOrder: null, createdAt: null, updatedAt: null } as never],
+    seatingConstraints: [{ id: 'sc1', type: 'MUST_SIT_TOGETHER', guestIds: ['g1', 'g2'], label: null, isHard: null, createdAt: null, updatedAt: null } as never],
+    weddingEvents: [{ id: 'we1', type: 'DINNER', title: 'Réception', date: '2026-09-12', startTime: null, endTime: null, venueName: null, address: null, notes: null, isPrimary: true, isPublic: true, sortOrder: 1, createdAt: null, updatedAt: null } as never],
+    guestMealSelections: [{ id: 'ms1', guestId: 'g1', eventId: null, mealChoice: 'STANDARD', courses: null, notes: null, createdAt: null, updatedAt: null } as never],
+    communicationTemplates: [{ id: 'ct1', name: 'Save-the-date', channel: 'EMAIL', subject: null, body: 'Hello', isSystem: true, createdAt: null, updatedAt: null } as never],
+    documents: [{ id: 'doc1', ownerType: 'VENDOR', ownerId: 'v1', label: 'Devis', fileName: 'devis.pdf', mimeType: 'application/pdf', localUri: 'file:///d.pdf', fileSize: 100, uploadedAt: null, notes: null, createdAt: null, updatedAt: null } as never],
+    legalMilestones: [{ id: 'lm1', type: 'CIVIL_APPOINTMENT', title: 'RDV mairie', dueDate: null, completedDate: null, status: 'TODO', location: null, notes: null, documentIds: null, reminderDaysBefore: null, createdAt: null, updatedAt: null } as never],
+    honeymoonPlans: [{ id: 'hp1', destination: 'Toscane', startDate: null, endDate: null, budgetTarget: null, spentAmount: null, notes: null, itinerary: null, createdAt: null, updatedAt: null } as never],
     ...overrides,
   };
 }
@@ -260,6 +268,8 @@ describe('importLegacyBackup', () => {
     expect(result.idMap['guest:g1']).toBeDefined();
     expect(result.idMap['vendor:v1']).toBeDefined();
     expect(result.idMap['task:task1']).toBeDefined();
+    expect(result.idMap['weddingRoleAssignment:wra1']).toBeDefined();
+    expect(result.idMap['seatingConstraint:sc1']).toBeDefined();
   });
 
   it('calls getNodeAccess for each content push with access:space enc:true', async () => {

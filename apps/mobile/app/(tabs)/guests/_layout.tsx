@@ -3,7 +3,7 @@ import { useColorScheme } from "react-native";
 import { View } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { BedDouble, Tag, Mail, FolderOpen, LayoutGrid } from "lucide-react-native";
+import { BedDouble, Tag, Mail, FolderOpen, LayoutGrid, Users, UsersRound } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { StackMenu } from "@/components/StackMenu";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
@@ -67,6 +67,16 @@ export default function InvitesLayout() {
                     icon: Mail,
                     onPress: () => router.push("/(tabs)/guests/communications"),
                   },
+                  {
+                    label: t("weddingParty.title"),
+                    icon: Users,
+                    onPress: () => router.push("/(tabs)/guests/wedding-party"),
+                  },
+                  {
+                    label: t("seatingConstraints.title"),
+                    icon: UsersRound,
+                    onPress: () => router.push("/(tabs)/guests/seating-constraints"),
+                  },
                 ]}
               />
             </View>
@@ -86,7 +96,10 @@ export default function InvitesLayout() {
           title: (route.params as any)?.title ?? t("communicationRosterScreen"),
         })}
       />
+      <Stack.Screen name="communications/templates" options={{ title: t("communications.templatesScreen") }} />
       <Stack.Screen name="seating" options={{ headerShown: false }} />
+      <Stack.Screen name="wedding-party" options={{ title: t("weddingParty.title") }} />
+      <Stack.Screen name="seating-constraints" options={{ title: t("seatingConstraints.title") }} />
     </Stack>
   );
 }

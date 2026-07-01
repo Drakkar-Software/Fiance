@@ -52,6 +52,7 @@
   "irreversible": "This action is irreversible.",
   "appointments": "appointments",
   "upcoming": "upcoming",
+  "past": "past",
   "noAppointments": "No appointments",
   "planYourVisits": "Plan your visits, fittings and meetings",
   "addAppointment": "Add an appointment",
@@ -154,5 +155,70 @@
   "overdueCount_one": "{{count}} overdue",
   "overdueCount_other": "{{count}} overdue",
   "eventEyebrow": "Appointment",
-  "dayOfEyebrow": "Day Of"
+  "dayOfEyebrow": "Day Of",
+  "events": {
+    "title": "Events",
+    "type": {
+      "CIVIL": "Civil",
+      "RELIGIOUS": "Religious",
+      "LAIC": "Secular",
+      "COCKTAIL": "Cocktail",
+      "DINNER": "Dinner",
+      "BRUNCH": "Brunch",
+      "OTHER": "Other"
+    },
+    "newEvent": "New event",
+    "editEvent": "Edit event",
+    "titlePlaceholder": "Event name",
+    "titleRequired": "Name is required",
+    "venuePlaceholder": "Venue",
+    "addressPlaceholder": "Address",
+    "isPrimary": "Primary event (drives countdown)",
+    "isPublic": "Visible on the public page",
+    "empty": "No events yet",
+    "emptyDesc": "Add the civil ceremony, reception, next-day brunch...",
+    "deleteEvent": "Delete this event?",
+    "deleteEventMsg": "This action cannot be undone.",
+    "primaryBadge": "Primary"
+  },
+  "legal": {
+    "title": "Legal & admin",
+    "type": {
+      "PUBLICATION_BANS": "Publication of banns",
+      "CIVIL_APPOINTMENT": "City hall appointment",
+      "CONTRACT_SIGNING": "Contract signing",
+      "DOCUMENTS_DEADLINE": "Document deadline",
+      "CUSTOM": "Other"
+    },
+    "status": {
+      "TODO": "To do",
+      "DONE": "Done",
+      "NA": "Not applicable"
+    },
+    "newMilestone": "New milestone",
+    "editMilestone": "Edit milestone",
+    "titlePlaceholder": "Milestone name",
+    "titleRequired": "Name is required",
+    "dueDate": "Due date",
+    "locationPlaceholder": "Location (e.g. City hall)",
+    "empty": "No legal milestones yet",
+    "emptyDesc": "Publication of banns, city hall appointment, document deadline, contract signing...",
+    "deleteMilestone": "Delete this milestone?",
+    "deleteMilestoneMsg": "This action cannot be undone."
+  },
+  "honeymoon": {
+    "title": "Honeymoon",
+    "newPlan": "Create a plan",
+    "empty": "No honeymoon plan yet",
+    "emptyDesc": "Plan your destination, dates, and budget.",
+    "details": "Details",
+    "destination": "Destination",
+    "startDate": "Departure date",
+    "endDate": "Return date",
+    "budgetTarget": "Planned budget",
+    "spentAmount": "Already spent",
+    "remaining": "Remaining",
+    "notes": "Notes",
+    "notesPlaceholder": "Flights, hotels, activities to plan..."
+  }
 }

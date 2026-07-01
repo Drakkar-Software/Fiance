@@ -11,7 +11,7 @@ export const bigSampleBackup = buildWeddingBackup({
   budgetTarget: 45_000,
   guestCount: 145,
   tableCount: 18,
-  vendorCount: 18,
+  vendorCount: 22,
   taskCount: 25,
   agendaCount: 12,
   dayOfCount: 15,
@@ -21,4 +21,9 @@ export const bigSampleBackup = buildWeddingBackup({
   giftCount: 20,
   communicationCount: 6,
   includeBothDays: true,
+  weddingPartyCount: 7,
+  seatingConstraintCount: 4,
+  weddingEventCount: 4,
+  legalMilestoneCount: 4,
+  includeHoneymoonPlan: true,
 });

@@ -19,6 +19,7 @@
   "overdue_one": "{{count}} overdue",
   "overdue_other": "{{count}} overdue",
   "vendors": "Vendors",
+  "legalNextDeadline": "Next legal deadline",
   "statusBooked": "Booked",
   "statusNegotiating": "Negotiating",
   "statusQuote": "Quotes",

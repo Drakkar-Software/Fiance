@@ -13,7 +13,15 @@ import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
-import { DEFAULT_INVITATION_TYPES } from "@fiance/sdk";
+import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
+import { useMealSelectionsStore } from "@/store/useMealSelectionsStore";
+import { useCommunicationTemplatesStore } from "@/store/useCommunicationTemplatesStore";
+import { useDocumentsStore } from "@/store/useDocumentsStore";
+import { useLegalStore } from "@/store/useLegalStore";
+import { useHoneymoonStore } from "@/store/useHoneymoonStore";
+import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES, synthesizePrimaryEvent } from "@fiance/sdk";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
 export interface BackupData {
@@ -36,10 +44,24 @@ export interface BackupData {
   gifts: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
+  weddingRoleAssignments?: unknown[];
+  seatingConstraints?: unknown[];
+  weddingEvents?: unknown[];
+  guestMealSelections?: unknown[];
+  communicationTemplates?: unknown[];
+  documents?: unknown[];
+  legalMilestones?: unknown[];
+  honeymoonPlans?: unknown[];
 }
 
-// v6 → v7: added communications collection
-const BACKUP_VERSION = 7;
+// v8 → v9: added weddingEvents + guestMealSelections collections;
+//          eventId FK on agendaEvents/dayOfItems/vendors
+// v9 → v10: added guest logistics fields; Communication content fields;
+//           communicationTemplates collection (seeded with 3 system templates)
+// v10 → v11: added documents collection (localUri stripped to "" on export);
+//            Vendor comparison fields (comparisonGroupId/isSelected/sortOrder)
+// v11 → v12: added legalMilestones (seeded with FR defaults); honeymoonPlans (0–1 row)
+const BACKUP_VERSION = 12;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -63,6 +85,15 @@ export function createBackupDocument(): Record<string, unknown> {
     gifts: useGiftsStore.getState().gifts,
     invitationTypes: useInvitationTypesStore.getState().invitationTypes,
     communications: useCommunicationsStore.getState().communications,
+    weddingRoleAssignments: useWeddingPartyStore.getState().weddingRoleAssignments,
+    seatingConstraints: useSeatingConstraintsStore.getState().seatingConstraints,
+    weddingEvents: useWeddingEventsStore.getState().weddingEvents,
+    guestMealSelections: useMealSelectionsStore.getState().mealSelections,
+    communicationTemplates: useCommunicationTemplatesStore.getState().communicationTemplates,
+    // Binaries never leave the device: strip localUri, metadata only.
+    documents: useDocumentsStore.getState().documents.map((d) => ({ ...d, localUri: "" })),
+    legalMilestones: useLegalStore.getState().legalMilestones,
+    honeymoonPlans: useHoneymoonStore.getState().honeymoonPlans,
   };
 }
 
@@ -95,12 +126,48 @@ export function restoreFromBackup(
   // v4 → v5: added vendorPayments, accommodations, gifts tables + new guest columns
   // v5 → v6: added invitationTypes collection (user-configurable)
   // v6 → v7: added communications collection (user-created, with embedded recipients)
+  // v7 → v8: added weddingRoleAssignments, seatingConstraints collections (additive, no migration)
+  // v8 → v9: added weddingEvents collection; auto-migrate a synthetic primary event
+  //          from wedding.weddingDate/venueName when no WeddingEvent rows exist yet
 
   const now = new Date().toISOString();
   const rawInvTypes = (backup.invitationTypes || []) as any[];
   const restoredInvitationTypes = rawInvTypes.length > 0
     ? rawInvTypes
     : DEFAULT_INVITATION_TYPES.map((t) => ({ ...t, createdAt: now, updatedAt: now }));
+
+  const rawWeddingEvents = (backup.weddingEvents || []) as any[];
+  const synthesizedEvent = rawWeddingEvents.length === 0 ? synthesizePrimaryEvent(backup.wedding as any) : null;
+  const restoredWeddingEvents = synthesizedEvent ? [synthesizedEvent] : rawWeddingEvents;
+
+  const rawTemplates = (backup.communicationTemplates || []) as any[];
+  const restoredCommunicationTemplates = rawTemplates.length > 0
+    ? rawTemplates
+    : DEFAULT_COMMUNICATION_TEMPLATES.map((tpl, i) => ({
+        id: `system-template-${i + 1}`,
+        ...tpl,
+        isSystem: true,
+        createdAt: now,
+        updatedAt: now,
+      }));
+
+  const rawLegalMilestones = (backup.legalMilestones || []) as any[];
+  const restoredLegalMilestones = rawLegalMilestones.length > 0
+    ? rawLegalMilestones
+    : DEFAULT_LEGAL_MILESTONES.map((m, i) => ({
+        id: `system-milestone-${i + 1}`,
+        type: m.type,
+        title: m.title,
+        dueDate: null,
+        completedDate: null,
+        status: "TODO",
+        location: null,
+        notes: null,
+        documentIds: null,
+        reminderDaysBefore: null,
+        createdAt: now,
+        updatedAt: now,
+      }));
 
   const restoredData = {
     wedding: backup.wedding,
@@ -130,6 +197,14 @@ export function restoreFromBackup(
     gifts: (backup.gifts || []) as any[],
     invitationTypes: restoredInvitationTypes,
     communications: (backup.communications || []) as any[],
+    weddingRoleAssignments: (backup.weddingRoleAssignments || []) as any[],
+    seatingConstraints: (backup.seatingConstraints || []) as any[],
+    weddingEvents: restoredWeddingEvents,
+    guestMealSelections: (backup.guestMealSelections || []) as any[],
+    communicationTemplates: restoredCommunicationTemplates,
+    documents: (backup.documents || []) as any[],
+    legalMilestones: restoredLegalMilestones,
+    honeymoonPlans: (backup.honeymoonPlans || []) as any[],
   };
 
   // Write to KV storage then re-hydrate stores from it
@@ -155,6 +230,14 @@ export function restoreFromBackup(
     useGiftsStore.getState().setGifts(restoredData.gifts);
     useInvitationTypesStore.getState().setInvitationTypes(restoredData.invitationTypes);
     useCommunicationsStore.getState().setCommunications(restoredData.communications);
+    useWeddingPartyStore.getState().setWeddingRoleAssignments(restoredData.weddingRoleAssignments);
+    useSeatingConstraintsStore.getState().setSeatingConstraints(restoredData.seatingConstraints);
+    useWeddingEventsStore.getState().setWeddingEvents(restoredData.weddingEvents);
+    useMealSelectionsStore.getState().setMealSelections(restoredData.guestMealSelections);
+    useCommunicationTemplatesStore.getState().setCommunicationTemplates(restoredData.communicationTemplates);
+    useDocumentsStore.getState().setDocuments(restoredData.documents);
+    useLegalStore.getState().setLegalMilestones(restoredData.legalMilestones);
+    useHoneymoonStore.getState().setHoneymoonPlans(restoredData.honeymoonPlans);
   }
 }
 

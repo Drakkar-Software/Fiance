@@ -2,8 +2,10 @@ import React from "react";
 import { View } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { CalendarRange, FileCheck2, Palmtree } from "lucide-react-native";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
+import { StackMenu } from "@/components/StackMenu";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { PLANNING_ASPECT_LABELS } from "@/db/types";
 import type { PlanningAspect } from "@/db/types";
@@ -36,7 +38,28 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />
+            <View className="flex-row items-center">
+              <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />
+              <StackMenu
+                items={[
+                  {
+                    label: t("events.title"),
+                    icon: CalendarRange,
+                    onPress: () => router.push("/(tabs)/planning/events"),
+                  },
+                  {
+                    label: t("legal.title"),
+                    icon: FileCheck2,
+                    onPress: () => router.push("/(tabs)/planning/legal"),
+                  },
+                  {
+                    label: t("honeymoon.title"),
+                    icon: Palmtree,
+                    onPress: () => router.push("/(tabs)/planning/honeymoon"),
+                  },
+                ]}
+              />
+            </View>
           ),
         }}
       />

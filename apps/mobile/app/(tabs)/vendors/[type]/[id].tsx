@@ -2,10 +2,13 @@ import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
 import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2 } from "lucide-react-native";
+import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2, FileText, Upload } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { useDocumentsStore } from "@/store/useDocumentsStore";
+import { pickAndStoreDocument, isDocumentAvailableOnDevice, deleteDocumentFile } from "@/lib/documents";
+import { selectVendorInGroup } from "@/lib/vendor-comparison";
 import {
   VENDOR_TYPE_LABELS,
   VENDOR_STATUS_LABELS,
@@ -61,7 +64,7 @@ export default function VendorDetailScreen() {
 
   const [notes, setNotes] = useState(existingVendor?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
-  const [activeTab, setActiveTab] = useState<"infos" | "tarif" | "paiements">("infos");
+  const [activeTab, setActiveTab] = useState<"infos" | "tarif" | "paiements" | "documents">("infos");
 
   // Date fields (exist in schema but were not surfaced before)
   const [quoteDate, setQuoteDate] = useState(existingVendor?.quoteDate || "");
@@ -80,6 +83,10 @@ export default function VendorDetailScreen() {
   const canSave = name.trim().length > 0;
 
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
+
+  const sameTypeVendors = existingVendor ? vendors.filter((v) => v.type === existingVendor.type) : [];
+  const isComparable = !isNew && sameTypeVendors.length >= 2;
+  const isRetained = existingVendor?.isSelected === true;
 
   const updateCustomField = (key: string, value: any) => {
     setCustomFieldsData((prev) => ({ ...prev, [key]: value }));
@@ -151,8 +158,8 @@ export default function VendorDetailScreen() {
 
       {/* Tab bar */}
       <View className="flex-row mx-4 mt-3 bg-accent-paper rounded-xl p-1">
-        {(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as ("infos" | "tarif" | "paiements")[]).map((tab) => {
-          const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments" } as const;
+        {(["infos", "tarif", ...(isNew ? [] : ["paiements", "documents"])] as ("infos" | "tarif" | "paiements" | "documents")[]).map((tab) => {
+          const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments", documents: "tabDocuments" } as const;
           return (
             <Pressable
               key={tab}
@@ -194,6 +201,32 @@ export default function VendorDetailScreen() {
               activeKey={status}
               onSelect={(k) => setStatus(k as VendorStatus)}
             />
+
+            {isComparable && (
+              <>
+                <SectionTitle>{t("comparison.title")}</SectionTitle>
+                <View className="mb-5">
+                  <ToggleRow
+                    label={t("comparison.retained")}
+                    value={isRetained}
+                    onToggle={() => {
+                      if (isRetained) {
+                        updateVendor(existingVendor!.id, { isSelected: false });
+                      } else {
+                        selectVendorInGroup(vendors, updateVendor, existingVendor!.id);
+                        analytics.capture("vendor_selected_for_budget");
+                      }
+                    }}
+                  />
+                  <Pressable
+                    onPress={() => router.push({ pathname: "/(tabs)/vendors/compare", params: { type } })}
+                    className="mt-2"
+                  >
+                    <Text className="text-sm text-primary-500 font-medium">{t("comparison.viewAll")}</Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
 
             <SectionTitle>{t("information")}</SectionTitle>
             <FormCard>
@@ -294,6 +327,10 @@ export default function VendorDetailScreen() {
 
         {activeTab === "paiements" && !isNew && (
           <PaymentsTab vendorId={id!} />
+        )}
+
+        {activeTab === "documents" && !isNew && (
+          <DocumentsTab vendorId={id!} />
         )}
 
         <View className="h-8" />
@@ -451,6 +488,99 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
         destructive
         onConfirm={() => {
           if (deleteId) removePayment(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
+      />
+    </View>
+  );
+}
+
+function DocumentsTab({ vendorId }: { vendorId: string }) {
+  const { t } = useTranslation("vendors");
+  const allDocuments = useDocumentsStore((s) => s.documents);
+  const addDocument = useDocumentsStore((s) => s.addDocument);
+  const removeDocument = useDocumentsStore((s) => s.removeDocument);
+  const documents = useMemo(
+    () => allDocuments.filter((d) => d.ownerType === "VENDOR" && d.ownerId === vendorId),
+    [allDocuments, vendorId]
+  );
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handlePick = async () => {
+    const docId = Crypto.randomUUID();
+    try {
+      const picked = await pickAndStoreDocument(docId);
+      if (!picked) return;
+      const now = new Date().toISOString();
+      addDocument({
+        id: docId,
+        ownerType: "VENDOR",
+        ownerId: vendorId,
+        label: picked.fileName,
+        fileName: picked.fileName,
+        mimeType: picked.mimeType,
+        localUri: picked.localUri,
+        fileSize: picked.fileSize,
+        uploadedAt: now,
+        notes: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+      analytics.capture("document_attached");
+    } catch {
+      Alert.alert(t("common:error"), t("documentPickError"));
+    }
+  };
+
+  return (
+    <View>
+      {documents.map((doc) => {
+        const available = isDocumentAvailableOnDevice(doc.localUri);
+        return (
+          <View key={doc.id} className="bg-accent-card rounded-xl p-3.5 mb-2 border border-hair flex-row items-center">
+            <FileText size={18} color="#b96a4a" style={{ marginRight: 10 }} />
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-ink" numberOfLines={1}>{doc.label}</Text>
+              <Text className="text-xs text-mute mt-0.5">{doc.fileName}</Text>
+              {!available && (
+                <Text className="text-xs text-red-500 mt-0.5">{t("documentUnavailable")}</Text>
+              )}
+            </View>
+            <Pressable
+              onPress={() => setDeleteId(doc.id)}
+              className="w-8 h-8 items-center justify-center"
+            >
+              <Trash2 size={16} color="#EF4444" />
+            </Pressable>
+          </View>
+        );
+      })}
+
+      {documents.length === 0 && (
+        <Text className="text-sm text-mute mb-3">{t("noDocuments")}</Text>
+      )}
+
+      <Pressable
+        onPress={handlePick}
+        className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 flex-row items-center justify-center gap-2 border border-dashed border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
+      >
+        <Upload size={15} color="#b96a4a" />
+        <Text className="text-sm font-semibold text-primary-500">{t("addDocument")}</Text>
+      </Pressable>
+
+      <ConfirmSheet
+        visible={!!deleteId}
+        title={t("deleteDocument")}
+        message={t("irreversible")}
+        confirmLabel={t("common:delete")}
+        destructive
+        onConfirm={async () => {
+          if (deleteId) {
+            const doc = documents.find((d) => d.id === deleteId);
+            if (doc) await deleteDocumentFile(doc.localUri);
+            removeDocument(deleteId);
+          }
           setDeleteId(null);
         }}
         onCancel={() => setDeleteId(null)}

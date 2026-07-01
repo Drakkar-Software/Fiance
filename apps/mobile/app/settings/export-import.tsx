@@ -7,6 +7,9 @@ import { ChevronRight, Download, Upload, FileText, Table2, Sparkles } from "luci
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
+import { useMealSelectionsStore } from "@/store/useMealSelectionsStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
+import { MEAL_CHOICE_LABELS, type MealChoice } from "@fiance/sdk";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -21,9 +24,11 @@ import {
   buildBudgetHtml,
   buildTimelineHtml,
   buildVendorContactsHtml,
+  buildMenuSummaryHtml,
   exportToCsv,
   buildBudgetCsv,
   buildPaymentsCsv,
+  buildGuestLogisticsCsv,
 } from "@/lib/pdf-export";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { analytics } from "@/lib/analytics";
@@ -38,6 +43,8 @@ export default function ExportImportScreen() {
   const vendors = useVendorsStore((s) => s.vendors);
   const vendorPayments = useVendorsStore((s) => s.vendorPayments);
   const dayOfItems = usePlanningStore((s) => s.dayOfItems);
+  const mealSelections = useMealSelectionsStore((s) => s.mealSelections);
+  const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
   const wedding = useWeddingStore((s) => s.wedding);
   const currency = useWeddingStore((s) => s.wedding?.currency ?? "EUR");
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -178,7 +185,7 @@ export default function ExportImportScreen() {
   }, [selectedSampleId, t]);
 
   const handleExportPdf = useCallback(
-    async (type: "guests" | "budget" | "timeline" | "vendors") => {
+    async (type: "guests" | "budget" | "timeline" | "vendors" | "menu") => {
       try {
         let html = "";
         let filename = "";
@@ -199,6 +206,14 @@ export default function ExportImportScreen() {
             html = buildVendorContactsHtml(vendors);
             filename = "prestataires.pdf";
             break;
+          case "menu": {
+            const mealChoiceLabels = Object.fromEntries(
+              (Object.keys(MEAL_CHOICE_LABELS) as MealChoice[]).map((m) => [m, t(MEAL_CHOICE_LABELS[m])])
+            );
+            html = buildMenuSummaryHtml(guests, mealSelections, weddingEvents, mealChoiceLabels, t("menuSummaryTitle"));
+            filename = "synthese-menu-traiteur.pdf";
+            break;
+          }
         }
         await exportToPdf(html, filename);
         analytics.capture("export_data", { format: "pdf", kind: type });
@@ -206,11 +221,11 @@ export default function ExportImportScreen() {
         Alert.alert(t("common:error"), e.message);
       }
     },
-    [guests, tables, groups, vendors, dayOfItems, wedding, budgetSummary, currency, t]
+    [guests, tables, groups, vendors, dayOfItems, wedding, budgetSummary, currency, mealSelections, weddingEvents, t]
   );
 
   const handleExportCsv = useCallback(
-    async (type: "budget" | "payments") => {
+    async (type: "budget" | "payments" | "logistics") => {
       try {
         let csv = "";
         let filename = "";
@@ -223,6 +238,10 @@ export default function ExportImportScreen() {
             csv = buildPaymentsCsv(vendorPayments, vendors);
             filename = "paiements.csv";
             break;
+          case "logistics":
+            csv = buildGuestLogisticsCsv(guests, vendors);
+            filename = "logistique-invites.csv";
+            break;
         }
         await exportToCsv(csv, filename);
         analytics.capture("export_data", { format: "csv", kind: type });
@@ -230,7 +249,7 @@ export default function ExportImportScreen() {
         Alert.alert(t("common:error"), e.message);
       }
     },
-    [budgetSummary, vendorPayments, vendors, currency, t]
+    [budgetSummary, vendorPayments, vendors, guests, currency, t]
   );
 
   return (
@@ -262,6 +281,11 @@ export default function ExportImportScreen() {
               icon={<FileText size={18} color="#b96a4a" />}
               label={t("exportVendors")}
               onPress={() => handleExportPdf("vendors")}
+            />
+            <ExportRow
+              icon={<FileText size={18} color="#b96a4a" />}
+              label={t("exportMenuSummary")}
+              onPress={() => handleExportPdf("menu")}
               last
             />
           </FormCard>
@@ -280,6 +304,11 @@ export default function ExportImportScreen() {
               icon={<Table2 size={18} color="#10B981" />}
               label={t("exportPaymentsCsv")}
               onPress={() => handleExportCsv("payments")}
+            />
+            <ExportRow
+              icon={<Table2 size={18} color="#10B981" />}
+              label={t("exportLogisticsCsv")}
+              onPress={() => handleExportCsv("logistics")}
               last
             />
           </FormCard>

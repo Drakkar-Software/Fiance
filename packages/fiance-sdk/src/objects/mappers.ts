@@ -34,6 +34,14 @@ import type {
   DayOfItem,
   IdeaCollection,
   Idea,
+  WeddingRoleAssignment,
+  SeatingConstraint,
+  WeddingEvent,
+  GuestMealSelection,
+  CommunicationTemplate,
+  Document,
+  LegalMilestone,
+  HoneymoonPlan,
 } from '../domain/schema.js';
 
 // ─── Index-level node descriptors (passed to addObject / updateObjectIndex) ───
@@ -429,6 +437,182 @@ export function communicationToNode(c: Communication, id: string, weddingNodeId:
 
 export function communicationFromDoc(doc: unknown): Communication {
   return doc as Communication;
+}
+
+// ─── WeddingRoleAssignment ────────────────────────────────────────────────────
+
+export function weddingRoleAssignmentToNode(
+  a: WeddingRoleAssignment,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.weddingRoleAssignment,
+    parentId: weddingNodeId,
+    title: a.displayName || a.role,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: a.id },
+  };
+}
+
+export function weddingRoleAssignmentFromDoc(doc: unknown): WeddingRoleAssignment {
+  return doc as WeddingRoleAssignment;
+}
+
+// ─── SeatingConstraint ────────────────────────────────────────────────────────
+
+export function seatingConstraintToNode(
+  c: SeatingConstraint,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.seatingConstraint,
+    parentId: weddingNodeId,
+    title: c.label || c.type,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: c.id },
+  };
+}
+
+export function seatingConstraintFromDoc(doc: unknown): SeatingConstraint {
+  return doc as SeatingConstraint;
+}
+
+// ─── WeddingEvent ─────────────────────────────────────────────────────────────
+
+export function weddingEventToNode(e: WeddingEvent, id: string, weddingNodeId: string): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.weddingEvent,
+    parentId: weddingNodeId,
+    title: e.title,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: e.id },
+  };
+}
+
+export function weddingEventFromDoc(doc: unknown): WeddingEvent {
+  return doc as WeddingEvent;
+}
+
+// ─── GuestMealSelection ───────────────────────────────────────────────────────
+
+export function guestMealSelectionToNode(
+  s: GuestMealSelection,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.guestMealSelection,
+    parentId: weddingNodeId,
+    title: s.mealChoice,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: s.id, guestId: s.guestId },
+  };
+}
+
+export function guestMealSelectionFromDoc(doc: unknown): GuestMealSelection {
+  return doc as GuestMealSelection;
+}
+
+// ─── CommunicationTemplate ────────────────────────────────────────────────────
+
+export function communicationTemplateToNode(
+  t: CommunicationTemplate,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.communicationTemplate,
+    parentId: weddingNodeId,
+    title: t.name,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: t.id },
+  };
+}
+
+export function communicationTemplateFromDoc(doc: unknown): CommunicationTemplate {
+  return doc as CommunicationTemplate;
+}
+
+// ─── Document (metadata synced; binary stays device-local) ───────────────────
+
+export function documentToNode(d: Document, id: string, weddingNodeId: string): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.document,
+    parentId: weddingNodeId,
+    title: d.label,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: d.id, ownerType: d.ownerType, ownerId: d.ownerId },
+  };
+}
+
+export function documentFromDoc(doc: unknown): Document {
+  return doc as Document;
+}
+
+// ─── LegalMilestone ───────────────────────────────────────────────────────────
+
+export function legalMilestoneToNode(
+  m: LegalMilestone,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.legalMilestone,
+    parentId: weddingNodeId,
+    title: m.title,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: m.id },
+  };
+}
+
+export function legalMilestoneFromDoc(doc: unknown): LegalMilestone {
+  return doc as LegalMilestone;
+}
+
+// ─── HoneymoonPlan (singleton, 0–1 row) ───────────────────────────────────────
+
+export function honeymoonPlanToNode(
+  p: HoneymoonPlan,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.honeymoonPlan,
+    parentId: weddingNodeId,
+    title: p.destination || 'Lune de miel',
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: p.id },
+  };
+}
+
+export function honeymoonPlanFromDoc(doc: unknown): HoneymoonPlan {
+  return doc as HoneymoonPlan;
 }
 
 // ─── PublicPage (invite, plaintext) ──────────────────────────────────────────

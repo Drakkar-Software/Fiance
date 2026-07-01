@@ -4,7 +4,7 @@
  */
 
 // NodeNext .js extension required
-import type { Wedding, DayOfItem, Gift } from '../domain/schema.js';
+import type { Wedding, DayOfItem, Gift, WeddingEvent } from '../domain/schema.js';
 
 export interface PublicDayOfItem {
   id: string;
@@ -27,8 +27,18 @@ export interface PublicGift {
   claimed?: boolean;
 }
 
+export interface PublicWeddingEvent {
+  id: string;
+  type: string;
+  title: string;
+  date: string;
+  time?: string | null;
+  venueName?: string | null;
+  address?: string | null;
+}
+
 export interface PublicWeddingPage {
-  version: 1;
+  version: 1 | 2;
   timestamp: string;
   about: {
     partner1Name?: string | null;
@@ -40,6 +50,8 @@ export interface PublicWeddingPage {
   timeline: PublicDayOfItem[];
   faq: FaqItem[];
   gifts?: PublicGift[];
+  /** v2: public sub-events (multi-day/venue). Absent on v1 documents. */
+  events?: PublicWeddingEvent[];
 }
 
 export interface FaqItem {
@@ -51,9 +63,23 @@ export interface FaqItem {
 export function buildPublicPage(
   wedding: Wedding | null,
   dayOfItems: DayOfItem[],
-  gifts: Gift[]
+  gifts: Gift[],
+  weddingEvents: WeddingEvent[] = []
 ): PublicWeddingPage {
   const weddingDate = wedding?.weddingDate || "";
+
+  const events: PublicWeddingEvent[] = weddingEvents
+    .filter((e) => e.isPublic)
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.startTime || "").localeCompare(b.startTime || ""))
+    .map(({ id, type, title, date, startTime, venueName, address }) => ({
+      id,
+      type,
+      title,
+      date,
+      time: startTime,
+      venueName,
+      address,
+    }));
 
   const timeline = dayOfItems
     .filter((item) => item.isPublic)
@@ -95,7 +121,7 @@ export function buildPublicPage(
   }
 
   return {
-    version: 1,
+    version: 2,
     timestamp: new Date().toISOString(),
     about: {
       partner1Name: wedding?.partner1Name,
@@ -107,5 +133,6 @@ export function buildPublicPage(
     timeline,
     faq,
     gifts: publicGifts.length > 0 ? publicGifts : undefined,
+    events: events.length > 0 ? events : undefined,
   };
 }

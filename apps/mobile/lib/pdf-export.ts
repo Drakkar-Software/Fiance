@@ -4,7 +4,7 @@
  */
 
 import { Platform } from "react-native";
-import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding, VendorPayment } from "@/db/schema";
+import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding, VendorPayment, GuestMealSelection, WeddingEvent } from "@/db/schema";
 import type { BudgetSummary } from "@/store/useBudgetStore";
 
 function escapeHtml(str: string): string {
@@ -76,6 +76,56 @@ export function buildGuestListHtml(
     <h1>Liste des invités</h1>
     <p>${guests.length} invités</p>
     <table><thead><tr><th>Nom</th><th>RSVP</th><th>Régime</th><th>Table</th><th>Groupe</th><th>Accompagnant</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="footer">Exporté depuis Fiancé</div>
+  </body></html>`;
+}
+
+// ─── Caterer menu summary HTML ───────────────────────────────────────────────
+
+export function buildMenuSummaryHtml(
+  guests: Guest[],
+  mealSelections: GuestMealSelection[],
+  weddingEvents: WeddingEvent[],
+  mealChoiceLabels: Record<string, string>,
+  title: string,
+): string {
+  const guestMap = new Map(guests.map((g) => [g.id, g]));
+  const eventMap = new Map(weddingEvents.map((e) => [e.id, e.title]));
+
+  const byEvent = new Map<string, GuestMealSelection[]>();
+  for (const s of mealSelections) {
+    const key = s.eventId ?? "__none__";
+    const list = byEvent.get(key) ?? [];
+    list.push(s);
+    byEvent.set(key, list);
+  }
+
+  const sections = [...byEvent.entries()]
+    .map(([eventId, selections]) => {
+      const eventTitle = eventId === "__none__" ? title : (eventMap.get(eventId) ?? title);
+      const counts = new Map<string, number>();
+      for (const s of selections) counts.set(s.mealChoice, (counts.get(s.mealChoice) ?? 0) + 1);
+      const countRows = [...counts.entries()]
+        .map(([choice, count]) => `<tr><td>${escapeHtml(mealChoiceLabels[choice] ?? choice)}</td><td>${count}</td></tr>`)
+        .join("");
+      const detailRows = selections
+        .map((s) => {
+          const g = guestMap.get(s.guestId);
+          const name = g ? `${escapeHtml(g.firstName)} ${escapeHtml(g.lastName)}` : "—";
+          return `<tr><td>${name}</td><td>${escapeHtml(mealChoiceLabels[s.mealChoice] ?? s.mealChoice)}</td></tr>`;
+        })
+        .join("");
+      return `
+    <h2>${escapeHtml(eventTitle)}</h2>
+    <table><thead><tr><th>Choix</th><th>Nombre</th></tr></thead><tbody>${countRows}</tbody></table>
+    <table style="margin-top:8px"><thead><tr><th>Invité</th><th>Choix</th></tr></thead><tbody>${detailRows}</tbody></table>`;
+    })
+    .join("");
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${BASE_STYLES}</style></head><body>
+    <h1>${escapeHtml(title)}</h1>
+    <p>${mealSelections.length} sélections sur ${guests.length} invités</p>
+    ${sections}
     <div class="footer">Exporté depuis Fiancé</div>
   </body></html>`;
 }
@@ -376,6 +426,28 @@ export function buildPaymentsCsv(
       p.paidDate ?? "",
       p.method ?? "",
       p.label ?? "",
+    ].join(";")
+  );
+  return [header, ...rows].join("\n");
+}
+
+// ─── Guest logistics CSV ──────────────────────────────────────────────────────
+
+export function buildGuestLogisticsCsv(guests: Guest[], vendors: Vendor[]): string {
+  const vendorMap = new Map(vendors.map((v) => [v.id, v.name]));
+  const sorted = [...guests].sort((a, b) =>
+    `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`)
+  );
+  const header = ["Nom", "Transport", "Navette", "Lieu de prise en charge", "Heure", "Parking", "Notes d'arrivée"].join(";");
+  const rows = sorted.map((g) =>
+    [
+      `${g.lastName} ${g.firstName}`,
+      g.transportMode ?? "",
+      g.shuttleVendorId ? (vendorMap.get(g.shuttleVendorId) ?? "") : "",
+      g.shuttlePickupLocation ?? "",
+      g.shuttlePickupTime ?? "",
+      g.parkingNeeded ? "Oui" : "Non",
+      g.arrivalNotes ?? "",
     ].join(";")
   );
   return [header, ...rows].join("\n");

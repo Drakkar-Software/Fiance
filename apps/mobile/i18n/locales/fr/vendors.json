@@ -125,6 +125,28 @@
   "tabPayments": "Paiements",
   "noPayments": "Aucun paiement enregistré",
   "deletePayment": "Supprimer ce paiement ?",
+  "tabDocuments": "Documents",
+  "noDocuments": "Aucun document",
+  "addDocument": "Ajouter un document",
+  "deleteDocument": "Supprimer ce document ?",
+  "documentUnavailable": "Fichier non inclus sur cet appareil — réattachez-le",
+  "documentLabelPlaceholder": "Nom du document (ex. Devis signé)",
+  "documentPickError": "Impossible d'importer le fichier",
+  "documents": {
+    "ownerType": {
+      "WEDDING": "Mariage",
+      "VENDOR": "Prestataire",
+      "GUEST": "Invité",
+      "LEGAL": "Administratif",
+      "HONEYMOON": "Lune de miel"
+    }
+  },
+  "comparison": {
+    "title": "Comparaison",
+    "retained": "Retenu (compte dans le budget)",
+    "retainedBadge": "Retenu",
+    "viewAll": "Voir tous les devis →"
+  },
   "pageTagline": "sur {{total}} réservés",
   "newKindTitle": "Choisissez un type",
   "newVendorEyebrow": "Nouveau prestataire",

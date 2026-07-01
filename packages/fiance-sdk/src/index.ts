@@ -7,6 +7,14 @@ export * from './domain/budget.js';
 export * from './domain/planning.js';
 export * from './domain/vendor-config.js';
 export * from './domain/registry.js';
+export * from './domain/wedding-party.js';
+export * from './domain/seating.js';
+export * from './domain/wedding-events.js';
+export * from './domain/meal-selections.js';
+export * from './domain/communication-templates.js';
+export * from './domain/documents.js';
+export * from './domain/legal-milestones.js';
+export * from './domain/honeymoon.js';
 
 // ─── Fiancé object model ──────────────────────────────────────────────────────
 export * from './objects/object-types.js';

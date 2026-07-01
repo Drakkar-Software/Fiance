@@ -35,6 +35,17 @@
   "child": "Child",
   "newGuest": "New guest",
   "guest": "Guest",
+  "rsvpLabel": "RSVP",
+  "sections": {
+    "contact": "Contact details",
+    "contactEmpty": "Add email, phone...",
+    "rsvpInvitation": "RSVP & invitation",
+    "placement": "Placement",
+    "mealDiet": "Meal & diet",
+    "transport": "Transport & logistics",
+    "postWeddingPending": "To do",
+    "notesEmpty": "No notes"
+  },
   "personalInfo": "Personal information",
   "firstName": "First name *",
   "lastName": "Last name *",
@@ -61,6 +72,30 @@
   "table": "Table",
   "unassigned": "Unassigned",
   "dietLabel": "Dietary requirements",
+  "mealChoiceSection": "Meal choice",
+  "logistics": {
+    "title": "Transport & arrival",
+    "transportModeLabel": "Transport mode",
+    "transportMode": {
+      "car": "Car",
+      "train": "Train",
+      "shuttle": "Shuttle",
+      "taxi": "Taxi / rideshare"
+    },
+    "shuttleVendor": "Shuttle",
+    "shuttlePickupLocation": "Pickup location",
+    "shuttlePickupTime": "Pickup time",
+    "parkingNeeded": "Parking spot needed",
+    "arrivalNotes": "Arrival notes",
+    "arrivalNotesPlaceholder": "E.g. TGV train 2:02pm"
+  },
+  "mealChoice": {
+    "STANDARD": "Standard",
+    "VEGETARIAN": "Vegetarian",
+    "VEGAN": "Vegan",
+    "CHILD": "Child",
+    "CUSTOM": "Custom"
+  },
   "dietDetails": "Details (allergies, restrictions...)",
   "notes": "Notes",
   "freeNotes": "Free notes...",
@@ -151,5 +186,76 @@
   "markAllSent": "Mark all as sent",
   "markAllNotSent": "Mark all as not sent",
   "sent": "Sent",
-  "notSent": "Not sent"
+  "notSent": "Not sent",
+  "communications": {
+    "templatesScreen": "Message templates",
+    "useTemplate": "Use a template",
+    "subject": "Subject",
+    "body": "Message",
+    "channel": {
+      "EMAIL": "Email",
+      "POSTAL": "Postal mail",
+      "SMS": "SMS",
+      "WHATSAPP": "WhatsApp",
+      "OTHER": "Other"
+    },
+    "templates": {
+      "newTemplate": "New template",
+      "editTemplate": "Edit template",
+      "namePlaceholder": "Template name",
+      "bodyPlaceholder": "Message content (e.g. Hello {{guest.firstName}}...)",
+      "nameAndBodyRequired": "Name and message are required",
+      "empty": "No templates yet",
+      "emptyDesc": "Create reusable templates for your invitations",
+      "deleteTemplate": "Delete this template?",
+      "deleteTemplateMsg": "This action cannot be undone."
+    }
+  },
+  "weddingParty": {
+    "title": "Wedding party & roles",
+    "role": {
+      "OFFICIANT": "Officiant",
+      "WITNESS": "Witness",
+      "BRIDESMAID": "Bridesmaid",
+      "GROOMSMAN": "Groomsman",
+      "RING_BEARER": "Ring bearer",
+      "FLOWER_GIRL": "Flower girl",
+      "USHER": "Usher",
+      "OTHER": "Other role"
+    },
+    "category": {
+      "ceremony": "Ceremony",
+      "party": "Wedding party",
+      "other": "Other roles"
+    },
+    "role_label": "Role",
+    "addRole": "Add a role",
+    "newRole": "New role",
+    "editRole": "Edit role",
+    "existingGuest": "Existing guest",
+    "displayNamePlaceholder": "Full name",
+    "displayNameRequired": "Name is required for an external person",
+    "selectGuestRequired": "Select a guest",
+    "empty": "No roles yet",
+    "emptyDesc": "Add witnesses, officiant, and wedding party to organize your ceremony",
+    "deleteRole": "Delete this role?",
+    "deleteRoleMsg": "This action cannot be undone."
+  },
+  "seatingConstraints": {
+    "title": "Seating constraints",
+    "type": {
+      "MUST_SIT_TOGETHER": "Together",
+      "MUST_NOT_SIT_TOGETHER": "Apart"
+    },
+    "newConstraint": "New constraint",
+    "editConstraint": "Edit constraint",
+    "labelPlaceholder": "Name (e.g. Smith family)",
+    "isHard": "Hard constraint",
+    "selectGuests": "Guests involved",
+    "minGuestsRequired": "Select at least 2 guests",
+    "empty": "No seating constraints",
+    "emptyDesc": "Note who should sit together or apart for the seating plan",
+    "deleteConstraint": "Delete this constraint?",
+    "deleteConstraintMsg": "This action cannot be undone."
+  }
 }

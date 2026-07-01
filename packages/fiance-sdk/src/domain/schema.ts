@@ -51,6 +51,13 @@ export interface Guest {
   phone: string | null;
   address: string | null;
   notes: string | null;
+  shuttleVendorId: string | null;
+  shuttlePickupLocation: string | null;
+  shuttlePickupTime: string | null;
+  parkingNeeded: boolean | null;
+  parkingNotes: string | null;
+  arrivalNotes: string | null;
+  transportMode: string | null; // TransportMode enum
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -87,6 +94,10 @@ export interface Vendor {
   customFields: string | null;
   notes: string | null;
   rating: number | null;
+  eventId: string | null;
+  comparisonGroupId: string | null; // same UUID = same comparison slot
+  isSelected: boolean | null; // winner for budget roll-up
+  sortOrder: number | null; // within comparison group
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -190,6 +201,7 @@ export interface AgendaEvent {
   location: string | null;
   vendorId: string | null;
   notes: string | null;
+  eventId: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -203,6 +215,24 @@ export interface DayOfItem {
   location: string | null;
   responsible: string | null;
   notes: string | null;
+  isPublic: boolean | null;
+  sortOrder: number | null;
+  eventId: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface WeddingEvent {
+  id: string;
+  type: string; // WeddingEventType enum
+  title: string;
+  date: string; // YYYY-MM-DD
+  startTime: string | null;
+  endTime: string | null;
+  venueName: string | null;
+  address: string | null;
+  notes: string | null;
+  isPrimary: boolean | null;
   isPublic: boolean | null;
   sortOrder: number | null;
   createdAt: string | null;
@@ -247,6 +277,98 @@ export interface Communication {
   date: string | null;
   notes: string | null;
   recipients: CommunicationRecipient[];
+  channel: string | null; // CommunicationChannel enum
+  subject: string | null;
+  body: string | null;
+  templateId: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface CommunicationTemplate {
+  id: string;
+  name: string;
+  channel: string; // CommunicationChannel enum
+  subject: string | null;
+  body: string; // may contain {{guest.firstName}}-style placeholders
+  isSystem: boolean | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface Document {
+  id: string;
+  ownerType: string; // DocumentOwnerType enum
+  ownerId: string | null; // vendorId, guestId, legalMilestoneId, etc.
+  label: string;
+  fileName: string;
+  mimeType: string | null;
+  localUri: string; // device path (native) or KV blob key (web); stripped on backup export
+  fileSize: number | null;
+  uploadedAt: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface LegalMilestone {
+  id: string;
+  type: string; // LegalMilestoneType enum
+  title: string;
+  dueDate: string | null;
+  completedDate: string | null;
+  status: string | null; // LegalMilestoneStatus enum
+  location: string | null;
+  notes: string | null;
+  documentIds: string[] | null;
+  reminderDaysBefore: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface HoneymoonPlan {
+  id: string;
+  destination: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  budgetTarget: number | null;
+  spentAmount: number | null;
+  notes: string | null;
+  itinerary: string | null; // JSON: { day, activity, bookingRef }[]
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface WeddingRoleAssignment {
+  id: string;
+  role: string; // GuestRole enum
+  guestId: string | null; // null = external person not in guest list
+  displayName: string; // required when guestId is null
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface SeatingConstraint {
+  id: string;
+  type: string; // SeatingConstraintType enum
+  guestIds: string[];
+  label: string | null;
+  isHard: boolean | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface GuestMealSelection {
+  id: string;
+  guestId: string;
+  eventId: string | null; // FK to WeddingEvent; null = single-meal wedding
+  mealChoice: string; // MealChoice enum or custom id
+  courses: string | null; // JSON: { starter?, main?, dessert? }
+  notes: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -270,3 +392,11 @@ export type AgendaEventInsert = AgendaEvent;
 export type DayOfItemInsert = DayOfItem;
 export type IdeaCollectionInsert = IdeaCollection;
 export type IdeaInsert = Idea;
+export type WeddingRoleAssignmentInsert = WeddingRoleAssignment;
+export type SeatingConstraintInsert = SeatingConstraint;
+export type WeddingEventInsert = WeddingEvent;
+export type GuestMealSelectionInsert = GuestMealSelection;
+export type CommunicationTemplateInsert = CommunicationTemplate;
+export type DocumentInsert = Document;
+export type LegalMilestoneInsert = LegalMilestone;
+export type HoneymoonPlanInsert = HoneymoonPlan;

@@ -7,7 +7,7 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
 import {
@@ -279,6 +279,17 @@ export default function SettingsScreen() {
           subtitle={t("publicPageDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/settings/public-page")}
+        />
+        <IconCard
+          icon={
+            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+              <FileText size={20} color="#b96a4a" />
+            </View>
+          }
+          title={t("documentsTitle")}
+          subtitle={t("documentsDesc")}
+          right={<ChevronRight size={18} color="#C0C0C8" />}
+          onPress={() => router.push("/settings/documents")}
         />
       </View>
 

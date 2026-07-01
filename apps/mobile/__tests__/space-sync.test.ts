@@ -81,6 +81,13 @@ vi.mock("@drakkar.software/starfish-spaces", () => ({
     vendor: "vendor", quotePricing: "quotePricing", vendorPayment: "vendorPayment",
     accommodation: "accommodation", gift: "gift", invitationType: "invitationType",
     communication: "communication",
+    weddingRoleAssignment: "weddingRoleAssignment", seatingConstraint: "seatingConstraint",
+    weddingEvent: "weddingEvent",
+    guestMealSelection: "guestMealSelection",
+    communicationTemplate: "communicationTemplate",
+    document: "document",
+    legalMilestone: "legalMilestone",
+    honeymoonPlan: "honeymoonPlan",
     taskCategory: "taskCategory", task: "task", agendaEvent: "agendaEvent",
     dayOfItem: "dayOfItem", ideaCollection: "ideaCollection", idea: "idea",
     rsvp: "rsvp",
@@ -95,12 +102,26 @@ vi.mock("@drakkar.software/starfish-spaces", () => ({
   vendorToNode: vi.fn(), quotePricingToNode: vi.fn(), vendorPaymentToNode: vi.fn(),
   accommodationToNode: vi.fn(), giftToNode: vi.fn(), invitationTypeToNode: vi.fn(),
   communicationToNode: vi.fn(),
+  weddingRoleAssignmentToNode: vi.fn(), seatingConstraintToNode: vi.fn(),
+  weddingEventToNode: vi.fn(),
+  guestMealSelectionToNode: vi.fn(),
+  communicationTemplateToNode: vi.fn(),
+  documentToNode: vi.fn(),
+  legalMilestoneToNode: vi.fn(),
+  honeymoonPlanToNode: vi.fn(),
   taskCategoryToNode: vi.fn(), taskToNode: vi.fn(), agendaEventToNode: vi.fn(),
   dayOfItemToNode: vi.fn(), ideaCollectionToNode: vi.fn(), ideaToNode: vi.fn(),
   weddingFromDoc: vi.fn(), guestGroupFromDoc: vi.fn(), guestFromDoc: vi.fn(),
   tableFromDoc: vi.fn(), vendorFromDoc: vi.fn(), quotePricingFromDoc: vi.fn(),
   vendorPaymentFromDoc: vi.fn(), accommodationFromDoc: vi.fn(), giftFromDoc: vi.fn(),
   invitationTypeFromDoc: vi.fn(), communicationFromDoc: vi.fn(),
+  weddingRoleAssignmentFromDoc: vi.fn(), seatingConstraintFromDoc: vi.fn(),
+  weddingEventFromDoc: vi.fn(),
+  guestMealSelectionFromDoc: vi.fn(),
+  communicationTemplateFromDoc: vi.fn(),
+  documentFromDoc: vi.fn(),
+  legalMilestoneFromDoc: vi.fn(),
+  honeymoonPlanFromDoc: vi.fn(),
   taskCategoryFromDoc: vi.fn(), taskFromDoc: vi.fn(),
   agendaEventFromDoc: vi.fn(), dayOfItemFromDoc: vi.fn(), ideaCollectionFromDoc: vi.fn(),
   ideaFromDoc: vi.fn(),
@@ -124,12 +145,20 @@ const emptyStore = { getState: () => ({
   wedding: null, guests: [], tables: [], groups: [],
   vendors: [], quotePricings: [], vendorPayments: [],
   accommodations: [], gifts: [], invitationTypes: [], communications: [],
+  weddingRoleAssignments: [], seatingConstraints: [], weddingEvents: [], mealSelections: [],
+  communicationTemplates: [], documents: [], legalMilestones: [], honeymoonPlans: [],
   categories: [], tasks: [], agendaEvents: [], dayOfItems: [],
   collections: [], ideas: [],
   setWedding: vi.fn(), setGroups: vi.fn(), setTables: vi.fn(), setGuests: vi.fn(),
   setVendors: vi.fn(), setQuotePricings: vi.fn(), setVendorPayments: vi.fn(),
   setAccommodations: vi.fn(), setGifts: vi.fn(), setInvitationTypes: vi.fn(),
   setCommunications: vi.fn(),
+  setWeddingRoleAssignments: vi.fn(), setSeatingConstraints: vi.fn(), setWeddingEvents: vi.fn(),
+  setMealSelections: vi.fn(),
+  setCommunicationTemplates: vi.fn(),
+  setDocuments: vi.fn(),
+  setLegalMilestones: vi.fn(),
+  setHoneymoonPlans: vi.fn(),
   setCategories: vi.fn(), setTasks: vi.fn(), setAgendaEvents: vi.fn(),
   setDayOfItems: vi.fn(), setCollections: vi.fn(), setIdeas: vi.fn(),
 }) };
@@ -147,6 +176,14 @@ vi.mock("@/store/useAccommodationsStore", () => ({ useAccommodationsStore: empty
 vi.mock("@/store/useGiftsStore", () => ({ useGiftsStore: emptyStore }));
 vi.mock("@/store/useInvitationTypesStore", () => ({ useInvitationTypesStore: emptyStore }));
 vi.mock("@/store/useCommunicationsStore", () => ({ useCommunicationsStore: emptyStore }));
+vi.mock("@/store/useWeddingPartyStore", () => ({ useWeddingPartyStore: emptyStore }));
+vi.mock("@/store/useSeatingConstraintsStore", () => ({ useSeatingConstraintsStore: emptyStore }));
+vi.mock("@/store/useWeddingEventsStore", () => ({ useWeddingEventsStore: emptyStore }));
+vi.mock("@/store/useMealSelectionsStore", () => ({ useMealSelectionsStore: emptyStore }));
+vi.mock("@/store/useCommunicationTemplatesStore", () => ({ useCommunicationTemplatesStore: emptyStore }));
+vi.mock("@/store/useDocumentsStore", () => ({ useDocumentsStore: emptyStore }));
+vi.mock("@/store/useLegalStore", () => ({ useLegalStore: emptyStore }));
+vi.mock("@/store/useHoneymoonStore", () => ({ useHoneymoonStore: emptyStore }));
 
 vi.mock("@/lib/rsvp-sync", () => ({
   applyRsvpSubmissionsByGuestId: vi.fn(),

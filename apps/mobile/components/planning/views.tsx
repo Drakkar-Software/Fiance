@@ -15,6 +15,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { TASK_STATUS_LABELS } from "@/db/types";
 import type { TaskStatus, Priority } from "@/db/types";
+import type { AgendaEvent } from "@/db/schema";
 import { FilterTabs } from "@/components/FilterTabs";
 import { DeadlineChip } from "@/components/DeadlineChip";
 import { PriorityBadge } from "@/components/PriorityBadge";
@@ -299,6 +300,16 @@ export function PreparationView() {
 
 // ─── Agenda View ─────────────────────────────────────────────────────────
 
+function groupByMonth(list: AgendaEvent[]): Record<string, AgendaEvent[]> {
+  const groups: Record<string, AgendaEvent[]> = {};
+  list.forEach((e) => {
+    const key = safeFormat(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: getDateLocale() });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+  return groups;
+}
+
 export function AgendaView() {
   const { t } = useTranslation("planning");
   const router = useRouter();
@@ -306,36 +317,96 @@ export function AgendaView() {
   const events = usePlanningStore((s) => s.agendaEvents);
   const vendors = useVendorsStore((s) => s.vendors);
 
-  const sortedEvents = useMemo(
-    () =>
-      [...events].sort((a, b) => {
-        const d = a.date.localeCompare(b.date);
-        if (d !== 0) return d;
-        return (a.time || "").localeCompare(b.time || "");
-      }),
-    [events]
-  );
-
-  const groupedByMonth = useMemo(() => {
-    const groups: Record<string, typeof sortedEvents> = {};
-    sortedEvents.forEach((e) => {
-      const key = safeFormat(new Date(e.date + "T00:00:00"), "MMMM yyyy", { locale: getDateLocale() });
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(e);
+  const { futureEvents, pastEvents } = useMemo(() => {
+    const now = new Date();
+    const byDateTimeAsc = (a: AgendaEvent, b: AgendaEvent) => {
+      const d = a.date.localeCompare(b.date);
+      if (d !== 0) return d;
+      return (a.time || "").localeCompare(b.time || "");
+    };
+    const future: AgendaEvent[] = [];
+    const past: AgendaEvent[] = [];
+    events.forEach((e) => {
+      (new Date(e.date + "T23:59:59") >= now ? future : past).push(e);
     });
-    return groups;
-  }, [sortedEvents]);
+    future.sort(byDateTimeAsc);
+    past.sort((a, b) => byDateTimeAsc(b, a)); // most-recent-first
+    return { futureEvents: future, pastEvents: past };
+  }, [events]);
 
-  const now = new Date();
-  const upcoming = sortedEvents.filter(
-    (e) => new Date(e.date + "T23:59:59") >= now
-  ).length;
+  const groupedFuture = useMemo(() => groupByMonth(futureEvents), [futureEvents]);
+  const groupedPast = useMemo(() => groupByMonth(pastEvents), [pastEvents]);
+
+  const renderEvent = (event: AgendaEvent, isPast: boolean) => {
+    const vendor = event.vendorId
+      ? vendors.find((v) => v.id === event.vendorId)
+      : null;
+
+    return (
+      <Pressable
+        key={event.id}
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/planning/agenda-event",
+            params: { id: event.id },
+          })
+        }
+        className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
+          isPast
+            ? "border-hair opacity-60"
+            : "border-hair"
+        }`}
+      >
+        <View className="flex-row items-start">
+          <View className="w-14 items-center mr-3">
+            <Display size={20} weight="500" color="#b96a4a">
+              {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
+            </Display>
+            <Text className="text-xs text-mute capitalize">
+              {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
+            </Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-base font-medium text-ink">
+              {event.title}
+            </Text>
+            <View className="flex-row items-center gap-3 mt-1 flex-wrap">
+              {event.time && (
+                <View className="flex-row items-center gap-1">
+                  <Clock size={12} color="#9CA3AF" />
+                  <Text className="text-xs text-mute">
+                    {event.time}
+                    {event.endTime ? ` - ${event.endTime}` : ""}
+                  </Text>
+                </View>
+              )}
+              {event.location && (
+                <View className="flex-row items-center gap-1">
+                  <MapPin size={12} color="#9CA3AF" />
+                  <Text className="text-xs text-mute" numberOfLines={1}>
+                    {event.location}
+                  </Text>
+                </View>
+              )}
+              {vendor && (
+                <View className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900">
+                  <Text className="text-xs text-primary-500 font-medium">
+                    {vendor.name}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <View className="relative flex-1">
       <View className="px-4 pt-3 pb-3">
         <Text className="text-sm text-mute">
-          {`${events.length} ${t("appointments")} · ${upcoming} ${t("upcoming")}`}
+          {`${events.length} ${t("appointments")} · ${futureEvents.length} ${t("upcoming")}`}
         </Text>
       </View>
 
@@ -359,75 +430,31 @@ export function AgendaView() {
         </View>
       ) : (
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          {Object.entries(groupedByMonth).map(([month, monthEvents]) => (
-            <CollapsibleSection key={month} title={month} count={monthEvents.length} defaultExpanded>
-              {monthEvents.map((event) => {
-                const vendor = event.vendorId
-                  ? vendors.find((v) => v.id === event.vendorId)
-                  : null;
-                const isPast = new Date(event.date + "T23:59:59") < now;
+          {futureEvents.length > 0 && (
+            <>
+              <Label size={11} color="#9CA3AF" style={{ marginTop: 4, marginBottom: 4 }}>
+                {t("upcoming")}
+              </Label>
+              {Object.entries(groupedFuture).map(([month, monthEvents]) => (
+                <CollapsibleSection key={month} title={month} count={monthEvents.length} defaultExpanded>
+                  {monthEvents.map((event) => renderEvent(event, false))}
+                </CollapsibleSection>
+              ))}
+            </>
+          )}
 
-                return (
-                  <Pressable
-                    key={event.id}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/(tabs)/planning/agenda-event",
-                        params: { id: event.id },
-                      })
-                    }
-                    className={`bg-accent-card rounded-2xl p-3.5 mb-2 border active:opacity-80 ${
-                      isPast
-                        ? "border-hair opacity-60"
-                        : "border-hair"
-                    }`}
-                  >
-                    <View className="flex-row items-start">
-                      <View className="w-14 items-center mr-3">
-                        <Display size={20} weight="500" color="#b96a4a">
-                          {safeFormat(new Date(event.date + "T00:00:00"), "dd")}
-                        </Display>
-                        <Text className="text-xs text-mute capitalize">
-                          {safeFormat(new Date(event.date + "T00:00:00"), "EEE", { locale: getDateLocale() })}
-                        </Text>
-                      </View>
-                      <View className="flex-1">
-                        <Text className="text-base font-medium text-ink">
-                          {event.title}
-                        </Text>
-                        <View className="flex-row items-center gap-3 mt-1 flex-wrap">
-                          {event.time && (
-                            <View className="flex-row items-center gap-1">
-                              <Clock size={12} color="#9CA3AF" />
-                              <Text className="text-xs text-mute">
-                                {event.time}
-                                {event.endTime ? ` - ${event.endTime}` : ""}
-                              </Text>
-                            </View>
-                          )}
-                          {event.location && (
-                            <View className="flex-row items-center gap-1">
-                              <MapPin size={12} color="#9CA3AF" />
-                              <Text className="text-xs text-mute" numberOfLines={1}>
-                                {event.location}
-                              </Text>
-                            </View>
-                          )}
-                          {vendor && (
-                            <View className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900">
-                              <Text className="text-xs text-primary-500 font-medium">
-                                {vendor.name}
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </CollapsibleSection>
-          ))}
+          {pastEvents.length > 0 && (
+            <>
+              <Label size={11} color="#9CA3AF" style={{ marginTop: 12, marginBottom: 4 }}>
+                {t("past")}
+              </Label>
+              {Object.entries(groupedPast).map(([month, monthEvents]) => (
+                <CollapsibleSection key={month} title={month} count={monthEvents.length} defaultExpanded>
+                  {monthEvents.map((event) => renderEvent(event, true))}
+                </CollapsibleSection>
+              ))}
+            </>
+          )}
           <View className="h-24" />
         </ScrollView>
       )}

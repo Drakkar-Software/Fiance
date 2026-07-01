@@ -1,22 +1,27 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Mail, Trash2, Pencil, ChevronRight } from "lucide-react-native";
+import { Mail, Trash2, Pencil, ChevronRight, FileText } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
+import { useCommunicationTemplatesStore } from "@/store/useCommunicationTemplatesStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
-import { FormCard, DateRow, InputRow } from "@/components/FormSection";
+import { FormCard, DateRow, InputRow, ChipSelect } from "@/components/FormSection";
+import { StackMenu } from "@/components/StackMenu";
 import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
+import { renderTemplate, COMMUNICATION_CHANNEL_LABELS, type CommunicationChannel } from "@fiance/sdk";
 import type { Communication } from "@/db/schema";
 
-type FormState = { label: string; date: string; notes: string };
-const EMPTY_FORM: FormState = { label: "", date: "", notes: "" };
+type FormState = { label: string; date: string; notes: string; channel: CommunicationChannel; subject: string; body: string; templateId: string };
+const EMPTY_FORM: FormState = { label: "", date: "", notes: "", channel: "EMAIL", subject: "", body: "", templateId: "" };
+const CHANNELS: CommunicationChannel[] = ["EMAIL", "POSTAL", "SMS", "WHATSAPP", "OTHER"];
 
 export default function CommunicationsScreen() {
   const { t } = useTranslation("guests");
@@ -26,6 +31,22 @@ export default function CommunicationsScreen() {
   const updateCommunication = useCommunicationsStore((s) => s.updateCommunication);
   const removeCommunication = useCommunicationsStore((s) => s.removeCommunication);
   const guests = useGuestsStore((s) => s.guests);
+  const templates = useCommunicationTemplatesStore((s) => s.communicationTemplates);
+  const wedding = useWeddingStore((s) => s.wedding);
+
+  const applyTemplate = (form: FormState, templateId: string): FormState => {
+    const template = templates.find((tpl) => tpl.id === templateId);
+    if (!template) return { ...form, templateId };
+    const rendered = renderTemplate(template, null, wedding ?? null);
+    analytics.capture("communication_template_used");
+    return {
+      ...form,
+      templateId,
+      channel: template.channel as CommunicationChannel,
+      subject: rendered.subject ?? form.subject,
+      body: rendered.body,
+    };
+  };
 
   const [showAdd, setShowAdd] = useState(false);
   const [newForm, setNewForm] = useState<FormState>(EMPTY_FORM);
@@ -52,6 +73,10 @@ export default function CommunicationsScreen() {
       date: newForm.date || null,
       notes: newForm.notes.trim() || null,
       recipients: [],
+      channel: newForm.channel,
+      subject: newForm.subject.trim() || null,
+      body: newForm.body.trim() || null,
+      templateId: newForm.templateId || null,
       createdAt: now,
       updatedAt: now,
     } as Communication);
@@ -61,7 +86,15 @@ export default function CommunicationsScreen() {
 
   const handleEdit = (comm: Communication) => {
     setEditingId(comm.id);
-    setEditForm({ label: comm.label, date: comm.date ?? "", notes: comm.notes ?? "" });
+    setEditForm({
+      label: comm.label,
+      date: comm.date ?? "",
+      notes: comm.notes ?? "",
+      channel: (comm.channel as CommunicationChannel) || "EMAIL",
+      subject: comm.subject ?? "",
+      body: comm.body ?? "",
+      templateId: comm.templateId ?? "",
+    });
     setShowAdd(false);
   };
 
@@ -71,12 +104,31 @@ export default function CommunicationsScreen() {
       label: editForm.label.trim(),
       date: editForm.date || null,
       notes: editForm.notes.trim() || null,
+      channel: editForm.channel,
+      subject: editForm.subject.trim() || null,
+      body: editForm.body.trim() || null,
+      templateId: editForm.templateId || null,
     });
     resetForm();
   };
 
   return (
     <View className="relative flex-1 bg-accent-paper">
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <StackMenu
+              items={[
+                {
+                  label: t("communications.templatesScreen"),
+                  icon: FileText,
+                  onPress: () => router.push("/(tabs)/guests/communications/templates"),
+                },
+              ]}
+            />
+          ),
+        }}
+      />
       {communications.length === 0 && !showAdd ? (
         <EmptyState
           icon={Mail}
@@ -98,11 +150,41 @@ export default function CommunicationsScreen() {
                 onChangeText={(v) => setNewForm((f) => ({ ...f, label: v }))}
                 autoFocus
               />
+              {templates.length > 0 && (
+                <View className="mb-3">
+                  <Text className="text-xs text-mute mb-2 font-medium">{t("communications.useTemplate")}</Text>
+                  <ChipSelect
+                    options={["", ...templates.map((tpl) => tpl.id)]}
+                    value={newForm.templateId}
+                    onChange={(id) => setNewForm((f) => applyTemplate(f, id))}
+                    labels={Object.fromEntries([["", t("none")], ...templates.map((tpl) => [tpl.id, tpl.name])])}
+                  />
+                </View>
+              )}
+              <View className="mb-3">
+                <ChipSelect
+                  options={CHANNELS}
+                  value={newForm.channel}
+                  onChange={(channel) => setNewForm((f) => ({ ...f, channel }))}
+                  labels={Object.fromEntries(CHANNELS.map((c) => [c, t(COMMUNICATION_CHANNEL_LABELS[c])])) as Record<CommunicationChannel, string>}
+                />
+              </View>
               <FormCard>
                 <DateRow
                   label={t("communicationDate")}
                   value={newForm.date}
                   onChange={(v) => setNewForm((f) => ({ ...f, date: v }))}
+                />
+                <InputRow
+                  label={t("communications.subject")}
+                  value={newForm.subject}
+                  onChangeText={(v) => setNewForm((f) => ({ ...f, subject: v }))}
+                />
+                <InputRow
+                  label={t("communications.body")}
+                  value={newForm.body}
+                  onChangeText={(v) => setNewForm((f) => ({ ...f, body: v }))}
+                  multiline
                 />
                 <InputRow
                   label={t("notes")}
@@ -146,11 +228,41 @@ export default function CommunicationsScreen() {
                     autoFocus
                     selectTextOnFocus
                   />
+                  {templates.length > 0 && (
+                    <View className="mb-3">
+                      <Text className="text-xs text-mute mb-2 font-medium">{t("communications.useTemplate")}</Text>
+                      <ChipSelect
+                        options={["", ...templates.map((tpl) => tpl.id)]}
+                        value={editForm.templateId}
+                        onChange={(id) => setEditForm((f) => applyTemplate(f, id))}
+                        labels={Object.fromEntries([["", t("none")], ...templates.map((tpl) => [tpl.id, tpl.name])])}
+                      />
+                    </View>
+                  )}
+                  <View className="mb-3">
+                    <ChipSelect
+                      options={CHANNELS}
+                      value={editForm.channel}
+                      onChange={(channel) => setEditForm((f) => ({ ...f, channel }))}
+                      labels={Object.fromEntries(CHANNELS.map((c) => [c, t(COMMUNICATION_CHANNEL_LABELS[c])])) as Record<CommunicationChannel, string>}
+                    />
+                  </View>
                   <FormCard>
                     <DateRow
                       label={t("communicationDate")}
                       value={editForm.date}
                       onChange={(v) => setEditForm((f) => ({ ...f, date: v }))}
+                    />
+                    <InputRow
+                      label={t("communications.subject")}
+                      value={editForm.subject}
+                      onChangeText={(v) => setEditForm((f) => ({ ...f, subject: v }))}
+                    />
+                    <InputRow
+                      label={t("communications.body")}
+                      value={editForm.body}
+                      onChangeText={(v) => setEditForm((f) => ({ ...f, body: v }))}
+                      multiline
                     />
                     <InputRow
                       label={t("notes")}
@@ -191,8 +303,18 @@ export default function CommunicationsScreen() {
                     </View>
                     <View className="flex-1">
                       <Text className="text-base font-semibold text-ink">{comm.label}</Text>
-                      {comm.date ? (
-                        <Text className="text-xs text-mute mt-0.5">{comm.date}</Text>
+                      <View className="flex-row items-center gap-1.5 mt-0.5">
+                        {comm.date ? <Text className="text-xs text-mute">{comm.date}</Text> : null}
+                        {comm.channel ? (
+                          <View className="px-1.5 py-0.5 rounded bg-accent-clay-soft dark:bg-primary-900">
+                            <Text className="text-[10px] font-semibold text-primary-600">
+                              {t(COMMUNICATION_CHANNEL_LABELS[comm.channel as CommunicationChannel])}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+                      {comm.subject ? (
+                        <Text className="text-xs text-mute mt-0.5" numberOfLines={1}>{comm.subject}</Text>
                       ) : null}
                     </View>
                   </View>

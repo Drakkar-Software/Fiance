@@ -1,7 +1,8 @@
-import { addMonths } from "date-fns";
+import { addMonths, addDays } from "date-fns";
 import {
   BACKUP_VERSION,
   createBackupDocument,
+  DEFAULT_LEGAL_MILESTONES,
   type BackupData,
   type WeddingSnapshot,
 } from "@fiance/sdk";
@@ -29,6 +30,11 @@ export interface SampleProfile {
   giftCount: number;
   communicationCount: number;
   includeBothDays: boolean;
+  weddingPartyCount: number;
+  seatingConstraintCount: number;
+  weddingEventCount: number;
+  legalMilestoneCount: number;
+  includeHoneymoonPlan: boolean;
 }
 
 function id(prefix: string, index: number): string {
@@ -80,6 +86,11 @@ const VENDOR_DEFS: Array<{
   { type: "OFFICIANT", name: "Cérémonie laïque par Élodie", status: "BOOKED", basePrice: 350 },
   { type: "FURNITURE_RENTAL", name: "Location Élégance", status: "BOOKED", basePrice: 1100 },
   { type: "KIDS_ENTERTAINER", name: "Atelier Petits Invités", status: "PROSPECT", basePrice: 280 },
+  // Comparison-group demo vendors (appended so existing indices/counts are untouched):
+  { type: "CATERER", name: "Traiteur du Marché", status: "QUOTE_RECEIVED", basePrice: 0, pppSource: "FULL" },
+  { type: "CATERER", name: "Table de Provence", status: "NEGOTIATING", basePrice: 0, pppSource: "FULL" },
+  { type: "PHOTOGRAPHER", name: "Regard Photographie", status: "QUOTE_RECEIVED", basePrice: 1900 },
+  { type: "PHOTOGRAPHER", name: "Instants Précieux", status: "PROSPECT", basePrice: 2100 },
 ];
 
 const TASK_TITLES = [
@@ -205,6 +216,16 @@ const GIFT_ITEMS = [
   { title: "Nuit dans un château", category: "voyage", price: 420 },
 ];
 
+const WEDDING_PARTY_ROLES: Array<{ role: string; external?: string }> = [
+  { role: "WITNESS" },
+  { role: "WITNESS" },
+  { role: "OFFICIANT", external: "Élodie Martin" },
+  { role: "BRIDESMAID" },
+  { role: "BRIDESMAID" },
+  { role: "BRIDESMAID" },
+  { role: "BRIDESMAID" },
+];
+
 const COMMUNICATION_LABELS = [
   "Save-the-date",
   "Faire-part officiels",
@@ -262,6 +283,7 @@ function buildGuests(
   tables: ReturnType<typeof buildTables>,
   accommodations: ReturnType<typeof buildAccommodations>,
   includeBothDays: boolean,
+  vendors: ReturnType<typeof buildVendors>,
 ) {
   const invitationTypes = includeBothDays
     ? ["FULL", "COCKTAIL", "CEREMONY", "BOTH_DAYS"]
@@ -269,6 +291,8 @@ function buildGuests(
   const rsvpStatuses = ["ACCEPTED", "ACCEPTED", "ACCEPTED", "PENDING", "DECLINED", "MAYBE"];
   const diets = ["STANDARD", "STANDARD", "VEGETARIAN", "VEGAN", "ALLERGY"];
   const sides = ["partner1", "partner2", "both"];
+  const shuttleVendor = vendors.find((v) => v.type === "SHUTTLE") ?? null;
+  const transportModes = ["car", "train", "shuttle", "taxi"];
 
   return Array.from({ length: count }, (_, i) => {
     const group = groups[i % groups.length];
@@ -276,6 +300,7 @@ function buildGuests(
     const accommodation = i % 5 === 0 ? accommodations[i % accommodations.length] : null;
     const invitationType = invitationTypes[i % invitationTypes.length];
     const needsSleeping = invitationType === "BOTH_DAYS" || (i % 7 === 0 && includeBothDays);
+    const usesShuttle = shuttleVendor && i % 5 === 0;
 
     return {
       id: id(`${prefix}-g`, i + 1),
@@ -303,6 +328,13 @@ function buildGuests(
       phone: i % 4 === 0 ? `06${String(10000000 + i).slice(-8)}` : null,
       address: i % 6 === 0 ? `${i + 1} rue de la Paix, 75002 Paris` : null,
       notes: i % 15 === 0 ? "Arrive en retard à la cérémonie" : null,
+      shuttleVendorId: usesShuttle ? shuttleVendor!.id : null,
+      shuttlePickupLocation: usesShuttle ? "Gare centrale" : null,
+      shuttlePickupTime: usesShuttle ? "17:30" : null,
+      parkingNeeded: i % 6 === 1,
+      parkingNotes: null,
+      arrivalNotes: i % 12 === 0 ? "Train TGV 14h02" : null,
+      transportMode: transportModes[i % transportModes.length],
       createdAt: TS,
       updatedAt: TS,
     };
@@ -310,7 +342,17 @@ function buildGuests(
 }
 
 function buildVendors(prefix: string, count: number) {
-  return VENDOR_DEFS.slice(0, count).map((v, i) => ({
+  const sliced = VENDOR_DEFS.slice(0, count);
+  const typeCounts = new Map<string, number>();
+  for (const v of sliced) typeCounts.set(v.type, (typeCounts.get(v.type) ?? 0) + 1);
+  const typeSortIndex = new Map<string, number>();
+
+  return sliced.map((v, i) => {
+    const isComparisonGroup = (typeCounts.get(v.type) ?? 0) > 1;
+    const sortOrder = isComparisonGroup ? (typeSortIndex.get(v.type) ?? 0) : null;
+    if (isComparisonGroup) typeSortIndex.set(v.type, (sortOrder ?? 0) + 1);
+
+    return {
     id: id(`${prefix}-v`, i + 1),
     type: v.type,
     name: v.name,
@@ -332,9 +374,14 @@ function buildVendors(prefix: string, count: number) {
     customFields: null,
     notes: i % 2 === 0 ? "Contrat signé, acompte versé." : null,
     rating: v.status === "BOOKED" ? 4 + (i % 2) : null,
+    eventId: null,
+    comparisonGroupId: isComparisonGroup ? `${prefix}-cmp-${v.type.toLowerCase()}` : null,
+    isSelected: isComparisonGroup ? v.status === "BOOKED" : null,
+    sortOrder,
     createdAt: TS,
     updatedAt: TS,
-  }));
+    };
+  });
 }
 
 function buildQuotePricings(prefix: string, vendors: ReturnType<typeof buildVendors>) {
@@ -459,6 +506,7 @@ function buildAgendaEvents(
     location: i % 2 === 0 ? "Sur place" : "Visioconférence",
     vendorId: vendors[i % vendors.length]?.id ?? null,
     notes: null,
+    eventId: null,
     createdAt: TS,
     updatedAt: TS,
   }));
@@ -476,9 +524,58 @@ function buildDayOfItems(prefix: string, count: number, weddingDate: string) {
     notes: null,
     isPublic: item.public ?? false,
     sortOrder: i + 1,
+    eventId: null,
     createdAt: TS,
     updatedAt: TS,
   }));
+}
+
+const WEDDING_EVENT_DEFS: Array<{ type: string; title: string; dayOffset: number; startTime: string; isPrimary: boolean }> = [
+  { type: "CIVIL", title: "Cérémonie civile", dayOffset: 0, startTime: "10:00", isPrimary: false },
+  { type: "DINNER", title: "Réception", dayOffset: 0, startTime: "19:00", isPrimary: true },
+  { type: "BRUNCH", title: "Brunch du lendemain", dayOffset: 1, startTime: "11:00", isPrimary: false },
+  { type: "COCKTAIL", title: "Cocktail de bienvenue", dayOffset: -1, startTime: "18:00", isPrimary: false },
+];
+
+function buildWeddingEvents(prefix: string, count: number, weddingDate: string, venueName: string) {
+  const base = new Date(weddingDate);
+  return WEDDING_EVENT_DEFS.slice(0, count).map((def, i) => ({
+    id: id(`${prefix}-we`, i + 1),
+    type: def.type,
+    title: def.title,
+    date: addDays(base, def.dayOffset).toISOString().slice(0, 10),
+    startTime: def.startTime,
+    endTime: null,
+    venueName: def.isPrimary ? venueName : null,
+    address: null,
+    notes: null,
+    isPrimary: def.isPrimary,
+    isPublic: true,
+    sortOrder: i + 1,
+    createdAt: TS,
+    updatedAt: TS,
+  }));
+}
+
+function buildMealSelections(
+  prefix: string,
+  guests: ReturnType<typeof buildGuests>,
+  weddingEvents: ReturnType<typeof buildWeddingEvents>,
+) {
+  const primaryEvent = weddingEvents.find((e) => e.isPrimary) ?? weddingEvents[0] ?? null;
+  const choices = ["VEGETARIAN", "VEGAN", "CHILD", "CUSTOM"];
+  return guests
+    .filter((_, i) => i % 8 === 0)
+    .map((g, i) => ({
+      id: id(`${prefix}-ms`, i + 1),
+      guestId: g.id,
+      eventId: primaryEvent?.id ?? null,
+      mealChoice: choices[i % choices.length],
+      courses: i % 2 === 0 ? json({ starter: "Velouté de saison", main: "Filet de bœuf", dessert: "Tarte au citron" }) : null,
+      notes: null,
+      createdAt: TS,
+      updatedAt: TS,
+    }));
 }
 
 function buildIdeaCollections(prefix: string, count: number) {
@@ -581,6 +678,7 @@ function buildCommunications(
   count: number,
   guests: ReturnType<typeof buildGuests>,
 ) {
+  const channels = ["EMAIL", "POSTAL"];
   return COMMUNICATION_LABELS.slice(0, count).map((label, i) => ({
     id: id(`${prefix}-comm`, i + 1),
     label,
@@ -590,9 +688,80 @@ function buildCommunications(
       guestId: g.id,
       sentAt: TS,
     })),
+    channel: channels[i % channels.length],
+    subject: label,
+    body: `Bonjour {{guest.firstName}}, ceci est votre message « ${label} ».`,
+    templateId: null,
     createdAt: TS,
     updatedAt: TS,
   }));
+}
+
+function buildWeddingRoleAssignments(
+  prefix: string,
+  count: number,
+  guests: ReturnType<typeof buildGuests>,
+) {
+  return WEDDING_PARTY_ROLES.slice(0, count).map((def, i) => {
+    const guest = def.external ? null : guests[i % guests.length];
+    return {
+      id: id(`${prefix}-wra`, i + 1),
+      role: def.role,
+      guestId: guest ? guest.id : null,
+      displayName: def.external ?? "",
+      phone: null,
+      email: null,
+      notes: null,
+      sortOrder: i + 1,
+      createdAt: TS,
+      updatedAt: TS,
+    };
+  });
+}
+
+function buildSeatingConstraints(
+  prefix: string,
+  count: number,
+  guests: ReturnType<typeof buildGuests>,
+) {
+  const defs: Array<{ type: string; label: string; isHard: boolean; guestIds: string[] }> = [
+    {
+      type: "MUST_SIT_TOGETHER",
+      label: "Famille Dupont",
+      isHard: true,
+      guestIds: [guests[0]?.id, guests[1]?.id].filter((v): v is string => !!v),
+    },
+    {
+      type: "MUST_NOT_SIT_TOGETHER",
+      label: "Ex-conjoints",
+      isHard: true,
+      guestIds: [guests[2]?.id, guests[3]?.id].filter((v): v is string => !!v),
+    },
+    {
+      type: "MUST_SIT_TOGETHER",
+      label: "Enfants avec parents",
+      isHard: false,
+      guestIds: [guests[4]?.id, guests[5]?.id].filter((v): v is string => !!v),
+    },
+    {
+      type: "MUST_NOT_SIT_TOGETHER",
+      label: "Collègues rivaux",
+      isHard: false,
+      guestIds: [guests[6]?.id, guests[7]?.id].filter((v): v is string => !!v),
+    },
+  ];
+  return defs
+    .slice(0, count)
+    .filter((c) => c.guestIds.length >= 2)
+    .map((c, i) => ({
+      id: id(`${prefix}-sc`, i + 1),
+      type: c.type,
+      guestIds: c.guestIds,
+      label: c.label,
+      isHard: c.isHard,
+      createdAt: TS,
+      updatedAt: TS,
+    }));
 }
 
 function buildCategoryBudgets(budget: number) {
@@ -610,6 +779,89 @@ function buildCategoryBudgets(budget: number) {
     cake: Math.round(budget * 0.02),
     other: Math.round(budget * 0.02),
   });
+}
+
+function buildDocuments(prefix: string, vendors: ReturnType<typeof buildVendors>) {
+  const caterer = vendors.find((v) => v.type === "CATERER") ?? vendors[0] ?? null;
+  if (!caterer) return [];
+  return [
+    {
+      id: id(`${prefix}-doc`, 1),
+      ownerType: "VENDOR",
+      ownerId: caterer.id,
+      label: "Devis signé",
+      fileName: "devis-traiteur.pdf",
+      mimeType: "application/pdf",
+      localUri: "", // metadata-only sample, no binary
+      fileSize: 245_000,
+      uploadedAt: TS,
+      notes: null,
+      createdAt: TS,
+      updatedAt: TS,
+    },
+  ];
+}
+
+function buildCommunicationTemplates(prefix: string) {
+  const defs = [
+    { name: "Save-the-date", channel: "EMAIL", subject: "Réservez la date !", body: "Bonjour {{guest.firstName}}, {{wedding.partner1Name}} & {{wedding.partner2Name}} se marient le {{wedding.weddingDate}} !" },
+    { name: "Faire-part officiel", channel: "POSTAL", subject: "Faire-part de mariage", body: "Bonjour {{guest.firstName}}, vous êtes invité·e au mariage le {{wedding.weddingDate}} à {{wedding.venueName}}." },
+    { name: "Relance RSVP", channel: "EMAIL", subject: "N'oubliez pas de répondre !", body: "Bonjour {{guest.firstName}}, merci de confirmer votre présence au plus vite." },
+  ];
+  return defs.map((def, i) => ({
+    id: id(`${prefix}-ct`, i + 1),
+    name: def.name,
+    channel: def.channel,
+    subject: def.subject,
+    body: def.body,
+    isSystem: true,
+    createdAt: TS,
+    updatedAt: TS,
+  }));
+}
+
+function buildLegalMilestones(prefix: string, count: number, weddingDate: string) {
+  return DEFAULT_LEGAL_MILESTONES.slice(0, count).map((def, i) => {
+    const done = i < 2;
+    return {
+      id: id(`${prefix}-lm`, i + 1),
+      type: def.type,
+      title: def.title,
+      dueDate: addMonths(new Date(weddingDate), done ? -3 : -1).toISOString().slice(0, 10),
+      completedDate: done ? addMonths(new Date(weddingDate), -4).toISOString().slice(0, 10) : null,
+      status: done ? "DONE" : "TODO",
+      location: def.type === "CIVIL_APPOINTMENT" ? "Mairie du 11e" : null,
+      notes: null,
+      documentIds: null,
+      reminderDaysBefore: 14,
+      createdAt: TS,
+      updatedAt: TS,
+    };
+  });
+}
+
+function buildHoneymoonPlan(prefix: string, include: boolean, weddingDate: string) {
+  if (!include) return [];
+  const start = addDays(new Date(weddingDate), 3);
+  const end = addDays(start, 7);
+  return [
+    {
+      id: id(`${prefix}-hp`, 1),
+      destination: "Toscane, Italie",
+      startDate: start.toISOString().slice(0, 10),
+      endDate: end.toISOString().slice(0, 10),
+      budgetTarget: 3500,
+      spentAmount: 1200,
+      notes: "Vol + location de voiture réservés. Reste à faire : hôtels à Florence et Sienne.",
+      itinerary: json([
+        { day: 1, activity: "Arrivée à Florence, check-in hôtel", bookingRef: null },
+        { day: 3, activity: "Route vers Sienne", bookingRef: null },
+        { day: 5, activity: "Dégustation vin Chianti", bookingRef: "CHI-2026-0472" },
+      ]),
+      createdAt: TS,
+      updatedAt: TS,
+    },
+  ];
 }
 
 function buildFaq() {
@@ -642,6 +894,7 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     tables,
     accommodations,
     profile.includeBothDays,
+    vendors,
   );
   const taskCategories = buildTaskCategories(prefix);
   const quotePricings = buildQuotePricings(prefix, vendors);
@@ -654,6 +907,14 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
   const gifts = buildGifts(prefix, profile.giftCount);
   const communications = buildCommunications(prefix, profile.communicationCount, guests);
   const invitationTypes = buildInvitationTypes(profile.includeBothDays);
+  const weddingRoleAssignments = buildWeddingRoleAssignments(prefix, profile.weddingPartyCount, guests);
+  const seatingConstraints = buildSeatingConstraints(prefix, profile.seatingConstraintCount, guests);
+  const weddingEvents = buildWeddingEvents(prefix, profile.weddingEventCount, profile.weddingDate, profile.venueName);
+  const guestMealSelections = buildMealSelections(prefix, guests, weddingEvents);
+  const communicationTemplates = buildCommunicationTemplates(prefix);
+  const documents = buildDocuments(prefix, vendors);
+  const legalMilestones = buildLegalMilestones(prefix, profile.legalMilestoneCount, profile.weddingDate);
+  const honeymoonPlans = buildHoneymoonPlan(prefix, profile.includeHoneymoonPlan, profile.weddingDate);
 
   return {
     wedding: {
@@ -687,6 +948,14 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     gifts,
     invitationTypes,
     communications,
+    weddingRoleAssignments,
+    seatingConstraints,
+    weddingEvents,
+    guestMealSelections,
+    communicationTemplates,
+    documents,
+    legalMilestones,
+    honeymoonPlans,
   };
 }
 

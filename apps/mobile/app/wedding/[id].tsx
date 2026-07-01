@@ -134,6 +134,7 @@ export default function WeddingPublicPage() {
   const timeline = page?.timeline ?? [];
   const faq = page?.faq ?? [];
   const publicGifts = (page?.gifts ?? []).filter((g) => !g.claimed);
+  const events = page?.events ?? [];
 
   const coupleNames = [about?.partner1Name, about?.partner2Name].filter(Boolean).join(" & ");
   const formattedDate = about?.weddingDate
@@ -270,6 +271,33 @@ export default function WeddingPublicPage() {
             <View className="h-px flex-1 bg-accent-rose-light" />
           </View>
         </View>
+
+        {/* Events (v2: multi-venue/day) */}
+        {events.length > 0 && (
+          <View className="mt-2 pb-4 px-5">
+            <View className="flex-row items-center gap-2 mb-4">
+              <MapPin size={18} color="#C9956B" />
+              <Display size={20} italic>{t("events")}</Display>
+            </View>
+            {events.map((e) => (
+              <View key={e.id} className="bg-accent-card rounded-2xl p-4 mb-3 shadow-sm" style={{ shadowColor: "#b96a4a", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
+                <Text className="text-base font-semibold text-ink">{e.title}</Text>
+                <Text className="text-xs text-mute mt-0.5">
+                  {safeFormat(new Date(e.date), "EEEE d MMMM", { locale: getDateLocale() })}
+                  {e.time ? ` · ${e.time}` : ""}
+                </Text>
+                {e.venueName && (
+                  <View className="flex-row items-center gap-1.5 mt-2">
+                    <MapPin size={12} color="#C9956B" />
+                    <Text className="text-xs text-accent-gold font-medium">
+                      {e.venueName}{e.address ? ` — ${e.address}` : ""}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Timeline */}
         {timeline.length > 0 && (

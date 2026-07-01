@@ -109,6 +109,7 @@ export interface BudgetCategoryItem {
     vendor: Vendor;
     calculatedTotal: number;
     isBooked: boolean;
+    countsTowardBudget: boolean;
   }>;
   totalEngaged: number;
   totalConfirmed: number;
@@ -157,8 +158,11 @@ export function computeBudgetSummary(
             vendorPricings
           );
           const isBooked = vendor.status === "BOOKED";
+          // Vendors in a comparison group that lost out (isSelected === false) are
+          // quotes, not commitments — they never count toward engaged/confirmed spend.
+          const countsTowardBudget = !(vendor.comparisonGroupId && vendor.isSelected === false);
 
-          if (vendor.status !== "CANCELLED") {
+          if (vendor.status !== "CANCELLED" && countsTowardBudget) {
             totalEngaged += calculatedTotal;
             if (isBooked) totalConfirmed += calculatedTotal;
           }
@@ -174,12 +178,12 @@ export function computeBudgetSummary(
             if (vendor.depositPaid) depositsPaid += vendor.depositAmount;
           }
 
-          return { vendor, calculatedTotal, isBooked };
+          return { vendor, calculatedTotal, isBooked, countsTowardBudget };
         });
 
       const catEngaged = categoryVendors.reduce(
         (sum, v) =>
-          sum + (v.vendor.status !== "CANCELLED" ? v.calculatedTotal : 0),
+          sum + (v.vendor.status !== "CANCELLED" && v.countsTowardBudget ? v.calculatedTotal : 0),
         0
       );
       const target = categoryBudgets?.[name] ?? null;
@@ -190,7 +194,7 @@ export function computeBudgetSummary(
         vendors: categoryVendors,
         totalEngaged: catEngaged,
         totalConfirmed: categoryVendors.reduce(
-          (sum, v) => sum + (v.isBooked ? v.calculatedTotal : 0),
+          (sum, v) => sum + (v.isBooked && v.countsTowardBudget ? v.calculatedTotal : 0),
           0
         ),
         targetAmount: target,

@@ -18,10 +18,26 @@ import {
 } from "@fiance/sdk";
 export type { GuestCounts } from "@fiance/sdk";
 import { getStorage } from "@/lib/kv-storage";
-import { persistGuests, persistTables, persistGroups, persistCommunications } from "@/lib/persistence";
+import {
+  persistGuests,
+  persistTables,
+  persistGroups,
+  persistCommunications,
+  persistWeddingRoleAssignments,
+  persistSeatingConstraints,
+  persistMealSelections,
+} from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
-import { removeGuestFromAll } from "@fiance/sdk";
+import {
+  removeGuestFromAll,
+  detachGuestFromRoles,
+  detachGuestFromConstraints,
+  removeMealSelectionsForGuest,
+} from "@fiance/sdk";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
+import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
+import { useMealSelectionsStore } from "@/store/useMealSelectionsStore";
 
 // Re-export computeCounts so existing callers of the store module still work
 export { computeCounts };
@@ -69,14 +85,30 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     notifySync();
   },
   removeGuest: (id) => {
+    const removedGuest = get().guests.find((g) => g.id === id);
     set((s) => ({ guests: sdkRemoveGuest(s.guests, id) }));
     // Cascade: strip this guest from all communications recipients
     const commStore = useCommunicationsStore.getState();
     commStore.setCommunications(removeGuestFromAll(commStore.communications, id));
+    // Cascade: keep wedding-party role rows, copy in the name, detach the FK
+    const displayName = removedGuest ? `${removedGuest.firstName} ${removedGuest.lastName}`.trim() : "";
+    const partyStore = useWeddingPartyStore.getState();
+    partyStore.setWeddingRoleAssignments(
+      detachGuestFromRoles(partyStore.weddingRoleAssignments, id, displayName),
+    );
+    // Cascade: strip this guest from seating constraints, dropping under-2 ones
+    const seatingStore = useSeatingConstraintsStore.getState();
+    seatingStore.setSeatingConstraints(detachGuestFromConstraints(seatingStore.seatingConstraints, id));
+    // Cascade: remove this guest's meal selections
+    const mealStore = useMealSelectionsStore.getState();
+    mealStore.setMealSelections(removeMealSelectionsForGuest(mealStore.mealSelections, id));
     const storage = getStorage();
     if (storage) {
       persistGuests(storage);
       persistCommunications(storage);
+      persistWeddingRoleAssignments(storage);
+      persistSeatingConstraints(storage);
+      persistMealSelections(storage);
     }
     notifySync();
   },

@@ -125,6 +125,28 @@
   "tabPayments": "Payments",
   "noPayments": "No payments recorded",
   "deletePayment": "Delete this payment?",
+  "tabDocuments": "Documents",
+  "noDocuments": "No documents",
+  "addDocument": "Add a document",
+  "deleteDocument": "Delete this document?",
+  "documentUnavailable": "File not included on this device — re-attach it",
+  "documentLabelPlaceholder": "Document name (e.g. Signed quote)",
+  "documentPickError": "Could not import the file",
+  "documents": {
+    "ownerType": {
+      "WEDDING": "Wedding",
+      "VENDOR": "Vendor",
+      "GUEST": "Guest",
+      "LEGAL": "Legal/admin",
+      "HONEYMOON": "Honeymoon"
+    }
+  },
+  "comparison": {
+    "title": "Comparison",
+    "retained": "Retained (counts toward budget)",
+    "retainedBadge": "Retained",
+    "viewAll": "View all quotes →"
+  },
   "pageTagline": "of {{total}} booked",
   "newKindTitle": "Choose a kind",
   "newVendorEyebrow": "New vendor",

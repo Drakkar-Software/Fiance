@@ -2,12 +2,14 @@ import React, { useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, FileCheck2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
+import { useLegalStore } from "@/store/useLegalStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -25,6 +27,7 @@ import { Sprig } from "@/components/Sprig";
 import { PageHeader } from "@/components/PageHeader";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
+import { getPrimaryEvent } from "@fiance/sdk";
 
 export default function HomeScreen() {
   return <DashboardScreen />;
@@ -38,6 +41,8 @@ function DashboardScreen() {
   const isWide = useIsWideScreen();
   const syncDotColor = useSyncStatusDot();
   const wedding = useWeddingStore((s) => s.wedding);
+  const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
+  const primaryEvent = React.useMemo(() => getPrimaryEvent(weddingEvents), [weddingEvents]);
   const vendors = useVendorsStore((s) => s.vendors);
   const guests = useGuestsStore((s) => s.guests);
   const counts = React.useMemo(() => computeCounts(guests), [guests]);
@@ -46,6 +51,12 @@ function DashboardScreen() {
     () => tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "DONE"),
     [tasks]
   );
+  const legalMilestones = useLegalStore((s) => s.legalMilestones);
+  const nextLegalMilestone = React.useMemo(() => {
+    return [...legalMilestones]
+      .filter((m) => m.status !== "DONE" && m.dueDate)
+      .sort((a, b) => (a.dueDate ?? "").localeCompare(b.dueDate ?? ""))[0] ?? null;
+  }, [legalMilestones]);
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
   const next3Events = React.useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
@@ -86,7 +97,8 @@ function DashboardScreen() {
   const budget = useBudgetSummary();
   const ideaCount = useIdeasStore((s) => s.ideas.length);
 
-  const weddingDate = wedding?.weddingDate ? new Date(wedding.weddingDate) : null;
+  const countdownDateStr = primaryEvent?.date ?? wedding?.weddingDate;
+  const weddingDate = countdownDateStr ? new Date(countdownDateStr) : null;
   const daysUntil = weddingDate ? differenceInDays(weddingDate, new Date()) : null;
 
   const urgentDeposits = vendors.filter((v) => {
@@ -191,6 +203,8 @@ function DashboardScreen() {
               title={daysUntil}
               tagline={t("common:homeTagline")}
               taglineColor="rgba(255,255,255,0.75)"
+              eyebrowColor="rgba(255,255,255,0.6)"
+              titleColor="#fff"
               titleSize={72}
               style={{ paddingHorizontal: 0, paddingTop: 0 }}
             />
@@ -519,6 +533,28 @@ function DashboardScreen() {
             </>
           )}
         </Pressable>
+
+        {/* Administratif — next legal milestone deadline */}
+        {nextLegalMilestone && (
+          <Pressable
+            onPress={() => router.push("/(tabs)/planning/legal")}
+            className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair flex-row items-center"
+          >
+            <View className="w-7 h-7 rounded-full bg-accent-clay-soft items-center justify-center mr-2.5">
+              <FileCheck2 size={14} color={GP.clay} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-ink">{t("legalNextDeadline")}</Text>
+              <Text className="text-xs text-mute mt-0.5" numberOfLines={1}>
+                {nextLegalMilestone.title}
+                {nextLegalMilestone.dueDate
+                  ? ` · ${safeFormat(new Date(nextLegalMilestone.dueDate + "T00:00:00"), "d MMM", { locale: getDateLocale() })}`
+                  : ""}
+              </Text>
+            </View>
+            <ChevronRight size={16} color={GP.mute} />
+          </Pressable>
+        )}
 
         {/* Prestataires */}
         <Pressable

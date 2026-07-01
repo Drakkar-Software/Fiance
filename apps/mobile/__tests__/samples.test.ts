@@ -40,6 +40,18 @@ describe("wedding samples", () => {
       expect(snapshot.communications.length).toBeGreaterThan(0);
       expect(snapshot.dayOfItems.length).toBeGreaterThan(0);
       expect(snapshot.agendaEvents.length).toBeGreaterThan(0);
+      expect(snapshot.weddingRoleAssignments.length).toBeGreaterThan(0);
+      expect(snapshot.seatingConstraints.length).toBeGreaterThan(0);
+      expect(snapshot.weddingEvents.length).toBeGreaterThan(0);
+      expect(snapshot.guestMealSelections.length).toBeGreaterThan(0);
+      expect(snapshot.communicationTemplates.length).toBeGreaterThan(0);
+      expect(snapshot.documents.length).toBeGreaterThan(0);
+      expect(snapshot.legalMilestones.length).toBeGreaterThan(0);
+      if (sample.id === "small") {
+        expect(snapshot.honeymoonPlans.length).toBe(0);
+      } else {
+        expect(snapshot.honeymoonPlans.length).toBeGreaterThan(0);
+      }
     });
   }
 });
