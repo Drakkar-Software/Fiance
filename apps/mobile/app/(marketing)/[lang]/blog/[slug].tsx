@@ -7,9 +7,11 @@ import { getBlogSlugs } from "@/lib/blog";
  * Return real slugs so Expo static export prerenders each post to a standalone
  * HTML file with baked-in <title>, canonical, og:*, and BlogPosting JSON-LD.
  * An empty array would only emit a placeholder and skip static metadata.
+ * `params.lang` is already resolved (fr/en) by the parent [lang] segment —
+ * fan out slugs under each locale.
  */
-export async function generateStaticParams() {
-  return getBlogSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams({ params }: { params: { lang: string } }) {
+  return getBlogSlugs().map((slug) => ({ lang: params.lang, slug }));
 }
 
 export default function BlogPost() {

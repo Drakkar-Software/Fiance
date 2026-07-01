@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft, ArrowUp, ArrowDown, LayoutList } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@fiance/ui/utils/file-export";
+import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
 
 interface TimelineEvent {
   id: string;
@@ -77,8 +78,10 @@ function EventCard({
 }
 
 export default function TimelineTool() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/tools/timeline");
 
   const templateTimes: Record<string, string> = {
     gettingReady: "08:00",
@@ -166,15 +169,15 @@ export default function TimelineTool() {
       <Seo
         title={t("tools.timeline.meta.title")}
         description={t("tools.timeline.meta.description")}
-        canonical={t("tools.timeline.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "WebApplication", name: t("tools.timeline.meta.title"),
-            url: t("tools.timeline.meta.canonical"),
+            url: seo.canonical,
             applicationCategory: "UtilityApplication",
             offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("tools.timeline.meta.title"), item: t("tools.timeline.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("tools.timeline.meta.title"), item: seo.canonical },
           ]},
         ]}
       />
@@ -182,7 +185,7 @@ export default function TimelineTool() {
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>
           <Pressable
-            onPress={() => router.push("/" as any)}
+            onPress={() => router.push(localizedPath(lang, "/") as any)}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />

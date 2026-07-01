@@ -3,21 +3,23 @@ import { Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { localizedPath, type MarketingLang } from "@/lib/seo-urls";
 
 export function MarketingFooter() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang: MarketingLang = i18n.language === "en" ? "en" : "fr";
 
   const featureLinks = [
-    { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
-    { label: t("nav.budget"), href: "/feature/budget" },
-    { label: t("nav.photos"), href: "/feature/photos" },
+    { label: t("nav.seatingChart"), href: localizedPath(lang, "/feature/seating-chart") },
+    { label: t("nav.budget"), href: localizedPath(lang, "/feature/budget") },
+    { label: t("nav.photos"), href: localizedPath(lang, "/feature/photos") },
   ];
 
   const toolLinks = [
-    { label: t("nav.toolsSeatingChart"), href: "/tools/seating-chart" },
-    { label: t("nav.toolsBudget"), href: "/tools/budget-calculator" },
-    { label: t("nav.toolsTimeline"), href: "/tools/timeline" },
+    { label: t("nav.toolsSeatingChart"), href: localizedPath(lang, "/tools/seating-chart") },
+    { label: t("nav.toolsBudget"), href: localizedPath(lang, "/tools/budget-calculator") },
+    { label: t("nav.toolsTimeline"), href: localizedPath(lang, "/tools/timeline") },
   ];
 
   return (
@@ -76,7 +78,7 @@ export function MarketingFooter() {
               {t("footer.blog")}
             </Text>
             <View className="gap-2">
-              <Pressable onPress={() => router.push("/blog" as any)} className="active:opacity-60">
+              <Pressable onPress={() => router.push(localizedPath(lang, "/blog") as any)} className="active:opacity-60">
                 <Text className="text-sm text-typography-300">{t("nav.blog")}</Text>
               </Pressable>
             </View>
@@ -88,10 +90,10 @@ export function MarketingFooter() {
               {t("footer.legal")}
             </Text>
             <View className="gap-2">
-              <Pressable onPress={() => router.push("/terms" as any)} className="active:opacity-60">
+              <Pressable onPress={() => router.push(localizedPath(lang, "/terms") as any)} className="active:opacity-60">
                 <Text className="text-sm text-typography-300">{t("legal.termsLink")}</Text>
               </Pressable>
-              <Pressable onPress={() => router.push("/privacy" as any)} className="active:opacity-60">
+              <Pressable onPress={() => router.push(localizedPath(lang, "/privacy") as any)} className="active:opacity-60">
                 <Text className="text-sm text-typography-300">{t("legal.privacyLink")}</Text>
               </Pressable>
             </View>

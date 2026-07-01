@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, RotateCcw } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@fiance/ui/utils/file-export";
+import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
 
 interface Category {
   key: string;
@@ -31,8 +32,10 @@ function formatAmount(amount: number): string {
 }
 
 export default function BudgetCalculatorTool() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/tools/budget-calculator");
 
   const [totalBudget, setTotalBudget] = useState("15000");
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
@@ -78,15 +81,15 @@ export default function BudgetCalculatorTool() {
       <Seo
         title={t("tools.budgetCalculator.meta.title")}
         description={t("tools.budgetCalculator.meta.description")}
-        canonical={t("tools.budgetCalculator.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "WebApplication", name: t("tools.budgetCalculator.meta.title"),
-            url: t("tools.budgetCalculator.meta.canonical"),
+            url: seo.canonical,
             applicationCategory: "UtilityApplication",
             offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("tools.budgetCalculator.meta.title"), item: t("tools.budgetCalculator.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("tools.budgetCalculator.meta.title"), item: seo.canonical },
           ]},
         ]}
       />
@@ -94,7 +97,7 @@ export default function BudgetCalculatorTool() {
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 800, width: "100%", alignSelf: "center" }}>
           <Pressable
-            onPress={() => router.push("/feature/budget" as any)}
+            onPress={() => router.push(localizedPath(lang, "/feature/budget") as any)}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />

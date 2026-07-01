@@ -3,15 +3,13 @@
     "terms": {
       "meta": {
         "title": "Conditions d'utilisation | Fiancé",
-        "description": "Conditions d'utilisation de l'application Fiancé. Application de planification de mariage privée et hors ligne.",
-        "canonical": "https://fiance.drakkar.software/terms"
+        "description": "Conditions d'utilisation de l'application Fiancé. Application de planification de mariage privée et hors ligne."
       }
     },
     "privacy": {
       "meta": {
         "title": "Politique de confidentialité | Fiancé",
-        "description": "Comment Fiancé gère vos données. Application hors ligne, zéro collecte, synchronisation chiffrée AES-256-GCM optionnelle.",
-        "canonical": "https://fiance.drakkar.software/privacy"
+        "description": "Comment Fiancé gère vos données. Application hors ligne, zéro collecte, synchronisation chiffrée AES-256-GCM optionnelle."
       }
     },
     "termsLink": "Conditions d'utilisation",
@@ -42,8 +40,7 @@
   "landing": {
     "meta": {
       "title": "Fiancé — Organisez votre mariage simplement | Application mariage privée",
-      "description": "Application mariage privée. Budget, plan de table, invités, prestataires, planning, checklist. Fonctionne hors ligne, zéro publicité, données 100% privées.",
-      "canonical": "https://fiance.drakkar.software/"
+      "description": "Application mariage privée. Budget, plan de table, invités, prestataires, planning, checklist. Fonctionne hors ligne, zéro publicité, données 100% privées."
     },
     "hero": {
       "headline": "Organisez votre mariage simplement",
@@ -51,6 +48,51 @@
       "ctaPrimary": "Créer mon mariage",
       "ctaSecondary": "Rejoindre un mariage",
       "badge": "Hors ligne • Privé • Sans publicité"
+    },
+    "whatsNew": {
+      "eyebrow": "Fiancé · Nouveautés",
+      "title": "Ce qui vient d'arriver",
+      "subtitle": "Dix nouveaux modules pour couvrir tout le mariage, de la demande au voyage de noces.",
+      "weddingParty": {
+        "title": "Rôles & témoins",
+        "description": "Organisez témoins, demoiselles et garçons d'honneur avec leurs missions du jour J."
+      },
+      "seatingConflicts": {
+        "title": "Détection de conflits",
+        "description": "Le plan de table repère automatiquement les invités à ne pas asseoir ensemble."
+      },
+      "multiDay": {
+        "title": "Mariage multi-jours",
+        "description": "Gérez plusieurs lieux et journées — cérémonie, cocktail, brunch du lendemain — dans un seul mariage."
+      },
+      "guestLogistics": {
+        "title": "Logistique invités",
+        "description": "Centralisez hébergements, transport et navettes pour vos invités."
+      },
+      "documents": {
+        "title": "Documents & contrats",
+        "description": "Rangez devis, contrats et pièces justificatives au même endroit que vos prestataires."
+      },
+      "vendorComparison": {
+        "title": "Comparateur de prestataires",
+        "description": "Comparez devis, avis et disponibilités côte à côte avant de signer."
+      },
+      "communications": {
+        "title": "Communications invités",
+        "description": "Modèles de messages pour save-the-date, faire-part et rappels RSVP."
+      },
+      "legalMilestones": {
+        "title": "Démarches légales",
+        "description": "Suivez dossier de mariage, bans et publications avec des rappels adaptés à la France."
+      },
+      "menuChoices": {
+        "title": "Choix de menu",
+        "description": "Recueillez les préférences de menu par invité, régimes spéciaux compris."
+      },
+      "honeymoon": {
+        "title": "Voyage de noces",
+        "description": "Planifiez et budgétez votre lune de miel juste après le grand jour."
+      }
     },
     "features": {
       "title": "Tout ce dont vous avez besoin",
@@ -141,8 +183,7 @@
     "meta": {
       "title": "Le Carnet | Fiancé",
       "description": "Conseils, guides et inspirations pour organiser votre mariage sereinement. Budget, invités, plan de table, décoration — tout ce qu'il faut savoir.",
-      "ogDescription": "Conseils mariage par l'équipe Fiancé. Application privée, hors ligne, données sécurisées.",
-      "canonical": "https://fiance.drakkar.software/blog"
+      "ogDescription": "Conseils mariage par l'équipe Fiancé. Application privée, hors ligne, données sécurisées."
     },
     "hero": {
       "eyebrow": "Fiancé · Le Carnet",
@@ -168,8 +209,7 @@
   "seatingChart": {
     "meta": {
       "title": "Plan de table mariage en ligne | Fiancé",
-      "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Inclus dans l'application mariage Fiancé.",
-      "canonical": "https://fiance.drakkar.software/feature/seating-chart"
+      "description": "Créez votre plan de table mariage facilement. Glisser-déposer, tables rondes et rectangulaires, export PDF. Inclus dans l'application mariage Fiancé."
     },
     "hero": {
       "headline": "Plan de table mariage",
@@ -218,8 +258,7 @@
   "budget": {
     "meta": {
       "title": "Budget mariage — Simulateur & Calculateur | Fiancé",
-      "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur interactif et application mobile complète.",
-      "canonical": "https://fiance.drakkar.software/feature/budget"
+      "description": "Planifiez et suivez votre budget mariage. Répartition par catégorie, suivi des acomptes, soldes restants. Simulateur interactif et application mobile complète."
     },
     "hero": {
       "headline": "Budget mariage",
@@ -268,8 +307,7 @@
   "photos": {
     "meta": {
       "title": "Application partage photos mariage privée | Fiancé",
-      "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage.",
-      "canonical": "https://fiance.drakkar.software/feature/photos"
+      "description": "Partagez un album photo privé avec vos invités via QR code. Aucun compte requis pour vos invités. Photos hébergées sur votre serveur. Application photo mariage."
     },
     "hero": {
       "headline": "Partage de photos mariage",
@@ -326,8 +364,7 @@
     "seatingChart": {
       "meta": {
         "title": "Plan de table mariage en ligne | Fiancé",
-        "description": "Créez votre plan de table mariage en ligne. Ajoutez vos tables et invités, visualisez le résultat et exportez en PDF. Aucun compte requis.",
-        "canonical": "https://fiance.drakkar.software/tools/seating-chart"
+        "description": "Créez votre plan de table mariage en ligne. Ajoutez vos tables et invités, visualisez le résultat et exportez en PDF. Aucun compte requis."
       },
       "title": "Plan de table mariage",
       "subtitle": "Créez votre plan de table en ligne. Ajoutez vos tables, assignez vos invités, exportez en PDF.",
@@ -362,8 +399,7 @@
     "budgetCalculator": {
       "meta": {
         "title": "Simulateur budget mariage | Fiancé",
-        "description": "Estimez et répartissez votre budget mariage par catégorie. Simulateur interactif. Téléchargez votre estimation en PDF.",
-        "canonical": "https://fiance.drakkar.software/tools/budget-calculator"
+        "description": "Estimez et répartissez votre budget mariage par catégorie. Simulateur interactif. Téléchargez votre estimation en PDF."
       },
       "title": "Simulateur de budget mariage",
       "subtitle": "Entrez votre budget total et découvrez la répartition recommandée par catégorie.",
@@ -398,8 +434,7 @@
     "timeline": {
       "meta": {
         "title": "Planning jour J mariage | Fiancé",
-        "description": "Créez le programme de votre journée mariage. Ajoutez, réorganisez et imprimez votre planning jour J. Modèle de planning mariage.",
-        "canonical": "https://fiance.drakkar.software/tools/timeline"
+        "description": "Créez le programme de votre journée mariage. Ajoutez, réorganisez et imprimez votre planning jour J. Modèle de planning mariage."
       },
       "title": "Planning jour J mariage",
       "subtitle": "Construisez le programme de votre journée étape par étape. Exportez-le en PDF pour le distribuer.",

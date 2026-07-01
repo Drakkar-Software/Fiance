@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Modal, Dimensions, Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 import { Globe, Menu, X } from "lucide-react-native";
+import { localizedPath, swapLocaleInPath, type MarketingLang } from "@/lib/seo-urls";
 
 const LANGUAGES = [
   { code: "fr", label: "Français" },
@@ -12,21 +12,26 @@ const LANGUAGES = [
 ] as const;
 
 export function MarketingNav() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; right: number } | null>(null);
-  const currentLang = i18n.language === "en" ? "en" : "fr";
+  const currentLang: MarketingLang = i18n.language === "en" ? "en" : "fr";
   const langButtonRef = useRef<any>(null);
 
   const links = [
-    { label: t("nav.seatingChart"), href: "/feature/seating-chart" },
-    { label: t("nav.budget"), href: "/feature/budget" },
-    { label: t("nav.photos"), href: "/feature/photos" },
-    { label: t("nav.tools"), href: "/tools/seating-chart" },
-    { label: t("nav.blog"), href: "/blog" },
+    { label: t("nav.seatingChart"), href: localizedPath(currentLang, "/feature/seating-chart") },
+    { label: t("nav.budget"), href: localizedPath(currentLang, "/feature/budget") },
+    { label: t("nav.photos"), href: localizedPath(currentLang, "/feature/photos") },
+    { label: t("nav.tools"), href: localizedPath(currentLang, "/tools/seating-chart") },
+    { label: t("nav.blog"), href: localizedPath(currentLang, "/blog") },
   ];
+
+  function switchLanguage(lang: MarketingLang) {
+    router.replace(swapLocaleInPath(pathname, lang) as any);
+  }
 
   function handleLangPress() {
     if (langOpen) {
@@ -51,7 +56,7 @@ export function MarketingNav() {
         style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
       >
         {/* Logo */}
-        <Pressable onPress={() => router.push("/" as any)} className="flex-row items-center gap-2 active:opacity-70">
+        <Pressable onPress={() => router.push(localizedPath(currentLang, "/") as any)} className="flex-row items-center gap-2 active:opacity-70">
           <Image
             // eslint-disable-next-line @typescript-eslint/no-require-imports
             source={require("@/assets/logo.png")}
@@ -138,7 +143,7 @@ export function MarketingNav() {
               <Pressable
                 key={lang.code}
                 onPress={() => {
-                  i18n.changeLanguage(lang.code);
+                  switchLanguage(lang.code);
                   setLangOpen(false);
                 }}
                 className="px-4 py-2.5 active:opacity-60"
@@ -178,7 +183,7 @@ export function MarketingNav() {
             {LANGUAGES.map((lang) => (
               <Pressable
                 key={lang.code}
-                onPress={() => i18n.changeLanguage(lang.code)}
+                onPress={() => switchLanguage(lang.code)}
                 className={`flex-1 py-2.5 rounded-xl items-center border active:opacity-70 ${
                   currentLang === lang.code
                     ? "bg-primary-500 border-primary-500"

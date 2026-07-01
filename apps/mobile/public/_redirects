@@ -1,6 +1,16 @@
-# Legacy flat .html paths → clean URLs (301 consolidates SEO signals)
-/blog/:slug.html /blog/:slug 301
-/tools/:slug.html /tools/:slug 301
-/feature/:slug.html /feature/:slug 301
-/privacy.html /privacy 301
-/terms.html /terms 301
+# Legacy flat .html paths → clean, locale-prefixed URLs (must precede the
+# wildcard locale rules below — Cloudflare Pages stops at the first match).
+/blog/:slug.html /fr/blog/:slug 301
+/tools/:slug.html /fr/tools/:slug 301
+/feature/:slug.html /fr/feature/:slug 301
+/privacy.html /fr/privacy 301
+/terms.html /fr/terms 301
+
+# Legacy unprefixed marketing URLs → default (French) locale
+/blog/* /fr/blog/:splat 301
+/feature/* /fr/feature/:splat 301
+/tools/* /fr/tools/:splat 301
+/privacy /fr/privacy 301
+/terms /fr/terms 301
+/blog /fr/blog 301
+/ /fr 302

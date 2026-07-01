@@ -6,6 +6,7 @@ import {
   QrCode, Lock, Upload, UserX, Server, Download, CheckCircle, XCircle,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
+import { localizedSeo, localizedUrl } from "@/lib/seo-urls";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -44,8 +45,10 @@ function ComparisonRow({ feature, hasFiance, hasOthers }: { feature: string; has
 }
 
 export default function PhotosPage() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/feature/photos");
 
   const features = [
     { key: "qrCode", icon: <QrCode size={18} className="text-accent-gold" /> },
@@ -63,11 +66,11 @@ export default function PhotosPage() {
       <Seo
         title={t("photos.meta.title")}
         description={t("photos.meta.description")}
-        canonical={t("photos.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("photos.meta.title"), item: t("photos.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("photos.meta.title"), item: seo.canonical },
           ]},
         ]}
       />

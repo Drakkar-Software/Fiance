@@ -2,17 +2,20 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 import {
   DollarSign, Users, LayoutGrid, Store, CalendarCheck,
   Camera, Globe, WifiOff, Lock, ShieldCheck, HeartHandshake,
+  Sparkles, ShieldAlert, MapPin, BedDouble, FileText,
+  Scale, MessageCircle, Landmark, UtensilsCrossed, Plane,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { Sprig } from "@/components/Sprig";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getLandingBlogPosts } from "@/lib/blog";
+import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -43,10 +46,11 @@ function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; titl
 }
 
 export function LandingPage() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const blogPosts = getLandingBlogPosts(lang);
+  const seo = localizedSeo(lang, "/");
 
   const appFeatures = [
     { key: "budget", icon: <DollarSign size={18} className="text-accent-gold" /> },
@@ -57,6 +61,19 @@ export function LandingPage() {
     { key: "photos", icon: <Camera size={18} className="text-accent-gold" /> },
     { key: "publicPage", icon: <Globe size={18} className="text-accent-gold" /> },
     { key: "offline", icon: <WifiOff size={18} className="text-accent-gold" /> },
+  ] as const;
+
+  const whatsNew = [
+    { key: "weddingParty", icon: <Sparkles size={18} className="text-accent-gold" /> },
+    { key: "seatingConflicts", icon: <ShieldAlert size={18} className="text-accent-gold" /> },
+    { key: "multiDay", icon: <MapPin size={18} className="text-accent-gold" /> },
+    { key: "guestLogistics", icon: <BedDouble size={18} className="text-accent-gold" /> },
+    { key: "documents", icon: <FileText size={18} className="text-accent-gold" /> },
+    { key: "vendorComparison", icon: <Scale size={18} className="text-accent-gold" /> },
+    { key: "communications", icon: <MessageCircle size={18} className="text-accent-gold" /> },
+    { key: "legalMilestones", icon: <Landmark size={18} className="text-accent-gold" /> },
+    { key: "menuChoices", icon: <UtensilsCrossed size={18} className="text-accent-gold" /> },
+    { key: "honeymoon", icon: <Plane size={18} className="text-accent-gold" /> },
   ] as const;
 
   const privacyFeatures = [
@@ -70,20 +87,24 @@ export function LandingPage() {
       <Seo
         title={t("landing.meta.title")}
         description={t("landing.meta.description")}
-        canonical={t("landing.meta.canonical")}
+        {...seo}
         ogImage="https://fiance.drakkar.software/assets/og-image.png"
       />
       {/* Hero */}
-      <View className="w-full py-20 px-6 items-center bg-accent-cream">
+      <View className="w-full py-24 px-6 items-center bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
           {/* Eyebrow in Caveat script — warm, handwritten wedding feel */}
-          <Script size={17} style={{ marginBottom: 20 }}>
+          <Script size={18} style={{ marginBottom: 18 }}>
             {t("landing.hero.badge")}
           </Script>
           {/* Headline in Fraunces — Garden Press display type */}
-          <Display size={50} weight="600" style={{ textAlign: "center", marginBottom: 16 }}>
+          <Display size={56} weight="600" style={{ textAlign: "center", marginBottom: 8, lineHeight: 62 }}>
             {t("landing.hero.headline")}
           </Display>
+          {/* Signature botanical divider — the one Garden Press flourish on the page */}
+          <View style={{ marginVertical: 14 }}>
+            <Sprig size={22} />
+          </View>
           <Text className="text-lg text-typography-500 text-center mb-8 leading-7">
             {t("landing.hero.subheadline")}
           </Text>
@@ -100,6 +121,31 @@ export function LandingPage() {
             >
               <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
             </Pressable>
+          </View>
+        </View>
+      </View>
+
+      {/* Nouveautés — 10 wedding-planning modules shipped this release */}
+      <View className="w-full py-20 px-6 bg-white">
+        <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
+          <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
+            {t("landing.whatsNew.eyebrow")}
+          </Script>
+          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+            {t("landing.whatsNew.title")}
+          </Display>
+          <Text className="text-base text-typography-500 text-center mb-12">
+            {t("landing.whatsNew.subtitle")}
+          </Text>
+          <View className="flex-row flex-wrap gap-4">
+            {whatsNew.map((f) => (
+              <FeatureCard
+                key={f.key}
+                icon={f.icon}
+                title={t(`landing.whatsNew.${f.key}.title`)}
+                description={t(`landing.whatsNew.${f.key}.description`)}
+              />
+            ))}
           </View>
         </View>
       </View>
@@ -154,14 +200,14 @@ export function LandingPage() {
                   <BlogPostCard
                     post={post}
                     lang={lang}
-                    onPress={() => router.push(`/blog/${post.slug}` as any)}
+                    onPress={() => router.push(localizedPath(lang, `/blog/${post.slug}`) as any)}
                   />
                 </View>
               ))}
             </View>
             <View className="items-center" style={{ marginTop: 28 }}>
               <Pressable
-                onPress={() => router.push("/blog" as any)}
+                onPress={() => router.push(localizedPath(lang, "/blog") as any)}
                 className="active:opacity-60"
               >
                 <Text className="text-base font-semibold text-primary-500">
@@ -193,10 +239,10 @@ export function LandingPage() {
             ))}
           </View>
           <View className="flex-row justify-center gap-6 mt-12">
-            <Pressable onPress={() => router.push("/privacy" as any)} className="active:opacity-60">
+            <Pressable onPress={() => router.push(localizedPath(lang, "/privacy") as any)} className="active:opacity-60">
               <Text className="text-sm text-typography-400 underline">{t("legal.privacyLink")}</Text>
             </Pressable>
-            <Pressable onPress={() => router.push("/terms" as any)} className="active:opacity-60">
+            <Pressable onPress={() => router.push(localizedPath(lang, "/terms") as any)} className="active:opacity-60">
               <Text className="text-sm text-typography-400 underline">{t("legal.termsLink")}</Text>
             </Pressable>
           </View>

@@ -5,6 +5,8 @@ interface SeoProps {
   title: string;
   description: string;
   canonical?: string;
+  /** fr/en alternate URLs for this page — emits hreflang link tags (x-default = fr). */
+  alternates?: { fr: string; en: string };
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
@@ -16,6 +18,7 @@ export function Seo({
   title,
   description,
   canonical,
+  alternates,
   ogTitle,
   ogDescription,
   ogImage,
@@ -32,6 +35,9 @@ export function Seo({
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       {canonical && <link rel="canonical" href={canonical} />}
       {canonical && <meta property="og:url" content={canonical} />}
+      {alternates && <link rel="alternate" hrefLang="fr" href={alternates.fr} />}
+      {alternates && <link rel="alternate" hrefLang="en" href={alternates.en} />}
+      {alternates && <link rel="alternate" hrefLang="x-default" href={alternates.fr} />}
       <meta property="og:title" content={resolvedTitle} />
       <meta property="og:description" content={resolvedDesc} />
       <meta name="twitter:title" content={resolvedTitle} />

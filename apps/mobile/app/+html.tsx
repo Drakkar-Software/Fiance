@@ -23,10 +23,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="keywords" content={seo.keywords} />
         <meta name="author" content="Fiancé" />
 
-        {/* Hreflang — same URL for fr/en (language is switched client-side) */}
-        <link rel="alternate" hrefLang="fr" href={`${BASE_URL}/`} />
-        <link rel="alternate" hrefLang="en" href={`${BASE_URL}/`} />
-        <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}/`} />
+        {/* Hreflang is emitted per-page by <Seo alternates=.../> (real /fr /en URLs) */}
 
         {/* Open Graph invariants — type, site name, locale, default image */}
         <meta property="og:type" content="website" />

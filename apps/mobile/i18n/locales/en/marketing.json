@@ -3,15 +3,13 @@
     "terms": {
       "meta": {
         "title": "Terms of Service | Fiancé",
-        "description": "Terms of Service for the Fiancé app. Private, offline-first wedding planning application.",
-        "canonical": "https://fiance.drakkar.software/terms"
+        "description": "Terms of Service for the Fiancé app. Private, offline-first wedding planning application."
       }
     },
     "privacy": {
       "meta": {
         "title": "Privacy Policy | Fiancé",
-        "description": "How Fiancé handles your data. Offline-first, zero data collection, optional AES-256-GCM encrypted sync.",
-        "canonical": "https://fiance.drakkar.software/privacy"
+        "description": "How Fiancé handles your data. Offline-first, zero data collection, optional AES-256-GCM encrypted sync."
       }
     },
     "termsLink": "Terms of Service",
@@ -42,8 +40,7 @@
   "landing": {
     "meta": {
       "title": "Fiancé — Wedding Planning App | Private & Offline",
-      "description": "Private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data.",
-      "canonical": "https://fiance.drakkar.software/"
+      "description": "Private wedding planning app. Budget, seating chart, guests, vendors, timeline, checklist. Works offline, zero ads, 100% private data."
     },
     "hero": {
       "headline": "Plan your wedding, simply",
@@ -51,6 +48,51 @@
       "ctaPrimary": "Create my wedding",
       "ctaSecondary": "Join a wedding",
       "badge": "Offline • Private • No ads"
+    },
+    "whatsNew": {
+      "eyebrow": "Fiancé · What's new",
+      "title": "What just shipped",
+      "subtitle": "Ten new modules to cover the whole wedding, from the proposal to the honeymoon.",
+      "weddingParty": {
+        "title": "Wedding party & roles",
+        "description": "Organize witnesses, bridesmaids and groomsmen with their day-of duties."
+      },
+      "seatingConflicts": {
+        "title": "Conflict detection",
+        "description": "The seating chart automatically flags guests who shouldn't sit together."
+      },
+      "multiDay": {
+        "title": "Multi-day weddings",
+        "description": "Manage several venues and days — ceremony, cocktail, next-day brunch — in one wedding."
+      },
+      "guestLogistics": {
+        "title": "Guest logistics",
+        "description": "Centralize accommodation, transport and shuttles for your guests."
+      },
+      "documents": {
+        "title": "Documents & contracts",
+        "description": "Keep quotes, contracts and paperwork alongside your vendors."
+      },
+      "vendorComparison": {
+        "title": "Vendor comparison",
+        "description": "Compare quotes, reviews and availability side by side before you sign."
+      },
+      "communications": {
+        "title": "Guest communications",
+        "description": "Message templates for save-the-dates, invitations and RSVP reminders."
+      },
+      "legalMilestones": {
+        "title": "Legal milestones",
+        "description": "Track your marriage file and banns with reminders tailored to France."
+      },
+      "menuChoices": {
+        "title": "Menu choices",
+        "description": "Collect per-guest menu preferences, including dietary needs."
+      },
+      "honeymoon": {
+        "title": "Honeymoon",
+        "description": "Plan and budget your honeymoon right after the big day."
+      }
     },
     "features": {
       "title": "Everything you need",
@@ -141,8 +183,7 @@
     "meta": {
       "title": "The Journal | Fiancé",
       "description": "Tips, guides and inspiration for planning your wedding with peace of mind. Budget, guests, seating chart, decoration — everything you need to know.",
-      "ogDescription": "Wedding planning tips from the Fiancé team. Private, offline app with secure data.",
-      "canonical": "https://fiance.drakkar.software/blog"
+      "ogDescription": "Wedding planning tips from the Fiancé team. Private, offline app with secure data."
     },
     "hero": {
       "eyebrow": "Fiancé · The Journal",
@@ -168,8 +209,7 @@
   "seatingChart": {
     "meta": {
       "title": "Wedding Seating Chart Maker | Fiancé",
-      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the Fiancé wedding planning app.",
-      "canonical": "https://fiance.drakkar.software/feature/seating-chart"
+      "description": "Create your wedding seating chart easily. Drag and drop, round and rectangular tables, PDF export. Included in the Fiancé wedding planning app."
     },
     "hero": {
       "headline": "Wedding Seating Chart",
@@ -218,8 +258,7 @@
   "budget": {
     "meta": {
       "title": "Wedding Budget Calculator & Planner | Fiancé",
-      "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Interactive calculator and complete mobile app.",
-      "canonical": "https://fiance.drakkar.software/feature/budget"
+      "description": "Plan and track your wedding budget. Category breakdown, deposit tracking, remaining balances. Interactive calculator and complete mobile app."
     },
     "hero": {
       "headline": "Wedding Budget Planner",
@@ -268,8 +307,7 @@
   "photos": {
     "meta": {
       "title": "Private Wedding Photo Sharing App | Fiancé",
-      "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Wedding photo app.",
-      "canonical": "https://fiance.drakkar.software/feature/photos"
+      "description": "Share a private photo album with your guests via QR code. No account required for guests. Photos hosted on your server. Wedding photo app."
     },
     "hero": {
       "headline": "Wedding Photo Sharing",
@@ -326,8 +364,7 @@
     "seatingChart": {
       "meta": {
         "title": "Online Wedding Seating Chart Maker | Fiancé",
-        "description": "Create your wedding seating chart online. Add your tables and guests, visualize the result and export as PDF. No account required.",
-        "canonical": "https://fiance.drakkar.software/tools/seating-chart"
+        "description": "Create your wedding seating chart online. Add your tables and guests, visualize the result and export as PDF. No account required."
       },
       "title": "Wedding Seating Chart Maker",
       "subtitle": "Create your seating chart online. Add tables, assign guests, export as PDF.",
@@ -362,8 +399,7 @@
     "budgetCalculator": {
       "meta": {
         "title": "Wedding Budget Calculator | Fiancé",
-        "description": "Estimate and allocate your wedding budget by category. Interactive calculator. Download your estimate as PDF.",
-        "canonical": "https://fiance.drakkar.software/tools/budget-calculator"
+        "description": "Estimate and allocate your wedding budget by category. Interactive calculator. Download your estimate as PDF."
       },
       "title": "Wedding Budget Calculator",
       "subtitle": "Enter your total budget and discover the recommended breakdown by category.",
@@ -398,8 +434,7 @@
     "timeline": {
       "meta": {
         "title": "Wedding Day-of Timeline Builder | Fiancé",
-        "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Wedding planning timeline template.",
-        "canonical": "https://fiance.drakkar.software/tools/timeline"
+        "description": "Create your wedding day schedule. Add, reorder and print your day-of timeline. Wedding planning timeline template."
       },
       "title": "Wedding Day-of Timeline",
       "subtitle": "Build your wedding day schedule step by step. Export as PDF to distribute.",

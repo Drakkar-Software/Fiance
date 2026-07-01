@@ -73,7 +73,7 @@ describe("buildBlogPostingNode", () => {
     expect(node.keywords).toBe(SAMPLE_POST.categoryKey);
     expect(node.timeRequired).toBe("PT5M");
     expect(node.url).toBe(
-      "https://fiance.drakkar.software/blog/test-post"
+      "https://fiance.drakkar.software/fr/blog/test-post"
     );
     expect(node.author).toEqual({
       "@id": "https://fiance.drakkar.software/#author-paul",

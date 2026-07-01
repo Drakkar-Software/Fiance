@@ -3,686 +3,1680 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://fiance.drakkar.software/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/"/>
+    <loc>https://fiance.drakkar.software/fr</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/feature/seating-chart</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/feature/seating-chart"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/feature/seating-chart"/>
+    <loc>https://fiance.drakkar.software/en</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/feature/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/seating-chart"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/feature/budget</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/feature/budget"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/feature/budget"/>
+    <loc>https://fiance.drakkar.software/en/feature/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/seating-chart"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/feature/photos</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/feature/photos"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/feature/photos"/>
+    <loc>https://fiance.drakkar.software/fr/feature/budget</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/budget"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/budget"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/budget"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/tools/seating-chart</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/seating-chart"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/seating-chart"/>
+    <loc>https://fiance.drakkar.software/en/feature/budget</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/budget"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/budget"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/budget"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/feature/photos</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/photos"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/photos"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/photos"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/en/feature/photos</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/feature/photos"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/feature/photos"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/feature/photos"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/tools/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/seating-chart"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/tools/budget-calculator</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/budget-calculator"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/budget-calculator"/>
+    <loc>https://fiance.drakkar.software/en/tools/seating-chart</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/seating-chart"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/seating-chart"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/tools/timeline</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/tools/timeline"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/tools/timeline"/>
+    <loc>https://fiance.drakkar.software/fr/tools/budget-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/budget-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/budget-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/budget-calculator"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/blog</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/blog"/>
+    <loc>https://fiance.drakkar.software/en/tools/budget-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/budget-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/budget-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/budget-calculator"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/tools/timeline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/timeline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/timeline"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/timeline"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/en/tools/timeline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/tools/timeline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/tools/timeline"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/tools/timeline"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog"/>
     <lastmod>2026-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/premieres-etapes-organiser-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog"/>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/premieres-etapes-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/premieres-etapes-organiser-mariage"/>
     <lastmod>2026-03-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/combien-temps-organiser-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/combien-temps-organiser-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/combien-temps-organiser-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/premieres-etapes-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/premieres-etapes-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/premieres-etapes-organiser-mariage"/>
+    <lastmod>2026-03-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/combien-temps-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/combien-temps-organiser-mariage"/>
     <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/retroplanning-mariage-mois-par-mois</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/retroplanning-mariage-mois-par-mois"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/retroplanning-mariage-mois-par-mois"/>
+    <loc>https://fiance.drakkar.software/en/blog/combien-temps-organiser-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/combien-temps-organiser-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/combien-temps-organiser-mariage"/>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/retroplanning-mariage-mois-par-mois</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/retroplanning-mariage-mois-par-mois"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/retroplanning-mariage-mois-par-mois"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/retroplanning-mariage-mois-par-mois"/>
     <lastmod>2026-03-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/organiser-mariage-10-etapes</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/organiser-mariage-10-etapes"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/organiser-mariage-10-etapes"/>
+    <loc>https://fiance.drakkar.software/en/blog/retroplanning-mariage-mois-par-mois</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/retroplanning-mariage-mois-par-mois"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/retroplanning-mariage-mois-par-mois"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/retroplanning-mariage-mois-par-mois"/>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/organiser-mariage-10-etapes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-10-etapes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/organiser-mariage-10-etapes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-10-etapes"/>
     <lastmod>2026-03-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mariage-6-mois-checklist</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mariage-6-mois-checklist"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mariage-6-mois-checklist"/>
+    <loc>https://fiance.drakkar.software/en/blog/organiser-mariage-10-etapes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-10-etapes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/organiser-mariage-10-etapes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-10-etapes"/>
+    <lastmod>2026-03-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mariage-6-mois-checklist</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-6-mois-checklist"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-6-mois-checklist"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-6-mois-checklist"/>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mariage-18-24-mois-premieres-actions</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mariage-18-24-mois-premieres-actions"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mariage-18-24-mois-premieres-actions"/>
+    <loc>https://fiance.drakkar.software/en/blog/mariage-6-mois-checklist</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-6-mois-checklist"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-6-mois-checklist"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-6-mois-checklist"/>
+    <lastmod>2026-03-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mariage-18-24-mois-premieres-actions</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-18-24-mois-premieres-actions"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-18-24-mois-premieres-actions"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-18-24-mois-premieres-actions"/>
     <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/sept-decisions-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/sept-decisions-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/sept-decisions-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/mariage-18-24-mois-premieres-actions</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-18-24-mois-premieres-actions"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-18-24-mois-premieres-actions"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-18-24-mois-premieres-actions"/>
+    <lastmod>2026-03-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/sept-decisions-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/sept-decisions-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/sept-decisions-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/sept-decisions-mariage"/>
     <lastmod>2026-03-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/checklist-mariage-50-taches</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/checklist-mariage-50-taches"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/checklist-mariage-50-taches"/>
+    <loc>https://fiance.drakkar.software/en/blog/sept-decisions-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/sept-decisions-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/sept-decisions-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/sept-decisions-mariage"/>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/checklist-mariage-50-taches</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/checklist-mariage-50-taches"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/checklist-mariage-50-taches"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/checklist-mariage-50-taches"/>
     <lastmod>2026-03-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/repartir-taches-mariage-deux</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/repartir-taches-mariage-deux"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/repartir-taches-mariage-deux"/>
+    <loc>https://fiance.drakkar.software/en/blog/checklist-mariage-50-taches</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/checklist-mariage-50-taches"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/checklist-mariage-50-taches"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/checklist-mariage-50-taches"/>
+    <lastmod>2026-03-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/repartir-taches-mariage-deux</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartir-taches-mariage-deux"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartir-taches-mariage-deux"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartir-taches-mariage-deux"/>
     <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/excel-vs-application-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/excel-vs-application-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/excel-vs-application-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/repartir-taches-mariage-deux</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartir-taches-mariage-deux"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartir-taches-mariage-deux"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartir-taches-mariage-deux"/>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/excel-vs-application-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/excel-vs-application-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/excel-vs-application-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/excel-vs-application-mariage"/>
     <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/budget-mariage-2026-combien-prevoir</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/budget-mariage-2026-combien-prevoir"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/budget-mariage-2026-combien-prevoir"/>
+    <loc>https://fiance.drakkar.software/en/blog/excel-vs-application-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/excel-vs-application-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/excel-vs-application-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/excel-vs-application-mariage"/>
+    <lastmod>2026-03-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/budget-mariage-2026-combien-prevoir</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-2026-combien-prevoir"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-2026-combien-prevoir"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-2026-combien-prevoir"/>
     <lastmod>2026-03-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/budget-mariage-cout-par-invite</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/budget-mariage-cout-par-invite"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/budget-mariage-cout-par-invite"/>
+    <loc>https://fiance.drakkar.software/en/blog/budget-mariage-2026-combien-prevoir</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-2026-combien-prevoir"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-2026-combien-prevoir"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-2026-combien-prevoir"/>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/budget-mariage-cout-par-invite</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-cout-par-invite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-cout-par-invite"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-cout-par-invite"/>
     <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/repartition-budget-mariage-par-poste</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/repartition-budget-mariage-par-poste"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/repartition-budget-mariage-par-poste"/>
+    <loc>https://fiance.drakkar.software/en/blog/budget-mariage-cout-par-invite</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-cout-par-invite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-cout-par-invite"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-cout-par-invite"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/repartition-budget-mariage-par-poste</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartition-budget-mariage-par-poste"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartition-budget-mariage-par-poste"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartition-budget-mariage-par-poste"/>
     <lastmod>2026-03-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/acomptes-soldes-mariage-echeances</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/acomptes-soldes-mariage-echeances"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/acomptes-soldes-mariage-echeances"/>
+    <loc>https://fiance.drakkar.software/en/blog/repartition-budget-mariage-par-poste</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartition-budget-mariage-par-poste"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartition-budget-mariage-par-poste"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartition-budget-mariage-par-poste"/>
+    <lastmod>2026-03-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/acomptes-soldes-mariage-echeances</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/acomptes-soldes-mariage-echeances"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/acomptes-soldes-mariage-echeances"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/acomptes-soldes-mariage-echeances"/>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/postes-budget-mariage-depassements</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/postes-budget-mariage-depassements"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/postes-budget-mariage-depassements"/>
+    <loc>https://fiance.drakkar.software/en/blog/acomptes-soldes-mariage-echeances</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/acomptes-soldes-mariage-echeances"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/acomptes-soldes-mariage-echeances"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/acomptes-soldes-mariage-echeances"/>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/postes-budget-mariage-depassements</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/postes-budget-mariage-depassements"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/postes-budget-mariage-depassements"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/postes-budget-mariage-depassements"/>
     <lastmod>2026-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mariage-petit-budget-10-conseils</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mariage-petit-budget-10-conseils"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mariage-petit-budget-10-conseils"/>
+    <loc>https://fiance.drakkar.software/en/blog/postes-budget-mariage-depassements</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/postes-budget-mariage-depassements"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/postes-budget-mariage-depassements"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/postes-budget-mariage-depassements"/>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mariage-petit-budget-10-conseils</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-petit-budget-10-conseils"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-petit-budget-10-conseils"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-petit-budget-10-conseils"/>
     <lastmod>2026-03-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/open-bar-ou-consommation-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/open-bar-ou-consommation-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/open-bar-ou-consommation-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/mariage-petit-budget-10-conseils</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-petit-budget-10-conseils"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-petit-budget-10-conseils"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-petit-budget-10-conseils"/>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/open-bar-ou-consommation-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/open-bar-ou-consommation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/open-bar-ou-consommation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/open-bar-ou-consommation-mariage"/>
     <lastmod>2026-03-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/comparer-devis-traiteur-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/comparer-devis-traiteur-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/comparer-devis-traiteur-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/open-bar-ou-consommation-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/open-bar-ou-consommation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/open-bar-ou-consommation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/open-bar-ou-consommation-mariage"/>
+    <lastmod>2026-03-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/comparer-devis-traiteur-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/comparer-devis-traiteur-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/comparer-devis-traiteur-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/comparer-devis-traiteur-mariage"/>
     <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/liste-invites-mariage-sans-conflits</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/liste-invites-mariage-sans-conflits"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/liste-invites-mariage-sans-conflits"/>
+    <loc>https://fiance.drakkar.software/en/blog/comparer-devis-traiteur-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/comparer-devis-traiteur-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/comparer-devis-traiteur-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/comparer-devis-traiteur-mariage"/>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/liste-invites-mariage-sans-conflits</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/liste-invites-mariage-sans-conflits"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/liste-invites-mariage-sans-conflits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/liste-invites-mariage-sans-conflits"/>
     <lastmod>2026-04-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/rsvp-mariage-quand-relancer</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/rsvp-mariage-quand-relancer"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/rsvp-mariage-quand-relancer"/>
+    <loc>https://fiance.drakkar.software/en/blog/liste-invites-mariage-sans-conflits</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/liste-invites-mariage-sans-conflits"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/liste-invites-mariage-sans-conflits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/liste-invites-mariage-sans-conflits"/>
+    <lastmod>2026-04-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/rsvp-mariage-quand-relancer</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/rsvp-mariage-quand-relancer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/rsvp-mariage-quand-relancer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/rsvp-mariage-quand-relancer"/>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/gerer-plus-un-enfants-regimes-alimentaires</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <loc>https://fiance.drakkar.software/en/blog/rsvp-mariage-quand-relancer</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/rsvp-mariage-quand-relancer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/rsvp-mariage-quand-relancer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/rsvp-mariage-quand-relancer"/>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/gerer-plus-un-enfants-regimes-alimentaires</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
     <lastmod>2026-04-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mariage-intime-vs-grande-reception</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mariage-intime-vs-grande-reception"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mariage-intime-vs-grande-reception"/>
+    <loc>https://fiance.drakkar.software/en/blog/gerer-plus-un-enfants-regimes-alimentaires</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/gerer-plus-un-enfants-regimes-alimentaires"/>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mariage-intime-vs-grande-reception</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-intime-vs-grande-reception"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-intime-vs-grande-reception"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-intime-vs-grande-reception"/>
     <lastmod>2026-04-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/save-the-date-faire-part-calendrier</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/save-the-date-faire-part-calendrier"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/save-the-date-faire-part-calendrier"/>
+    <loc>https://fiance.drakkar.software/en/blog/mariage-intime-vs-grande-reception</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mariage-intime-vs-grande-reception"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mariage-intime-vs-grande-reception"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mariage-intime-vs-grande-reception"/>
+    <lastmod>2026-04-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/save-the-date-faire-part-calendrier</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/save-the-date-faire-part-calendrier"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/save-the-date-faire-part-calendrier"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/save-the-date-faire-part-calendrier"/>
     <lastmod>2026-04-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/suivre-communications-invites-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/suivre-communications-invites-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/suivre-communications-invites-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/save-the-date-faire-part-calendrier</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/save-the-date-faire-part-calendrier"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/save-the-date-faire-part-calendrier"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/save-the-date-faire-part-calendrier"/>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/suivre-communications-invites-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/suivre-communications-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/suivre-communications-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/suivre-communications-invites-mariage"/>
     <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/rsvp-en-ligne-sans-compte</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/rsvp-en-ligne-sans-compte"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/rsvp-en-ligne-sans-compte"/>
+    <loc>https://fiance.drakkar.software/en/blog/suivre-communications-invites-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/suivre-communications-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/suivre-communications-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/suivre-communications-invites-mariage"/>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/rsvp-en-ligne-sans-compte</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/rsvp-en-ligne-sans-compte"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/rsvp-en-ligne-sans-compte"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/rsvp-en-ligne-sans-compte"/>
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/taux-reponse-rsvp-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/taux-reponse-rsvp-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/taux-reponse-rsvp-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/rsvp-en-ligne-sans-compte</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/rsvp-en-ligne-sans-compte"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/rsvp-en-ligne-sans-compte"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/rsvp-en-ligne-sans-compte"/>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/taux-reponse-rsvp-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/taux-reponse-rsvp-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/taux-reponse-rsvp-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/taux-reponse-rsvp-mariage"/>
     <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/plan-de-table-mariage-guide-complet</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/plan-de-table-mariage-guide-complet"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/plan-de-table-mariage-guide-complet"/>
+    <loc>https://fiance.drakkar.software/en/blog/taux-reponse-rsvp-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/taux-reponse-rsvp-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/taux-reponse-rsvp-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/taux-reponse-rsvp-mariage"/>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/plan-de-table-mariage-guide-complet</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-mariage-guide-complet"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-mariage-guide-complet"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-mariage-guide-complet"/>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/plan-de-table-5-regles-placement</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/plan-de-table-5-regles-placement"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/plan-de-table-5-regles-placement"/>
+    <loc>https://fiance.drakkar.software/en/blog/plan-de-table-mariage-guide-complet</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-mariage-guide-complet"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-mariage-guide-complet"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-mariage-guide-complet"/>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/plan-de-table-5-regles-placement</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-5-regles-placement"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-5-regles-placement"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-5-regles-placement"/>
     <lastmod>2026-04-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/tables-rondes-ou-rectangulaires-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/tables-rondes-ou-rectangulaires-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/plan-de-table-5-regles-placement</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-5-regles-placement"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-5-regles-placement"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-5-regles-placement"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/tables-rondes-ou-rectangulaires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tables-rondes-ou-rectangulaires-mariage"/>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/plan-de-table-serpentin-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/plan-de-table-serpentin-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/plan-de-table-serpentin-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/tables-rondes-ou-rectangulaires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tables-rondes-ou-rectangulaires-mariage"/>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/plan-de-table-serpentin-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-serpentin-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-serpentin-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-serpentin-mariage"/>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/finaliser-plan-de-table-traiteur</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/finaliser-plan-de-table-traiteur"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/finaliser-plan-de-table-traiteur"/>
+    <loc>https://fiance.drakkar.software/en/blog/plan-de-table-serpentin-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-serpentin-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-serpentin-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-serpentin-mariage"/>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/finaliser-plan-de-table-traiteur</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/finaliser-plan-de-table-traiteur"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/finaliser-plan-de-table-traiteur"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/finaliser-plan-de-table-traiteur"/>
     <lastmod>2026-04-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/ordre-reservation-prestataires-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/ordre-reservation-prestataires-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/ordre-reservation-prestataires-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/finaliser-plan-de-table-traiteur</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/finaliser-plan-de-table-traiteur"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/finaliser-plan-de-table-traiteur"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/finaliser-plan-de-table-traiteur"/>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/ordre-reservation-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/ordre-reservation-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/ordre-reservation-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/ordre-reservation-prestataires-mariage"/>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/negocier-devis-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/negocier-devis-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/negocier-devis-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/ordre-reservation-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/ordre-reservation-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/ordre-reservation-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/ordre-reservation-prestataires-mariage"/>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/negocier-devis-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/negocier-devis-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/negocier-devis-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/negocier-devis-mariage"/>
     <lastmod>2026-04-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/cinq-prestataires-a-booker-priorite</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/cinq-prestataires-a-booker-priorite"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/cinq-prestataires-a-booker-priorite"/>
+    <loc>https://fiance.drakkar.software/en/blog/negocier-devis-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/negocier-devis-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/negocier-devis-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/negocier-devis-mariage"/>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/cinq-prestataires-a-booker-priorite</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/cinq-prestataires-a-booker-priorite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/cinq-prestataires-a-booker-priorite"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/cinq-prestataires-a-booker-priorite"/>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/centraliser-devis-prestataires-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/centraliser-devis-prestataires-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/centraliser-devis-prestataires-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/cinq-prestataires-a-booker-priorite</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/cinq-prestataires-a-booker-priorite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/cinq-prestataires-a-booker-priorite"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/cinq-prestataires-a-booker-priorite"/>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/centraliser-devis-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/centraliser-devis-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/centraliser-devis-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/centraliser-devis-prestataires-mariage"/>
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/tableau-bord-prestataires-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/tableau-bord-prestataires-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/tableau-bord-prestataires-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/centraliser-devis-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/centraliser-devis-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/centraliser-devis-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/centraliser-devis-prestataires-mariage"/>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/tableau-bord-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tableau-bord-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tableau-bord-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tableau-bord-prestataires-mariage"/>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/planning-jour-j-minute-par-minute</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/planning-jour-j-minute-par-minute"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/planning-jour-j-minute-par-minute"/>
+    <loc>https://fiance.drakkar.software/en/blog/tableau-bord-prestataires-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tableau-bord-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tableau-bord-prestataires-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tableau-bord-prestataires-mariage"/>
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/planning-jour-j-minute-par-minute</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/planning-jour-j-minute-par-minute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/planning-jour-j-minute-par-minute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/planning-jour-j-minute-par-minute"/>
     <lastmod>2026-05-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/repartir-roles-jour-j-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/repartir-roles-jour-j-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/repartir-roles-jour-j-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/planning-jour-j-minute-par-minute</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/planning-jour-j-minute-par-minute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/planning-jour-j-minute-par-minute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/planning-jour-j-minute-par-minute"/>
+    <lastmod>2026-05-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/repartir-roles-jour-j-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartir-roles-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartir-roles-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartir-roles-jour-j-mariage"/>
     <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mode-jour-j-suivre-deroule</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mode-jour-j-suivre-deroule"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mode-jour-j-suivre-deroule"/>
+    <loc>https://fiance.drakkar.software/en/blog/repartir-roles-jour-j-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/repartir-roles-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/repartir-roles-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/repartir-roles-jour-j-mariage"/>
+    <lastmod>2026-05-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mode-jour-j-suivre-deroule</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mode-jour-j-suivre-deroule"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mode-jour-j-suivre-deroule"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mode-jour-j-suivre-deroule"/>
     <lastmod>2026-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/programme-mariage-partager-invites</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/programme-mariage-partager-invites"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/programme-mariage-partager-invites"/>
+    <loc>https://fiance.drakkar.software/en/blog/mode-jour-j-suivre-deroule</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mode-jour-j-suivre-deroule"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mode-jour-j-suivre-deroule"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mode-jour-j-suivre-deroule"/>
+    <lastmod>2026-05-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/programme-mariage-partager-invites</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/programme-mariage-partager-invites"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/programme-mariage-partager-invites"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/programme-mariage-partager-invites"/>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/imprevus-jour-j-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/imprevus-jour-j-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/imprevus-jour-j-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/programme-mariage-partager-invites</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/programme-mariage-partager-invites"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/programme-mariage-partager-invites"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/programme-mariage-partager-invites"/>
+    <lastmod>2026-05-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/imprevus-jour-j-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/imprevus-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/imprevus-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/imprevus-jour-j-mariage"/>
     <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/creer-page-web-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/creer-page-web-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/creer-page-web-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/imprevus-jour-j-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/imprevus-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/imprevus-jour-j-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/imprevus-jour-j-mariage"/>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/creer-page-web-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/creer-page-web-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/creer-page-web-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/creer-page-web-mariage"/>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/faq-mariage-invites-15-questions</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/faq-mariage-invites-15-questions"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/faq-mariage-invites-15-questions"/>
+    <loc>https://fiance.drakkar.software/en/blog/creer-page-web-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/creer-page-web-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/creer-page-web-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/creer-page-web-mariage"/>
+    <lastmod>2026-05-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/faq-mariage-invites-15-questions</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/faq-mariage-invites-15-questions"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/faq-mariage-invites-15-questions"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/faq-mariage-invites-15-questions"/>
     <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/liste-cadeaux-mariage-guide</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/liste-cadeaux-mariage-guide"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/liste-cadeaux-mariage-guide"/>
+    <loc>https://fiance.drakkar.software/en/blog/faq-mariage-invites-15-questions</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/faq-mariage-invites-15-questions"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/faq-mariage-invites-15-questions"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/faq-mariage-invites-15-questions"/>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/liste-cadeaux-mariage-guide</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/liste-cadeaux-mariage-guide"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/liste-cadeaux-mariage-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/liste-cadeaux-mariage-guide"/>
     <lastmod>2026-05-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/partage-photos-mariage-qr-code</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/partage-photos-mariage-qr-code"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/partage-photos-mariage-qr-code"/>
+    <loc>https://fiance.drakkar.software/en/blog/liste-cadeaux-mariage-guide</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/liste-cadeaux-mariage-guide"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/liste-cadeaux-mariage-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/liste-cadeaux-mariage-guide"/>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/partage-photos-mariage-qr-code</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/partage-photos-mariage-qr-code"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/partage-photos-mariage-qr-code"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/partage-photos-mariage-qr-code"/>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/hebergement-invites-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/hebergement-invites-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/hebergement-invites-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/partage-photos-mariage-qr-code</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/partage-photos-mariage-qr-code"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/partage-photos-mariage-qr-code"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/partage-photos-mariage-qr-code"/>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/hebergement-invites-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/hebergement-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/hebergement-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/hebergement-invites-mariage"/>
     <lastmod>2026-05-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/mood-board-mariage-organiser</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/mood-board-mariage-organiser"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/mood-board-mariage-organiser"/>
+    <loc>https://fiance.drakkar.software/en/blog/hebergement-invites-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/hebergement-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/hebergement-invites-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/hebergement-invites-mariage"/>
+    <lastmod>2026-05-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/mood-board-mariage-organiser</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mood-board-mariage-organiser"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mood-board-mariage-organiser"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mood-board-mariage-organiser"/>
     <lastmod>2026-05-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/definir-theme-mariage-5-etapes</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/definir-theme-mariage-5-etapes"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/definir-theme-mariage-5-etapes"/>
+    <loc>https://fiance.drakkar.software/en/blog/mood-board-mariage-organiser</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/mood-board-mariage-organiser"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/mood-board-mariage-organiser"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/mood-board-mariage-organiser"/>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/definir-theme-mariage-5-etapes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/definir-theme-mariage-5-etapes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/definir-theme-mariage-5-etapes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/definir-theme-mariage-5-etapes"/>
     <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/organiser-mariage-a-deux-sync</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/organiser-mariage-a-deux-sync"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/organiser-mariage-a-deux-sync"/>
+    <loc>https://fiance.drakkar.software/en/blog/definir-theme-mariage-5-etapes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/definir-theme-mariage-5-etapes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/definir-theme-mariage-5-etapes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/definir-theme-mariage-5-etapes"/>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/organiser-mariage-a-deux-sync</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-a-deux-sync"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/organiser-mariage-a-deux-sync"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-a-deux-sync"/>
     <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/app-mariage-privee-hors-ligne</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/app-mariage-privee-hors-ligne"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/app-mariage-privee-hors-ligne"/>
+    <loc>https://fiance.drakkar.software/en/blog/organiser-mariage-a-deux-sync</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-a-deux-sync"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/organiser-mariage-a-deux-sync"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/organiser-mariage-a-deux-sync"/>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/app-mariage-privee-hors-ligne</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/app-mariage-privee-hors-ligne"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/app-mariage-privee-hors-ligne"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/app-mariage-privee-hors-ligne"/>
     <lastmod>2026-05-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/dossier-mairie-bans-mariage-delais</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/dossier-mairie-bans-mariage-delais"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/dossier-mairie-bans-mariage-delais"/>
+    <loc>https://fiance.drakkar.software/en/blog/app-mariage-privee-hors-ligne</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/app-mariage-privee-hors-ligne"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/app-mariage-privee-hors-ligne"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/app-mariage-privee-hors-ligne"/>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/dossier-mairie-bans-mariage-delais</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/dossier-mairie-bans-mariage-delais"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/dossier-mairie-bans-mariage-delais"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/dossier-mairie-bans-mariage-delais"/>
     <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/ceremonie-laique-choisir-officiant</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/ceremonie-laique-choisir-officiant"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/ceremonie-laique-choisir-officiant"/>
+    <loc>https://fiance.drakkar.software/en/blog/dossier-mairie-bans-mariage-delais</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/dossier-mairie-bans-mariage-delais"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/dossier-mairie-bans-mariage-delais"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/dossier-mairie-bans-mariage-delais"/>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/ceremonie-laique-choisir-officiant</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/ceremonie-laique-choisir-officiant"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/ceremonie-laique-choisir-officiant"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/ceremonie-laique-choisir-officiant"/>
     <lastmod>2026-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/choisir-temoins-role-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-temoins-role-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-temoins-role-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/ceremonie-laique-choisir-officiant</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/ceremonie-laique-choisir-officiant"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/ceremonie-laique-choisir-officiant"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/ceremonie-laique-choisir-officiant"/>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/choisir-temoins-role-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-temoins-role-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-temoins-role-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-temoins-role-mariage"/>
     <lastmod>2026-06-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/assurance-annulation-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/assurance-annulation-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/assurance-annulation-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/choisir-temoins-role-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-temoins-role-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-temoins-role-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-temoins-role-mariage"/>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/assurance-annulation-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/assurance-annulation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/assurance-annulation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/assurance-annulation-mariage"/>
     <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/pourboires-enveloppes-mariage-jour-j</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/pourboires-enveloppes-mariage-jour-j"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <loc>https://fiance.drakkar.software/en/blog/assurance-annulation-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/assurance-annulation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/assurance-annulation-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/assurance-annulation-mariage"/>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/pourboires-enveloppes-mariage-jour-j</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/pourboires-enveloppes-mariage-jour-j"/>
     <lastmod>2026-06-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/budget-mariage-par-region-france</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/budget-mariage-par-region-france"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/budget-mariage-par-region-france"/>
+    <loc>https://fiance.drakkar.software/en/blog/pourboires-enveloppes-mariage-jour-j</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/pourboires-enveloppes-mariage-jour-j"/>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/budget-mariage-par-region-france</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-par-region-france"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-par-region-france"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-par-region-france"/>
     <lastmod>2026-06-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/faire-part-parents-divorces</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/faire-part-parents-divorces"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/faire-part-parents-divorces"/>
+    <loc>https://fiance.drakkar.software/en/blog/budget-mariage-par-region-france</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/budget-mariage-par-region-france"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/budget-mariage-par-region-france"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/budget-mariage-par-region-france"/>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/faire-part-parents-divorces</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/faire-part-parents-divorces"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/faire-part-parents-divorces"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/faire-part-parents-divorces"/>
     <lastmod>2026-06-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/remerciements-apres-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/remerciements-apres-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/remerciements-apres-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/faire-part-parents-divorces</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/faire-part-parents-divorces"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/faire-part-parents-divorces"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/faire-part-parents-divorces"/>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/remerciements-apres-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/remerciements-apres-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/remerciements-apres-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/remerciements-apres-mariage"/>
     <lastmod>2026-06-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/protocole-invitations-qui-inviter</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/protocole-invitations-qui-inviter"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/protocole-invitations-qui-inviter"/>
+    <loc>https://fiance.drakkar.software/en/blog/remerciements-apres-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/remerciements-apres-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/remerciements-apres-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/remerciements-apres-mariage"/>
+    <lastmod>2026-06-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/protocole-invitations-qui-inviter</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/protocole-invitations-qui-inviter"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/protocole-invitations-qui-inviter"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/protocole-invitations-qui-inviter"/>
     <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/table-honneur-formats-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/table-honneur-formats-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/table-honneur-formats-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/protocole-invitations-qui-inviter</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/protocole-invitations-qui-inviter"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/protocole-invitations-qui-inviter"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/protocole-invitations-qui-inviter"/>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/table-honneur-formats-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/table-honneur-formats-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/table-honneur-formats-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/table-honneur-formats-mariage"/>
     <lastmod>2026-06-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/plan-de-table-enfants-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/plan-de-table-enfants-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/plan-de-table-enfants-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/table-honneur-formats-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/table-honneur-formats-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/table-honneur-formats-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/table-honneur-formats-mariage"/>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/plan-de-table-enfants-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-enfants-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-enfants-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-enfants-mariage"/>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/placement-libre-ou-assigne-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/placement-libre-ou-assigne-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/placement-libre-ou-assigne-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/plan-de-table-enfants-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/plan-de-table-enfants-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/plan-de-table-enfants-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/plan-de-table-enfants-mariage"/>
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/placement-libre-ou-assigne-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/placement-libre-ou-assigne-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/placement-libre-ou-assigne-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/placement-libre-ou-assigne-mariage"/>
     <lastmod>2026-06-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/choisir-photographe-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-photographe-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-photographe-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/placement-libre-ou-assigne-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/placement-libre-ou-assigne-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/placement-libre-ou-assigne-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/placement-libre-ou-assigne-mariage"/>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/choisir-photographe-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-photographe-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-photographe-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-photographe-mariage"/>
     <lastmod>2026-06-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/choisir-dj-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-dj-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-dj-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/choisir-photographe-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-photographe-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-photographe-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-photographe-mariage"/>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/choisir-dj-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-dj-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-dj-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-dj-mariage"/>
     <lastmod>2026-06-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/choisir-fleuriste-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-fleuriste-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-fleuriste-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/choisir-dj-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-dj-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-dj-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-dj-mariage"/>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/choisir-fleuriste-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-fleuriste-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-fleuriste-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-fleuriste-mariage"/>
     <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/tendances-mariage-2026</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/tendances-mariage-2026"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/tendances-mariage-2026"/>
+    <loc>https://fiance.drakkar.software/en/blog/choisir-fleuriste-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-fleuriste-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-fleuriste-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-fleuriste-mariage"/>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/tendances-mariage-2026</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tendances-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tendances-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tendances-mariage-2026"/>
     <lastmod>2026-06-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/palette-couleurs-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/palette-couleurs-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/palette-couleurs-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/tendances-mariage-2026</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/tendances-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/tendances-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/tendances-mariage-2026"/>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/palette-couleurs-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/palette-couleurs-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/palette-couleurs-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/palette-couleurs-mariage"/>
     <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/choisir-alliances-mariage</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/choisir-alliances-mariage"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/choisir-alliances-mariage"/>
+    <loc>https://fiance.drakkar.software/en/blog/palette-couleurs-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/palette-couleurs-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/palette-couleurs-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/palette-couleurs-mariage"/>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/choisir-alliances-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-alliances-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-alliances-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-alliances-mariage"/>
     <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/blog/fiance-vs-mariages-net</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-mariages-net"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-mariages-net"/>
+    <loc>https://fiance.drakkar.software/en/blog/choisir-alliances-mariage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/choisir-alliances-mariage"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/choisir-alliances-mariage"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/choisir-alliances-mariage"/>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/fiance-vs-mariages-net</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mariages-net"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-mariages-net"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mariages-net"/>
     <lastmod>2026-07-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/fiance-vs-zankyou</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-zankyou"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-zankyou"/>
+    <loc>https://fiance.drakkar.software/en/blog/fiance-vs-mariages-net</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mariages-net"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-mariages-net"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mariages-net"/>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/fiance-vs-zankyou</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-zankyou"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-zankyou"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-zankyou"/>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/fiance-vs-mywed</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/fiance-vs-mywed"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/fiance-vs-mywed"/>
+    <loc>https://fiance.drakkar.software/en/blog/fiance-vs-zankyou</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-zankyou"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-zankyou"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-zankyou"/>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/fiance-vs-mywed</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mywed"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-mywed"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mywed"/>
     <lastmod>2026-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/top-5-applications-mariage-2026</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/top-5-applications-mariage-2026"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/top-5-applications-mariage-2026"/>
+    <loc>https://fiance.drakkar.software/en/blog/fiance-vs-mywed</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mywed"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/fiance-vs-mywed"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/fiance-vs-mywed"/>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/top-5-applications-mariage-2026</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/top-5-applications-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/top-5-applications-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/top-5-applications-mariage-2026"/>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/meilleures-applications-mariage-gratuit-france"/>
+    <loc>https://fiance.drakkar.software/en/blog/top-5-applications-mariage-2026</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/top-5-applications-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/top-5-applications-mariage-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/top-5-applications-mariage-2026"/>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/meilleures-applications-mariage-gratuit-france"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france"/>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <loc>https://fiance.drakkar.software/en/blog/meilleures-applications-mariage-gratuit-france</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/meilleures-applications-mariage-gratuit-france"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france"/>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline"/>
     <lastmod>2026-07-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/privacy</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/privacy"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/privacy"/>
+    <loc>https://fiance.drakkar.software/en/blog/top-5-apps-mariage-vie-privee-offline</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline"/>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/privacy"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://fiance.drakkar.software/terms</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/terms"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/terms"/>
+    <loc>https://fiance.drakkar.software/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/privacy"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/fr/terms</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/terms"/>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://fiance.drakkar.software/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fiance.drakkar.software/fr/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fiance.drakkar.software/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fiance.drakkar.software/fr/terms"/>
     <lastmod>2026-06-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

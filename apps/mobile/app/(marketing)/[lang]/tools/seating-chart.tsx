@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@fiance/ui/utils/file-export";
+import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
 
 type TableShape = "round" | "rectangular";
 
@@ -78,8 +79,10 @@ function TableCard({
 }
 
 export default function SeatingChartTool() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/tools/seating-chart");
 
   const [tables, setTables] = useState<GuestTable[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -148,15 +151,15 @@ export default function SeatingChartTool() {
       <Seo
         title={t("tools.seatingChart.meta.title")}
         description={t("tools.seatingChart.meta.description")}
-        canonical={t("tools.seatingChart.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "WebApplication", name: t("tools.seatingChart.meta.title"),
-            url: t("tools.seatingChart.meta.canonical"),
+            url: seo.canonical,
             applicationCategory: "UtilityApplication",
             offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("tools.seatingChart.meta.title"), item: t("tools.seatingChart.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("tools.seatingChart.meta.title"), item: seo.canonical },
           ]},
         ]}
       />
@@ -164,7 +167,7 @@ export default function SeatingChartTool() {
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>
           <Pressable
-            onPress={() => router.push("/feature/seating-chart" as any)}
+            onPress={() => router.push(localizedPath(lang, "/feature/seating-chart") as any)}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />

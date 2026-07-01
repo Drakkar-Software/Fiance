@@ -8,7 +8,6 @@ export default function TermsScreen() {
       docKey="terms"
       metaTitle={t("legal.terms.meta.title")}
       metaDescription={t("legal.terms.meta.description")}
-      metaCanonical={t("legal.terms.meta.canonical")}
     />
   );
 }

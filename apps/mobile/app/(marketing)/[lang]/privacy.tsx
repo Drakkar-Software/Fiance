@@ -8,7 +8,6 @@ export default function PrivacyScreen() {
       docKey="privacy"
       metaTitle={t("legal.privacy.meta.title")}
       metaDescription={t("legal.privacy.meta.description")}
-      metaCanonical={t("legal.privacy.meta.canonical")}
     />
   );
 }

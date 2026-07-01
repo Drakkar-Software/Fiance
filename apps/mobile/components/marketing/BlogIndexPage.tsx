@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
@@ -10,9 +9,10 @@ import { Seo } from "@/components/Seo";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getBlogPosts, buildBlogJsonLd } from "@/lib/blog";
+import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
 export function BlogIndexPage() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const posts = getBlogPosts(lang);
@@ -24,7 +24,7 @@ export function BlogIndexPage() {
         title={t("blog.meta.title")}
         description={t("blog.meta.description")}
         ogDescription={t("blog.meta.ogDescription")}
-        canonical={t("blog.meta.canonical")}
+        {...localizedSeo(lang, "/blog")}
         jsonLd={buildBlogJsonLd(posts, lang, t("blog.meta.description"))}
       />
 
@@ -91,7 +91,7 @@ export function BlogIndexPage() {
                   featured
                   lang={lang}
                   onPress={() =>
-                    router.push(`/blog/${featured.slug}` as any)
+                    router.push(localizedPath(lang, `/blog/${featured.slug}`) as any)
                   }
                 />
               </View>
@@ -112,7 +112,7 @@ export function BlogIndexPage() {
                       post={post}
                       lang={lang}
                       onPress={() =>
-                        router.push(`/blog/${post.slug}` as any)
+                        router.push(localizedPath(lang, `/blog/${post.slug}`) as any)
                       }
                     />
                   </View>

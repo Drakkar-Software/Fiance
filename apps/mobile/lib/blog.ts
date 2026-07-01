@@ -10,10 +10,9 @@ import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
 import { POSTS_51_68_EN, POSTS_51_68_FR } from "./blog-posts-51-68";
 import { POSTS_69_74_EN, POSTS_69_74_FR } from "./blog-posts-69-74";
 import { getBlogPublishDate } from "./blog-publish-dates";
+import { BASE_URL, localizedUrl, normalizeLang } from "./seo-urls";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
-
-const BASE_URL = "https://fiance.drakkar.software";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 // Defined in blog-types.ts
@@ -527,7 +526,10 @@ export function formatBlogYear(iso: string): string {
 const SCHEMA_CONTEXT = "https://schema.org";
 const ORG_ID = `${BASE_URL}/#organization`;
 const AUTHOR_ID = `${BASE_URL}/#author-paul`;
-const BLOG_ID = `${BASE_URL}/blog#blog`;
+
+function blogIdForLang(lang: string): string {
+  return `${localizedUrl(normalizeLang(lang), "/blog")}#blog`;
+}
 
 const PUBLISHER = {
   "@type": "Organization",
@@ -561,8 +563,16 @@ export function toSchemaDateTime(iso: string): string {
   return `${iso}T08:00:00Z`;
 }
 
-function postCanonicalUrl(slug: string): string {
-  return `${BASE_URL}/blog/${slug}`;
+export function postCanonicalUrl(slug: string, lang: string): string {
+  return localizedUrl(normalizeLang(lang), `/blog/${slug}`);
+}
+
+/** fr/en/x-default alternates for a blog post's <Seo alternates> prop. */
+export function postAlternates(slug: string): { fr: string; en: string } {
+  return {
+    fr: localizedUrl("fr", `/blog/${slug}`),
+    en: localizedUrl("en", `/blog/${slug}`),
+  };
 }
 
 function computeWordCount(post: BlogPost): number {
@@ -596,7 +606,7 @@ export function extractArticleBody(post: BlogPost): string {
 
 /** Full BlogPosting node from BlogPost source data. */
 export function buildBlogPostingNode(post: BlogPost, lang: string): object {
-  const canonical = postCanonicalUrl(post.slug);
+  const canonical = postCanonicalUrl(post.slug, lang);
   const blogName = blogNameForLang(lang);
   const inLanguage = inLanguageForLang(lang);
   const datePublished = toSchemaDateTime(post.date);
@@ -629,9 +639,9 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
     timeRequired: `PT${post.readingMinutes}M`,
     isPartOf: {
       "@type": "Blog",
-      "@id": BLOG_ID,
+      "@id": blogIdForLang(lang),
       name: blogName,
-      url: `${BASE_URL}/blog`,
+      url: localizedUrl(normalizeLang(lang), "/blog"),
     },
   };
 }
@@ -652,9 +662,12 @@ function buildBreadcrumbList(
 
 /** BlogPosting + WebPage + BreadcrumbList JSON-LD for a single post page. */
 export function buildPostJsonLd(post: BlogPost, lang: string): object {
-  const canonical = postCanonicalUrl(post.slug);
+  const canonical = postCanonicalUrl(post.slug, lang);
   const blogName = blogNameForLang(lang);
   const inLanguage = inLanguageForLang(lang);
+  const blogId = blogIdForLang(lang);
+  const blogUrl = localizedUrl(normalizeLang(lang), "/blog");
+  const homeUrl = localizedUrl(normalizeLang(lang), "/");
 
   return {
     "@context": SCHEMA_CONTEXT,
@@ -666,7 +679,7 @@ export function buildPostJsonLd(post: BlogPost, lang: string): object {
         name: post.title,
         description: post.excerpt,
         inLanguage,
-        isPartOf: { "@id": BLOG_ID },
+        isPartOf: { "@id": blogId },
         primaryImageOfPage: { "@id": `${canonical}#article` },
         breadcrumb: { "@id": `${canonical}#breadcrumb` },
         mainEntity: { "@id": `${canonical}#article` },
@@ -674,9 +687,9 @@ export function buildPostJsonLd(post: BlogPost, lang: string): object {
       buildBlogPostingNode(post, lang),
       {
         "@type": "Blog",
-        "@id": BLOG_ID,
+        "@id": blogId,
         name: blogName,
-        url: `${BASE_URL}/blog`,
+        url: blogUrl,
         inLanguage,
         publisher: { "@id": ORG_ID },
       },
@@ -684,8 +697,8 @@ export function buildPostJsonLd(post: BlogPost, lang: string): object {
       PUBLISHER,
       {
         ...buildBreadcrumbList([
-          { name: "Fiancé", item: BASE_URL },
-          { name: blogName, item: `${BASE_URL}/blog` },
+          { name: "Fiancé", item: homeUrl },
+          { name: blogName, item: blogUrl },
           { name: post.title, item: canonical },
         ]),
         "@id": `${canonical}#breadcrumb`,
@@ -701,7 +714,9 @@ export function buildBlogJsonLd(
   blogDescription: string
 ): object {
   const blogName = blogNameForLang(lang);
-  const blogUrl = `${BASE_URL}/blog`;
+  const blogId = blogIdForLang(lang);
+  const blogUrl = localizedUrl(normalizeLang(lang), "/blog");
+  const homeUrl = localizedUrl(normalizeLang(lang), "/");
   const inLanguage = inLanguageForLang(lang);
 
   return {
@@ -709,20 +724,20 @@ export function buildBlogJsonLd(
     "@graph": [
       {
         "@type": "Blog",
-        "@id": BLOG_ID,
+        "@id": blogId,
         name: blogName,
         description: blogDescription,
         url: blogUrl,
         inLanguage,
         publisher: { "@id": ORG_ID },
-        blogPost: posts.map((p) => ({ "@id": `${postCanonicalUrl(p.slug)}#article` })),
+        blogPost: posts.map((p) => ({ "@id": `${postCanonicalUrl(p.slug, lang)}#article` })),
       },
       ...posts.map((p) => buildBlogPostingNode(p, lang)),
       AUTHOR,
       PUBLISHER,
       {
         ...buildBreadcrumbList([
-          { name: "Fiancé", item: BASE_URL },
+          { name: "Fiancé", item: homeUrl },
           { name: blogName, item: blogUrl },
         ]),
         "@id": `${blogUrl}#breadcrumb`,

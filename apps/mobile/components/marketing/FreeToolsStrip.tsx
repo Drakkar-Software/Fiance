@@ -3,10 +3,11 @@ import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/Display";
+import { localizedPath } from "@/lib/seo-urls";
 
 export type FreeToolId = "seatingChart" | "budget" | "timeline";
 
-const TOOL_HREFS: Record<FreeToolId, string> = {
+const TOOL_PATHS: Record<FreeToolId, string> = {
   seatingChart: "/tools/seating-chart",
   budget: "/tools/budget-calculator",
   timeline: "/tools/timeline",
@@ -53,7 +54,8 @@ export function FreeToolsStrip({
   showHeader = true,
   className = "w-full py-12 px-6 bg-accent-cream",
 }: FreeToolsStripProps) {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
+  const lang = i18n.language === "en" ? "en" : "fr";
 
   if (toolIds.length === 0) return null;
 
@@ -81,7 +83,7 @@ export function FreeToolsStrip({
               title={t(`landing.tools.${id}.title`)}
               description={t(`landing.tools.${id}.description`)}
               cta={t(`landing.tools.${id}.cta`)}
-              href={TOOL_HREFS[id]}
+              href={localizedPath(lang, TOOL_PATHS[id])}
             />
           ))}
         </View>

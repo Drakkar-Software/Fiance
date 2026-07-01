@@ -4,6 +4,7 @@ const path = require("path");
 const seo = require("../i18n/locales/fr/seo.json");
 
 const DIST = path.join(__dirname, "..", "dist");
+const LANGS = ["fr", "en"];
 
 // Generate manifest.json from translation keys
 const manifest = {
@@ -77,25 +78,14 @@ function promoteHtmlFilesToDirectories(dir) {
   return count;
 }
 
-function promoteRootPage(name) {
-  const src = path.join(DIST, `${name}.html`);
+function promoteRootPage(baseDir, name) {
+  const src = path.join(baseDir, `${name}.html`);
   if (!fs.existsSync(src)) return false;
-  const targetDir = path.join(DIST, name);
+  const targetDir = path.join(baseDir, name);
   fs.mkdirSync(targetDir, { recursive: true });
   fs.renameSync(src, path.join(targetDir, "index.html"));
   return true;
 }
-
-// SEO marketing routes: /blog/:slug, /tools/:slug, /feature/:slug
-const blogCount = promoteHtmlFilesToDirectories(path.join(DIST, "blog"));
-const toolsCount = promoteHtmlFilesToDirectories(path.join(DIST, "tools"));
-const featureCount = promoteHtmlFilesToDirectories(path.join(DIST, "feature"));
-for (const page of ["privacy", "terms"]) {
-  promoteRootPage(page);
-}
-console.log(
-  `Clean URLs: promoted ${blogCount} blog, ${toolsCount} tools, ${featureCount} feature pages to directory/index.html`
-);
 
 // Remove dynamic route placeholders (empty shell pages, bad for SEO)
 function removeDynamicPlaceholders(dir) {
@@ -107,17 +97,61 @@ function removeDynamicPlaceholders(dir) {
     }
   }
 }
-removeDynamicPlaceholders(path.join(DIST, "blog"));
-removeDynamicPlaceholders(path.join(DIST, "tools"));
-removeDynamicPlaceholders(path.join(DIST, "feature"));
+
+// SEO marketing routes now live under /fr and /en: /fr/blog/:slug, /en/tools/:slug, etc.
+for (const lang of LANGS) {
+  const langDir = path.join(DIST, lang);
+  const blogCount = promoteHtmlFilesToDirectories(path.join(langDir, "blog"));
+  const toolsCount = promoteHtmlFilesToDirectories(path.join(langDir, "tools"));
+  const featureCount = promoteHtmlFilesToDirectories(path.join(langDir, "feature"));
+  for (const page of ["privacy", "terms"]) {
+    promoteRootPage(langDir, page);
+  }
+  console.log(
+    `[${lang}] Clean URLs: promoted ${blogCount} blog, ${toolsCount} tools, ${featureCount} feature pages to directory/index.html`
+  );
+
+  removeDynamicPlaceholders(path.join(langDir, "blog"));
+  removeDynamicPlaceholders(path.join(langDir, "tools"));
+  removeDynamicPlaceholders(path.join(langDir, "feature"));
+}
 
 // Expo also exports the (marketing) route group as a literal folder — duplicate
-// content at /(marketing)/blog/... that splits SEO signals. Remove it.
+// content at /(marketing)/[lang]/blog/... that splits SEO signals. Remove it.
 const marketingDir = path.join(DIST, "(marketing)");
 if (fs.existsSync(marketingDir)) {
   fs.rmSync(marketingDir, { recursive: true, force: true });
   console.log("Removed duplicate dist/(marketing) route-group export");
 }
+
+// The [lang] segment itself also gets exported once with the literal,
+// unresolved placeholder name (e.g. dist/[lang]/blog/...) — an empty/generic
+// shell that isn't real content. Remove it the same way as [slug]/[id].
+removeDynamicPlaceholders(DIST);
+
+// Static export renders every /fr and /en page from the same +html.tsx shell
+// (hardcoded <html lang="fr">). Correct the lang attribute on English pages.
+// React's server renderer can emit extra whitespace between attributes, so
+// match on the attribute itself rather than an exact "<html lang=...>" string.
+function fixEnglishHtmlLang(dir) {
+  if (!fs.existsSync(dir)) return 0;
+  let count = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      count += fixEnglishHtmlLang(full);
+    } else if (entry.isFile() && entry.name.endsWith(".html")) {
+      const html = fs.readFileSync(full, "utf8");
+      if (/<html(\s+)lang="fr">/.test(html)) {
+        fs.writeFileSync(full, html.replace(/(<html\s+)lang="fr">/, '$1lang="en">'));
+        count++;
+      }
+    }
+  }
+  return count;
+}
+const enLangFixed = fixEnglishHtmlLang(path.join(DIST, "en"));
+console.log(`Fixed <html lang> to "en" on ${enLangFixed} English page(s)`);
 
 // Cloudflare Pages excludes directories starting with "." from deployment.
 // Font TTFs land in dist/assets/node_modules/.pnpm/ — rename to drop the dot,

@@ -1,9 +1,8 @@
 User-agent: *
 Allow: /
-Allow: /feature/
-Allow: /tools/
+Allow: /fr/
+Allow: /en/
 Allow: /wedding/
-Allow: /blog/
 
 Disallow: /_expo/
 

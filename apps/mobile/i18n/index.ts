@@ -80,3 +80,16 @@ i18n.use(initReactI18next).init({
 });
 
 export default i18n;
+
+// ─── Per-locale instances for the /fr /en marketing static export ──────────
+// Static export renders every marketing page once per locale. Resources are
+// bundled (no async backend), so cloning is synchronous and safe to call
+// during render. Each clone gets its own `language`, shared resources.
+const marketingClones: Partial<Record<"fr" | "en", typeof i18n>> = {};
+
+export function getI18nForLang(lang: "fr" | "en"): typeof i18n {
+  if (!marketingClones[lang]) {
+    marketingClones[lang] = i18n.cloneInstance({ lng: lang, initImmediate: false });
+  }
+  return marketingClones[lang]!;
+}

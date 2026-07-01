@@ -1,5 +1,6 @@
-import { LandingPage } from "@/components/marketing/LandingPage";
+import { Redirect } from "expo-router";
 
-export default function LandingPageRoute() {
-  return <LandingPage />;
+/** Bare "/" has no locale — send visitors to the default (French) marketing site. */
+export default function MarketingRoot() {
+  return <Redirect href="/fr" />;
 }

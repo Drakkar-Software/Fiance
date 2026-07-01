@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Avatar } from "@/components/Avatar";
@@ -11,9 +10,11 @@ import {
   getBlogPost,
   buildPostJsonLd,
   formatBlogDate,
+  postAlternates,
   BLOG_AUTHOR,
   type BlogSection,
 } from "@/lib/blog";
+import { localizedUrl, localizedPath } from "@/lib/seo-urls";
 import { RichText } from "@/lib/rich-text";
 import {
   FreeToolsStrip,
@@ -126,7 +127,7 @@ interface BlogPostPageProps {
 }
 
 export function BlogPostPage({ slug }: BlogPostPageProps) {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const post = getBlogPost(lang, slug);
@@ -142,7 +143,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
           {t("blog.postNotFound")}
         </Display>
         <Pressable
-          onPress={() => router.push("/blog" as any)}
+          onPress={() => router.push(localizedPath(lang, "/blog") as any)}
           className="active:opacity-60"
         >
           <Text className="text-primary-500 font-semibold" style={{ fontSize: 15 }}>
@@ -153,7 +154,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
     );
   }
 
-  const canonical = `https://fiance.drakkar.software/blog/${post.slug}`;
+  const canonical = localizedUrl(lang, `/blog/${post.slug}`);
 
   return (
     <View className="w-full">
@@ -162,6 +163,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
         description={post.excerpt}
         ogDescription={t("blog.meta.ogDescription")}
         canonical={canonical}
+        alternates={postAlternates(post.slug)}
         ogImage={post.heroImage}
         jsonLd={buildPostJsonLd(post, lang)}
       />
@@ -171,7 +173,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>
           {/* Back */}
           <Pressable
-            onPress={() => router.push("/blog" as any)}
+            onPress={() => router.push(localizedPath(lang, "/blog") as any)}
             className="active:opacity-60"
             style={{ marginBottom: 20 }}
           >
@@ -268,7 +270,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
             style={{ paddingTop: 28, marginTop: 24 }}
           >
             <Pressable
-              onPress={() => router.push("/blog" as any)}
+              onPress={() => router.push(localizedPath(lang, "/blog") as any)}
               className="active:opacity-60"
             >
               <Text

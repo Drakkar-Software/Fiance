@@ -6,6 +6,7 @@ import {
   Move, Square, Users, Download, FileText, RefreshCw,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
+import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -22,8 +23,10 @@ function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title
 }
 
 export default function SeatingChartPage() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/feature/seating-chart");
 
   const features = [
     { key: "dragDrop", icon: <Move size={18} className="text-accent-gold" /> },
@@ -39,11 +42,11 @@ export default function SeatingChartPage() {
       <Seo
         title={t("seatingChart.meta.title")}
         description={t("seatingChart.meta.description")}
-        canonical={t("seatingChart.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("seatingChart.meta.title"), item: t("seatingChart.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("seatingChart.meta.title"), item: seo.canonical },
           ]},
         ]}
       />
@@ -61,7 +64,7 @@ export default function SeatingChartPage() {
           </Text>
           <View className="flex-row gap-3 flex-wrap justify-center">
             <Pressable
-              onPress={() => router.push("/tools/seating-chart" as any)}
+              onPress={() => router.push(localizedPath(lang, "/tools/seating-chart") as any)}
               className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-white">{t("seatingChart.hero.ctaPrimary")}</Text>
@@ -106,7 +109,7 @@ export default function SeatingChartPage() {
             {t("seatingChart.toolCta.description")}
           </Text>
           <Pressable
-            onPress={() => router.push("/tools/seating-chart" as any)}
+            onPress={() => router.push(localizedPath(lang, "/tools/seating-chart") as any)}
             className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("seatingChart.toolCta.cta")}</Text>

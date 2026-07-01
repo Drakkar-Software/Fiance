@@ -1,35 +1,36 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { getLegalDocs } from "@/lib/legal";
 import { Seo } from "@/components/Seo";
-import i18n from "@/i18n";
+import { localizedSeo } from "@/lib/seo-urls";
 
 interface LegalPageProps {
   docKey: "terms" | "privacy";
   metaTitle: string;
   metaDescription: string;
-  metaCanonical: string;
 }
 
-export function LegalPage({ docKey, metaTitle, metaDescription, metaCanonical }: LegalPageProps) {
+export function LegalPage({ docKey, metaTitle, metaDescription }: LegalPageProps) {
   const router = useRouter();
+  const { i18n } = useTranslation();
   const lang = i18n.language === "en" ? "en" : "fr";
   const docs = getLegalDocs(lang);
   const doc = docs[docKey];
   const isEn = lang === "en";
-
+  const seo = localizedSeo(lang, `/${docKey}`);
 
   const handleBack = () => {
     if (router.canGoBack()) router.back();
-    else router.replace("/" as any);
+    else router.replace(`/${lang}` as any);
   };
 
   return (
     <View className="w-full">
-      <Seo title={metaTitle} description={metaDescription} canonical={metaCanonical} />
+      <Seo title={metaTitle} description={metaDescription} {...seo} />
       {/* Hero */}
       <View className="w-full py-16 px-6 bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>

@@ -6,6 +6,7 @@ import {
   Tag, TrendingDown, BarChart2, Store, FileText, WifiOff, Calculator,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
+import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
 
 function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -22,8 +23,10 @@ function FeatureRow({ icon, title, description }: { icon: React.ReactNode; title
 }
 
 export default function BudgetPage() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const lang = i18n.language === "en" ? "en" : "fr";
+  const seo = localizedSeo(lang, "/feature/budget");
 
   const features = [
     { key: "categories", icon: <Tag size={18} className="text-accent-gold" /> },
@@ -39,11 +42,11 @@ export default function BudgetPage() {
       <Seo
         title={t("budget.meta.title")}
         description={t("budget.meta.description")}
-        canonical={t("budget.meta.canonical")}
+        {...seo}
         jsonLd={[
           { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Fiancé", item: "https://fiance.drakkar.software" },
-            { "@type": "ListItem", position: 2, name: t("budget.meta.title"), item: t("budget.meta.canonical") },
+            { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+            { "@type": "ListItem", position: 2, name: t("budget.meta.title"), item: seo.canonical },
           ]},
         ]}
       />
@@ -61,7 +64,7 @@ export default function BudgetPage() {
           </Text>
           <View className="flex-row gap-3 flex-wrap justify-center">
             <Pressable
-              onPress={() => router.push("/tools/budget-calculator" as any)}
+              onPress={() => router.push(localizedPath(lang, "/tools/budget-calculator") as any)}
               className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
             >
               <Text className="text-base font-semibold text-white">{t("budget.hero.ctaPrimary")}</Text>
@@ -106,7 +109,7 @@ export default function BudgetPage() {
             {t("budget.toolCta.description")}
           </Text>
           <Pressable
-            onPress={() => router.push("/tools/budget-calculator" as any)}
+            onPress={() => router.push(localizedPath(lang, "/tools/budget-calculator") as any)}
             className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
           >
             <Text className="text-base font-semibold text-white">{t("budget.toolCta.cta")}</Text>
