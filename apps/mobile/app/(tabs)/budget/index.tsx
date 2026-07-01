@@ -229,6 +229,7 @@ export default function BudgetScreen() {
       {/* Contributors */}
       <ContributorsCard
         target={budget.budgetTarget}
+        totalEngaged={budget.totalEngaged}
         categories={budget.categories}
         categoryBudgets={categoryBudgets}
       />

@@ -21,11 +21,12 @@ import type { BudgetCategoryItem } from "@/store/useBudgetStore";
 
 interface ContributorsCardProps {
   target: number;
+  totalEngaged: number;
   categories: BudgetCategoryItem[];
   categoryBudgets: Record<string, number>;
 }
 
-export function ContributorsCard({ target, categories, categoryBudgets }: ContributorsCardProps) {
+export function ContributorsCard({ target, totalEngaged, categories, categoryBudgets }: ContributorsCardProps) {
   const { t } = useTranslation("budget");
   const contributors = useContributorsStore((s) => s.contributors);
   const addContributor = useContributorsStore((s) => s.addContributor);
@@ -48,13 +49,17 @@ export function ContributorsCard({ target, categories, categoryBudgets }: Contri
     return amounts;
   }, [categories, categoryBudgets]);
 
+  // Mirrors the per-category fallback below: a "global" allocation should still resolve
+  // to a meaningful euro amount even when no explicit target budget has been set yet.
+  const effectiveTarget = target > 0 ? target : totalEngaged;
+
   const contributorTotals = useMemo(
     () =>
       contributors.map((contributor) => ({
         contributor,
-        amount: calculateContributorTotal(contributor, target, categoryAmounts),
+        amount: calculateContributorTotal(contributor, effectiveTarget, categoryAmounts),
       })),
-    [contributors, target, categoryAmounts]
+    [contributors, effectiveTarget, categoryAmounts]
   );
 
   const covered = contributorTotals.reduce((sum, c) => sum + c.amount, 0);
@@ -194,7 +199,7 @@ export function ContributorsCard({ target, categories, categoryBudgets }: Contri
             : undefined
         }
         categoryAmounts={categoryAmounts}
-        globalTarget={target}
+        globalTarget={effectiveTarget}
       />
 
       <ConfirmSheet
