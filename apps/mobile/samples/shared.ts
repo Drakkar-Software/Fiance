@@ -216,15 +216,7 @@ const GIFT_ITEMS = [
   { title: "Nuit dans un château", category: "voyage", price: 420 },
 ];
 
-const WEDDING_PARTY_ROLES: Array<{ role: string; external?: string }> = [
-  { role: "WITNESS" },
-  { role: "WITNESS" },
-  { role: "OFFICIANT", external: "Élodie Martin" },
-  { role: "BRIDESMAID" },
-  { role: "BRIDESMAID" },
-  { role: "BRIDESMAID" },
-  { role: "BRIDESMAID" },
-];
+const WEDDING_PARTY_ROLE_NAMES = ["Témoin", "Officiant·e", "Demoiselle d'honneur", "Garçon d'honneur"] as const;
 
 const COMMUNICATION_LABELS = [
   "Save-the-date",
@@ -697,20 +689,29 @@ function buildCommunications(
   }));
 }
 
+function buildWeddingRoles(prefix: string) {
+  return WEDDING_PARTY_ROLE_NAMES.map((name, i) => ({
+    id: id(`${prefix}-role`, i + 1),
+    name,
+    sortOrder: i + 1,
+    createdAt: TS,
+    updatedAt: TS,
+  }));
+}
+
 function buildWeddingRoleAssignments(
   prefix: string,
   count: number,
   guests: ReturnType<typeof buildGuests>,
+  roles: ReturnType<typeof buildWeddingRoles>,
 ) {
-  return WEDDING_PARTY_ROLES.slice(0, count).map((def, i) => {
-    const guest = def.external ? null : guests[i % guests.length];
+  return Array.from({ length: count }, (_, i) => {
+    const role = roles[i % roles.length];
+    const guest = guests[i % guests.length];
     return {
       id: id(`${prefix}-wra`, i + 1),
-      role: def.role,
-      guestId: guest ? guest.id : null,
-      displayName: def.external ?? "",
-      phone: null,
-      email: null,
+      roleId: role.id,
+      guestId: guest.id,
       notes: null,
       sortOrder: i + 1,
       createdAt: TS,
@@ -907,7 +908,8 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
   const gifts = buildGifts(prefix, profile.giftCount);
   const communications = buildCommunications(prefix, profile.communicationCount, guests);
   const invitationTypes = buildInvitationTypes(profile.includeBothDays);
-  const weddingRoleAssignments = buildWeddingRoleAssignments(prefix, profile.weddingPartyCount, guests);
+  const weddingRoles = buildWeddingRoles(prefix);
+  const weddingRoleAssignments = buildWeddingRoleAssignments(prefix, profile.weddingPartyCount, guests, weddingRoles);
   const seatingConstraints = buildSeatingConstraints(prefix, profile.seatingConstraintCount, guests);
   const weddingEvents = buildWeddingEvents(prefix, profile.weddingEventCount, profile.weddingDate, profile.venueName);
   const guestMealSelections = buildMealSelections(prefix, guests, weddingEvents);
@@ -948,6 +950,7 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     gifts,
     invitationTypes,
     communications,
+    weddingRoles,
     weddingRoleAssignments,
     seatingConstraints,
     weddingEvents,

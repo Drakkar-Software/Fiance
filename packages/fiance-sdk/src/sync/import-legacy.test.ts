@@ -97,7 +97,8 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     ideaCollections: [{ id: 'ic1', title: 'Déco' } as never],
     ideas: [{ id: 'idea1', title: 'Bougie', collectionId: 'ic1' } as never],
     communications: [{ id: 'comm1', label: 'Faire-part', date: null, notes: null, recipients: [], createdAt: null, updatedAt: null } as never],
-    weddingRoleAssignments: [{ id: 'wra1', role: 'WITNESS', guestId: 'g1', displayName: '', phone: null, email: null, notes: null, sortOrder: null, createdAt: null, updatedAt: null } as never],
+    weddingRoles: [{ id: 'role1', name: 'Témoin', sortOrder: null, createdAt: null, updatedAt: null } as never],
+    weddingRoleAssignments: [{ id: 'wra1', roleId: 'role1', guestId: 'g1', notes: null, sortOrder: null, createdAt: null, updatedAt: null } as never],
     seatingConstraints: [{ id: 'sc1', type: 'MUST_SIT_TOGETHER', guestIds: ['g1', 'g2'], label: null, isHard: null, createdAt: null, updatedAt: null } as never],
     weddingEvents: [{ id: 'we1', type: 'DINNER', title: 'Réception', date: '2026-09-12', startTime: null, endTime: null, venueName: null, address: null, notes: null, isPrimary: true, isPublic: true, sortOrder: 1, createdAt: null, updatedAt: null } as never],
     guestMealSelections: [{ id: 'ms1', guestId: 'g1', eventId: null, mealChoice: 'STANDARD', courses: null, notes: null, createdAt: null, updatedAt: null } as never],
@@ -268,6 +269,7 @@ describe('importLegacyBackup', () => {
     expect(result.idMap['guest:g1']).toBeDefined();
     expect(result.idMap['vendor:v1']).toBeDefined();
     expect(result.idMap['task:task1']).toBeDefined();
+    expect(result.idMap['weddingRole:role1']).toBeDefined();
     expect(result.idMap['weddingRoleAssignment:wra1']).toBeDefined();
     expect(result.idMap['seatingConstraint:sc1']).toBeDefined();
   });

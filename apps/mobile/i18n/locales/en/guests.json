@@ -228,33 +228,18 @@
   },
   "weddingParty": {
     "title": "Roles",
-    "role": {
-      "OFFICIANT": "Officiant",
-      "WITNESS": "Witness",
-      "BRIDESMAID": "Bridesmaid",
-      "GROOMSMAN": "Groomsman",
-      "RING_BEARER": "Ring bearer",
-      "FLOWER_GIRL": "Flower girl",
-      "USHER": "Usher",
-      "OTHER": "Other role"
-    },
-    "category": {
-      "ceremony": "Ceremony",
-      "party": "Wedding party",
-      "other": "Other roles"
-    },
-    "role_label": "Role",
     "addRole": "Add a role",
     "newRole": "New role",
     "editRole": "Edit role",
-    "existingGuest": "Existing guest",
-    "displayNamePlaceholder": "Full name",
-    "displayNameRequired": "Name is required for an external person",
-    "selectGuestRequired": "Select a guest",
+    "roleNamePlaceholder": "Role name",
+    "roleNameRequired": "Role name is required",
+    "createDefaults": "Create default roles",
     "empty": "No roles yet",
-    "emptyDesc": "Add witnesses, officiant, and wedding party to organize your ceremony",
+    "emptyDesc": "Create your own roles or generate the classic ones (witness, bridesmaid...)",
     "deleteRole": "Delete this role?",
-    "deleteRoleMsg": "This action cannot be undone."
+    "deleteRoleMsg": "This action cannot be undone. Guests holding this role will no longer have it.",
+    "noRolesYet": "No roles have been created yet.",
+    "manageRoles": "Manage roles"
   },
   "seatingConstraints": {
     "title": "Seating constraints",

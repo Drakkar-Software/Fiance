@@ -1,6 +1,6 @@
 {
-  "version": 12,
-  "timestamp": "2026-07-01T14:47:34.954Z",
+  "version": 13,
+  "timestamp": "2026-07-01T15:25:32.869Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Sophie",
@@ -8171,14 +8171,41 @@
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
   ],
+  "weddingRoles": [
+    {
+      "id": "big-role-001",
+      "name": "Témoin",
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "big-role-002",
+      "name": "Officiant·e",
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "big-role-003",
+      "name": "Demoiselle d'honneur",
+      "sortOrder": 3,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "big-role-004",
+      "name": "Garçon d'honneur",
+      "sortOrder": 4,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
   "weddingRoleAssignments": [
     {
       "id": "big-wra-001",
-      "role": "WITNESS",
+      "roleId": "big-role-001",
       "guestId": "big-g-001",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 1,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8186,11 +8213,8 @@
     },
     {
       "id": "big-wra-002",
-      "role": "WITNESS",
+      "roleId": "big-role-002",
       "guestId": "big-g-002",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 2,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8198,11 +8222,8 @@
     },
     {
       "id": "big-wra-003",
-      "role": "OFFICIANT",
-      "guestId": null,
-      "displayName": "Élodie Martin",
-      "phone": null,
-      "email": null,
+      "roleId": "big-role-003",
+      "guestId": "big-g-003",
       "notes": null,
       "sortOrder": 3,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8210,11 +8231,8 @@
     },
     {
       "id": "big-wra-004",
-      "role": "BRIDESMAID",
+      "roleId": "big-role-004",
       "guestId": "big-g-004",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 4,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8222,11 +8240,8 @@
     },
     {
       "id": "big-wra-005",
-      "role": "BRIDESMAID",
+      "roleId": "big-role-001",
       "guestId": "big-g-005",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 5,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8234,11 +8249,8 @@
     },
     {
       "id": "big-wra-006",
-      "role": "BRIDESMAID",
+      "roleId": "big-role-002",
       "guestId": "big-g-006",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 6,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -8246,11 +8258,8 @@
     },
     {
       "id": "big-wra-007",
-      "role": "BRIDESMAID",
+      "roleId": "big-role-003",
       "guestId": "big-g-007",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 7,
       "createdAt": "2026-07-01T10:00:00.000Z",

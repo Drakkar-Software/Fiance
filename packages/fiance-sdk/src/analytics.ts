@@ -25,6 +25,7 @@ export type FianceEvents = {
   communication_added:         undefined;
   table_added:                 undefined;
   table_deleted:               undefined;
+  wedding_role_created:        undefined;
   wedding_role_assigned:       undefined;
   seating_constraint_created:  undefined;
   wedding_event_created:       undefined;

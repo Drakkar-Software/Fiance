@@ -228,33 +228,18 @@
   },
   "weddingParty": {
     "title": "Rôles",
-    "role": {
-      "OFFICIANT": "Officiant·e",
-      "WITNESS": "Témoin",
-      "BRIDESMAID": "Demoiselle d'honneur",
-      "GROOMSMAN": "Garçon d'honneur",
-      "RING_BEARER": "Porteur d'alliances",
-      "FLOWER_GIRL": "Demoiselle de fleurs",
-      "USHER": "Placeur",
-      "OTHER": "Autre rôle"
-    },
-    "category": {
-      "ceremony": "Cérémonie",
-      "party": "Cortège",
-      "other": "Autres rôles"
-    },
-    "role_label": "Rôle",
     "addRole": "Ajouter un rôle",
     "newRole": "Nouveau rôle",
     "editRole": "Modifier le rôle",
-    "existingGuest": "Invité existant",
-    "displayNamePlaceholder": "Nom complet",
-    "displayNameRequired": "Le nom est requis pour une personne externe",
-    "selectGuestRequired": "Sélectionnez un invité",
-    "empty": "Aucun rôle défini",
-    "emptyDesc": "Ajoutez témoins, officiant·e et cortège pour organiser votre cérémonie",
+    "roleNamePlaceholder": "Nom du rôle",
+    "roleNameRequired": "Le nom du rôle est requis",
+    "createDefaults": "Créer les rôles par défaut",
+    "empty": "Aucun rôle créé",
+    "emptyDesc": "Créez vos propres rôles ou générez les rôles classiques (témoin, demoiselle d'honneur...)",
     "deleteRole": "Supprimer ce rôle ?",
-    "deleteRoleMsg": "Cette action est irréversible."
+    "deleteRoleMsg": "Cette action est irréversible. Les invités portant ce rôle ne le porteront plus.",
+    "noRolesYet": "Aucun rôle n'a encore été créé.",
+    "manageRoles": "Gérer les rôles"
   },
   "seatingConstraints": {
     "title": "Contraintes de placement",

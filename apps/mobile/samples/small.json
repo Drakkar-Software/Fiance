@@ -1,6 +1,6 @@
 {
-  "version": 12,
-  "timestamp": "2026-07-01T14:47:34.949Z",
+  "version": 13,
+  "timestamp": "2026-07-01T15:25:32.864Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Camille",
@@ -2001,14 +2001,41 @@
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
   ],
+  "weddingRoles": [
+    {
+      "id": "small-role-001",
+      "name": "Témoin",
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-role-002",
+      "name": "Officiant·e",
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-role-003",
+      "name": "Demoiselle d'honneur",
+      "sortOrder": 3,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-role-004",
+      "name": "Garçon d'honneur",
+      "sortOrder": 4,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
   "weddingRoleAssignments": [
     {
       "id": "small-wra-001",
-      "role": "WITNESS",
+      "roleId": "small-role-001",
       "guestId": "small-g-001",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 1,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -2016,11 +2043,8 @@
     },
     {
       "id": "small-wra-002",
-      "role": "WITNESS",
+      "roleId": "small-role-002",
       "guestId": "small-g-002",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 2,
       "createdAt": "2026-07-01T10:00:00.000Z",

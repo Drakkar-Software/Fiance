@@ -27,6 +27,7 @@ export const FIANCE_TYPES = {
   ideaCollection: 'ideaCollection',
   idea:           'idea',
   communication:  'communication',
+  weddingRole:           'weddingRole',
   weddingRoleAssignment: 'weddingRoleAssignment',
   seatingConstraint:     'seatingConstraint',
   weddingEvent:          'weddingEvent',

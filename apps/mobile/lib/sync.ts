@@ -21,7 +21,7 @@ import { useCommunicationTemplatesStore } from "@/store/useCommunicationTemplate
 import { useDocumentsStore } from "@/store/useDocumentsStore";
 import { useLegalStore } from "@/store/useLegalStore";
 import { useHoneymoonStore } from "@/store/useHoneymoonStore";
-import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES, synthesizePrimaryEvent } from "@fiance/sdk";
+import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES, synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
 export interface BackupData {
@@ -44,6 +44,7 @@ export interface BackupData {
   gifts: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
+  weddingRoles?: unknown[];
   weddingRoleAssignments?: unknown[];
   seatingConstraints?: unknown[];
   weddingEvents?: unknown[];
@@ -61,7 +62,10 @@ export interface BackupData {
 // v10 → v11: added documents collection (localUri stripped to "" on export);
 //            Vendor comparison fields (comparisonGroupId/isSelected/sortOrder)
 // v11 → v12: added legalMilestones (seeded with FR defaults); honeymoonPlans (0–1 row)
-const BACKUP_VERSION = 12;
+// v12 → v13: fixed GuestRole enum replaced by a user-created weddingRoles catalog;
+//            weddingRoleAssignments now link guestId → roleId (external, non-guest
+//            role-holders are no longer supported and are dropped on migration)
+const BACKUP_VERSION = 13;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -85,6 +89,7 @@ export function createBackupDocument(): Record<string, unknown> {
     gifts: useGiftsStore.getState().gifts,
     invitationTypes: useInvitationTypesStore.getState().invitationTypes,
     communications: useCommunicationsStore.getState().communications,
+    weddingRoles: useWeddingPartyStore.getState().weddingRoles,
     weddingRoleAssignments: useWeddingPartyStore.getState().weddingRoleAssignments,
     seatingConstraints: useSeatingConstraintsStore.getState().seatingConstraints,
     weddingEvents: useWeddingEventsStore.getState().weddingEvents,
@@ -129,6 +134,8 @@ export function restoreFromBackup(
   // v7 → v8: added weddingRoleAssignments, seatingConstraints collections (additive, no migration)
   // v8 → v9: added weddingEvents collection; auto-migrate a synthetic primary event
   //          from wedding.weddingDate/venueName when no WeddingEvent rows exist yet
+  // v12 → v13: fixed GuestRole enum replaced by a user-created weddingRoles catalog;
+  //            legacy enum-based weddingRoleAssignments migrated via migrateRoleAssignments
 
   const now = new Date().toISOString();
   const rawInvTypes = (backup.invitationTypes || []) as any[];
@@ -150,6 +157,12 @@ export function restoreFromBackup(
         createdAt: now,
         updatedAt: now,
       }));
+
+  const rawWeddingRoles = (backup.weddingRoles || []) as any[];
+  const rawRoleAssignments = (backup.weddingRoleAssignments || []) as any[];
+  const migratedRoles = rawWeddingRoles.length === 0 ? migrateRoleAssignments(rawRoleAssignments) : null;
+  const restoredWeddingRoles = migratedRoles ? migratedRoles.roles : rawWeddingRoles;
+  const restoredRoleAssignments = migratedRoles ? migratedRoles.assignments : rawRoleAssignments;
 
   const rawLegalMilestones = (backup.legalMilestones || []) as any[];
   const restoredLegalMilestones = rawLegalMilestones.length > 0
@@ -197,7 +210,8 @@ export function restoreFromBackup(
     gifts: (backup.gifts || []) as any[],
     invitationTypes: restoredInvitationTypes,
     communications: (backup.communications || []) as any[],
-    weddingRoleAssignments: (backup.weddingRoleAssignments || []) as any[],
+    weddingRoles: restoredWeddingRoles,
+    weddingRoleAssignments: restoredRoleAssignments,
     seatingConstraints: (backup.seatingConstraints || []) as any[],
     weddingEvents: restoredWeddingEvents,
     guestMealSelections: (backup.guestMealSelections || []) as any[],
@@ -230,6 +244,7 @@ export function restoreFromBackup(
     useGiftsStore.getState().setGifts(restoredData.gifts);
     useInvitationTypesStore.getState().setInvitationTypes(restoredData.invitationTypes);
     useCommunicationsStore.getState().setCommunications(restoredData.communications);
+    useWeddingPartyStore.getState().setWeddingRoles(restoredData.weddingRoles);
     useWeddingPartyStore.getState().setWeddingRoleAssignments(restoredData.weddingRoleAssignments);
     useSeatingConstraintsStore.getState().setSeatingConstraints(restoredData.seatingConstraints);
     useWeddingEventsStore.getState().setWeddingEvents(restoredData.weddingEvents);

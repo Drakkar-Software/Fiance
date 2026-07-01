@@ -25,6 +25,7 @@ function emptySnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapsho
     gifts: [],
     invitationTypes: [],
     communications: [],
+    weddingRoles: [],
     weddingRoleAssignments: [],
     seatingConstraints: [],
     weddingEvents: [],

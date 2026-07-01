@@ -45,6 +45,7 @@ import {
   giftToNode,
   invitationTypeToNode,
   communicationToNode,
+  weddingRoleToNode,
   weddingRoleAssignmentToNode,
   seatingConstraintToNode,
   weddingEventToNode,
@@ -288,6 +289,14 @@ export async function importLegacyBackup(
     const id = nextId(`communication:${comm.id}`, comm.id);
     allDescriptors.push(withLegacyId(communicationToNode(comm, id, resolvedWeddingId), comm.id));
     contentMap.set(id, comm);
+  }
+
+  // ── 12a2. Wedding roles catalog ──────────────────────────────────────────
+  for (const role of (snapshot.weddingRoles ?? [])) {
+    if (alreadyImported(role.id)) continue;
+    const id = nextId(`weddingRole:${role.id}`, role.id);
+    allDescriptors.push(withLegacyId(weddingRoleToNode(role, id, resolvedWeddingId), role.id));
+    contentMap.set(id, role);
   }
 
   // ── 12b. Wedding role assignments ────────────────────────────────────────

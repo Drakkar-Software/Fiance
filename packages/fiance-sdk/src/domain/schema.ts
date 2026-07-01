@@ -339,13 +339,20 @@ export interface HoneymoonPlan {
   updatedAt: string | null;
 }
 
+/** User-created wedding-party role (e.g. "Témoin", "Demoiselle d'honneur"). No pre-built roles ship in the app. */
+export interface WeddingRole {
+  id: string;
+  name: string;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+/** Links a guest to a WeddingRole. Association only happens from the guest detail view. */
 export interface WeddingRoleAssignment {
   id: string;
-  role: string; // GuestRole enum
-  guestId: string | null; // null = external person not in guest list
-  displayName: string; // required when guestId is null
-  phone: string | null;
-  email: string | null;
+  roleId: string; // FK to WeddingRole
+  guestId: string; // FK to Guest
   notes: string | null;
   sortOrder: number | null;
   createdAt: string | null;
@@ -392,6 +399,7 @@ export type AgendaEventInsert = AgendaEvent;
 export type DayOfItemInsert = DayOfItem;
 export type IdeaCollectionInsert = IdeaCollection;
 export type IdeaInsert = Idea;
+export type WeddingRoleInsert = WeddingRole;
 export type WeddingRoleAssignmentInsert = WeddingRoleAssignment;
 export type SeatingConstraintInsert = SeatingConstraint;
 export type WeddingEventInsert = WeddingEvent;

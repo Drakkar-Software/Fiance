@@ -6,6 +6,7 @@
 // NodeNext .js extension required
 import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from '../domain/types.js';
 import { synthesizePrimaryEvent } from '../domain/wedding-events.js';
+import { migrateRoleAssignments } from '../domain/wedding-party.js';
 import type {
   Wedding,
   Guest,
@@ -24,6 +25,7 @@ import type {
   Gift,
   InvitationTypeEntity,
   Communication,
+  WeddingRole,
   WeddingRoleAssignment,
   SeatingConstraint,
   WeddingEvent,
@@ -45,7 +47,10 @@ import type {
 //            Vendor comparison fields (comparisonGroupId/isSelected/sortOrder)
 // v11 → v12: added legalMilestones collection (seeded with 4 FR admin defaults);
 //            honeymoonPlans collection (0–1 row, singleton)
-export const BACKUP_VERSION = 12;
+// v12 → v13: replaced the fixed GuestRole enum with a user-created weddingRoles
+//            catalog; weddingRoleAssignments now link a guestId to a roleId
+//            (external, non-guest role-holders are no longer supported)
+export const BACKUP_VERSION = 13;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -67,6 +72,7 @@ export interface WeddingSnapshot {
   gifts: Gift[];
   invitationTypes: InvitationTypeEntity[];
   communications: Communication[];
+  weddingRoles: WeddingRole[];
   weddingRoleAssignments: WeddingRoleAssignment[];
   seatingConstraints: SeatingConstraint[];
   weddingEvents: WeddingEvent[];
@@ -99,6 +105,7 @@ export interface BackupData {
   gifts: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
+  weddingRoles?: unknown[];
   weddingRoleAssignments?: unknown[];
   seatingConstraints?: unknown[];
   weddingEvents?: unknown[];
@@ -133,6 +140,7 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     gifts: snapshot.gifts,
     invitationTypes: snapshot.invitationTypes,
     communications: snapshot.communications,
+    weddingRoles: snapshot.weddingRoles,
     weddingRoleAssignments: snapshot.weddingRoleAssignments,
     seatingConstraints: snapshot.seatingConstraints,
     weddingEvents: snapshot.weddingEvents,
@@ -238,6 +246,9 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   //            re-attach on this device); Vendor comparison fields (additive)
   // v11 → v12: added legalMilestones (seeded with FR defaults when empty);
   //            honeymoonPlans (additive, 0–1 row, no migration needed)
+  // v12 → v13: fixed GuestRole enum replaced by a user-created weddingRoles
+  //            catalog; legacy enum-based weddingRoleAssignments (and any
+  //            external, non-guest entries) are migrated via migrateRoleAssignments
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -262,6 +273,14 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
           createdAt: now,
           updatedAt: now,
         }));
+
+  const rawWeddingRoles = (doc.weddingRoles || []) as unknown as WeddingRole[];
+  const rawRoleAssignments = (doc.weddingRoleAssignments || []) as unknown[];
+  const migratedRoles = rawWeddingRoles.length === 0 ? migrateRoleAssignments(rawRoleAssignments) : null;
+  const restoredWeddingRoles = migratedRoles ? migratedRoles.roles : rawWeddingRoles;
+  const restoredRoleAssignments = migratedRoles
+    ? migratedRoles.assignments
+    : (rawRoleAssignments as unknown as WeddingRoleAssignment[]);
 
   const rawLegalMilestones = ((doc.legalMilestones || []) as unknown[]) as Record<string, unknown>[];
   const restoredLegalMilestones =
@@ -314,7 +333,8 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     gifts: (doc.gifts || []) as unknown as Gift[],
     invitationTypes: restoredInvitationTypes as unknown as InvitationTypeEntity[],
     communications: (doc.communications || []) as unknown as Communication[],
-    weddingRoleAssignments: (doc.weddingRoleAssignments || []) as unknown as WeddingRoleAssignment[],
+    weddingRoles: restoredWeddingRoles,
+    weddingRoleAssignments: restoredRoleAssignments,
     seatingConstraints: (doc.seatingConstraints || []) as unknown as SeatingConstraint[],
     weddingEvents: restoredWeddingEvents,
     guestMealSelections: (doc.guestMealSelections || []) as unknown as GuestMealSelection[],

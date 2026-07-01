@@ -30,7 +30,7 @@ import {
 import { notifySync } from "@/lib/starfish";
 import {
   removeGuestFromAll,
-  detachGuestFromRoles,
+  removeRoleAssignmentsForGuest,
   detachGuestFromConstraints,
   removeMealSelectionsForGuest,
 } from "@fiance/sdk";
@@ -85,16 +85,14 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     notifySync();
   },
   removeGuest: (id) => {
-    const removedGuest = get().guests.find((g) => g.id === id);
     set((s) => ({ guests: sdkRemoveGuest(s.guests, id) }));
     // Cascade: strip this guest from all communications recipients
     const commStore = useCommunicationsStore.getState();
     commStore.setCommunications(removeGuestFromAll(commStore.communications, id));
-    // Cascade: keep wedding-party role rows, copy in the name, detach the FK
-    const displayName = removedGuest ? `${removedGuest.firstName} ${removedGuest.lastName}`.trim() : "";
+    // Cascade: a guest is gone, so drop their wedding-party role assignments
     const partyStore = useWeddingPartyStore.getState();
     partyStore.setWeddingRoleAssignments(
-      detachGuestFromRoles(partyStore.weddingRoleAssignments, id, displayName),
+      removeRoleAssignmentsForGuest(partyStore.weddingRoleAssignments, id),
     );
     // Cascade: strip this guest from seating constraints, dropping under-2 ones
     const seatingStore = useSeatingConstraintsStore.getState();

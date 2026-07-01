@@ -25,7 +25,7 @@ import { useDocumentsStore } from "@/store/useDocumentsStore";
 import { useLegalStore } from "@/store/useLegalStore";
 import { useHoneymoonStore } from "@/store/useHoneymoonStore";
 import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from "@/db/types";
-import { synthesizePrimaryEvent } from "@fiance/sdk";
+import { synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
 import { readCollection, writeCollection } from "./kv-storage";
 
 // ─── Clear all stores (for wedding switching) ──────────────────────────────
@@ -50,6 +50,7 @@ export function clearAllStores(): void {
   useGiftsStore.getState().setGifts([]);
   useInvitationTypesStore.getState().setInvitationTypes([]);
   useCommunicationsStore.getState().setCommunications([]);
+  useWeddingPartyStore.getState().setWeddingRoles([]);
   useWeddingPartyStore.getState().setWeddingRoleAssignments([]);
   useSeatingConstraintsStore.getState().setSeatingConstraints([]);
   useWeddingEventsStore.getState().setWeddingEvents([]);
@@ -98,7 +99,19 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
 
   useCommunicationsStore.getState().setCommunications(readCollection<any[]>("communications") ?? []);
 
-  useWeddingPartyStore.getState().setWeddingRoleAssignments(readCollection<any[]>("weddingRoleAssignments") ?? []);
+  const storedWeddingRoles = readCollection<any[]>("weddingRoles") ?? [];
+  const storedRoleAssignments = readCollection<any[]>("weddingRoleAssignments") ?? [];
+  if (storedWeddingRoles.length === 0 && storedRoleAssignments.length > 0) {
+    // Legacy enum-based assignments (no roleId yet): derive a role catalog and remap.
+    const migrated = migrateRoleAssignments(storedRoleAssignments);
+    useWeddingPartyStore.getState().setWeddingRoles(migrated.roles);
+    useWeddingPartyStore.getState().setWeddingRoleAssignments(migrated.assignments);
+    writeCollection("weddingRoles", migrated.roles);
+    writeCollection("weddingRoleAssignments", migrated.assignments);
+  } else {
+    useWeddingPartyStore.getState().setWeddingRoles(storedWeddingRoles);
+    useWeddingPartyStore.getState().setWeddingRoleAssignments(storedRoleAssignments);
+  }
   useSeatingConstraintsStore.getState().setSeatingConstraints(readCollection<any[]>("seatingConstraints") ?? []);
   useMealSelectionsStore.getState().setMealSelections(readCollection<any[]>("guestMealSelections") ?? []);
   useDocumentsStore.getState().setDocuments(readCollection<any[]>("documents") ?? []);
@@ -235,6 +248,10 @@ export function persistCommunications(_storage: SQLiteStorage): void {
   writeCollection("communications", useCommunicationsStore.getState().communications);
 }
 
+export function persistWeddingRoles(_storage: SQLiteStorage): void {
+  writeCollection("weddingRoles", useWeddingPartyStore.getState().weddingRoles);
+}
+
 export function persistWeddingRoleAssignments(_storage: SQLiteStorage): void {
   writeCollection("weddingRoleAssignments", useWeddingPartyStore.getState().weddingRoleAssignments);
 }
@@ -287,6 +304,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   gifts?: any[];
   invitationTypes?: any[];
   communications?: any[];
+  weddingRoles?: any[];
   weddingRoleAssignments?: any[];
   seatingConstraints?: any[];
   weddingEvents?: any[];
@@ -313,6 +331,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("gifts", data.gifts ?? []);
   writeCollection("invitationTypes", data.invitationTypes ?? []);
   writeCollection("communications", data.communications ?? []);
+  writeCollection("weddingRoles", data.weddingRoles ?? []);
   writeCollection("weddingRoleAssignments", data.weddingRoleAssignments ?? []);
   writeCollection("seatingConstraints", data.seatingConstraints ?? []);
   writeCollection("weddingEvents", data.weddingEvents ?? []);

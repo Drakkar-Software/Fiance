@@ -1,6 +1,6 @@
 {
-  "version": 12,
-  "timestamp": "2026-07-01T14:47:34.952Z",
+  "version": 13,
+  "timestamp": "2026-07-01T15:25:32.867Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Léa",
@@ -4764,14 +4764,41 @@
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
   ],
+  "weddingRoles": [
+    {
+      "id": "medium-role-001",
+      "name": "Témoin",
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "medium-role-002",
+      "name": "Officiant·e",
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "medium-role-003",
+      "name": "Demoiselle d'honneur",
+      "sortOrder": 3,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "medium-role-004",
+      "name": "Garçon d'honneur",
+      "sortOrder": 4,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
   "weddingRoleAssignments": [
     {
       "id": "medium-wra-001",
-      "role": "WITNESS",
+      "roleId": "medium-role-001",
       "guestId": "medium-g-001",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 1,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4779,11 +4806,8 @@
     },
     {
       "id": "medium-wra-002",
-      "role": "WITNESS",
+      "roleId": "medium-role-002",
       "guestId": "medium-g-002",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 2,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4791,11 +4815,8 @@
     },
     {
       "id": "medium-wra-003",
-      "role": "OFFICIANT",
-      "guestId": null,
-      "displayName": "Élodie Martin",
-      "phone": null,
-      "email": null,
+      "roleId": "medium-role-003",
+      "guestId": "medium-g-003",
       "notes": null,
       "sortOrder": 3,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4803,11 +4824,8 @@
     },
     {
       "id": "medium-wra-004",
-      "role": "BRIDESMAID",
+      "roleId": "medium-role-004",
       "guestId": "medium-g-004",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 4,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4815,11 +4833,8 @@
     },
     {
       "id": "medium-wra-005",
-      "role": "BRIDESMAID",
+      "roleId": "medium-role-001",
       "guestId": "medium-g-005",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 5,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4827,11 +4842,8 @@
     },
     {
       "id": "medium-wra-006",
-      "role": "BRIDESMAID",
+      "roleId": "medium-role-002",
       "guestId": "medium-g-006",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 6,
       "createdAt": "2026-07-01T10:00:00.000Z",
@@ -4839,11 +4851,8 @@
     },
     {
       "id": "medium-wra-007",
-      "role": "BRIDESMAID",
+      "roleId": "medium-role-003",
       "guestId": "medium-g-007",
-      "displayName": "",
-      "phone": null,
-      "email": null,
       "notes": null,
       "sortOrder": 7,
       "createdAt": "2026-07-01T10:00:00.000Z",

@@ -16,11 +16,9 @@ import { useVendorsStore } from "@/store/useVendorsStore";
 import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import {
-  GUEST_ROLE_LABELS,
   MEAL_CHOICE_LABELS,
   SEATING_CONSTRAINT_TYPE_LABELS,
   COMMUNICATION_CHANNEL_LABELS,
-  type GuestRole,
   type MealChoice,
   type SeatingConstraintType,
   type CommunicationChannel,
@@ -100,6 +98,7 @@ export default function GuestDetailScreen() {
   const removeGuest = useGuestsStore((s) => s.removeGuest);
   const linkCompanion = useGuestsStore((s) => s.linkCompanion);
   const unlinkCompanion = useGuestsStore((s) => s.unlinkCompanion);
+  const weddingRoles = useWeddingPartyStore((s) => s.weddingRoles);
   const weddingRoleAssignments = useWeddingPartyStore((s) => s.weddingRoleAssignments);
   const addRoleAssignment = useWeddingPartyStore((s) => s.addRoleAssignment);
   const removeRoleAssignment = useWeddingPartyStore((s) => s.removeRoleAssignment);
@@ -264,8 +263,10 @@ export default function GuestDetailScreen() {
 
   // ─── Section summaries (drive the compact rows below) ────────────────────
 
+  const roleName = (a: (typeof guestRoles)[number]) =>
+    weddingRoles.find((r) => r.id === a.roleId)?.name ?? "";
   const roleSummary = guestRoles.length > 0
-    ? guestRoles.map((r) => t(GUEST_ROLE_LABELS[r.role as GuestRole])).join(", ")
+    ? guestRoles.map(roleName).filter(Boolean).join(", ")
     : t("sections.roleEmpty");
 
   const contactSummary = [email, phone].filter(Boolean).join(" · ") || t("sections.contactEmpty");
@@ -323,12 +324,12 @@ export default function GuestDetailScreen() {
         )}
         {guestRoles.length > 0 && (
           <Pressable
-            onPress={() => router.push("/(tabs)/guests/wedding-party")}
+            onPress={() => setActiveSheet("role")}
             className="flex-row flex-wrap gap-1.5 mb-4"
           >
             {guestRoles.map((r) => (
               <View key={r.id} className="px-2.5 py-1 rounded-full bg-accent-clay-soft dark:bg-primary-900">
-                <Text className="text-xs font-medium text-primary-600">{t(GUEST_ROLE_LABELS[r.role as GuestRole])}</Text>
+                <Text className="text-xs font-medium text-primary-600">{roleName(r)}</Text>
               </View>
             ))}
           </Pressable>
@@ -577,7 +578,7 @@ export default function GuestDetailScreen() {
             <View className="mb-3">
               {guestRoles.map((r) => (
                 <View key={r.id} className="flex-row items-center justify-between py-2 border-b border-hair">
-                  <Text className="text-sm text-ink">{t(GUEST_ROLE_LABELS[r.role as GuestRole])}</Text>
+                  <Text className="text-sm text-ink">{roleName(r)}</Text>
                   <Pressable onPress={() => removeRoleAssignment(r.id)}>
                     <XCircle size={16} color="#9CA3AF" />
                   </Pressable>
@@ -585,28 +586,50 @@ export default function GuestDetailScreen() {
               ))}
             </View>
           )}
-          <Text className="text-xs text-mute mb-2 font-medium">{t("weddingParty.addRole")}</Text>
-          <HorizontalChipSelect
-            options={(Object.keys(GUEST_ROLE_LABELS) as GuestRole[])
-              .filter((role) => !guestRoles.some((r) => r.role === role))
-              .map((role) => ({ key: role, label: t(GUEST_ROLE_LABELS[role]) }))}
-            activeKey=""
-            onSelect={(role) => {
-              const now = new Date().toISOString();
-              addRoleAssignment({
-                id: Crypto.randomUUID(),
-                role: role as GuestRole,
-                guestId: id!,
-                displayName: `${firstName} ${lastName}`.trim(),
-                phone: null,
-                email: null,
-                notes: null,
-                sortOrder: null,
-                createdAt: now,
-                updatedAt: now,
-              });
-            }}
-          />
+          {weddingRoles.length === 0 ? (
+            <Pressable
+              onPress={() => {
+                setActiveSheet(null);
+                router.push("/(tabs)/guests/wedding-party");
+              }}
+              className="active:opacity-60"
+            >
+              <Text className="text-xs text-mute mb-1">{t("weddingParty.noRolesYet")}</Text>
+              <Text className="text-xs text-primary-500 font-medium">{t("weddingParty.manageRoles")}</Text>
+            </Pressable>
+          ) : (
+            <>
+              <Text className="text-xs text-mute mb-2 font-medium">{t("weddingParty.addRole")}</Text>
+              <HorizontalChipSelect
+                options={weddingRoles
+                  .filter((role) => !guestRoles.some((r) => r.roleId === role.id))
+                  .map((role) => ({ key: role.id, label: role.name }))}
+                activeKey=""
+                onSelect={(roleId) => {
+                  const now = new Date().toISOString();
+                  addRoleAssignment({
+                    id: Crypto.randomUUID(),
+                    roleId,
+                    guestId: id!,
+                    notes: null,
+                    sortOrder: null,
+                    createdAt: now,
+                    updatedAt: now,
+                  });
+                  analytics.capture("wedding_role_assigned");
+                }}
+              />
+              <Pressable
+                onPress={() => {
+                  setActiveSheet(null);
+                  router.push("/(tabs)/guests/wedding-party");
+                }}
+                className="mt-3 active:opacity-60"
+              >
+                <Text className="text-xs text-primary-500 font-medium">{t("weddingParty.manageRoles")}</Text>
+              </Pressable>
+            </>
+          )}
         </GuestSheet>
       )}
 
@@ -723,7 +746,10 @@ export default function GuestDetailScreen() {
               <Text className="text-xs text-mute mb-2">{t("sections.constraintsEmpty")}</Text>
             )}
             <Pressable
-              onPress={() => router.push("/(tabs)/guests/seating-constraints")}
+              onPress={() => {
+                setActiveSheet(null);
+                router.push("/(tabs)/guests/seating-constraints");
+              }}
               className="mt-2 active:opacity-60"
             >
               <Text className="text-xs text-primary-500 font-medium">{t("sections.manageConstraints")}</Text>

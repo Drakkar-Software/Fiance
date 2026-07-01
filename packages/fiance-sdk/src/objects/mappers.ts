@@ -34,6 +34,7 @@ import type {
   DayOfItem,
   IdeaCollection,
   Idea,
+  WeddingRole,
   WeddingRoleAssignment,
   SeatingConstraint,
   WeddingEvent,
@@ -439,6 +440,29 @@ export function communicationFromDoc(doc: unknown): Communication {
   return doc as Communication;
 }
 
+// ─── WeddingRole ──────────────────────────────────────────────────────────────
+
+export function weddingRoleToNode(
+  r: WeddingRole,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.weddingRole,
+    parentId: weddingNodeId,
+    title: r.name,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: r.id },
+  };
+}
+
+export function weddingRoleFromDoc(doc: unknown): WeddingRole {
+  return doc as WeddingRole;
+}
+
 // ─── WeddingRoleAssignment ────────────────────────────────────────────────────
 
 export function weddingRoleAssignmentToNode(
@@ -450,7 +474,7 @@ export function weddingRoleAssignmentToNode(
     id,
     type: FIANCE_TYPES.weddingRoleAssignment,
     parentId: weddingNodeId,
-    title: a.displayName || a.role,
+    title: a.roleId,
     access: 'space',
     enc: true,
     contentKind: 'merge',

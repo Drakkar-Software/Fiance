@@ -91,18 +91,6 @@ export type IdeaCategory =
   | "VENUE"
   | "OTHER";
 
-export type GuestRole =
-  | "OFFICIANT"
-  | "WITNESS"
-  | "BRIDESMAID"
-  | "GROOMSMAN"
-  | "RING_BEARER"
-  | "FLOWER_GIRL"
-  | "USHER"
-  | "OTHER";
-
-export type GuestRoleCategory = "ceremony" | "party" | "other";
-
 export type SeatingConstraintType = "MUST_SIT_TOGETHER" | "MUST_NOT_SIT_TOGETHER";
 
 export type WeddingEventType =
@@ -241,32 +229,27 @@ export const IDEA_CATEGORY_LABELS: Record<IdeaCategory, string> = {
   OTHER: "ideas:categories.OTHER",
 };
 
-export const GUEST_ROLE_LABELS: Record<GuestRole, string> = {
-  OFFICIANT: "guests:weddingParty.role.OFFICIANT",
-  WITNESS: "guests:weddingParty.role.WITNESS",
-  BRIDESMAID: "guests:weddingParty.role.BRIDESMAID",
-  GROOMSMAN: "guests:weddingParty.role.GROOMSMAN",
-  RING_BEARER: "guests:weddingParty.role.RING_BEARER",
-  FLOWER_GIRL: "guests:weddingParty.role.FLOWER_GIRL",
-  USHER: "guests:weddingParty.role.USHER",
-  OTHER: "guests:weddingParty.role.OTHER",
-};
+/** Seed data for the "create default roles" button (French labels = app primary language). No roles ship pre-built. */
+export const DEFAULT_WEDDING_ROLES = [
+  "Officiant·e",
+  "Témoin",
+  "Demoiselle d'honneur",
+  "Garçon d'honneur",
+  "Porteur d'alliances",
+  "Demoiselle de fleurs",
+  "Placeur",
+] as const;
 
-export const GUEST_ROLE_CATEGORY: Record<GuestRole, GuestRoleCategory> = {
-  OFFICIANT: "ceremony",
-  WITNESS: "ceremony",
-  BRIDESMAID: "party",
-  GROOMSMAN: "party",
-  RING_BEARER: "party",
-  FLOWER_GIRL: "party",
-  USHER: "other",
-  OTHER: "other",
-};
-
-export const GUEST_ROLE_CATEGORY_LABELS: Record<GuestRoleCategory, string> = {
-  ceremony: "guests:weddingParty.category.ceremony",
-  party: "guests:weddingParty.category.party",
-  other: "guests:weddingParty.category.other",
+/** Legacy GuestRole enum value → French name, for migrating pre-existing role assignments. */
+export const LEGACY_GUEST_ROLE_NAMES: Record<string, string> = {
+  OFFICIANT: "Officiant·e",
+  WITNESS: "Témoin",
+  BRIDESMAID: "Demoiselle d'honneur",
+  GROOMSMAN: "Garçon d'honneur",
+  RING_BEARER: "Porteur d'alliances",
+  FLOWER_GIRL: "Demoiselle de fleurs",
+  USHER: "Placeur",
+  OTHER: "Autre rôle",
 };
 
 export const SEATING_CONSTRAINT_TYPE_LABELS: Record<SeatingConstraintType, string> = {

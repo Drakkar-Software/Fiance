@@ -29,6 +29,7 @@ import {
   giftToNode, giftFromDoc,
   invitationTypeToNode, invitationTypeFromDoc,
   communicationToNode, communicationFromDoc,
+  weddingRoleToNode, weddingRoleFromDoc,
   weddingRoleAssignmentToNode, weddingRoleAssignmentFromDoc,
   seatingConstraintToNode, seatingConstraintFromDoc,
   weddingEventToNode, weddingEventFromDoc,
@@ -222,7 +223,7 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   const { gifts } = useGiftsStore.getState();
   const { invitationTypes } = useInvitationTypesStore.getState();
   const { communications } = useCommunicationsStore.getState();
-  const { weddingRoleAssignments } = useWeddingPartyStore.getState();
+  const { weddingRoles, weddingRoleAssignments } = useWeddingPartyStore.getState();
   const { seatingConstraints } = useSeatingConstraintsStore.getState();
   const { weddingEvents } = useWeddingEventsStore.getState();
   const { mealSelections } = useMealSelectionsStore.getState();
@@ -242,6 +243,9 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   }
   for (const c of communications) {
     push(communicationToNode(c, c.id, weddingNodeId), c);
+  }
+  for (const r of weddingRoles) {
+    push(weddingRoleToNode(r, r.id, weddingNodeId), r);
   }
   for (const a of weddingRoleAssignments) {
     push(weddingRoleAssignmentToNode(a, a.id, weddingNodeId), a);
@@ -480,6 +484,7 @@ export async function hydrateFromSpace(
       giftDocs,
       invitationTypeDocs,
       communicationDocs,
+      weddingRoleDocs,
       weddingRoleAssignmentDocs,
       seatingConstraintDocs,
       weddingEventDocs,
@@ -506,6 +511,7 @@ export async function hydrateFromSpace(
       pullAll(FIANCE_TYPES.gift),
       pullAll(FIANCE_TYPES.invitationType),
       pullAll(FIANCE_TYPES.communication),
+      pullAll(FIANCE_TYPES.weddingRole),
       pullAll(FIANCE_TYPES.weddingRoleAssignment),
       pullAll(FIANCE_TYPES.seatingConstraint),
       pullAll(FIANCE_TYPES.weddingEvent),
@@ -541,6 +547,7 @@ export async function hydrateFromSpace(
     if (giftDocs.length) useGiftsStore.getState().setGifts(giftDocs.map(giftFromDoc) as Parameters<ReturnType<typeof useGiftsStore.getState>['setGifts']>[0]);
     if (invitationTypeDocs.length) useInvitationTypesStore.getState().setInvitationTypes(invitationTypeDocs.map(invitationTypeFromDoc) as Parameters<ReturnType<typeof useInvitationTypesStore.getState>['setInvitationTypes']>[0]);
     if (communicationDocs.length) useCommunicationsStore.getState().setCommunications(communicationDocs.map(communicationFromDoc) as Parameters<ReturnType<typeof useCommunicationsStore.getState>['setCommunications']>[0]);
+    if (weddingRoleDocs.length) useWeddingPartyStore.getState().setWeddingRoles(weddingRoleDocs.map(weddingRoleFromDoc) as Parameters<ReturnType<typeof useWeddingPartyStore.getState>['setWeddingRoles']>[0]);
     if (weddingRoleAssignmentDocs.length) useWeddingPartyStore.getState().setWeddingRoleAssignments(weddingRoleAssignmentDocs.map(weddingRoleAssignmentFromDoc) as Parameters<ReturnType<typeof useWeddingPartyStore.getState>['setWeddingRoleAssignments']>[0]);
     if (seatingConstraintDocs.length) useSeatingConstraintsStore.getState().setSeatingConstraints(seatingConstraintDocs.map(seatingConstraintFromDoc) as Parameters<ReturnType<typeof useSeatingConstraintsStore.getState>['setSeatingConstraints']>[0]);
     if (weddingEventDocs.length) useWeddingEventsStore.getState().setWeddingEvents(weddingEventDocs.map(weddingEventFromDoc) as Parameters<ReturnType<typeof useWeddingEventsStore.getState>['setWeddingEvents']>[0]);
