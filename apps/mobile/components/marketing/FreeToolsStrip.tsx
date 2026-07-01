@@ -2,7 +2,9 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { Users, Wallet, Clock } from "lucide-react-native";
 import { Display } from "@/components/Display";
+import { theme as GP } from "@/lib/theme";
 import { localizedPath } from "@/lib/seo-urls";
 
 export type FreeToolId = "seatingChart" | "budget" | "timeline";
@@ -13,24 +15,39 @@ const TOOL_PATHS: Record<FreeToolId, string> = {
   timeline: "/tools/timeline",
 };
 
+const TOOL_ICONS: Record<FreeToolId, { Icon: typeof Users; tint: string; color: string }> = {
+  seatingChart: { Icon: Users, tint: GP.oliveSoft, color: GP.olive },
+  budget: { Icon: Wallet, tint: GP.claySoft, color: GP.clay },
+  timeline: { Icon: Clock, tint: GP.blueSoft, color: GP.blue },
+};
+
 function ToolCard({
+  id,
   title,
   description,
   cta,
   href,
 }: {
+  id: FreeToolId;
   title: string;
   description: string;
   cta: string;
   href: string;
 }) {
   const router = useRouter();
+  const { Icon, tint, color } = TOOL_ICONS[id];
   return (
     <Pressable
       onPress={() => router.push(href as any)}
-      className="bg-white rounded-2xl p-5 border border-accent-rose-light active:opacity-80"
+      className="bg-white rounded-2xl p-5 border border-accent-rose-light active:opacity-80 hover:shadow-lg"
       style={{ flex: 1, minWidth: 220 }}
     >
+      <View
+        className="items-center justify-center rounded-2xl mb-4"
+        style={{ width: 48, height: 48, backgroundColor: tint }}
+      >
+        <Icon size={22} color={color} />
+      </View>
       <Text className="text-base font-semibold text-typography-900 mb-1">
         {title}
       </Text>
@@ -80,6 +97,7 @@ export function FreeToolsStrip({
           {toolIds.map((id) => (
             <ToolCard
               key={id}
+              id={id}
               title={t(`landing.tools.${id}.title`)}
               description={t(`landing.tools.${id}.description`)}
               cta={t(`landing.tools.${id}.cta`)}

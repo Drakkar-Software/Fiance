@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,21 @@ export function BlogIndexPage() {
   const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const posts = getBlogPosts(lang);
-  const [featured, ...rest] = posts;
+  const [category, setCategory] = useState("all");
+
+  // Categories present in the actual post data — no guessing at an enum that could
+  // drift from the real `categoryKey`/`category` values across the ~74 posts.
+  const categories = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const post of posts) {
+      if (!seen.has(post.categoryKey)) seen.set(post.categoryKey, post.category);
+    }
+    return Array.from(seen, ([key, label]) => ({ key, label }));
+  }, [posts]);
+
+  const filtered = category === "all" ? posts : posts.filter((p) => p.categoryKey === category);
+  const featured = category === "all" ? filtered[0] : null;
+  const rest = category === "all" ? filtered.slice(1) : filtered;
 
   return (
     <View className="w-full">
@@ -59,6 +73,30 @@ export function BlogIndexPage() {
           </Text>
         </View>
       </View>
+
+      {/* Category filter */}
+      {posts.length > 0 && (
+        <View className="w-full pt-6 px-6 bg-accent-cream items-center">
+          <View className="flex-row flex-wrap justify-center" style={{ gap: 10, maxWidth: 900 }}>
+            {[{ key: "all", label: t("blog.categories.all") }, ...categories].map((c) => {
+              const active = category === c.key;
+              return (
+                <Pressable
+                  key={c.key}
+                  onPress={() => setCategory(c.key)}
+                  className={`px-4 py-2 rounded-full border active:opacity-70 ${
+                    active ? "bg-primary-500 border-primary-500" : "bg-white border-accent-rose-light"
+                  }`}
+                >
+                  <Text className={`text-sm font-semibold ${active ? "text-white" : "text-typography-600"}`}>
+                    {c.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      )}
 
       {posts.length === 0 ? (
         /* Empty state */

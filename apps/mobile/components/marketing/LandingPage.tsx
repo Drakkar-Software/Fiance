@@ -13,13 +13,15 @@ import { Script } from "@/components/Script";
 import { Underline } from "@/components/Underline";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
-import { Seal } from "@/components/Seal";
 import { Postit } from "@/components/Postit";
 import { Avatar } from "@/components/Avatar";
-import { formatMoney } from "@/components/MoneyDisplay";
 import { theme as GP } from "@/lib/theme";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
+import { Reveal, SectionGradient, Grain } from "@/components/marketing/effects";
+import { PhoneMock } from "@/components/marketing/PhoneMock";
+import { MarqueeBar } from "@/components/marketing/MarqueeBar";
+import { BudgetMiniDemo } from "@/components/marketing/BudgetMiniDemo";
 import { getLandingBlogPosts } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
@@ -37,72 +39,6 @@ const vignetteCardStyle = {
   padding: 24,
 } as const;
 
-/** Budget preview — reused in the hero app-peek card and the Budget spotlight row. */
-const BudgetPeek = React.memo(function BudgetPeek({ compact }: { compact?: boolean }) {
-  const { t } = useTranslation("marketing");
-  const spent = 8400;
-  const max = 12000;
-  const pct = Math.round((spent / max) * 100);
-  return (
-    <View style={{ width: "100%", gap: compact ? 12 : 16 }}>
-      <View>
-        <Text
-          className="text-accent-gold"
-          style={{ fontFamily: "Inter_600SemiBold", fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase" }}
-        >
-          {t("landing.hero.peek.budgetLabel")}
-        </Text>
-        <View className="flex-row items-baseline" style={{ gap: 6, marginTop: 4 }}>
-          <Display size={compact ? 28 : 32} weight="600">
-            {formatMoney(spent)}
-          </Display>
-          <Text className="text-typography-400" style={{ fontFamily: "Inter_500Medium", fontSize: 13 }}>
-            / {formatMoney(max)}
-          </Text>
-        </View>
-      </View>
-      <View>
-        <View className="flex-row justify-between" style={{ marginBottom: 8 }}>
-          <Text className="text-mute" style={{ fontSize: 12 }}>
-            {t("landing.hero.peek.budgetSpent")}
-          </Text>
-          <Text className="text-typography-900" style={{ fontSize: 12, fontFamily: "Inter_600SemiBold" }}>
-            {pct}%
-          </Text>
-        </View>
-        <View style={{ position: "relative" }}>
-          <View style={{ height: 10, borderRadius: 5, overflow: "hidden", backgroundColor: "rgba(42,36,24,0.08)" }}>
-            <View style={{ width: `${pct}%`, height: "100%", borderRadius: 5, backgroundColor: GP.clay }}>
-              <View
-                style={{
-                  position: "absolute", top: 0, left: 0, right: 0, height: 5,
-                  borderTopLeftRadius: 5, borderTopRightRadius: 5,
-                  backgroundColor: "rgba(255,255,255,0.18)",
-                }}
-              />
-            </View>
-          </View>
-          {compact && (
-            <View
-              style={{
-                position: "absolute", top: -2, left: `${pct}%`, marginLeft: -7,
-                width: 14, height: 14, borderRadius: 7,
-                backgroundColor: GP.card, borderWidth: 2, borderColor: GP.clay,
-                shadowColor: GP.ink, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.25, shadowRadius: 3, elevation: 2,
-              }}
-            />
-          )}
-        </View>
-      </View>
-      {!compact && (
-        <Text className="text-mute" style={{ fontSize: 12 }}>
-          {t("landing.hero.peek.budgetRemaining", { amount: formatMoney(max - spent) })}
-        </Text>
-      )}
-    </View>
-  );
-});
-
 const RsvpPill = React.memo(function RsvpPill({ color, label }: { color: string; label: string }) {
   return (
     <View
@@ -115,7 +51,7 @@ const RsvpPill = React.memo(function RsvpPill({ color, label }: { color: string;
   );
 });
 
-/** Guest-list preview — reused in the hero app-peek card and the Guests spotlight row. */
+/** Guest-list preview — reused in the Guests spotlight row. */
 const GuestsPeek = React.memo(function GuestsPeek({ variant = "compact" }: { variant?: "compact" | "full" }) {
   const { t } = useTranslation("marketing");
   const avatars = [
@@ -248,17 +184,21 @@ const WebsiteVignette = React.memo(function WebsiteVignette() {
   );
 });
 
-/** One alternating large row in the core-features section: vignette on one side, copy on the other. */
+/** One alternating large row in the core-features section: vignette on one side, copy on the
+ *  other. `raw` skips the Card/shadow wrapper for vignettes that already style themselves
+ *  (e.g. BudgetMiniDemo). */
 const FlagshipRow = React.memo(function FlagshipRow({
   featureKey,
   reverse,
   tint,
   vignette,
+  raw,
 }: {
   featureKey: string;
   reverse: boolean;
   tint?: string;
   vignette: React.ReactNode;
+  raw?: boolean;
 }) {
   const { t } = useTranslation("marketing");
   const tagline = t(`landing.features.${featureKey}.tagline`, { defaultValue: "" });
@@ -279,15 +219,21 @@ const FlagshipRow = React.memo(function FlagshipRow({
   );
   const box = (
     <View key="box" style={{ flexGrow: 1, flexBasis: 260, minWidth: 240, maxWidth: 420 }}>
-      <Card tinted={tint} style={[vignetteCardStyle, { minHeight: 190, alignItems: "center", justifyContent: "center" }]}>
-        {vignette}
-      </Card>
+      {raw ? (
+        vignette
+      ) : (
+        <Card tinted={tint} style={[vignetteCardStyle, { minHeight: 190, alignItems: "center", justifyContent: "center" }]}>
+          {vignette}
+        </Card>
+      )}
     </View>
   );
   return (
-    <View className="flex-row flex-wrap items-center" style={{ gap: 32, marginBottom: 40 }}>
-      {reverse ? [copy, box] : [box, copy]}
-    </View>
+    <Reveal>
+      <View className="flex-row flex-wrap items-center" style={{ gap: 32, marginBottom: 40 }}>
+        {reverse ? [copy, box] : [box, copy]}
+      </View>
+    </Reveal>
   );
 });
 
@@ -310,11 +256,13 @@ const CompactFeatureChip = React.memo(function CompactFeatureChip({
 
 function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <View
-      className="bg-typography-800 rounded-2xl p-5"
-      style={{ flex: 1, minWidth: 220 }}
-    >
-      <View className="mb-3">{icon}</View>
+    <View className="bg-typography-800 rounded-2xl p-5" style={{ flex: 1, minWidth: 220 }}>
+      <View
+        className="items-center justify-center rounded-2xl mb-3"
+        style={{ width: 46, height: 46, backgroundColor: "rgba(142,163,111,0.16)" }}
+      >
+        {icon}
+      </View>
       <Text className="text-base font-semibold text-white mb-1">{title}</Text>
       <Text className="text-sm text-typography-400 leading-5">{description}</Text>
     </View>
@@ -329,11 +277,11 @@ export function LandingPage() {
   const seo = localizedSeo(lang, "/");
 
   const flagshipFeatures = [
-    { key: "budget", tint: undefined, vignette: <BudgetPeek /> },
-    { key: "seatingChart", tint: GP.paper, vignette: <SeatingVignette /> },
-    { key: "guests", tint: undefined, vignette: <GuestsPeek variant="full" /> },
-    { key: "publicPage", tint: GP.paper, vignette: <WebsiteVignette /> },
-  ] as const;
+    { key: "budget", tint: undefined, vignette: <BudgetMiniDemo />, raw: true },
+    { key: "seatingChart", tint: GP.paper as string | undefined, vignette: <SeatingVignette />, raw: false },
+    { key: "guests", tint: undefined as string | undefined, vignette: <GuestsPeek variant="full" />, raw: false },
+    { key: "publicPage", tint: GP.paper as string | undefined, vignette: <WebsiteVignette />, raw: false },
+  ];
 
   const compactFeatures = [
     { key: "vendors", icon: <Store size={16} className="text-accent-gold" /> },
@@ -356,13 +304,42 @@ export function LandingPage() {
         {...seo}
         ogImage="https://fiance.drakkar.software/assets/og-image.png"
       />
-      {/* Hero — editorial split: copy on the left, native app-peek vignette on the right */}
-      <View className="w-full pt-24 pb-24 px-6 bg-accent-cream">
-        <View className="flex-row flex-wrap" style={{ maxWidth: 1080, width: "100%", alignSelf: "center", gap: 48 }}>
+
+      {/* Hero — editorial split: copy + trust badge on the left, phone-dashboard mock on the right */}
+      <View className="w-full pt-24 pb-24 px-6 bg-accent-cream" style={{ position: "relative", overflow: "hidden" }}>
+        <SectionGradient
+          spots={[
+            { cx: 82, cy: -12, r: 100, color: "#f0dccf" },
+            { cx: 3, cy: 112, r: 85, color: "#dde3cc" },
+          ]}
+        />
+        <Grain />
+        <View
+          className="flex-row flex-wrap"
+          style={{ position: "relative", maxWidth: 1080, width: "100%", alignSelf: "center", gap: 48 }}
+        >
           {/* Copy column */}
-          <View style={{ flexGrow: 1, flexBasis: 420, minWidth: 300 }}>
-            <Script size={18} style={{ marginBottom: 14 }}>
-              {t("landing.hero.badge")}
+          <Reveal style={{ flexGrow: 1, flexBasis: 420, minWidth: 300 }}>
+            <View
+              className="flex-row items-center self-start"
+              style={{
+                gap: 9,
+                backgroundColor: "rgba(253,250,241,0.85)",
+                borderWidth: 1,
+                borderColor: "rgba(42,36,24,0.09)",
+                borderRadius: 999,
+                paddingHorizontal: 15,
+                paddingVertical: 7,
+                marginBottom: 22,
+              }}
+            >
+              <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: GP.olive }} />
+              <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 12.5, color: "#4a4234" }}>
+                {t("landing.hero.badge")}
+              </Text>
+            </View>
+            <Script size={20} style={{ marginBottom: 6 }}>
+              {t("landing.hero.tagline")}
             </Script>
             <Display size={50} weight="600" style={{ marginBottom: 8, lineHeight: 56 }}>
               {t("landing.hero.headline")}
@@ -387,62 +364,57 @@ export function LandingPage() {
                 <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
               </Pressable>
             </View>
-            <View className="flex-row flex-wrap" style={{ gap: 8 }}>
-              <Chip color={GP.blue}>{t("landing.hero.trust.offline")}</Chip>
-              <Chip color={GP.clay}>{t("landing.hero.trust.private")}</Chip>
-              <Chip color={GP.mustard}>{t("landing.hero.trust.noAds")}</Chip>
-            </View>
-          </View>
-
-          {/* App-peek vignette column */}
-          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: 280, maxWidth: 380, alignSelf: "center" }}>
-            <View style={{ position: "relative" }}>
-              <Card style={[vignetteCardStyle, { gap: 18 }]}>
-                <BudgetPeek compact />
-                <View style={{ borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(42,36,24,0.18)", paddingTop: 16 }}>
-                  <GuestsPeek />
+            <View className="flex-row flex-wrap items-center" style={{ gap: 22 }}>
+              <View className="flex-row items-center" style={{ gap: 8 }}>
+                <View className="flex-row">
+                  <Avatar ini="M" tone={GP.claySoft} size={30} />
+                  <View style={{ marginLeft: -9 }}>
+                    <Avatar ini="J" tone={GP.oliveSoft} size={30} />
+                  </View>
+                  <View style={{ marginLeft: -9 }}>
+                    <Avatar ini="L" tone={GP.mustardSoft} size={30} />
+                  </View>
                 </View>
-              </Card>
-              <View style={{ position: "absolute", top: -20, right: -14 }}>
-                <Seal
-                  label={t("landing.hero.peek.sealLabel")}
-                  angle={-10}
-                  size={58}
-                  style={{
-                    shadowColor: GP.ink, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 6,
-                  }}
-                />
-              </View>
-              <View style={{ position: "absolute", bottom: -12, left: -14 }}>
-                <Postit
-                  angle={-4}
-                  style={{
-                    shadowColor: GP.ink, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 7,
-                  }}
-                >
-                  {t("landing.hero.peek.postit")}
-                </Postit>
+                <Text style={{ fontSize: 13.5, color: GP.mute, lineHeight: 17, maxWidth: 180 }}>
+                  {t("landing.hero.socialProof")}
+                </Text>
               </View>
             </View>
+          </Reveal>
+
+          {/* Phone-dashboard mock column */}
+          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: 280, alignSelf: "center", alignItems: "center" }}>
+            <PhoneMock />
           </View>
         </View>
       </View>
 
+      <MarqueeBar />
+
       {/* Core features — alternating spotlight rows + a compact strip for the rest */}
       <View className="w-full py-20 px-6 bg-white">
         <View style={{ maxWidth: 1000, width: "100%", alignSelf: "center" }}>
-          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 10 }}>
-            {t("landing.features.title")}
-          </Display>
-          <View className="items-center" style={{ marginBottom: 14 }}>
-            <Underline width={90} />
-          </View>
-          <Text className="text-base text-typography-500 text-center mb-16">
-            {t("landing.features.subtitle")}
-          </Text>
+          <Reveal style={{ marginBottom: 16 }}>
+            <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 10 }}>
+              {t("landing.features.title")}
+            </Display>
+            <View className="items-center" style={{ marginBottom: 14 }}>
+              <Underline width={90} />
+            </View>
+            <Text className="text-base text-typography-500 text-center">
+              {t("landing.features.subtitle")}
+            </Text>
+          </Reveal>
 
           {flagshipFeatures.map((f, i) => (
-            <FlagshipRow key={f.key} featureKey={f.key} reverse={i % 2 === 1} tint={f.tint} vignette={f.vignette} />
+            <FlagshipRow
+              key={f.key}
+              featureKey={f.key}
+              reverse={i % 2 === 1}
+              tint={f.tint}
+              vignette={f.vignette}
+              raw={f.raw}
+            />
           ))}
 
           <View className="flex-row flex-wrap justify-center" style={{ gap: 12, marginTop: 8 }}>
@@ -463,16 +435,18 @@ export function LandingPage() {
       {blogPosts.length > 0 && (
         <View className="w-full py-20 px-6 bg-white">
           <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-            <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
-              {t("landing.blog.eyebrow")}
-            </Script>
-            <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
-              {t("landing.blog.title")}
-            </Display>
-            <Text className="text-base text-typography-500 text-center mb-12">
-              {t("landing.blog.subtitle")}
-            </Text>
-            <View className="flex-row flex-wrap" style={{ gap: 20 }}>
+            <Reveal style={{ marginBottom: 12 }}>
+              <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
+                {t("landing.blog.eyebrow")}
+              </Script>
+              <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+                {t("landing.blog.title")}
+              </Display>
+              <Text className="text-base text-typography-500 text-center">
+                {t("landing.blog.subtitle")}
+              </Text>
+            </Reveal>
+            <View className="flex-row flex-wrap" style={{ gap: 20, marginTop: 40 }}>
               {blogPosts.map((post) => (
                 <View
                   key={post.slug}
@@ -503,13 +477,15 @@ export function LandingPage() {
       {/* Privacy section */}
       <View className="w-full py-20 px-6 bg-typography-900">
         <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Display size={34} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
-            {t("landing.privacy.title")}
-          </Display>
-          <Text className="text-base text-typography-400 text-center mb-12">
-            {t("landing.privacy.subtitle")}
-          </Text>
-          <View className="flex-row flex-wrap gap-4">
+          <Reveal style={{ marginBottom: 12 }}>
+            <Display size={34} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
+              {t("landing.privacy.title")}
+            </Display>
+            <Text className="text-base text-typography-400 text-center">
+              {t("landing.privacy.subtitle")}
+            </Text>
+          </Reveal>
+          <View className="flex-row flex-wrap gap-4" style={{ marginTop: 40 }}>
             {privacyFeatures.map((f) => (
               <PrivacyCard
                 key={f.key}
@@ -531,8 +507,9 @@ export function LandingPage() {
       </View>
 
       {/* Download CTA */}
-      <View className="w-full py-20 px-6 items-center bg-accent-blush">
-        <View style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
+      <View className="w-full py-20 px-6 items-center bg-accent-blush" style={{ position: "relative", overflow: "hidden" }}>
+        <SectionGradient spots={[{ cx: 50, cy: 0, r: 90, color: GP.claySoft }]} />
+        <Reveal style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
           <HeartHandshake size={40} className="text-primary-500 mb-6" />
           <Display size={36} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.download.title")}
@@ -542,11 +519,11 @@ export function LandingPage() {
           </Text>
           <Pressable
             onPress={() => router.push("/home" as any)}
-            className="bg-primary-500 px-10 py-4 rounded-full active:opacity-70"
+            className="bg-primary-500 px-10 py-4 rounded-full active:opacity-70 hover:opacity-90"
           >
             <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
           </Pressable>
-        </View>
+        </Reveal>
       </View>
 
     </View>

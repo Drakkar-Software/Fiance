@@ -30,7 +30,7 @@ export function BlogPostCard({
   const imageHeight = featured ? 260 : 190;
 
   return (
-    <Pressable onPress={onPress} className="active:opacity-80">
+    <Pressable onPress={onPress} className="active:opacity-80 hover:shadow-lg">
       <View className="bg-white rounded-2xl border border-accent-rose-light overflow-hidden">
         {/* Hero image — Postit category tag overlaid bottom-left */}
         <View style={{ position: "relative" }}>

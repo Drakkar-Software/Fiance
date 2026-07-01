@@ -11,7 +11,14 @@ const LANGUAGES = [
   { code: "en", label: "English" },
 ] as const;
 
-export function MarketingNav() {
+interface MarketingNavProps {
+  /** Whether the page has scrolled past the fold — swaps the transparent bar for a
+   *  frosted, bordered one. Passed down from the ScrollView in `[lang]/_layout.tsx`
+   *  since the nav sits outside it and can't read window scroll on its own. */
+  scrolled?: boolean;
+}
+
+export function MarketingNav({ scrolled = false }: MarketingNavProps) {
   const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
   const pathname = usePathname();
@@ -28,6 +35,7 @@ export function MarketingNav() {
     { label: t("nav.tools"), href: localizedPath(currentLang, "/tools/seating-chart") },
     { label: t("nav.blog"), href: localizedPath(currentLang, "/blog") },
   ];
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   function switchLanguage(lang: MarketingLang) {
     router.replace(swapLocaleInPath(pathname, lang) as any);
@@ -50,7 +58,21 @@ export function MarketingNav() {
   }
 
   return (
-    <View className="w-full bg-accent-cream border-b border-accent-rose-light">
+    <View
+      style={
+        {
+          width: "100%",
+          backgroundColor: scrolled ? "rgba(247,242,232,0.92)" : "rgba(242,236,224,0.4)",
+          borderBottomWidth: 1,
+          borderBottomColor: scrolled ? "rgba(42,36,24,0.1)" : "rgba(42,36,24,0)",
+          transitionProperty: "background-color, border-color, box-shadow",
+          transitionDuration: "0.3s",
+          ...(scrolled
+            ? { shadowColor: "#2a2418", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 24, elevation: 3 }
+            : null),
+        } as any
+      }
+    >
       <View
         className="flex-row items-center justify-between px-6 py-4"
         style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
@@ -68,18 +90,27 @@ export function MarketingNav() {
         </Pressable>
 
         {/* Desktop nav links */}
-        <View className="hidden md:flex flex-row items-center gap-6">
-          {links.map((link) => (
-            <Pressable
-              key={link.href}
-              onPress={() => router.push(link.href as any)}
-              className="active:opacity-60"
-            >
-              <Text className="text-sm text-typography-600 hover:text-typography-900">
-                {link.label}
-              </Text>
-            </Pressable>
-          ))}
+        <View className="hidden md:flex flex-row items-center gap-1">
+          {links.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Pressable
+                key={link.href}
+                onPress={() => router.push(link.href as any)}
+                className={`px-3.5 py-2 rounded-full active:opacity-60 ${active ? "bg-accent-blush" : ""}`}
+              >
+                <Text
+                  className={
+                    active
+                      ? "text-sm font-semibold text-primary-500"
+                      : "text-sm text-typography-600 hover:text-typography-900"
+                  }
+                >
+                  {link.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         {/* Right side actions */}

@@ -35,7 +35,11 @@
     "privacy": "100% Privé",
     "legal": "Mentions légales",
     "madeWith": "Fait avec ♥ pour les futurs mariés",
-    "blog": "Le Carnet"
+    "blog": "Le Carnet",
+    "badges": {
+      "offline": "HORS LIGNE",
+      "private": "100% PRIVÉ"
+    }
   },
   "landing": {
     "meta": {
@@ -48,6 +52,8 @@
       "ctaPrimary": "Créer mon mariage",
       "ctaSecondary": "Rejoindre un mariage",
       "badge": "Hors ligne • Privé • Sans publicité",
+      "tagline": "votre grand jour, votre histoire",
+      "socialProof": "Des milliers de couples organisent avec Fiancé",
       "trust": {
         "offline": "Hors ligne",
         "private": "100% privé",
@@ -61,7 +67,27 @@
         "rsvp": "24 confirmés",
         "sealLabel": "0 pub",
         "postit": "Chiffré, juré !"
+      },
+      "phone": {
+        "eyebrow": "notre mariage",
+        "countdown": "J−128",
+        "date": "14 juin",
+        "guestsCount": "52 invités",
+        "planningLabel": "Planning",
+        "planningTasks": "12/18 tâches",
+        "tabs": {
+          "home": "Accueil",
+          "budget": "Budget",
+          "guests": "Invités",
+          "plan": "Plan"
+        }
       }
+    },
+    "marquee": {
+      "offline": { "stat": "100%", "label": "hors ligne, chez vous" },
+      "noAds": { "stat": "0", "label": "publicité, jamais" },
+      "encrypted": { "stat": "Chiffré", "label": "sécurisé de bout en bout" },
+      "vendors": { "stat": "20+", "label": "catégories de prestataires" }
     },
     "features": {
       "title": "Tout ce dont vous avez besoin",
@@ -69,7 +95,17 @@
       "budget": {
         "title": "Budget mariage",
         "tagline": "Suivi en temps réel",
-        "description": "Suivez chaque dépense, gérez les acomptes et ayez une vue en temps réel de votre budget."
+        "description": "Suivez chaque dépense, gérez les acomptes et ayez une vue en temps réel de votre budget.",
+        "demo": {
+          "totalLabel": "Budget total",
+          "categories": {
+            "venue": "Salle de réception",
+            "catering": "Traiteur & boissons",
+            "photography": "Photographe",
+            "decoration": "Décoration & fleurs",
+            "attire": "Tenues & alliances"
+          }
+        }
       },
       "guests": {
         "title": "Liste d'invités & RSVP",
@@ -174,6 +210,9 @@
       "subtitle": "Conseils & inspirations pour organiser votre mariage"
     },
     "featuredLabel": "Article à la une",
+    "categories": {
+      "all": "Tous"
+    },
     "readMore": "Lire l'article",
     "by": "Par",
     "readingTime": "{{count}} min de lecture",
@@ -360,6 +399,8 @@
       "guestName": "Nom de l'invité",
       "assignTo": "Assigner à la table",
       "unassigned": "Non assigné",
+      "selectHint": "Cliquez une place libre pour installer {{name}}.",
+      "everyoneSeated": "Tout le monde est placé ✨",
       "seats": "places",
       "seatsTaken": "{{taken}}/{{total}} places",
       "seatsAvailable": "{{count}} place disponible",

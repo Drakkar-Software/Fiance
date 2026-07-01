@@ -41,7 +41,15 @@ export function MarketingFooter() {
               />
               <Text className="text-lg font-bold text-white">Fiancé</Text>
             </View>
-            <Text className="text-sm text-typography-400 leading-5">{t("footer.tagline")}</Text>
+            <Text className="text-sm text-typography-400 leading-5 mb-3">{t("footer.tagline")}</Text>
+            <View className="flex-row flex-wrap gap-2">
+              <Text className="text-xs font-semibold tracking-widest text-accent-gold border border-accent-gold rounded-full px-2.5 py-1">
+                {t("footer.badges.offline")}
+              </Text>
+              <Text className="text-xs font-semibold tracking-widest text-accent-sage border border-accent-sage rounded-full px-2.5 py-1">
+                {t("footer.badges.private")}
+              </Text>
+            </View>
           </View>
 
           {/* Features */}

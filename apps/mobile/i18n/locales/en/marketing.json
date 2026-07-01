@@ -35,7 +35,11 @@
     "privacy": "100% Private",
     "legal": "Legal",
     "madeWith": "Made with ♥ for future newlyweds",
-    "blog": "Journal"
+    "blog": "Journal",
+    "badges": {
+      "offline": "OFFLINE",
+      "private": "100% PRIVATE"
+    }
   },
   "landing": {
     "meta": {
@@ -48,6 +52,8 @@
       "ctaPrimary": "Create my wedding",
       "ctaSecondary": "Join a wedding",
       "badge": "Offline • Private • No ads",
+      "tagline": "your big day, your story",
+      "socialProof": "Thousands of couples plan with Fiancé",
       "trust": {
         "offline": "Offline",
         "private": "100% private",
@@ -61,7 +67,27 @@
         "rsvp": "24 confirmed",
         "sealLabel": "0 ads",
         "postit": "Encrypted, promise!"
+      },
+      "phone": {
+        "eyebrow": "our wedding",
+        "countdown": "D-128",
+        "date": "June 14",
+        "guestsCount": "52 guests",
+        "planningLabel": "Planning",
+        "planningTasks": "12/18 tasks",
+        "tabs": {
+          "home": "Home",
+          "budget": "Budget",
+          "guests": "Guests",
+          "plan": "Plan"
+        }
       }
+    },
+    "marquee": {
+      "offline": { "stat": "100%", "label": "offline, on your device" },
+      "noAds": { "stat": "0", "label": "ads, ever" },
+      "encrypted": { "stat": "Encrypted", "label": "secured end-to-end" },
+      "vendors": { "stat": "20+", "label": "vendor categories" }
     },
     "features": {
       "title": "Everything you need",
@@ -69,7 +95,17 @@
       "budget": {
         "title": "Wedding Budget",
         "tagline": "Real-time tracking",
-        "description": "Track every expense, manage deposits and get a real-time view of your budget."
+        "description": "Track every expense, manage deposits and get a real-time view of your budget.",
+        "demo": {
+          "totalLabel": "Total budget",
+          "categories": {
+            "venue": "Reception venue",
+            "catering": "Catering & drinks",
+            "photography": "Photographer",
+            "decoration": "Decoration & flowers",
+            "attire": "Attire & rings"
+          }
+        }
       },
       "guests": {
         "title": "Guest List & RSVP",
@@ -174,6 +210,9 @@
       "subtitle": "Tips & inspiration for planning your wedding"
     },
     "featuredLabel": "Featured article",
+    "categories": {
+      "all": "All"
+    },
     "readMore": "Read article",
     "by": "By",
     "readingTime": "{{count}} min read",
@@ -360,6 +399,8 @@
       "guestName": "Guest name",
       "assignTo": "Assign to table",
       "unassigned": "Unassigned",
+      "selectHint": "Click an empty seat to place {{name}}.",
+      "everyoneSeated": "Everyone is seated ✨",
       "seats": "seats",
       "seatsTaken": "{{taken}}/{{total}} seats",
       "seatsAvailable": "{{count}} seat available",

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { Platform } from "react-native";
 import { View, Text, Pressable, TextInput } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, ArrowLeft, ArrowUp, ArrowDown, LayoutList } from "lucide-react-native";
+import { Plus, Trash2, ArrowLeft, ArrowUp, ArrowDown, Download, RotateCcw } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@fiance/ui/utils/file-export";
 import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
+import { theme as GP } from "@/lib/theme";
 
 interface TimelineEvent {
   id: string;
@@ -14,6 +16,8 @@ interface TimelineEvent {
   location: string;
   notes: string;
 }
+
+const DOTS = [GP.clay, GP.mustard, GP.olive, GP.blue, "#a3502f", "#8ea36f", "#d9a441", "#7d9bb3"];
 
 function uid() {
   return Math.random().toString(36).slice(2, 9);
@@ -26,7 +30,6 @@ function EventCard({
   onDelete,
   onMoveUp,
   onMoveDown,
-  t,
 }: {
   event: TimelineEvent;
   index: number;
@@ -34,20 +37,20 @@ function EventCard({
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  t: (key: string) => string;
 }) {
+  const dot = DOTS[index % DOTS.length];
   return (
-    <View className="flex-row gap-3 mb-3">
-      {/* Timeline line */}
-      <View className="items-center" style={{ width: 40 }}>
-        <View className="w-3 h-3 rounded-full bg-primary-400 mt-3" />
-        {index < total - 1 && <View className="w-0.5 flex-1 bg-accent-rose-light mt-1" />}
+    <View className="flex-row gap-3">
+      {/* Timeline dot + connector */}
+      <View className="items-center" style={{ width: 14 }}>
+        <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: dot, marginTop: 6, shadowColor: dot, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 1 }} />
+        {index < total - 1 && <View style={{ flex: 1, width: 2, backgroundColor: "rgba(42,36,24,0.1)", marginTop: 4, marginBottom: 4 }} />}
       </View>
       {/* Card */}
-      <View className="flex-1 bg-white rounded-2xl p-4 border border-accent-rose-light mb-1">
+      <View className="flex-1 bg-white rounded-2xl p-4 border border-accent-rose-light mb-4">
         <View className="flex-row items-start justify-between gap-2">
           <View className="flex-1">
-            <Text className="text-xs font-semibold text-primary-500 mb-0.5">{event.time}</Text>
+            <Text style={{ fontFamily: "Fraunces_700Bold", fontSize: 15, color: GP.clay, marginBottom: 2 }}>{event.time}</Text>
             <Text className="text-base font-semibold text-typography-900">{event.title}</Text>
             {event.location ? (
               <Text className="text-sm text-typography-500 mt-0.5">{event.location}</Text>
@@ -201,17 +204,20 @@ export default function TimelineTool() {
       {/* Tool body */}
       <View className="w-full py-8 px-6 bg-white">
         <View
-          className="flex-row flex-wrap gap-8"
-          style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}
+          className="flex-row flex-wrap"
+          style={{ maxWidth: 900, width: "100%", alignSelf: "center", gap: 24, alignItems: "flex-start" }}
         >
-          {/* Left: add events */}
-          <View style={{ flex: 1, minWidth: 280 }}>
-            <Text className="text-lg font-semibold text-typography-900 mb-4">
-              {t("tools.timeline.addEvent")}
-            </Text>
-            <View className="bg-accent-cream rounded-2xl p-4 gap-3">
-              <View className="flex-row gap-2">
-                <View className="flex-1">
+          {/* Aside — add moment + export/template */}
+          <View
+            style={[
+              { flexBasis: 300, flexGrow: 1, maxWidth: 330 },
+              Platform.OS === "web" ? ({ position: "sticky", top: 88 } as any) : null,
+            ]}
+          >
+            <View className="bg-accent-cream rounded-2xl p-5">
+              <Text className="text-lg font-semibold text-typography-900 mb-4">{t("tools.timeline.addEvent")}</Text>
+              <View className="gap-3">
+                <View style={{ width: 110 }}>
                   <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventTime")}</Text>
                   <TextInput
                     value={newTime}
@@ -220,85 +226,70 @@ export default function TimelineTool() {
                     className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
                   />
                 </View>
+                <View>
+                  <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventTitle")}</Text>
+                  <TextInput
+                    value={newTitle}
+                    onChangeText={setNewTitle}
+                    placeholder={t("tools.timeline.eventTitle")}
+                    className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
+                  />
+                </View>
+                <View>
+                  <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventLocation")}</Text>
+                  <TextInput
+                    value={newLocation}
+                    onChangeText={setNewLocation}
+                    placeholder={t("tools.timeline.eventLocation")}
+                    className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
+                  />
+                </View>
+                <View>
+                  <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventNotes")}</Text>
+                  <TextInput
+                    value={newNotes}
+                    onChangeText={setNewNotes}
+                    placeholder={t("tools.timeline.eventNotes")}
+                    className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
+                  />
+                </View>
+                <Pressable
+                  onPress={addEvent}
+                  className="bg-primary-500 rounded-full py-3 flex-row items-center justify-center gap-1.5 active:opacity-70"
+                >
+                  <Plus size={14} className="text-white" />
+                  <Text className="text-sm font-semibold text-white">{t("tools.timeline.addEvent")}</Text>
+                </Pressable>
               </View>
-              <View>
-                <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventTitle")}</Text>
-                <TextInput
-                  value={newTitle}
-                  onChangeText={setNewTitle}
-                  placeholder={t("tools.timeline.eventTitle")}
-                  className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
-                />
-              </View>
-              <View>
-                <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventLocation")}</Text>
-                <TextInput
-                  value={newLocation}
-                  onChangeText={setNewLocation}
-                  placeholder={t("tools.timeline.eventLocation")}
-                  className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
-                />
-              </View>
-              <View>
-                <Text className="text-xs text-typography-500 mb-1">{t("tools.timeline.eventNotes")}</Text>
-                <TextInput
-                  value={newNotes}
-                  onChangeText={setNewNotes}
-                  placeholder={t("tools.timeline.eventNotes")}
-                  className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light"
-                />
-              </View>
-              <Pressable
-                onPress={addEvent}
-                className="bg-primary-500 rounded-xl py-2.5 flex-row items-center justify-center gap-1 active:opacity-70"
-              >
-                <Plus size={14} className="text-white" />
-                <Text className="text-sm font-semibold text-white">{t("tools.timeline.addEvent")}</Text>
-              </Pressable>
-            </View>
 
-            {events.length === 0 && (
-              <Pressable
-                onPress={useTemplate}
-                className="mt-4 flex-row items-center justify-center gap-2 bg-accent-blush rounded-xl py-3 active:opacity-70"
-              >
-                <LayoutList size={14} className="text-primary-500" />
-                <Text className="text-sm font-semibold text-primary-500">{t("tools.timeline.useTemplate")}</Text>
-              </Pressable>
-            )}
+              <View className="h-px bg-accent-rose-light" style={{ marginVertical: 18 }} />
+
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={handleExport}
+                  disabled={events.length === 0}
+                  className="flex-1 flex-row items-center justify-center gap-1.5 bg-white rounded-full py-2.5 border border-accent-rose-light active:opacity-70"
+                  style={events.length === 0 ? { opacity: 0.5 } : undefined}
+                >
+                  <Download size={13} className="text-typography-600" />
+                  <Text className="text-xs font-semibold text-typography-700">{t("tools.timeline.exportPdf")}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={useTemplate}
+                  className="flex-1 flex-row items-center justify-center gap-1.5 bg-white rounded-full py-2.5 border border-accent-rose-light active:opacity-70"
+                >
+                  <RotateCcw size={13} className="text-typography-600" />
+                  <Text className="text-xs font-semibold text-typography-700">{t("tools.timeline.useTemplate")}</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
 
-          {/* Right: timeline preview */}
-          <View style={{ flex: 1, minWidth: 280 }}>
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-lg font-semibold text-typography-900">
-                {t("tools.seatingChart.preview")}
-              </Text>
-              <View className="flex-row gap-2">
-                {events.length > 0 && (
-                  <>
-                    <Pressable
-                      onPress={useTemplate}
-                      className="px-3 py-1.5 rounded-full border border-accent-rose-light active:opacity-70"
-                    >
-                      <Text className="text-xs text-typography-500">{t("tools.timeline.reset")}</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={handleExport}
-                      className="bg-accent-gold px-3 py-1.5 rounded-full active:opacity-70"
-                    >
-                      <Text className="text-xs font-semibold text-white">{t("tools.timeline.exportPdf")}</Text>
-                    </Pressable>
-                  </>
-                )}
-              </View>
-            </View>
-
+          {/* Timeline preview */}
+          <View style={{ flexGrow: 2, flexBasis: 400, minWidth: 280 }}>
             {events.length === 0 ? (
-              <View className="bg-accent-cream rounded-2xl p-8 items-center">
-                <Text className="text-sm text-typography-400 text-center">
-                  {t("tools.timeline.noEvents")}
-                </Text>
+              <View className="bg-accent-cream rounded-2xl p-10 items-center border border-dashed border-accent-rose-light">
+                <Text className="text-sm text-typography-400 text-center">{t("tools.timeline.noEvents")}</Text>
               </View>
             ) : (
               <View>
@@ -311,7 +302,6 @@ export default function TimelineTool() {
                     onDelete={() => deleteEvent(event.id)}
                     onMoveUp={() => moveUp(index)}
                     onMoveDown={() => moveDown(index)}
-                    t={t}
                   />
                 ))}
               </View>
