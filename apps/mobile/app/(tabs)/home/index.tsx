@@ -25,7 +25,6 @@ import { Label } from "@/components/Label";
 import { Sprig } from "@/components/Sprig";
 import { PageHeader } from "@/components/PageHeader";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
-import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
 import { getPrimaryEvent } from "@fiance/sdk";
 
 export default function HomeScreen() {
@@ -38,7 +37,6 @@ function DashboardScreen() {
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const router = useRouter();
   const isWide = useIsWideScreen();
-  const syncDotColor = useSyncStatusDot();
   const wedding = useWeddingStore((s) => s.wedding);
   const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
   const primaryEvent = React.useMemo(() => getPrimaryEvent(weddingEvents), [weddingEvents]);
@@ -156,24 +154,7 @@ function DashboardScreen() {
               className="w-12 h-12 rounded-full bg-white/15 items-center justify-center"
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <View style={{ width: 22, height: 22 }}>
-                <Settings size={22} color="rgba(255,255,255,0.85)" />
-                {syncDotColor && (
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: -2,
-                      right: -2,
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: syncDotColor,
-                      borderWidth: 1.5,
-                      borderColor: "rgba(255,255,255,0.3)",
-                    }}
-                  />
-                )}
-              </View>
+              <Settings size={22} color="rgba(255,255,255,0.85)" />
             </Pressable>
           </View>
         )}
@@ -577,7 +558,7 @@ function DashboardScreen() {
         </Pressable>
       </View>
 
-      <View className="h-6" />
+      <View className="h-24" />
     </ScrollView>
   );
 }

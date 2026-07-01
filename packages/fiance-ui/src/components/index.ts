@@ -20,6 +20,8 @@ export { ConfirmSheet } from "./sheets/ConfirmSheet";
 export { RenameSheet } from "./sheets/RenameSheet";
 // Recovered from seahorse 0.11.0 (dropped in the 0.12.0 working tree); exported as `Sheet`.
 export { SheetShell as Sheet } from "./sheets/SheetShell";
+// Standard sheet shell (uniform surface color, title placement, padding, detent).
+export { SheetScaffold } from "./sheets/SheetScaffold";
 
 export { SectionTitle, FormCard, InputRow, DateRow, TimeRow, ToggleRow, ChipSelect } from "./form/FormSection";
 

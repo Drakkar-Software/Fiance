@@ -26,6 +26,7 @@ export default function PlanningLayout() {
           headerShown: !isWide,
           headerShadowVisible: false,
           headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+          animation: "none",
         }}
       />
       <Stack.Screen
@@ -35,6 +36,7 @@ export default function PlanningLayout() {
           headerShown: !isWide,
           headerShadowVisible: false,
           headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+          animation: "none",
         }}
       />
       <Stack.Screen
@@ -44,6 +46,7 @@ export default function PlanningLayout() {
           headerShown: !isWide,
           headerShadowVisible: false,
           headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+          animation: "none",
         }}
       />
       <Stack.Screen name="[id]" options={{ title: "Tâche" }} />

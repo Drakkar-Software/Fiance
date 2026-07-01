@@ -111,7 +111,6 @@ function TableCard({
               style={{
                 width: 34, height: 34, borderRadius: 17,
                 borderWidth: 1.4,
-                borderStyle: "dashed",
                 borderColor: selectedGuestId ? GP.olive : "rgba(42,36,24,0.2)",
                 backgroundColor: selectedGuestId ? GP.oliveSoft : "transparent",
                 alignItems: "center", justifyContent: "center",
@@ -279,7 +278,8 @@ export default function SeatingChartTool() {
                   value={newTableCapacity}
                   onChangeText={setNewTableCapacity}
                   keyboardType="numeric"
-                  className="bg-white rounded-xl px-3 py-2 text-sm text-typography-900 border border-accent-rose-light w-16 text-center"
+                  textAlign="center"
+                  className="bg-white rounded-xl px-3 py-2 text-sm text-typography-900 border border-accent-rose-light w-16"
                 />
               </View>
               <Pressable
@@ -365,7 +365,7 @@ export default function SeatingChartTool() {
             </View>
 
             {tables.length === 0 ? (
-              <View className="bg-accent-cream rounded-2xl p-8 items-center border border-dashed border-accent-rose-light">
+              <View className="bg-accent-cream rounded-2xl p-8 items-center border border-accent-rose-light">
                 <Text className="text-sm text-typography-400 text-center">{t("tools.seatingChart.noTables")}</Text>
               </View>
             ) : (

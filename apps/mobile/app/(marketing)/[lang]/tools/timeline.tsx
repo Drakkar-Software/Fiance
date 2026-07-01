@@ -288,7 +288,7 @@ export default function TimelineTool() {
           {/* Timeline preview */}
           <View style={{ flexGrow: 2, flexBasis: 400, minWidth: 280 }}>
             {events.length === 0 ? (
-              <View className="bg-accent-cream rounded-2xl p-10 items-center border border-dashed border-accent-rose-light">
+              <View className="bg-accent-cream rounded-2xl p-10 items-center border border-accent-rose-light">
                 <Text className="text-sm text-typography-400 text-center">{t("tools.timeline.noEvents")}</Text>
               </View>
             ) : (

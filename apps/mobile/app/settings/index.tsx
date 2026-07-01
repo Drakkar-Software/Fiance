@@ -422,7 +422,7 @@ export default function SettingsScreen() {
         })}
         <Pressable
           onPress={() => setShowCreateConfirm(true)}
-          className="bg-accent-card rounded-2xl p-4 mb-2 border border-dashed border-hair dark:border-hair flex-row items-center active:opacity-80"
+          className="bg-accent-card rounded-2xl p-4 mb-2 border border-hair dark:border-hair flex-row items-center active:opacity-80"
         >
           <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper">
             <PlusCircle size={20} color="#9CA3AF" />
@@ -500,31 +500,33 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Appearance */}
-      <View className="px-4 mt-4">
-        <SectionTitle>{t("appearance")}</SectionTitle>
-        <View className="flex-row gap-2">
-          {(["light", "dark"] as const).map((scheme) => (
-            <Pressable
-              key={scheme}
-              onPress={() => setColorScheme(scheme)}
-              className={`flex-1 py-3 rounded-2xl items-center border ${
-                colorScheme === scheme
-                  ? "bg-primary-500 border-primary-500"
-                  : "bg-accent-card border-hair"
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  colorScheme === scheme ? "text-white" : "text-mute"
+      {/* Appearance (hidden for now, keep code) */}
+      {false && (
+        <View className="px-4 mt-4">
+          <SectionTitle>{t("appearance")}</SectionTitle>
+          <View className="flex-row gap-2">
+            {(["light", "dark"] as const).map((scheme) => (
+              <Pressable
+                key={scheme}
+                onPress={() => setColorScheme(scheme)}
+                className={`flex-1 py-3 rounded-2xl items-center border ${
+                  colorScheme === scheme
+                    ? "bg-primary-500 border-primary-500"
+                    : "bg-accent-card border-hair"
                 }`}
               >
-                {t(`theme${scheme.charAt(0).toUpperCase()}${scheme.slice(1)}` as "themeSystem" | "themeLight" | "themeDark")}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  className={`text-sm font-medium ${
+                    colorScheme === scheme ? "text-white" : "text-mute"
+                  }`}
+                >
+                  {t(`theme${scheme.charAt(0).toUpperCase()}${scheme.slice(1)}` as "themeSystem" | "themeLight" | "themeDark")}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
-      </View>
+      )}
 
       <PinSetup
         visible={showPinSetup}

@@ -183,7 +183,7 @@ export default function CommunicationRosterScreen() {
               </Text>
             </>
           }
-          ListFooterComponent={<View className="h-10" />}
+          ListFooterComponent={<View className="h-24" />}
         />
       )}
     </View>

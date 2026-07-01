@@ -164,6 +164,7 @@ export default function CompareScreen() {
           ))}
         </View>
       </View>
+      <View className="h-24" />
     </ScrollView>
   );
 }

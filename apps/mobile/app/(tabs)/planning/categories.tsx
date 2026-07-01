@@ -32,6 +32,7 @@ export default function CategoriesScreen() {
           </View>
         );
       })}
+      <View className="h-24" />
     </ScrollView>
   );
 }

@@ -96,7 +96,7 @@
     "expo-updates": "~57.0.5",
     "i18next": "^24.2.3",
     "lucide-react-native": "^1.8.0",
-    "nativewind": "5.0.0-preview.3",
+    "nativewind": "5.0.0-preview.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.72.1",

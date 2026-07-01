@@ -3,7 +3,7 @@ import { View, Pressable, Text, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { shareLink } from "@/lib/share";
 import { Sheet } from "@fiance/ui/components";
-import { AlertCircle, Link2 } from "lucide-react-native";
+import { AlertCircle } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
 import { theme } from "@/lib/theme";
 
@@ -47,7 +47,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   }, [visible]);
 
   const handleShare = async () => {
-    await shareLink(url, t("joinOurWedding", { url }), t("linkCopied"));
+    await shareLink(url, "", t("linkCopied"));
   };
 
   return (
@@ -69,22 +69,13 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
         {state === "ready" && (
           <>
             {/* Header row */}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24 }}>
-              <View style={{
-                width: 44, height: 44, borderRadius: 14,
-                backgroundColor: theme.claySoft,
-                alignItems: "center", justifyContent: "center",
-              }}>
-                <Link2 size={20} color={theme.clay} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "700", color: theme.ink, letterSpacing: -0.3 }}>
-                  {t("shareInviteLink")}
-                </Text>
-                <Text style={{ fontSize: 13, color: theme.mute, marginTop: 2 }}>
-                  {t("scanFromOtherDevice")}
-                </Text>
-              </View>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontSize: 18, fontWeight: "700", color: theme.ink, letterSpacing: -0.3 }}>
+                {t("shareInviteLink")}
+              </Text>
+              <Text style={{ fontSize: 13, color: theme.mute, marginTop: 2 }}>
+                {t("scanFromOtherDevice")}
+              </Text>
             </View>
 
             {/* QR code card */}
@@ -98,25 +89,6 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
               }}>
                 <QRCode value={url} size={184} />
               </View>
-            </View>
-
-            {/* URL pill */}
-            <View style={{
-              backgroundColor: theme.paper,
-              borderRadius: 12,
-              paddingHorizontal: 14,
-              paddingVertical: 10,
-              marginBottom: 20,
-              overflow: "hidden",
-            }}>
-              <Text
-                selectable
-                numberOfLines={1}
-                ellipsizeMode="middle"
-                style={{ fontSize: 11, color: theme.mute, textAlign: "center" }}
-              >
-                {url}
-              </Text>
             </View>
 
             {/* Share button */}

@@ -13,7 +13,8 @@ export async function shareLink(url: string, message: string, copiedText: string
         // message already ends with the url (from the i18n template), so do NOT
         // also pass `url` as a separate field — share targets concatenate them,
         // producing a duplicate url that pollutes the #fragment of the first link.
-        await navigator.share({ text: message });
+        // Empty message = link-only share: pass url as its own field instead.
+        await (message ? navigator.share({ text: message }) : navigator.share({ url }));
       } else if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(url);
         toast.success(copiedText);
@@ -23,7 +24,8 @@ export async function shareLink(url: string, message: string, copiedText: string
     }
   } else {
     try {
-      await Share.share({ message, url });
+      // Empty message = link-only share: omit message so the share sheet doesn't duplicate the url.
+      await (message ? Share.share({ message, url }) : Share.share({ message: url }));
     } catch {
       // dismissed
     }

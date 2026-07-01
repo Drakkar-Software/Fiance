@@ -91,7 +91,7 @@ export default function EventPhotosScreen() {
             </View>
             <Pressable
               onPress={handleAdd}
-              className="bg-accent-card rounded-2xl p-4 mb-3 border border-dashed border-hair dark:border-hair flex-row items-center justify-center active:opacity-80"
+              className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair dark:border-hair flex-row items-center justify-center active:opacity-80"
             >
               <Plus size={20} color="#9CA3AF" />
               <Text className="text-base font-medium text-mute ml-2">
@@ -124,7 +124,7 @@ export default function EventPhotosScreen() {
               <Pressable
                 onPress={handleAdd}
                 style={{ width: photoSize, height: photoSize }}
-                className="rounded-xl border border-dashed border-hair dark:border-hair items-center justify-center bg-accent-card active:opacity-70"
+                className="rounded-xl border border-hair dark:border-hair items-center justify-center bg-accent-card active:opacity-70"
               >
                 <Plus size={24} color="#9CA3AF" />
               </Pressable>

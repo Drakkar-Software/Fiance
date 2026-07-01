@@ -116,7 +116,7 @@ export function ContributorsCard({ target, totalEngaged, categories, categoryBud
         {expanded && (
           <View className="mt-1 bg-accent-card rounded-2xl p-4 border border-hair">
             {contributors.length === 0 ? (
-              <View className="border border-dashed border-hair rounded-xl py-6 items-center px-4">
+              <View className="border border-hair rounded-xl py-6 items-center px-4">
                 <Text className="text-sm text-mute text-center">{t("contributors.empty")}</Text>
               </View>
             ) : (

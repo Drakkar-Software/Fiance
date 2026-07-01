@@ -84,7 +84,10 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
         <SegmentedControl
           segments={ASPECTS.map((a) => ({ key: a, label: t(PLANNING_ASPECT_LABELS[a]) }))}
           activeKey={aspect}
-          onSelect={(key) => router.push(ASPECT_ROUTES[key as PlanningAspect] as any)}
+          onSelect={(key) => {
+            if (key === aspect) return;
+            router.replace(ASPECT_ROUTES[key as PlanningAspect] as any);
+          }}
         />
       )}
 

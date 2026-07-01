@@ -4,8 +4,9 @@ import { Search, XCircle } from "lucide-react-native";
 
 // Local override of seahorse's SearchBar: seahorse hardcodes the inner box to
 // bg-background-0/border-outline-100 (pure white + grey hairline), which reads
-// as an out-of-place box on the warm Garden Press paper. This version floats
-// on a card surface with a soft shadow instead of a border.
+// as an out-of-place box on the warm Garden Press paper. This version is a
+// compact, fixed-height field: a lighter card fill sits inset on the paper
+// with a warm hairline border (no floating shadow) for a refined native feel.
 
 interface SearchBarProps {
   value: string;
@@ -18,17 +19,17 @@ interface SearchBarProps {
 export function SearchBar({ value, onChangeText, placeholder, right, className }: SearchBarProps) {
   return (
     <View className={className}>
-      <View className="flex-row items-center bg-accent-card rounded-xl px-3.5 py-2.5 shadow-soft-1">
+      <View className="flex-row items-center h-11 bg-accent-card border border-hair rounded-lg px-3">
         <Search size={18} color="#8a8373" />
         <TextInput
-          className="flex-1 ml-2.5 text-base text-ink"
+          className="flex-1 ml-2 text-base text-ink"
           placeholder={placeholder}
           placeholderTextColor="#8a8373"
           value={value}
           onChangeText={onChangeText}
         />
         {value.length > 0 && (
-          <Pressable onPress={() => onChangeText("")}>
+          <Pressable onPress={() => onChangeText("")} hitSlop={8} className="ml-1.5">
             <XCircle size={18} color="#8a8373" />
           </Pressable>
         )}

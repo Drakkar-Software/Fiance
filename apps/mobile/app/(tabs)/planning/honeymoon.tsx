@@ -106,6 +106,7 @@ export default function PlanningHoneymoonScreen() {
       <Pressable onPress={handleSave} className="bg-primary-500 py-3 rounded-xl items-center mt-2 mb-8 active:bg-primary-600">
         <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
       </Pressable>
+      <View className="h-24" />
     </ScrollView>
   );
 }
