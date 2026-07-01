@@ -47,51 +47,19 @@
       "subheadline": "L'application de planification mariage 100% privée et sans publicité. Budget, invités, plan de table, prestataires — tout en un.",
       "ctaPrimary": "Créer mon mariage",
       "ctaSecondary": "Rejoindre un mariage",
-      "badge": "Hors ligne • Privé • Sans publicité"
-    },
-    "whatsNew": {
-      "eyebrow": "Fiancé · Nouveautés",
-      "title": "Ce qui vient d'arriver",
-      "subtitle": "Dix nouveaux modules pour couvrir tout le mariage, de la demande au voyage de noces.",
-      "weddingParty": {
-        "title": "Rôles & témoins",
-        "description": "Organisez témoins, demoiselles et garçons d'honneur avec leurs missions du jour J."
+      "badge": "Hors ligne • Privé • Sans publicité",
+      "trust": {
+        "offline": "Hors ligne",
+        "private": "100% privé",
+        "noAds": "Sans publicité"
       },
-      "seatingConflicts": {
-        "title": "Détection de conflits",
-        "description": "Le plan de table repère automatiquement les invités à ne pas asseoir ensemble."
-      },
-      "multiDay": {
-        "title": "Mariage multi-jours",
-        "description": "Gérez plusieurs lieux et journées — cérémonie, cocktail, brunch du lendemain — dans un seul mariage."
-      },
-      "guestLogistics": {
-        "title": "Logistique invités",
-        "description": "Centralisez hébergements, transport et navettes pour vos invités."
-      },
-      "documents": {
-        "title": "Documents & contrats",
-        "description": "Rangez devis, contrats et pièces justificatives au même endroit que vos prestataires."
-      },
-      "vendorComparison": {
-        "title": "Comparateur de prestataires",
-        "description": "Comparez devis, avis et disponibilités côte à côte avant de signer."
-      },
-      "communications": {
-        "title": "Communications invités",
-        "description": "Modèles de messages pour save-the-date, faire-part et rappels RSVP."
-      },
-      "legalMilestones": {
-        "title": "Démarches légales",
-        "description": "Suivez dossier de mariage, bans et publications avec des rappels adaptés à la France."
-      },
-      "menuChoices": {
-        "title": "Choix de menu",
-        "description": "Recueillez les préférences de menu par invité, régimes spéciaux compris."
-      },
-      "honeymoon": {
-        "title": "Voyage de noces",
-        "description": "Planifiez et budgétez votre lune de miel juste après le grand jour."
+      "peek": {
+        "budgetLabel": "Budget",
+        "budgetSpent": "Dépensé",
+        "guestsLabel": "Invités",
+        "rsvp": "24 confirmés",
+        "sealLabel": "0 pub",
+        "postit": "Chiffré, juré !"
       }
     },
     "features": {
@@ -99,6 +67,7 @@
       "subtitle": "Une application complète pour organiser chaque aspect de votre mariage.",
       "budget": {
         "title": "Budget mariage",
+        "tagline": "Suivi en temps réel",
         "description": "Suivez chaque dépense, gérez les acomptes et ayez une vue en temps réel de votre budget."
       },
       "guests": {

@@ -47,51 +47,19 @@
       "subheadline": "The 100% private, ad-free wedding planning app. Budget, guests, seating chart, vendors — all in one place.",
       "ctaPrimary": "Create my wedding",
       "ctaSecondary": "Join a wedding",
-      "badge": "Offline • Private • No ads"
-    },
-    "whatsNew": {
-      "eyebrow": "Fiancé · What's new",
-      "title": "What just shipped",
-      "subtitle": "Ten new modules to cover the whole wedding, from the proposal to the honeymoon.",
-      "weddingParty": {
-        "title": "Wedding party & roles",
-        "description": "Organize witnesses, bridesmaids and groomsmen with their day-of duties."
+      "badge": "Offline • Private • No ads",
+      "trust": {
+        "offline": "Offline",
+        "private": "100% private",
+        "noAds": "No ads"
       },
-      "seatingConflicts": {
-        "title": "Conflict detection",
-        "description": "The seating chart automatically flags guests who shouldn't sit together."
-      },
-      "multiDay": {
-        "title": "Multi-day weddings",
-        "description": "Manage several venues and days — ceremony, cocktail, next-day brunch — in one wedding."
-      },
-      "guestLogistics": {
-        "title": "Guest logistics",
-        "description": "Centralize accommodation, transport and shuttles for your guests."
-      },
-      "documents": {
-        "title": "Documents & contracts",
-        "description": "Keep quotes, contracts and paperwork alongside your vendors."
-      },
-      "vendorComparison": {
-        "title": "Vendor comparison",
-        "description": "Compare quotes, reviews and availability side by side before you sign."
-      },
-      "communications": {
-        "title": "Guest communications",
-        "description": "Message templates for save-the-dates, invitations and RSVP reminders."
-      },
-      "legalMilestones": {
-        "title": "Legal milestones",
-        "description": "Track your marriage file and banns with reminders tailored to France."
-      },
-      "menuChoices": {
-        "title": "Menu choices",
-        "description": "Collect per-guest menu preferences, including dietary needs."
-      },
-      "honeymoon": {
-        "title": "Honeymoon",
-        "description": "Plan and budget your honeymoon right after the big day."
+      "peek": {
+        "budgetLabel": "Budget",
+        "budgetSpent": "Spent",
+        "guestsLabel": "Guests",
+        "rsvp": "24 confirmed",
+        "sealLabel": "0 ads",
+        "postit": "Encrypted, promise!"
       }
     },
     "features": {
@@ -99,6 +67,7 @@
       "subtitle": "A complete app to organize every aspect of your wedding.",
       "budget": {
         "title": "Wedding Budget",
+        "tagline": "Real-time tracking",
         "description": "Track every expense, manage deposits and get a real-time view of your budget."
       },
       "guests": {

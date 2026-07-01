@@ -3,34 +3,127 @@ import { View, Text, Pressable } from "react-native-css/components";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  DollarSign, Users, LayoutGrid, Store, CalendarCheck,
-  Camera, Globe, WifiOff, Lock, ShieldCheck, HeartHandshake,
-  Sparkles, ShieldAlert, MapPin, BedDouble, FileText,
-  Scale, MessageCircle, Landmark, UtensilsCrossed, Plane,
+  LayoutGrid, Store, CalendarCheck, Camera, Globe,
+  WifiOff, Lock, ShieldCheck, HeartHandshake,
 } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
+import { Underline } from "@/components/Underline";
+import { Card } from "@/components/Card";
+import { Chip } from "@/components/Chip";
+import { Seal } from "@/components/Seal";
+import { Postit } from "@/components/Postit";
+import { Avatar } from "@/components/Avatar";
+import { MoneyDisplay } from "@/components/MoneyDisplay";
+import { ProgressBar } from "@/components/ProgressBar";
+import { theme as GP } from "@/lib/theme";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { getLandingBlogPosts } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+/** Budget preview — reused in the hero app-peek card and the Budget spotlight row. */
+const BudgetPeek = React.memo(function BudgetPeek({ compact }: { compact?: boolean }) {
+  const { t } = useTranslation("marketing");
   return (
-    <View
-      className="bg-accent-card rounded-2xl p-5 border border-accent-rose-light"
-      style={{ flex: 1, minWidth: 260 }}
-    >
-      <View className="mb-3 w-10 h-10 rounded-xl bg-accent-blush items-center justify-center">
-        {icon}
-      </View>
-      <Text className="text-base font-semibold text-typography-900 mb-1">{title}</Text>
-      <Text className="text-sm text-typography-500 leading-5">{description}</Text>
+    <View style={{ width: "100%", gap: compact ? 10 : 14 }}>
+      <Chip color={GP.mustard}>{t("landing.hero.peek.budgetLabel")}</Chip>
+      <MoneyDisplay amount={8400} size={compact ? "md" : "lg"} />
+      <ProgressBar value={8400} max={12000} label={t("landing.hero.peek.budgetSpent")} />
     </View>
   );
-}
+});
+
+/** Guest-list preview — reused in the hero app-peek card and the Guests spotlight row. */
+const GuestsPeek = React.memo(function GuestsPeek() {
+  const { t } = useTranslation("marketing");
+  return (
+    <View style={{ alignItems: "center", gap: 14 }}>
+      <View className="flex-row items-center">
+        <Avatar ini="M" tone={GP.claySoft} />
+        <View style={{ marginLeft: -10 }}>
+          <Avatar ini="J" tone={GP.oliveSoft} />
+        </View>
+        <View style={{ marginLeft: -10 }}>
+          <Avatar ini="L" tone={GP.mustardSoft} />
+        </View>
+      </View>
+      <Chip color={GP.olive}>{t("landing.hero.peek.rsvp")}</Chip>
+    </View>
+  );
+});
+
+/** Plain icon + Sprig vignette for spotlight rows that don't need a data preview. */
+const IconVignette = React.memo(function IconVignette({ icon }: { icon: React.ReactNode }) {
+  return (
+    <View className="items-center" style={{ gap: 12 }}>
+      <View className="w-16 h-16 rounded-2xl bg-accent-blush items-center justify-center">{icon}</View>
+      <Sprig size={18} />
+    </View>
+  );
+});
+
+/** One alternating large row in the core-features section: vignette on one side, copy on the other. */
+const FlagshipRow = React.memo(function FlagshipRow({
+  featureKey,
+  reverse,
+  tint,
+  vignette,
+}: {
+  featureKey: string;
+  reverse: boolean;
+  tint?: string;
+  vignette: React.ReactNode;
+}) {
+  const { t } = useTranslation("marketing");
+  const tagline = t(`landing.features.${featureKey}.tagline`, { defaultValue: "" });
+  const copy = (
+    <View key="copy" style={{ flexGrow: 1, flexBasis: 300, minWidth: 260 }}>
+      {tagline ? (
+        <Script size={15} style={{ marginBottom: 6 }}>
+          {tagline}
+        </Script>
+      ) : null}
+      <Display size={24} weight="600" style={{ marginBottom: 8 }}>
+        {t(`landing.features.${featureKey}.title`)}
+      </Display>
+      <Text className="text-base text-typography-500 leading-6" style={{ maxWidth: 420 }}>
+        {t(`landing.features.${featureKey}.description`)}
+      </Text>
+    </View>
+  );
+  const box = (
+    <View key="box" style={{ flexGrow: 1, flexBasis: 260, minWidth: 240, maxWidth: 420 }}>
+      <Card tinted={tint} style={{ padding: 26, minHeight: 190, alignItems: "center", justifyContent: "center" }}>
+        {vignette}
+      </Card>
+    </View>
+  );
+  return (
+    <View className="flex-row flex-wrap items-center" style={{ gap: 32, marginBottom: 40 }}>
+      {reverse ? [copy, box] : [box, copy]}
+    </View>
+  );
+});
+
+/** Compact icon+title pill for the secondary features that don't get a full spotlight row. */
+const CompactFeatureChip = React.memo(function CompactFeatureChip({
+  featureKey,
+  icon,
+}: {
+  featureKey: string;
+  icon: React.ReactNode;
+}) {
+  const { t } = useTranslation("marketing");
+  return (
+    <View className="flex-row items-center bg-accent-paper rounded-full px-4 py-2.5" style={{ gap: 8 }}>
+      {icon}
+      <Text className="text-sm font-medium text-typography-700">{t(`landing.features.${featureKey}.title`)}</Text>
+    </View>
+  );
+});
 
 function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
@@ -52,28 +145,18 @@ export function LandingPage() {
   const blogPosts = getLandingBlogPosts(lang);
   const seo = localizedSeo(lang, "/");
 
-  const appFeatures = [
-    { key: "budget", icon: <DollarSign size={18} className="text-accent-gold" /> },
-    { key: "guests", icon: <Users size={18} className="text-accent-gold" /> },
-    { key: "seatingChart", icon: <LayoutGrid size={18} className="text-accent-gold" /> },
-    { key: "vendors", icon: <Store size={18} className="text-accent-gold" /> },
-    { key: "planning", icon: <CalendarCheck size={18} className="text-accent-gold" /> },
-    { key: "photos", icon: <Camera size={18} className="text-accent-gold" /> },
-    { key: "publicPage", icon: <Globe size={18} className="text-accent-gold" /> },
-    { key: "offline", icon: <WifiOff size={18} className="text-accent-gold" /> },
+  const flagshipFeatures = [
+    { key: "budget", tint: undefined, vignette: <BudgetPeek /> },
+    { key: "seatingChart", tint: GP.paper, vignette: <IconVignette icon={<LayoutGrid size={28} className="text-accent-gold" />} /> },
+    { key: "guests", tint: undefined, vignette: <GuestsPeek /> },
+    { key: "publicPage", tint: GP.paper, vignette: <IconVignette icon={<Globe size={28} className="text-accent-gold" />} /> },
   ] as const;
 
-  const whatsNew = [
-    { key: "weddingParty", icon: <Sparkles size={18} className="text-accent-gold" /> },
-    { key: "seatingConflicts", icon: <ShieldAlert size={18} className="text-accent-gold" /> },
-    { key: "multiDay", icon: <MapPin size={18} className="text-accent-gold" /> },
-    { key: "guestLogistics", icon: <BedDouble size={18} className="text-accent-gold" /> },
-    { key: "documents", icon: <FileText size={18} className="text-accent-gold" /> },
-    { key: "vendorComparison", icon: <Scale size={18} className="text-accent-gold" /> },
-    { key: "communications", icon: <MessageCircle size={18} className="text-accent-gold" /> },
-    { key: "legalMilestones", icon: <Landmark size={18} className="text-accent-gold" /> },
-    { key: "menuChoices", icon: <UtensilsCrossed size={18} className="text-accent-gold" /> },
-    { key: "honeymoon", icon: <Plane size={18} className="text-accent-gold" /> },
+  const compactFeatures = [
+    { key: "vendors", icon: <Store size={16} className="text-accent-gold" /> },
+    { key: "planning", icon: <CalendarCheck size={16} className="text-accent-gold" /> },
+    { key: "photos", icon: <Camera size={16} className="text-accent-gold" /> },
+    { key: "offline", icon: <WifiOff size={16} className="text-accent-gold" /> },
   ] as const;
 
   const privacyFeatures = [
@@ -90,83 +173,84 @@ export function LandingPage() {
         {...seo}
         ogImage="https://fiance.drakkar.software/assets/og-image.png"
       />
-      {/* Hero */}
-      <View className="w-full py-24 px-6 items-center bg-accent-cream">
-        <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
-          {/* Eyebrow in Caveat script — warm, handwritten wedding feel */}
-          <Script size={18} style={{ marginBottom: 18 }}>
-            {t("landing.hero.badge")}
-          </Script>
-          {/* Headline in Fraunces — Garden Press display type */}
-          <Display size={56} weight="600" style={{ textAlign: "center", marginBottom: 8, lineHeight: 62 }}>
-            {t("landing.hero.headline")}
-          </Display>
-          {/* Signature botanical divider — the one Garden Press flourish on the page */}
-          <View style={{ marginVertical: 14 }}>
-            <Sprig size={22} />
+      {/* Hero — editorial split: copy on the left, native app-peek vignette on the right */}
+      <View className="w-full pt-24 pb-24 px-6 bg-accent-cream">
+        <View className="flex-row flex-wrap" style={{ maxWidth: 1080, width: "100%", alignSelf: "center", gap: 48 }}>
+          {/* Copy column */}
+          <View style={{ flexGrow: 1, flexBasis: 420, minWidth: 300 }}>
+            <Script size={18} style={{ marginBottom: 14 }}>
+              {t("landing.hero.badge")}
+            </Script>
+            <Display size={50} weight="600" style={{ marginBottom: 8, lineHeight: 56 }}>
+              {t("landing.hero.headline")}
+            </Display>
+            <View style={{ marginBottom: 18 }}>
+              <Underline width={120} />
+            </View>
+            <Text className="text-lg text-typography-500 mb-8 leading-7" style={{ maxWidth: 440 }}>
+              {t("landing.hero.subheadline")}
+            </Text>
+            <View className="flex-row gap-3 flex-wrap mb-8">
+              <Pressable
+                onPress={() => router.replace("/onboarding" as any)}
+                className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70 hover:opacity-90"
+              >
+                <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.replace("/onboarding" as any)}
+                className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70 hover:opacity-90"
+              >
+                <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
+              </Pressable>
+            </View>
+            <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+              <Chip color={GP.blue}>{t("landing.hero.trust.offline")}</Chip>
+              <Chip color={GP.clay}>{t("landing.hero.trust.private")}</Chip>
+              <Chip color={GP.mustard}>{t("landing.hero.trust.noAds")}</Chip>
+            </View>
           </View>
-          <Text className="text-lg text-typography-500 text-center mb-8 leading-7">
-            {t("landing.hero.subheadline")}
-          </Text>
-          <View className="flex-row gap-3 flex-wrap justify-center">
-            <Pressable
-              onPress={() => router.replace("/onboarding" as any)}
-              className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
-            >
-              <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => router.replace("/onboarding" as any)}
-              className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70"
-            >
-              <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
-            </Pressable>
+
+          {/* App-peek vignette column */}
+          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: 280, maxWidth: 380, alignSelf: "center" }}>
+            <View style={{ position: "relative" }}>
+              <Card style={{ padding: 22, gap: 18 }}>
+                <BudgetPeek compact />
+                <View className="border-t border-accent-rose-light" style={{ paddingTop: 16 }}>
+                  <GuestsPeek />
+                </View>
+              </Card>
+              <View style={{ position: "absolute", top: -16, right: -12 }}>
+                <Seal label={t("landing.hero.peek.sealLabel")} angle={-8} />
+              </View>
+              <View style={{ position: "absolute", bottom: -18, left: -16 }}>
+                <Postit angle={-3}>{t("landing.hero.peek.postit")}</Postit>
+              </View>
+            </View>
           </View>
         </View>
       </View>
 
-      {/* Nouveautés — 10 wedding-planning modules shipped this release */}
+      {/* Core features — alternating spotlight rows + a compact strip for the rest */}
       <View className="w-full py-20 px-6 bg-white">
-        <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
-            {t("landing.whatsNew.eyebrow")}
-          </Script>
-          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
-            {t("landing.whatsNew.title")}
-          </Display>
-          <Text className="text-base text-typography-500 text-center mb-12">
-            {t("landing.whatsNew.subtitle")}
-          </Text>
-          <View className="flex-row flex-wrap gap-4">
-            {whatsNew.map((f) => (
-              <FeatureCard
-                key={f.key}
-                icon={f.icon}
-                title={t(`landing.whatsNew.${f.key}.title`)}
-                description={t(`landing.whatsNew.${f.key}.description`)}
-              />
-            ))}
-          </View>
-        </View>
-      </View>
-
-      {/* Features grid */}
-      <View className="w-full py-20 px-6 bg-white">
-        <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
-          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+        <View style={{ maxWidth: 1000, width: "100%", alignSelf: "center" }}>
+          <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 10 }}>
             {t("landing.features.title")}
           </Display>
-          <Text className="text-base text-typography-500 text-center mb-12">
+          <View className="items-center" style={{ marginBottom: 14 }}>
+            <Underline width={90} />
+          </View>
+          <Text className="text-base text-typography-500 text-center mb-16">
             {t("landing.features.subtitle")}
           </Text>
-          <View className="flex-row flex-wrap gap-4">
-            {appFeatures.map((f) => (
-              <FeatureCard
-                key={f.key}
-                icon={f.icon}
-                title={t(`landing.features.${f.key}.title`)}
-                description={t(`landing.features.${f.key}.description`)}
-              />
+
+          {flagshipFeatures.map((f, i) => (
+            <FlagshipRow key={f.key} featureKey={f.key} reverse={i % 2 === 1} tint={f.tint} vignette={f.vignette} />
+          ))}
+
+          <View className="flex-row flex-wrap justify-center" style={{ gap: 12, marginTop: 8 }}>
+            {compactFeatures.map((f) => (
+              <CompactFeatureChip key={f.key} featureKey={f.key} icon={f.icon} />
             ))}
           </View>
         </View>
