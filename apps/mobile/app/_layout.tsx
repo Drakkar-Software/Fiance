@@ -54,7 +54,7 @@ import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
-import { UpdateBanner } from "@/components/UpdateBanner";
+import { useAutoApplyUpdate } from "@/lib/use-app-update";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
 // available before any screen renders (home, settings, public-page all call
@@ -140,9 +140,9 @@ function AppContent() {
 
 function InnerApp() {
   useExpoRouterScreenTracking(analytics);
+  useAutoApplyUpdate();
   return (
     <>
-      <UpdateBanner topInset />
       <AppContent />
       <Toaster />
     </>

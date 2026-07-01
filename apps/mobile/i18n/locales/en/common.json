@@ -82,7 +82,5 @@
   "homeEyebrow": "Wedding",
   "homeTagline": "days",
   "syncSizeWarning": "Backup is getting large ({{kb}} KB / {{max}} KB max)",
-  "syncSizeExceeded": "Backup too large ({{kb}} KB) — backup blocked",
-  "updateReady": "Update ready",
-  "updateRestart": "Restart"
+  "syncSizeExceeded": "Backup too large ({{kb}} KB) — backup blocked"
 }

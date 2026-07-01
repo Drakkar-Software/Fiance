@@ -82,7 +82,5 @@
   "homeEyebrow": "Mariage",
   "homeTagline": "jours",
   "syncSizeWarning": "Sauvegarde volumineuse ({{kb}} Ko / {{max}} Ko max)",
-  "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — sauvegarde bloquée",
-  "updateReady": "Mise à jour disponible",
-  "updateRestart": "Redémarrer"
+  "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — sauvegarde bloquée"
 }

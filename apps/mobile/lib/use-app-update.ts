@@ -1,20 +1,19 @@
+import { useEffect, useRef } from "react";
 import * as Updates from "expo-updates";
 import { useUpdates } from "expo-updates";
 
 /**
- * Wraps expo-updates to expose a stable update-banner API.
- *
- * `updateReady` is true when expo-updates has downloaded a new bundle
- * (`isUpdatePending`). `applyUpdate` reloads the JS bundle via
- * `Updates.reloadAsync()`.
- *
- * On web (expo-updates no-op) and in dev mode, `updateReady` is always false
- * and `applyUpdate` is a no-op.
+ * Silently applies a downloaded EAS update as soon as it's ready, instead of
+ * waiting for the next natural cold start. No-op on web / dev (`Updates.isEnabled`
+ * is false there, and `reloadAsync()` throws if called while disabled).
  */
-export function useAppUpdate(): { updateReady: boolean; applyUpdate: () => void } {
+export function useAutoApplyUpdate(): void {
   const { isUpdatePending } = useUpdates();
-  return {
-    updateReady: isUpdatePending,
-    applyUpdate: () => void Updates.reloadAsync(),
-  };
+  const hasReloaded = useRef(false);
+
+  useEffect(() => {
+    if (!isUpdatePending || hasReloaded.current || !Updates.isEnabled) return;
+    hasReloaded.current = true;
+    void Updates.reloadAsync();
+  }, [isUpdatePending]);
 }
