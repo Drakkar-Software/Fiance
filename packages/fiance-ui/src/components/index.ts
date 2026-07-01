@@ -29,6 +29,7 @@ export { SheetScaffold } from "./sheets/SheetScaffold";
 export { ForgeHost } from "../primitives/_host/ForgeHost";
 
 export { SectionTitle, FormCard, InputRow, DateRow, TimeRow, ToggleRow, ChipSelect } from "./form/FormSection";
+export { FormActions } from "./form/FormActions";
 
 // ─── Garden Press primitives (moved from apps/mobile/components) ────────────
 export { Display } from "./Display";

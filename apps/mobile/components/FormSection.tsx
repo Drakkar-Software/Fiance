@@ -6,13 +6,14 @@ import {
   InputRow,
   ToggleRow,
   ChipSelect,
+  FormActions,
   DateRow as UiDateRow,
   TimeRow as UiTimeRow,
 } from "@fiance/ui/components";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
 import type { ComponentProps } from "react";
 
-export { SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect };
+export { SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect, FormActions };
 
 type DateRowProps = ComponentProps<typeof UiDateRow>;
 
