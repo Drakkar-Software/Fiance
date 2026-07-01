@@ -78,7 +78,7 @@
     "joinThisWedding": "Join this wedding?",
     "joinThisWeddingFirst": "You've been invited to join this wedding."
   },
-  "homeEyebrow": "Home",
+  "homeEyebrow": "Wedding",
   "homeTagline": "days",
   "syncSizeWarning": "Backup is getting large ({{kb}} KB / {{max}} KB max)",
   "syncSizeExceeded": "Backup too large ({{kb}} KB) — sync blocked",

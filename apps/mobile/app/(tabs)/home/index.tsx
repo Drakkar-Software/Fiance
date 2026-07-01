@@ -439,9 +439,7 @@ function DashboardScreen() {
 
         {/* À venir: appointments + tasks merged */}
         <Pressable
-          onPress={() =>
-            router.push({ pathname: "/(tabs)/planning", params: { aspect: "agenda" } })
-          }
+          onPress={() => router.push("/(tabs)/planning/agenda")}
           className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
         >
           <View className="flex-row items-center justify-between mb-3">

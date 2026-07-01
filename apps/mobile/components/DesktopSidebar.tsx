@@ -15,6 +15,8 @@ import {
   BedDouble,
   Tag,
   Mail,
+  List,
+  Clock,
   type LucideIcon,
 } from "lucide-react-native";
 import { theme as GP } from "@/lib/theme";
@@ -22,6 +24,7 @@ import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { useSyncStatusDot } from "@/lib/useSyncStatusDot";
+import { PLANNING_ASPECT_LABELS } from "@/db/types";
 import type { WeddingRegistryEntry } from "@fiance/sdk";
 
 interface NavItem {
@@ -57,6 +60,15 @@ const GUESTS_SUBNAV: SubNavItem[] = [
   { key: "communications", route: "/(tabs)/guests/communications", icon: Mail, labelKey: "communicationsScreen" },
 ];
 
+// Préparatifs/Agenda/Jour J are real routes now (see app/(tabs)/planning/) so
+// they can be linked from here; PLANNING_ASPECT_LABELS values are already
+// namespace-qualified ("planning:aspects.xxx") so any t() resolves them.
+const PLANNING_SUBNAV: SubNavItem[] = [
+  { key: "preparation", route: "/(tabs)/planning", icon: List, labelKey: PLANNING_ASPECT_LABELS.preparation },
+  { key: "agenda", route: "/(tabs)/planning/agenda", icon: Calendar, labelKey: PLANNING_ASPECT_LABELS.agenda },
+  { key: "day-of", route: "/(tabs)/planning/day-of", icon: Clock, labelKey: PLANNING_ASPECT_LABELS["day-of"] },
+];
+
 interface Props {
   isDark: boolean;
   overdueCount: number;
@@ -73,8 +85,11 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
 
   // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...]
   const activeKey = (segments[1] as string | undefined) ?? "home";
-  // segments[2] = active guests sub-route key, e.g. ["(tabs)", "guests", "groups"]
+  // segments[2] = active sub-route key, e.g. ["(tabs)", "guests", "groups"].
+  // Planning's default route (index) has no segments[2] but still maps to
+  // the "preparation" sub-item, so it needs an explicit fallback.
   const activeSubKey = segments[2] as string | undefined;
+  const effectiveSubKey = activeKey === "planning" ? activeSubKey ?? "preparation" : activeSubKey;
 
   const bg = isDark ? GP.cardDark : GP.card;
   const borderColor = isDark ? GP.hairStrong : GP.hair;
@@ -137,30 +152,31 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
                 </View>
               </Pressable>
 
-              {item.key === "guests" && isActive && (
+              {(item.key === "guests" || item.key === "planning") && isActive && (
                 <View style={styles.subNav}>
-                  {GUESTS_SUBNAV.map((sub) => {
-                    const isSubActive = activeSubKey === sub.key;
-                    const isSubHovered = hoveredKey === `guests:${sub.key}`;
+                  {(item.key === "guests" ? GUESTS_SUBNAV : PLANNING_SUBNAV).map((sub) => {
+                    const isSubActive = effectiveSubKey === sub.key;
+                    const isSubHovered = hoveredKey === `${item.key}:${sub.key}`;
                     const SubIcon = sub.icon;
                     const subColor = isSubActive ? GP.clay : isDark ? GP.inkDark : mutedText;
                     const subBg =
                       isSubActive ? GP.claySoft :
                       isSubHovered ? (isDark ? "rgba(42,36,24,0.10)" : GP.paper) :
                       "transparent";
+                    const label = item.key === "guests" ? tg(sub.labelKey) : t(sub.labelKey);
 
                     return (
                       <Pressable
                         key={sub.key}
                         onPress={() => router.push(sub.route as any)}
                         // @ts-ignore — web-only hover events
-                        onHoverIn={() => setHoveredKey(`guests:${sub.key}`)}
+                        onHoverIn={() => setHoveredKey(`${item.key}:${sub.key}`)}
                         onHoverOut={() => setHoveredKey(null)}
                         style={[styles.subRow, { backgroundColor: subBg }]}
                       >
                         <SubIcon size={16} color={subColor} />
                         <Text style={[styles.subRowLabel, { color: subColor }]}>
-                          {tg(sub.labelKey)}
+                          {label}
                         </Text>
                       </Pressable>
                     );

@@ -26,6 +26,24 @@ export default function PlanningLayout() {
           headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
         }}
       />
+      <Stack.Screen
+        name="agenda"
+        options={{
+          title: "",
+          headerShown: !isWide,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+        }}
+      />
+      <Stack.Screen
+        name="day-of"
+        options={{
+          title: "",
+          headerShown: !isWide,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+        }}
+      />
       <Stack.Screen name="[id]" options={{ title: "Tâche" }} />
       <Stack.Screen name="categories" options={{ title: "Catégories" }} />
       <Stack.Screen name="agenda-event" options={{ title: "Rendez-vous" }} />

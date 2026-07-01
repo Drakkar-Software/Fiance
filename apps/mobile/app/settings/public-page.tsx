@@ -227,7 +227,7 @@ export default function PublicPageScreen() {
           title={t("manageDayOf")}
           subtitle={t("manageDayOfDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push({ pathname: "/(tabs)/planning", params: { aspect: "day-of" } })}
+          onPress={() => router.push("/(tabs)/planning/day-of")}
         />
       </View>
 

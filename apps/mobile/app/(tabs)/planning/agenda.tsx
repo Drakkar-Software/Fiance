@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
 import { useRouter } from "expo-router";
 import { PlanningShell } from "@/components/planning/PlanningShell";
-import { PreparationView } from "@/components/planning/views";
+import { AgendaView } from "@/components/planning/views";
 
-export default function PlanningPreparationScreen() {
+export default function PlanningAgendaScreen() {
   const router = useRouter();
   const handleAdd = useCallback(() => {
-    router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } });
+    router.push({ pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } });
   }, [router]);
 
   return (
-    <PlanningShell aspect="preparation" onAdd={handleAdd}>
-      <PreparationView />
+    <PlanningShell aspect="agenda" onAdd={handleAdd}>
+      <AgendaView />
     </PlanningShell>
   );
 }
