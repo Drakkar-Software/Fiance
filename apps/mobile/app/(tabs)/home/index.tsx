@@ -2,14 +2,13 @@ import React, { useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle, FileCheck2 } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
-import { useLegalStore } from "@/store/useLegalStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -51,12 +50,6 @@ function DashboardScreen() {
     () => tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "DONE"),
     [tasks]
   );
-  const legalMilestones = useLegalStore((s) => s.legalMilestones);
-  const nextLegalMilestone = React.useMemo(() => {
-    return [...legalMilestones]
-      .filter((m) => m.status !== "DONE" && m.dueDate)
-      .sort((a, b) => (a.dueDate ?? "").localeCompare(b.dueDate ?? ""))[0] ?? null;
-  }, [legalMilestones]);
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
   const next3Events = React.useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
@@ -533,28 +526,6 @@ function DashboardScreen() {
             </>
           )}
         </Pressable>
-
-        {/* Administratif — next legal milestone deadline */}
-        {nextLegalMilestone && (
-          <Pressable
-            onPress={() => router.push("/(tabs)/planning/legal")}
-            className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair flex-row items-center"
-          >
-            <View className="w-7 h-7 rounded-full bg-accent-clay-soft items-center justify-center mr-2.5">
-              <FileCheck2 size={14} color={GP.clay} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{t("legalNextDeadline")}</Text>
-              <Text className="text-xs text-mute mt-0.5" numberOfLines={1}>
-                {nextLegalMilestone.title}
-                {nextLegalMilestone.dueDate
-                  ? ` · ${safeFormat(new Date(nextLegalMilestone.dueDate + "T00:00:00"), "d MMM", { locale: getDateLocale() })}`
-                  : ""}
-              </Text>
-            </View>
-            <ChevronRight size={16} color={GP.mute} />
-          </Pressable>
-        )}
 
         {/* Prestataires */}
         <Pressable

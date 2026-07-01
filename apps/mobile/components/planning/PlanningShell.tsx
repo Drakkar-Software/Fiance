@@ -2,7 +2,7 @@ import React from "react";
 import { View, Pressable } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { CalendarRange, FileCheck2, Palmtree, Church, Mic2, Radio } from "lucide-react-native";
+import { CalendarRange, Palmtree, Church, Mic2, Play } from "lucide-react-native";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { StackMenu } from "@/components/StackMenu";
@@ -47,7 +47,7 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
                   className="w-9 h-9 items-center justify-center rounded-lg active:opacity-60 mr-1"
                   hitSlop={8}
                 >
-                  <Radio size={20} color="#b96a4a" />
+                  <Play size={20} color="#b96a4a" />
                 </Pressable>
               )}
               <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />
@@ -67,11 +67,6 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
                     label: t("music.title"),
                     icon: Mic2,
                     onPress: () => router.push("/(tabs)/planning/speeches-music"),
-                  },
-                  {
-                    label: t("legal.title"),
-                    icon: FileCheck2,
-                    onPress: () => router.push("/(tabs)/planning/legal"),
                   },
                   {
                     label: t("honeymoon.title"),

@@ -18,7 +18,6 @@ import {
   Clock,
   UsersRound,
   CalendarRange,
-  FileCheck2,
   Palmtree,
   Armchair,
   Church,
@@ -78,7 +77,6 @@ const PLANNING_SUBNAV: SubNavItem[] = [
   { key: "events", route: "/(tabs)/planning/events", icon: CalendarRange, labelKey: "planning:events.title" },
   { key: "ceremony", route: "/(tabs)/planning/ceremony", icon: Church, labelKey: "planning:ceremony.title" },
   { key: "speeches-music", route: "/(tabs)/planning/speeches-music", icon: Mic2, labelKey: "planning:music.title" },
-  { key: "legal", route: "/(tabs)/planning/legal", icon: FileCheck2, labelKey: "planning:legal.title" },
   { key: "honeymoon", route: "/(tabs)/planning/honeymoon", icon: Palmtree, labelKey: "planning:honeymoon.title" },
 ];
 
