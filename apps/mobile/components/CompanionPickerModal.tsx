@@ -1,10 +1,21 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/components";
-import { useWindowDimensions } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import {
+  Column,
+  Row,
+  Text as UIText,
+  TextInput as UITextInput,
+  Button as UIButton,
+  List,
+  ListItem,
+  useNativeState,
+} from "@expo/ui";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { Sheet } from "@fiance/ui/components";
+import { ForgeHost } from "@fiance/ui/primitives/host";
 
 interface CompanionPickerModalProps {
   visible: boolean;
@@ -27,11 +38,13 @@ export function CompanionPickerModal({
   const guests = useGuestsStore((s) => s.guests);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(currentCompanionId);
+  const searchState = useNativeState("");
 
   useEffect(() => {
     if (visible) {
       setSelected(currentCompanionId);
       setSearch("");
+      searchState.value = "";
     }
   }, [visible, currentCompanionId]);
 
@@ -50,6 +63,65 @@ export function CompanionPickerModal({
 
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * 0.6;
+
+  const handleConfirm = () => {
+    if (selected) onSelect(selected);
+    else onClear();
+  };
+
+  // iOS: @expo/ui BottomSheet hosts RN content via an RNHostView bridge whose touch
+  // handler desyncs on resize. This is a row-of-choices menu sheet, so its content is
+  // rebuilt entirely from @expo/ui-native components (List/ListItem) instead of RN
+  // Pressables. Avatar initials + selected checkmark stay RN — ListItem's leading/
+  // trailing slots are the one bridge point @expo/ui itself wraps safely.
+  if (Platform.OS === "ios") {
+    return (
+      <Sheet visible={visible} onDismiss={onClose}>
+        <ForgeHost style={{ flex: 1 }} useViewportSizeMeasurement>
+          <Column style={{ padding: 20 }} spacing={12}>
+            <UIText textStyle={{ fontSize: 18, fontWeight: "700" }}>
+              {t("companionLabel")}
+            </UIText>
+            <UITextInput
+              value={searchState}
+              onChangeText={(text) => {
+                searchState.value = text;
+                setSearch(text);
+              }}
+              placeholder={t("searchCompanion")}
+              autoCapitalize="none"
+            />
+            <List>
+              {filteredGuests.map((g) => (
+                <ListItem
+                  key={g.id}
+                  onPress={() => setSelected(selected === g.id ? null : g.id)}
+                  leading={
+                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center">
+                      <Text className="text-primary-500 font-bold text-xs">
+                        {g.firstName[0]}
+                        {g.lastName[0]}
+                      </Text>
+                    </View>
+                  }
+                  trailing={selected === g.id ? <Check size={18} color="#EC4899" /> : undefined}
+                >
+                  {`${g.firstName} ${g.lastName}`}
+                </ListItem>
+              ))}
+            </List>
+            {filteredGuests.length === 0 && (
+              <UIText textStyle={{ textAlign: "center" }}>{t("noGuests")}</UIText>
+            )}
+            <Row spacing={12}>
+              <UIButton variant="filled" label={t("common:confirm")} onPress={handleConfirm} />
+              <UIButton variant="outlined" label={t("common:cancel")} onPress={onClose} />
+            </Row>
+          </Column>
+        </ForgeHost>
+      </Sheet>
+    );
+  }
 
   return (
     <Sheet visible={visible} onDismiss={onClose}>
@@ -105,10 +177,7 @@ export function CompanionPickerModal({
         {/* Footer buttons */}
         <View className="flex-row gap-3 mt-4">
           <Pressable
-            onPress={() => {
-              if (selected) onSelect(selected);
-              else onClear();
-            }}
+            onPress={handleConfirm}
             className="flex-1 py-3.5 rounded-2xl items-center bg-primary-500 active:opacity-80"
           >
             <Text className="text-white font-semibold text-base">

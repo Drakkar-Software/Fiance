@@ -23,6 +23,13 @@
       "import": "./dist/components/index.js",
       "types": "./dist/components/index.d.ts"
     },
+    "./primitives/host": {
+      "source": "./src/primitives/_host/ForgeHost.tsx",
+      "react-native": "./src/primitives/_host/ForgeHost.tsx",
+      "require": "./src/primitives/_host/ForgeHost.tsx",
+      "import": "./dist/primitives/_host/ForgeHost.js",
+      "types": "./dist/primitives/_host/ForgeHost.d.ts"
+    },
     "./theme": {
       "source": "./src/theme/index.ts",
       "react-native": "./src/theme/index.ts",
