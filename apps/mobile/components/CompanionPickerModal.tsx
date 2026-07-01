@@ -14,8 +14,7 @@ import {
   useNativeState,
 } from "@expo/ui";
 import { useGuestsStore } from "@/store/useGuestsStore";
-import { Sheet } from "@fiance/ui/components";
-import { ForgeHost } from "@fiance/ui/primitives/host";
+import { Sheet, ForgeHost } from "@fiance/ui/components";
 import { theme } from "@/lib/theme";
 
 interface CompanionPickerModalProps {

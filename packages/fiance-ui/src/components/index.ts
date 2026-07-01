@@ -23,6 +23,11 @@ export { SheetShell as Sheet } from "./sheets/SheetShell";
 // Standard sheet shell (uniform surface color, title placement, padding, detent).
 export { SheetScaffold } from "./sheets/SheetScaffold";
 
+// Themed @expo/ui Host bridge — re-exported through this barrel (resolves from
+// src on all platforms) rather than a dedicated export subpath, which resolved
+// to the unbuilt dist/ path and broke the web bundle.
+export { ForgeHost } from "../primitives/_host/ForgeHost";
+
 export { SectionTitle, FormCard, InputRow, DateRow, TimeRow, ToggleRow, ChipSelect } from "./form/FormSection";
 
 // ─── Garden Press primitives (moved from apps/mobile/components) ────────────
