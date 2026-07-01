@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Platform } from "react-native";
+import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ChevronUp, ChevronDown, Target } from "lucide-react-native";
 import { format, differenceInDays } from "date-fns";
 import { useBudgetSummary } from "@/store/useBudgetStore";
@@ -26,6 +27,8 @@ import { ContributorsCard } from "@/components/budget/ContributorsCard";
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const budget = useBudgetSummary();
   const vendors = useVendorsStore((s) => s.vendors);
   const wedding = useWeddingStore((s) => s.wedding);
@@ -114,6 +117,7 @@ export default function BudgetScreen() {
     <ScrollView
       className="flex-1 bg-accent-paper"
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingTop: topInset }}
     >
       {Platform.OS === 'web' && (
         <PageHeader
