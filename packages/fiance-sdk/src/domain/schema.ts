@@ -156,6 +156,21 @@ export interface Gift {
   updatedAt: string | null;
 }
 
+export interface ContributorAllocation {
+  scope: string; // "global" or a BUDGET_CATEGORIES key
+  share: number; // percent, 0-100
+}
+
+export interface Contributor {
+  id: string;
+  name: string;
+  color: string | null;
+  phone: string | null;
+  allocations: string | null; // JSON: ContributorAllocation[]
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
 export interface InvitationTypeEntity {
   id: string;
   label: string;
@@ -393,6 +408,7 @@ export type QuotePricingInsert = QuotePricing;
 export type VendorPaymentInsert = VendorPayment;
 export type AccommodationInsert = Accommodation;
 export type GiftInsert = Gift;
+export type ContributorInsert = Contributor;
 export type TaskCategoryInsert = TaskCategory;
 export type TaskInsert = Task;
 export type AgendaEventInsert = AgendaEvent;

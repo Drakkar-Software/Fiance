@@ -14,6 +14,7 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+import { useContributorsStore } from "@/store/useContributorsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
@@ -48,6 +49,7 @@ export function clearAllStores(): void {
   useIdeasStore.getState().setIdeas([]);
   useAccommodationsStore.getState().setAccommodations([]);
   useGiftsStore.getState().setGifts([]);
+  useContributorsStore.getState().setContributors([]);
   useInvitationTypesStore.getState().setInvitationTypes([]);
   useCommunicationsStore.getState().setCommunications([]);
   useWeddingPartyStore.getState().setWeddingRoles([]);
@@ -96,6 +98,8 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
   useAccommodationsStore.getState().setAccommodations(readCollection<any[]>("accommodations") ?? []);
 
   useGiftsStore.getState().setGifts(readCollection<any[]>("gifts") ?? []);
+
+  useContributorsStore.getState().setContributors(readCollection<any[]>("contributors") ?? []);
 
   useCommunicationsStore.getState().setCommunications(readCollection<any[]>("communications") ?? []);
 
@@ -240,6 +244,10 @@ export function persistGifts(_storage: SQLiteStorage): void {
   writeCollection("gifts", useGiftsStore.getState().gifts);
 }
 
+export function persistContributors(_storage: SQLiteStorage): void {
+  writeCollection("contributors", useContributorsStore.getState().contributors);
+}
+
 export function persistInvitationTypes(_storage: SQLiteStorage): void {
   writeCollection("invitationTypes", useInvitationTypesStore.getState().invitationTypes);
 }
@@ -302,6 +310,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   vendorPayments?: any[];
   accommodations?: any[];
   gifts?: any[];
+  contributors?: any[];
   invitationTypes?: any[];
   communications?: any[];
   weddingRoles?: any[];
@@ -329,6 +338,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("ideaCollections", data.ideaCollections);
   writeCollection("ideas", data.ideas);
   writeCollection("gifts", data.gifts ?? []);
+  writeCollection("contributors", data.contributors ?? []);
   writeCollection("invitationTypes", data.invitationTypes ?? []);
   writeCollection("communications", data.communications ?? []);
   writeCollection("weddingRoles", data.weddingRoles ?? []);

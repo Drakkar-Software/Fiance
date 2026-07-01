@@ -61,5 +61,26 @@
     "other": "Autre"
   },
   "totalPaid": "Total payé",
-  "pageTagline": "€ dépensés"
+  "pageTagline": "€ dépensés",
+  "contributors": {
+    "title": "Contributeurs",
+    "subtitle": "Famille, proches ou tiers qui prennent en charge des dépenses",
+    "empty": "Aucun contributeur. Ajoutez les personnes qui participent au financement du mariage.",
+    "addTitle": "Ajouter un contributeur",
+    "editTitle": "Modifier le contributeur",
+    "deleteTitle": "Supprimer ce contributeur ?",
+    "name": "Nom",
+    "namePlaceholder": "Ex : Famille Martin, Parents de Sophie…",
+    "color": "Couleur d'identification",
+    "phone": "Téléphone",
+    "phonePlaceholder": "06 12 34 56 78",
+    "allocations": "Répartition",
+    "global": "Budget global",
+    "share": "Part (%)",
+    "addAllocation": "Ajouter une part",
+    "covered": "{{percent}} % couvert",
+    "coveredAmount": "Couvert",
+    "remainingToFinance": "Reste à financer",
+    "exceeds": "La répartition dépasse le budget cible"
+  }
 }

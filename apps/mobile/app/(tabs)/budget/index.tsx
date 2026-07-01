@@ -21,6 +21,7 @@ import { analytics } from "@/lib/analytics";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { Sprig } from "@/components/Sprig";
+import { ContributorsCard } from "@/components/budget/ContributorsCard";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
@@ -224,6 +225,13 @@ export default function BudgetScreen() {
           showPercentage={false}
         />
       </View>
+
+      {/* Contributors */}
+      <ContributorsCard
+        target={budget.budgetTarget}
+        categories={budget.categories}
+        categoryBudgets={categoryBudgets}
+      />
 
       {/* Category targets */}
       <Pressable

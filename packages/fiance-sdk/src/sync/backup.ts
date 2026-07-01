@@ -23,6 +23,7 @@ import type {
   VendorPayment,
   Accommodation,
   Gift,
+  Contributor,
   InvitationTypeEntity,
   Communication,
   WeddingRole,
@@ -50,7 +51,8 @@ import type {
 // v12 → v13: replaced the fixed GuestRole enum with a user-created weddingRoles
 //            catalog; weddingRoleAssignments now link a guestId to a roleId
 //            (external, non-guest role-holders are no longer supported)
-export const BACKUP_VERSION = 13;
+// v13 → v14: added contributors collection (additive, no migration)
+export const BACKUP_VERSION = 14;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -70,6 +72,7 @@ export interface WeddingSnapshot {
   vendorPayments: VendorPayment[];
   accommodations: Accommodation[];
   gifts: Gift[];
+  contributors: Contributor[];
   invitationTypes: InvitationTypeEntity[];
   communications: Communication[];
   weddingRoles: WeddingRole[];
@@ -103,6 +106,7 @@ export interface BackupData {
   vendorPayments: unknown[];
   accommodations: unknown[];
   gifts: unknown[];
+  contributors?: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
   weddingRoles?: unknown[];
@@ -138,6 +142,7 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     vendorPayments: snapshot.vendorPayments,
     accommodations: snapshot.accommodations,
     gifts: snapshot.gifts,
+    contributors: snapshot.contributors,
     invitationTypes: snapshot.invitationTypes,
     communications: snapshot.communications,
     weddingRoles: snapshot.weddingRoles,
@@ -249,6 +254,7 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   // v12 → v13: fixed GuestRole enum replaced by a user-created weddingRoles
   //            catalog; legacy enum-based weddingRoleAssignments (and any
   //            external, non-guest entries) are migrated via migrateRoleAssignments
+  // v13 → v14: added contributors collection (additive, no migration)
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -331,6 +337,7 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     vendorPayments: (doc.vendorPayments || []) as unknown as VendorPayment[],
     accommodations: (doc.accommodations || []) as unknown as Accommodation[],
     gifts: (doc.gifts || []) as unknown as Gift[],
+    contributors: (doc.contributors || []) as unknown as Contributor[],
     invitationTypes: restoredInvitationTypes as unknown as InvitationTypeEntity[],
     communications: (doc.communications || []) as unknown as Communication[],
     weddingRoles: restoredWeddingRoles,

@@ -1,6 +1,6 @@
 {
-  "version": 13,
-  "timestamp": "2026-07-01T15:25:32.867Z",
+  "version": 14,
+  "timestamp": "2026-07-01T15:44:39.818Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Léa",
@@ -4592,6 +4592,7 @@
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
   ],
+  "contributors": [],
   "invitationTypes": [
     {
       "id": "CEREMONY",

@@ -1,5 +1,5 @@
 // NodeNext .js extension required
-import type { Vendor, QuotePricing } from './schema.js';
+import type { Vendor, QuotePricing, Contributor, ContributorAllocation } from './schema.js';
 import type { GuestCounts } from './guests.js';
 import type { PppSource } from './types.js';
 import { PRICING_KEY_GUEST_SOURCE } from './types.js';
@@ -90,6 +90,40 @@ function getGuestCountForPricingKey(
     return value || (useEstimate ? counts.total : 0);
   }
   return 0;
+}
+
+/** Parse a contributor's allocations JSON field. Returns [] on missing/invalid data. */
+export function parseContributorAllocations(json: string | null): ContributorAllocation[] {
+  if (!json) return [];
+  try {
+    const parsed = JSON.parse(json);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Resolve one allocation to a euro amount. `scope: "global"` uses budgetTarget, otherwise looks up categoryAmounts[scope]. */
+export function resolveAllocationAmount(
+  allocation: ContributorAllocation,
+  budgetTarget: number,
+  categoryAmounts: Record<string, number>
+): number {
+  const base =
+    allocation.scope === "global" ? budgetTarget : categoryAmounts[allocation.scope] ?? 0;
+  return (base * allocation.share) / 100;
+}
+
+/** Sum a contributor's allocations into a single euro amount. */
+export function calculateContributorTotal(
+  contributor: Contributor,
+  budgetTarget: number,
+  categoryAmounts: Record<string, number>
+): number {
+  return parseContributorAllocations(contributor.allocations).reduce(
+    (sum, allocation) => sum + resolveAllocationAmount(allocation, budgetTarget, categoryAmounts),
+    0
+  );
 }
 
 /** Calculate caterer score /100 */

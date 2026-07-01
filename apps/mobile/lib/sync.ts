@@ -11,6 +11,7 @@ import { usePlanningStore } from "@/store/usePlanningStore";
 import { useIdeasStore } from "@/store/useIdeasStore";
 import { useAccommodationsStore } from "@/store/useAccommodationsStore";
 import { useGiftsStore } from "@/store/useGiftsStore";
+import { useContributorsStore } from "@/store/useContributorsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
@@ -42,6 +43,7 @@ export interface BackupData {
   vendorPayments: unknown[];
   accommodations: unknown[];
   gifts: unknown[];
+  contributors?: unknown[];
   invitationTypes?: unknown[];
   communications?: unknown[];
   weddingRoles?: unknown[];
@@ -65,7 +67,8 @@ export interface BackupData {
 // v12 → v13: fixed GuestRole enum replaced by a user-created weddingRoles catalog;
 //            weddingRoleAssignments now link guestId → roleId (external, non-guest
 //            role-holders are no longer supported and are dropped on migration)
-const BACKUP_VERSION = 13;
+// v13 → v14: added contributors collection (additive, no migration)
+const BACKUP_VERSION = 14;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -87,6 +90,7 @@ export function createBackupDocument(): Record<string, unknown> {
     vendorPayments: useVendorsStore.getState().vendorPayments,
     accommodations: useAccommodationsStore.getState().accommodations,
     gifts: useGiftsStore.getState().gifts,
+    contributors: useContributorsStore.getState().contributors,
     invitationTypes: useInvitationTypesStore.getState().invitationTypes,
     communications: useCommunicationsStore.getState().communications,
     weddingRoles: useWeddingPartyStore.getState().weddingRoles,
@@ -208,6 +212,7 @@ export function restoreFromBackup(
     vendorPayments: (backup.vendorPayments || []) as any[],
     accommodations: (backup.accommodations || []) as any[],
     gifts: (backup.gifts || []) as any[],
+    contributors: (backup.contributors || []) as any[],
     invitationTypes: restoredInvitationTypes,
     communications: (backup.communications || []) as any[],
     weddingRoles: restoredWeddingRoles,
@@ -242,6 +247,7 @@ export function restoreFromBackup(
     useIdeasStore.getState().setIdeas(restoredData.ideas);
     useAccommodationsStore.getState().setAccommodations(restoredData.accommodations);
     useGiftsStore.getState().setGifts(restoredData.gifts);
+    useContributorsStore.getState().setContributors(restoredData.contributors);
     useInvitationTypesStore.getState().setInvitationTypes(restoredData.invitationTypes);
     useCommunicationsStore.getState().setCommunications(restoredData.communications);
     useWeddingPartyStore.getState().setWeddingRoles(restoredData.weddingRoles);

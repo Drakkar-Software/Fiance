@@ -61,5 +61,26 @@
     "other": "Other"
   },
   "totalPaid": "Total paid",
-  "pageTagline": "€ spent"
+  "pageTagline": "€ spent",
+  "contributors": {
+    "title": "Contributors",
+    "subtitle": "Family, relatives or third parties covering expenses",
+    "empty": "No contributors yet. Add the people helping fund the wedding.",
+    "addTitle": "Add a contributor",
+    "editTitle": "Edit contributor",
+    "deleteTitle": "Delete this contributor?",
+    "name": "Name",
+    "namePlaceholder": "E.g. Martin family, Sophie's parents…",
+    "color": "Identification color",
+    "phone": "Phone",
+    "phonePlaceholder": "06 12 34 56 78",
+    "allocations": "Allocation",
+    "global": "Global budget",
+    "share": "Share (%)",
+    "addAllocation": "Add a share",
+    "covered": "{{percent}}% covered",
+    "coveredAmount": "Covered",
+    "remainingToFinance": "Remaining to finance",
+    "exceeds": "The allocation exceeds the target budget"
+  }
 }

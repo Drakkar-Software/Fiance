@@ -948,6 +948,7 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     ideas,
     accommodations,
     gifts,
+    contributors: [],
     invitationTypes,
     communications,
     weddingRoles,

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Users, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
 import {
   RSVP_STATUS_LABELS,
   RSVP_STATUS_COLORS,
@@ -43,6 +44,13 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
     const c = s.guests.find((g) => g.id === guest.companionId);
     return c ? `${c.firstName} ${c.lastName}` : null;
   });
+  const roleLabel = useWeddingPartyStore((s) => {
+    const names = s.weddingRoleAssignments
+      .filter((a) => a.guestId === guest.id)
+      .map((a) => s.weddingRoles.find((r) => r.id === a.roleId)?.name)
+      .filter(Boolean);
+    return names.length > 0 ? names.join(", ") : null;
+  });
 
   return (
     <Pressable
@@ -63,6 +71,7 @@ function GuestCard({ guest, invitationTypeLabel }: { guest: Guest; invitationTyp
             {guest.firstName} {guest.lastName}
           </Text>
           <Text className="text-sm text-mute mt-0.5">
+            {roleLabel ? `${roleLabel} · ` : ""}
             {invitationTypeLabel}
             {(guest.childrenCount ?? 0) > 0 ? ` · ${guest.childrenCount} ${t("child")}` : ""}
             {guest.diet && guest.diet !== "STANDARD"
