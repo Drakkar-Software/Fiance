@@ -26,3 +26,5 @@ design-package/
 # Workspace node_modules at sub-package level
 apps/mobile/node_modules
 packages/*/node_modules
+android/
+ios/
