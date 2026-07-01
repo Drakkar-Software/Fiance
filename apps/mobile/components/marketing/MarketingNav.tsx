@@ -32,7 +32,7 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
     { label: t("nav.seatingChart"), href: localizedPath(currentLang, "/feature/seating-chart") },
     { label: t("nav.budget"), href: localizedPath(currentLang, "/feature/budget") },
     { label: t("nav.photos"), href: localizedPath(currentLang, "/feature/photos") },
-    { label: t("nav.tools"), href: localizedPath(currentLang, "/tools/seating-chart") },
+    { label: t("nav.toolsTimeline"), href: localizedPath(currentLang, "/tools/timeline") },
     { label: t("nav.blog"), href: localizedPath(currentLang, "/blog") },
   ];
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
