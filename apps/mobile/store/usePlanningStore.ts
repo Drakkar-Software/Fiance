@@ -41,6 +41,8 @@ interface PlanningState {
   addDayOfItem: (item: DayOfItem) => void;
   updateDayOfItem: (id: string, updates: Partial<DayOfItem>) => void;
   removeDayOfItem: (id: string) => void;
+  completeDayOfItem: (id: string) => void;
+  uncompleteDayOfItem: (id: string) => void;
 }
 
 export const usePlanningStore = create<PlanningState>((set, get) => ({
@@ -190,6 +192,26 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
   },
   removeDayOfItem: (id) => {
     set((state) => ({ dayOfItems: state.dayOfItems.filter((i) => i.id !== id) }));
+    const storage = getStorage();
+    if (storage) persistDayOfItems(storage);
+    notifySync();
+  },
+  completeDayOfItem: (id) => {
+    set((state) => ({
+      dayOfItems: state.dayOfItems.map((i) =>
+        i.id === id ? { ...i, completedAt: new Date().toISOString() } : i
+      ),
+    }));
+    const storage = getStorage();
+    if (storage) persistDayOfItems(storage);
+    notifySync();
+  },
+  uncompleteDayOfItem: (id) => {
+    set((state) => ({
+      dayOfItems: state.dayOfItems.map((i) =>
+        i.id === id ? { ...i, completedAt: null } : i
+      ),
+    }));
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();

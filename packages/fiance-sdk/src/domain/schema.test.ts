@@ -92,6 +92,8 @@ describe("DayOfItem entity", () => {
       isPublic: false,
       sortOrder: null,
       eventId: null,
+      completedAt: null,
+      roleId: null,
       createdAt: null,
       updatedAt: null,
     });

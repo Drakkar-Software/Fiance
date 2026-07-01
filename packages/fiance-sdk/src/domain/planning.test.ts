@@ -4,7 +4,8 @@
  */
 import { describe, it, expect } from "vitest";
 import { addMonths } from "date-fns";
-import type { Task } from './schema.js';
+import type { Task, DayOfItem } from './schema.js';
+import { resolveRunOfShow } from './planning.js';
 
 // The recalculateDueDates function is pure logic — reimplement it here
 // to avoid importing the full store (which pulls in react-native).
@@ -80,5 +81,76 @@ describe("recalculateDueDates", () => {
     const result = recalculateDueDates(tasks, "2026-09-15");
     expect(result[0]).not.toBe(tasks[0]);
     expect(tasks[0].dueDate).toBe("old");
+  });
+});
+
+function makeDayOfItem(overrides: Partial<DayOfItem> = {}): DayOfItem {
+  return {
+    id: "item-1",
+    title: "Cérémonie",
+    date: null,
+    time: "14:00",
+    endTime: null,
+    location: null,
+    responsible: null,
+    notes: null,
+    isPublic: false,
+    sortOrder: null,
+    eventId: null,
+    completedAt: null,
+    roleId: null,
+    createdAt: null,
+    updatedAt: null,
+    ...overrides,
+  };
+}
+
+describe("resolveRunOfShow", () => {
+  it("picks the latest started, not-done item as current", () => {
+    const items = [
+      makeDayOfItem({ id: "a", time: "10:00" }),
+      makeDayOfItem({ id: "b", time: "14:00" }),
+      makeDayOfItem({ id: "c", time: "18:00" }),
+    ];
+    const result = resolveRunOfShow(items, "15:00");
+    expect(result.current?.id).toBe("b");
+    expect(result.next?.id).toBe("c");
+    expect(result.total).toBe(3);
+    expect(result.completedCount).toBe(0);
+  });
+
+  it("skips completed items when picking current/next", () => {
+    const items = [
+      makeDayOfItem({ id: "a", time: "10:00", completedAt: "2026-01-01T00:00:00.000Z" }),
+      makeDayOfItem({ id: "b", time: "14:00", completedAt: "2026-01-01T00:00:00.000Z" }),
+      makeDayOfItem({ id: "c", time: "18:00" }),
+    ];
+    const result = resolveRunOfShow(items, "20:00");
+    expect(result.current?.id).toBe("c");
+    expect(result.next).toBeNull();
+    expect(result.completedCount).toBe(2);
+  });
+
+  it("returns null current before the first item has started", () => {
+    const items = [makeDayOfItem({ id: "a", time: "10:00" })];
+    const result = resolveRunOfShow(items, "08:00");
+    expect(result.current).toBeNull();
+    expect(result.next?.id).toBe("a");
+  });
+
+  it("returns null current and next once everything is done", () => {
+    const items = [makeDayOfItem({ id: "a", time: "10:00", completedAt: "2026-01-01T00:00:00.000Z" })];
+    const result = resolveRunOfShow(items, "12:00");
+    expect(result.current).toBeNull();
+    expect(result.next).toBeNull();
+    expect(result.completedCount).toBe(1);
+    expect(result.total).toBe(1);
+  });
+
+  it("handles an empty list", () => {
+    const result = resolveRunOfShow([], "12:00");
+    expect(result.current).toBeNull();
+    expect(result.next).toBeNull();
+    expect(result.total).toBe(0);
   });
 });

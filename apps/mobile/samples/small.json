@@ -1,6 +1,6 @@
 {
-  "version": 14,
-  "timestamp": "2026-07-01T15:44:39.814Z",
+  "version": 15,
+  "timestamp": "2026-07-01T16:32:56.085Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Camille",
@@ -1583,6 +1583,8 @@
       "isPublic": false,
       "sortOrder": 1,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1598,6 +1600,8 @@
       "isPublic": false,
       "sortOrder": 2,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1613,6 +1617,8 @@
       "isPublic": false,
       "sortOrder": 3,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1628,6 +1634,8 @@
       "isPublic": true,
       "sortOrder": 4,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1643,6 +1651,8 @@
       "isPublic": true,
       "sortOrder": 5,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     },
@@ -1658,6 +1668,8 @@
       "isPublic": true,
       "sortOrder": 6,
       "eventId": null,
+      "completedAt": null,
+      "roleId": null,
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
@@ -2204,5 +2216,145 @@
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
   ],
-  "honeymoonPlans": []
+  "honeymoonPlans": [],
+  "ceremonyItems": [
+    {
+      "id": "small-cer-001",
+      "eventId": "small-we-001",
+      "kind": "ENTRANCE",
+      "title": "Entrée des mariés",
+      "reference": null,
+      "content": null,
+      "guestId": null,
+      "performerName": null,
+      "roleId": null,
+      "notes": null,
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-cer-002",
+      "eventId": "small-we-001",
+      "kind": "READING",
+      "title": "Lecture — 1 Corinthiens 13",
+      "reference": "1 Corinthiens 13",
+      "content": "L'amour est patient, l'amour est serviable, il n'est pas envieux...",
+      "guestId": null,
+      "performerName": "Sophie (sœur de la mariée)",
+      "roleId": null,
+      "notes": null,
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-cer-003",
+      "eventId": "small-we-001",
+      "kind": "SONG",
+      "title": "Ave Maria",
+      "reference": "Franz Schubert",
+      "content": null,
+      "guestId": null,
+      "performerName": "Chorale",
+      "roleId": null,
+      "notes": null,
+      "sortOrder": 3,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-cer-004",
+      "eventId": "small-we-001",
+      "kind": "BLESSING",
+      "title": "Bénédiction",
+      "reference": null,
+      "content": null,
+      "guestId": null,
+      "performerName": "Officiant·e",
+      "roleId": null,
+      "notes": null,
+      "sortOrder": 4,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "speeches": [
+    {
+      "id": "small-sp-001",
+      "title": "Discours du témoin",
+      "guestId": null,
+      "speakerName": "Antoine (témoin)",
+      "roleId": "small-role-001",
+      "durationMin": 5,
+      "dayOfItemId": null,
+      "content": null,
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-sp-002",
+      "title": "Discours des parents",
+      "guestId": null,
+      "speakerName": "Les parents des mariés",
+      "roleId": null,
+      "durationMin": 4,
+      "dayOfItemId": null,
+      "content": null,
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "playlistTracks": [
+    {
+      "id": "small-pl-001",
+      "title": "Perfect",
+      "artist": "Ed Sheeran",
+      "moment": "FIRST_DANCE",
+      "dayOfItemId": null,
+      "mustPlay": true,
+      "notes": null,
+      "sortOrder": 1,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-pl-002",
+      "title": "September",
+      "artist": "Earth, Wind & Fire",
+      "moment": "PARTY",
+      "dayOfItemId": null,
+      "mustPlay": true,
+      "notes": null,
+      "sortOrder": 2,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-pl-003",
+      "title": "L'aventurier",
+      "artist": "Indochine",
+      "moment": "PARTY",
+      "dayOfItemId": null,
+      "mustPlay": false,
+      "notes": null,
+      "sortOrder": 3,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "small-pl-004",
+      "title": "La Vie en rose",
+      "artist": "Édith Piaf",
+      "moment": "DINNER",
+      "dayOfItemId": null,
+      "mustPlay": false,
+      "notes": null,
+      "sortOrder": 4,
+      "createdAt": "2026-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-01T10:00:00.000Z"
+    }
+  ]
 }

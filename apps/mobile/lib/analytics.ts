@@ -45,6 +45,11 @@ export type FianceEvents = {
   planning_template_generated: undefined;
   agenda_event_added:          undefined;
   day_of_item_added:           undefined;
+  ceremony_item_added:         undefined;
+  ceremony_item_deleted:       undefined;
+  speech_added:                undefined;
+  speech_deleted:              undefined;
+  playlist_track_added:        undefined;
   // Budget
   budget_template_applied:     { template: string };
   // Ideas
@@ -68,7 +73,7 @@ export type FianceEvents = {
 export const analytics = createLazyClient<FianceEvents>();
 
 const ANALYTICS_BASE =
-  process.env.EXPO_PUBLIC_ANALYTICS_URL;
+  process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "";
 const ANALYTICS_APP = "fiance";
 
 // Guard against double-init (React StrictMode double-effects, fast-refresh, HMR module re-eval, etc.)

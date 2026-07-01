@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "paths": {
+      "@/components/Seo": ["./components/Seo.web.tsx"],
       "@/*": ["./*"],
       "@fiance/sdk": ["../../packages/fiance-sdk/src/index.ts"],
       "@fiance/ui": ["../../packages/fiance-ui/src/index.ts"],

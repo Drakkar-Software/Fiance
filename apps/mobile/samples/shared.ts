@@ -517,6 +517,8 @@ function buildDayOfItems(prefix: string, count: number, weddingDate: string) {
     isPublic: item.public ?? false,
     sortOrder: i + 1,
     eventId: null,
+    completedAt: null,
+    roleId: null,
     createdAt: TS,
     updatedAt: TS,
   }));
@@ -712,6 +714,84 @@ function buildWeddingRoleAssignments(
       id: id(`${prefix}-wra`, i + 1),
       roleId: role.id,
       guestId: guest.id,
+      notes: null,
+      sortOrder: i + 1,
+      createdAt: TS,
+      updatedAt: TS,
+    };
+  });
+}
+
+const CEREMONY_ITEM_DEFS: Array<{ kind: string; title: string; reference: string | null; content: string | null; performerName: string | null }> = [
+  { kind: "ENTRANCE", title: "Entrée des mariés", reference: null, content: null, performerName: null },
+  { kind: "READING", title: "Lecture — 1 Corinthiens 13", reference: "1 Corinthiens 13", content: "L'amour est patient, l'amour est serviable, il n'est pas envieux...", performerName: "Sophie (sœur de la mariée)" },
+  { kind: "SONG", title: "Ave Maria", reference: "Franz Schubert", content: null, performerName: "Chorale" },
+  { kind: "BLESSING", title: "Bénédiction", reference: null, content: null, performerName: "Officiant·e" },
+];
+
+function buildCeremonyItems(prefix: string, weddingEvents: ReturnType<typeof buildWeddingEvents>) {
+  const civilEvent = weddingEvents.find((e) => e.type === "CIVIL") ?? null;
+  return CEREMONY_ITEM_DEFS.map((def, i) => ({
+    id: id(`${prefix}-cer`, i + 1),
+    eventId: civilEvent?.id ?? null,
+    kind: def.kind,
+    title: def.title,
+    reference: def.reference,
+    content: def.content,
+    guestId: null,
+    performerName: def.performerName,
+    roleId: null,
+    notes: null,
+    sortOrder: i + 1,
+    createdAt: TS,
+    updatedAt: TS,
+  }));
+}
+
+const SPEECH_DEFS: Array<{ title: string; speakerName: string; durationMin: number }> = [
+  { title: "Discours du témoin", speakerName: "Antoine (témoin)", durationMin: 5 },
+  { title: "Discours des parents", speakerName: "Les parents des mariés", durationMin: 4 },
+];
+
+function buildSpeeches(
+  prefix: string,
+  dayOfItems: ReturnType<typeof buildDayOfItems>,
+  weddingRoles: ReturnType<typeof buildWeddingRoles>,
+) {
+  const speechDayOf = dayOfItems.find((d) => d.title === "Discours des témoins") ?? null;
+  const witnessRole = weddingRoles.find((r) => r.name === "Témoin") ?? null;
+  return SPEECH_DEFS.map((def, i) => ({
+    id: id(`${prefix}-sp`, i + 1),
+    title: def.title,
+    guestId: null,
+    speakerName: def.speakerName,
+    roleId: i === 0 ? (witnessRole?.id ?? null) : null,
+    durationMin: def.durationMin,
+    dayOfItemId: speechDayOf?.id ?? null,
+    content: null,
+    sortOrder: i + 1,
+    createdAt: TS,
+    updatedAt: TS,
+  }));
+}
+
+const PLAYLIST_TRACK_DEFS: Array<{ title: string; artist: string; moment: string; mustPlay: boolean; dayOfTitle: string | null }> = [
+  { title: "Perfect", artist: "Ed Sheeran", moment: "FIRST_DANCE", mustPlay: true, dayOfTitle: null },
+  { title: "September", artist: "Earth, Wind & Fire", moment: "PARTY", mustPlay: true, dayOfTitle: "Ouverture du bal" },
+  { title: "L'aventurier", artist: "Indochine", moment: "PARTY", mustPlay: false, dayOfTitle: null },
+  { title: "La Vie en rose", artist: "Édith Piaf", moment: "DINNER", mustPlay: false, dayOfTitle: null },
+];
+
+function buildPlaylistTracks(prefix: string, dayOfItems: ReturnType<typeof buildDayOfItems>) {
+  return PLAYLIST_TRACK_DEFS.map((def, i) => {
+    const linked = def.dayOfTitle ? dayOfItems.find((d) => d.title === def.dayOfTitle) ?? null : null;
+    return {
+      id: id(`${prefix}-pl`, i + 1),
+      title: def.title,
+      artist: def.artist,
+      moment: def.moment,
+      dayOfItemId: linked?.id ?? null,
+      mustPlay: def.mustPlay,
       notes: null,
       sortOrder: i + 1,
       createdAt: TS,
@@ -917,6 +997,9 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
   const documents = buildDocuments(prefix, vendors);
   const legalMilestones = buildLegalMilestones(prefix, profile.legalMilestoneCount, profile.weddingDate);
   const honeymoonPlans = buildHoneymoonPlan(prefix, profile.includeHoneymoonPlan, profile.weddingDate);
+  const ceremonyItems = buildCeremonyItems(prefix, weddingEvents);
+  const speeches = buildSpeeches(prefix, dayOfItems, weddingRoles);
+  const playlistTracks = buildPlaylistTracks(prefix, dayOfItems);
 
   return {
     wedding: {
@@ -960,6 +1043,9 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     documents,
     legalMilestones,
     honeymoonPlans,
+    ceremonyItems,
+    speeches,
+    playlistTracks,
   };
 }
 

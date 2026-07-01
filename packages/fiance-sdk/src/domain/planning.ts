@@ -1,6 +1,6 @@
 // NodeNext .js extension required
 import { addMonths } from 'date-fns';
-import type { Task, TaskCategory } from './schema.js';
+import type { Task, TaskCategory, DayOfItem } from './schema.js';
 
 // ─── Translator injection ────────────────────────────────────────────────────
 // The app passes its i18n t() function here instead of importing it directly.
@@ -140,4 +140,34 @@ export function recalculateDueDates(
     const dueDate = addMonths(wedding, -t.monthsBefore).toISOString();
     return { ...t, dueDate };
   });
+}
+
+// ─── Live day-of run-of-show ─────────────────────────────────────────────────
+
+export interface RunOfShowResult {
+  current: DayOfItem | null;
+  next: DayOfItem | null;
+  completedCount: number;
+  total: number;
+}
+
+/**
+ * Resolves the "current" and "next" day-of item for live mode, given the
+ * current time as "HH:mm". Pure — the caller supplies `nowHHmm` so this stays
+ * testable without faking the clock.
+ *
+ * current = the latest item that has started (time <= now) and isn't marked done.
+ * next = the first not-done item after current, in time order.
+ */
+export function resolveRunOfShow(items: DayOfItem[], nowHHmm: string): RunOfShowResult {
+  const sorted = [...items].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  const completedCount = sorted.filter((i) => !!i.completedAt).length;
+
+  const started = sorted.filter((i) => (i.time || '') <= nowHHmm);
+  const current = [...started].reverse().find((i) => !i.completedAt) ?? null;
+
+  const currentIdx = current ? sorted.indexOf(current) : -1;
+  const next = sorted.slice(currentIdx + 1).find((i) => !i.completedAt) ?? null;
+
+  return { current, next, completedCount, total: sorted.length };
 }

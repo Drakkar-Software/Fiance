@@ -132,7 +132,7 @@ describe("identity pinning before joinSpaceByLink (Bug B fix)", () => {
     const entry = getSpaceAccessEntry(SPACE_ID);
     expect(entry).not.toBeNull();
     expect(entry?.kind).toBe("link");
-    expect(entry?.kemPriv).toBe("f".repeat(64));
+    expect(entry?.kind === "link" ? entry.kemPriv : undefined).toBe("f".repeat(64));
   });
 
   it("merges server caps alongside the preserved link entry", async () => {
@@ -237,7 +237,7 @@ describe("web-prefixed adapter reproduces the bug; flat global adapter fixes it"
     const entry = getSpaceAccessEntry(SPACE_ID);
     expect(entry).not.toBeNull();
     expect(entry?.kind).toBe("link");
-    expect(entry?.kemPriv).toBe("f".repeat(64));
+    expect(entry?.kind === "link" ? entry.kemPriv : undefined).toBe("f".repeat(64));
   });
 });
 
@@ -267,6 +267,6 @@ describe("KV-backed reload across process restarts", () => {
     const entry = getSpaceAccessEntry(SPACE_ID);
     expect(entry).not.toBeNull();
     expect(entry?.kind).toBe("link");
-    expect(entry?.kemPriv).toBe("f".repeat(64));
+    expect(entry?.kind === "link" ? entry.kemPriv : undefined).toBe("f".repeat(64));
   });
 });

@@ -36,6 +36,9 @@ export const FIANCE_TYPES = {
   document:              'document',
   legalMilestone:        'legalMilestone',
   honeymoonPlan:         'honeymoonPlan',
+  ceremonyItem:          'ceremonyItem',
+  speech:                'speech',
+  playlistTrack:         'playlistTrack',
   // ─── 2 guest-surface synthetic nodes (access:'invite', enc:false) ─────────
   /** Invite-only guest page (about/timeline/FAQ/gifts). One per wedding. */
   publicPage:     'publicPage',

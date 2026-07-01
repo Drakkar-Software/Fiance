@@ -231,6 +231,8 @@ export interface DayOfItem {
   isPublic: boolean | null;
   sortOrder: number | null;
   eventId: string | null;
+  completedAt: string | null; // set by live day-of mode when the item is marked done
+  roleId: string | null; // FK to WeddingRole; powers the live day-of role lens
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -372,6 +374,52 @@ export interface WeddingRoleAssignment {
   updatedAt: string | null;
 }
 
+/** Ordered liturgy program row (entrée, lecture, chant, bénédiction...). */
+export interface CeremonyItem {
+  id: string;
+  eventId: string | null; // FK to WeddingEvent (which ceremony); null = default/unassigned
+  kind: string; // CeremonyItemKind enum
+  title: string;
+  reference: string | null; // scripture reference / song title / composer
+  content: string | null; // full reading text or lyrics
+  guestId: string | null; // performer, if a guest
+  performerName: string | null; // free-text performer fallback (chorale, officiant...)
+  roleId: string | null; // FK to WeddingRole
+  notes: string | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+/** A speech/toast assignment for the day-of. */
+export interface Speech {
+  id: string;
+  title: string | null;
+  guestId: string | null; // speaker, if a guest
+  speakerName: string | null; // free-text speaker fallback
+  roleId: string | null; // FK to WeddingRole
+  durationMin: number | null;
+  dayOfItemId: string | null; // FK to DayOfItem
+  content: string | null; // speech text / talking points
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+/** A track in the day-of playlist, grouped by moment. */
+export interface PlaylistTrack {
+  id: string;
+  title: string;
+  artist: string | null;
+  moment: string; // PlaylistMoment enum
+  dayOfItemId: string | null; // FK to DayOfItem
+  mustPlay: boolean | null;
+  notes: string | null;
+  sortOrder: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
 export interface SeatingConstraint {
   id: string;
   type: string; // SeatingConstraintType enum
@@ -422,3 +470,6 @@ export type CommunicationTemplateInsert = CommunicationTemplate;
 export type DocumentInsert = Document;
 export type LegalMilestoneInsert = LegalMilestone;
 export type HoneymoonPlanInsert = HoneymoonPlan;
+export type CeremonyItemInsert = CeremonyItem;
+export type SpeechInsert = Speech;
+export type PlaylistTrackInsert = PlaylistTrack;

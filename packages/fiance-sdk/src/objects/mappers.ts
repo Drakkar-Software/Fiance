@@ -43,6 +43,9 @@ import type {
   Document,
   LegalMilestone,
   HoneymoonPlan,
+  CeremonyItem,
+  Speech,
+  PlaylistTrack,
 } from '../domain/schema.js';
 
 // ─── Index-level node descriptors (passed to addObject / updateObjectIndex) ───
@@ -637,6 +640,91 @@ export function honeymoonPlanToNode(
 
 export function honeymoonPlanFromDoc(doc: unknown): HoneymoonPlan {
   return doc as HoneymoonPlan;
+}
+
+// ─── CeremonyItem ─────────────────────────────────────────────────────────────
+
+export function ceremonyItemToNode(
+  c: CeremonyItem,
+  id: string,
+  weddingNodeId: string,
+  idMap: Record<string, string>,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.ceremonyItem,
+    parentId: weddingNodeId,
+    title: c.title,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: {
+      legacyId: c.id,
+      eventId: c.eventId ? idMap[`weddingEvent:${c.eventId}`] ?? null : null,
+      guestId: c.guestId ? idMap[`guest:${c.guestId}`] ?? null : null,
+      roleId:  c.roleId  ? idMap[`weddingRole:${c.roleId}`]  ?? null : null,
+    },
+  };
+}
+
+export function ceremonyItemFromDoc(doc: unknown): CeremonyItem {
+  return doc as CeremonyItem;
+}
+
+// ─── Speech ───────────────────────────────────────────────────────────────────
+
+export function speechToNode(
+  s: Speech,
+  id: string,
+  weddingNodeId: string,
+  idMap: Record<string, string>,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.speech,
+    parentId: weddingNodeId,
+    title: s.title ?? '',
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: {
+      legacyId: s.id,
+      guestId:     s.guestId     ? idMap[`guest:${s.guestId}`]         ?? null : null,
+      roleId:      s.roleId      ? idMap[`weddingRole:${s.roleId}`]    ?? null : null,
+      dayOfItemId: s.dayOfItemId ? idMap[`dayOfItem:${s.dayOfItemId}`] ?? null : null,
+    },
+  };
+}
+
+export function speechFromDoc(doc: unknown): Speech {
+  return doc as Speech;
+}
+
+// ─── PlaylistTrack ────────────────────────────────────────────────────────────
+
+export function playlistTrackToNode(
+  p: PlaylistTrack,
+  id: string,
+  weddingNodeId: string,
+  idMap: Record<string, string>,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.playlistTrack,
+    parentId: weddingNodeId,
+    title: p.title,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: {
+      legacyId: p.id,
+      dayOfItemId: p.dayOfItemId ? idMap[`dayOfItem:${p.dayOfItemId}`] ?? null : null,
+    },
+  };
+}
+
+export function playlistTrackFromDoc(doc: unknown): PlaylistTrack {
+  return doc as PlaylistTrack;
 }
 
 // ─── PublicPage (invite, plaintext) ──────────────────────────────────────────

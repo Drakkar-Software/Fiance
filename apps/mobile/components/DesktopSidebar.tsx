@@ -21,6 +21,8 @@ import {
   FileCheck2,
   Palmtree,
   Armchair,
+  Church,
+  Mic2,
   type LucideIcon,
 } from "lucide-react-native";
 import { theme as GP } from "@/lib/theme";
@@ -74,6 +76,8 @@ const PLANNING_SUBNAV: SubNavItem[] = [
   { key: "agenda", route: "/(tabs)/planning/agenda", icon: Calendar, labelKey: PLANNING_ASPECT_LABELS.agenda },
   { key: "day-of", route: "/(tabs)/planning/day-of", icon: Clock, labelKey: PLANNING_ASPECT_LABELS["day-of"] },
   { key: "events", route: "/(tabs)/planning/events", icon: CalendarRange, labelKey: "planning:events.title" },
+  { key: "ceremony", route: "/(tabs)/planning/ceremony", icon: Church, labelKey: "planning:ceremony.title" },
+  { key: "speeches-music", route: "/(tabs)/planning/speeches-music", icon: Mic2, labelKey: "planning:music.title" },
   { key: "legal", route: "/(tabs)/planning/legal", icon: FileCheck2, labelKey: "planning:legal.title" },
   { key: "honeymoon", route: "/(tabs)/planning/honeymoon", icon: Palmtree, labelKey: "planning:honeymoon.title" },
 ];
@@ -88,7 +92,10 @@ export function DesktopSidebar({ isDark, overdueCount, activeWedding }: Props) {
   const { t } = useTranslation("common");
   const { t: tg } = useTranslation("guests");
   const router = useRouter();
-  const segments = useSegments();
+  // Cast away expo-router's route-tree-inferred literal tuple type: its width
+  // depends on the current app/ directory contents, so indexing beyond it is
+  // a compile error even though the runtime array is always ["(tabs)", tab, sub?].
+  const segments = useSegments() as string[];
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
   // segments[1] = active tab key, e.g. ["(tabs)", "vendors", ...].

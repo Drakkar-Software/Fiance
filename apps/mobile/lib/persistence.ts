@@ -25,6 +25,8 @@ import { useCommunicationTemplatesStore } from "@/store/useCommunicationTemplate
 import { useDocumentsStore } from "@/store/useDocumentsStore";
 import { useLegalStore } from "@/store/useLegalStore";
 import { useHoneymoonStore } from "@/store/useHoneymoonStore";
+import { useCeremonyStore } from "@/store/useCeremonyStore";
+import { useSpeechesMusicStore } from "@/store/useSpeechesMusicStore";
 import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from "@/db/types";
 import { synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
 import { readCollection, writeCollection } from "./kv-storage";
@@ -61,6 +63,9 @@ export function clearAllStores(): void {
   useDocumentsStore.getState().setDocuments([]);
   useLegalStore.getState().setLegalMilestones([]);
   useHoneymoonStore.getState().setHoneymoonPlans([]);
+  useCeremonyStore.getState().setCeremonyItems([]);
+  useSpeechesMusicStore.getState().setSpeeches([]);
+  useSpeechesMusicStore.getState().setPlaylistTracks([]);
 }
 
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
@@ -179,6 +184,10 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
     useLegalStore.getState().setLegalMilestones(defaultMilestones);
     writeCollection("legalMilestones", defaultMilestones);
   }
+
+  useCeremonyStore.getState().setCeremonyItems(readCollection<any[]>("ceremonyItems") ?? []);
+  useSpeechesMusicStore.getState().setSpeeches(readCollection<any[]>("speeches") ?? []);
+  useSpeechesMusicStore.getState().setPlaylistTracks(readCollection<any[]>("playlistTracks") ?? []);
 }
 
 // ─── Collection-level write-through helpers ─────────────────────────────────
@@ -292,6 +301,18 @@ export function persistHoneymoonPlans(_storage: SQLiteStorage): void {
   writeCollection("honeymoonPlans", useHoneymoonStore.getState().honeymoonPlans);
 }
 
+export function persistCeremonyItems(_storage: SQLiteStorage): void {
+  writeCollection("ceremonyItems", useCeremonyStore.getState().ceremonyItems);
+}
+
+export function persistSpeeches(_storage: SQLiteStorage): void {
+  writeCollection("speeches", useSpeechesMusicStore.getState().speeches);
+}
+
+export function persistPlaylistTracks(_storage: SQLiteStorage): void {
+  writeCollection("playlistTracks", useSpeechesMusicStore.getState().playlistTracks);
+}
+
 // ─── Bulk restore (for sync pull and import) ────────────────────────────────
 
 export function restoreAllTables(_storage: SQLiteStorage, data: {
@@ -322,6 +343,9 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   documents?: any[];
   legalMilestones?: any[];
   honeymoonPlans?: any[];
+  ceremonyItems?: any[];
+  speeches?: any[];
+  playlistTracks?: any[];
 }): void {
   writeCollection("wedding", data.wedding);
   writeCollection("guestGroups", data.guestGroups);
@@ -350,4 +374,7 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("documents", data.documents ?? []);
   writeCollection("legalMilestones", data.legalMilestones ?? []);
   writeCollection("honeymoonPlans", data.honeymoonPlans ?? []);
+  writeCollection("ceremonyItems", data.ceremonyItems ?? []);
+  writeCollection("speeches", data.speeches ?? []);
+  writeCollection("playlistTracks", data.playlistTracks ?? []);
 }

@@ -35,6 +35,9 @@ import type {
   Document,
   LegalMilestone,
   HoneymoonPlan,
+  CeremonyItem,
+  Speech,
+  PlaylistTrack,
 } from '../domain/schema.js';
 
 // v8 → v9: added weddingEvents + guestMealSelections collections;
@@ -52,7 +55,9 @@ import type {
 //            catalog; weddingRoleAssignments now link a guestId to a roleId
 //            (external, non-guest role-holders are no longer supported)
 // v13 → v14: added contributors collection (additive, no migration)
-export const BACKUP_VERSION = 14;
+// v14 → v15: added ceremonyItems, speeches, playlistTracks collections
+//            (additive, no migration); dayOfItems gained completedAt/roleId fields
+export const BACKUP_VERSION = 15;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -84,6 +89,9 @@ export interface WeddingSnapshot {
   documents: Document[];
   legalMilestones: LegalMilestone[];
   honeymoonPlans: HoneymoonPlan[];
+  ceremonyItems: CeremonyItem[];
+  speeches: Speech[];
+  playlistTracks: PlaylistTrack[];
 }
 
 // ─── BackupData ─────────────────────────────────────────────────────────────
@@ -118,6 +126,9 @@ export interface BackupData {
   documents?: unknown[];
   legalMilestones?: unknown[];
   honeymoonPlans?: unknown[];
+  ceremonyItems?: unknown[];
+  speeches?: unknown[];
+  playlistTracks?: unknown[];
 }
 
 // ─── Serialiser ─────────────────────────────────────────────────────────────
@@ -156,6 +167,9 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     documents: snapshot.documents.map((d) => ({ ...d, localUri: '' })),
     legalMilestones: snapshot.legalMilestones,
     honeymoonPlans: snapshot.honeymoonPlans,
+    ceremonyItems: snapshot.ceremonyItems,
+    speeches: snapshot.speeches,
+    playlistTracks: snapshot.playlistTracks,
   };
 }
 
@@ -255,6 +269,8 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   //            catalog; legacy enum-based weddingRoleAssignments (and any
   //            external, non-guest entries) are migrated via migrateRoleAssignments
   // v13 → v14: added contributors collection (additive, no migration)
+  // v14 → v15: added ceremonyItems, speeches, playlistTracks collections
+  //            (additive, no migration); dayOfItems gained completedAt/roleId fields
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -349,6 +365,9 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     documents: (doc.documents || []) as unknown as Document[],
     legalMilestones: restoredLegalMilestones as unknown as LegalMilestone[],
     honeymoonPlans: (doc.honeymoonPlans || []) as unknown as HoneymoonPlan[],
+    ceremonyItems: (doc.ceremonyItems || []) as unknown as CeremonyItem[],
+    speeches: (doc.speeches || []) as unknown as Speech[],
+    playlistTracks: (doc.playlistTracks || []) as unknown as PlaylistTrack[],
   };
 }
 

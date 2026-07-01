@@ -38,6 +38,9 @@ import {
   documentToNode, documentFromDoc,
   legalMilestoneToNode, legalMilestoneFromDoc,
   honeymoonPlanToNode, honeymoonPlanFromDoc,
+  ceremonyItemToNode, ceremonyItemFromDoc,
+  speechToNode, speechFromDoc,
+  playlistTrackToNode, playlistTrackFromDoc,
   taskCategoryToNode, taskCategoryFromDoc,
   taskToNode, taskFromDoc,
   agendaEventToNode, agendaEventFromDoc,
@@ -65,6 +68,8 @@ import { useCommunicationTemplatesStore } from '@/store/useCommunicationTemplate
 import { useDocumentsStore } from '@/store/useDocumentsStore';
 import { useLegalStore } from '@/store/useLegalStore';
 import { useHoneymoonStore } from '@/store/useHoneymoonStore';
+import { useCeremonyStore } from '@/store/useCeremonyStore';
+import { useSpeechesMusicStore } from '@/store/useSpeechesMusicStore';
 import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from '@/lib/starfish';
 import { applyRsvpSubmissionsByGuestId, type RsvpSubmission } from '@/lib/rsvp-sync';
 import { withIndexLock } from '@/lib/index-lock';
@@ -231,6 +236,13 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   const { documents } = useDocumentsStore.getState();
   const { legalMilestones } = useLegalStore.getState();
   const { honeymoonPlans } = useHoneymoonStore.getState();
+  const { ceremonyItems } = useCeremonyStore.getState();
+  const { speeches, playlistTracks } = useSpeechesMusicStore.getState();
+
+  // ceremony/speech/playlist FKs resolve against these — must be populated before their push loops below.
+  for (const e of weddingEvents) idMap[`weddingEvent:${e.id}`] = e.id;
+  for (const r of weddingRoles) idMap[`weddingRole:${r.id}`] = r.id;
+  for (const d of dayOfItems) idMap[`dayOfItem:${d.id}`] = d.id;
 
   for (const a of accommodations) {
     push(accommodationToNode(a, a.id, weddingNodeId), a);
@@ -287,6 +299,16 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
   }
   for (const d of dayOfItems) {
     push(dayOfItemToNode(d, d.id, weddingNodeId), d);
+  }
+
+  for (const c of ceremonyItems) {
+    push(ceremonyItemToNode(c, c.id, weddingNodeId, idMap), c);
+  }
+  for (const s of speeches) {
+    push(speechToNode(s, s.id, weddingNodeId, idMap), s);
+  }
+  for (const t of playlistTracks) {
+    push(playlistTrackToNode(t, t.id, weddingNodeId, idMap), t);
   }
 
   for (const ic of collections) {
@@ -499,6 +521,9 @@ export async function hydrateFromSpace(
       dayOfItemDocs,
       ideaCollectionDocs,
       ideaDocs,
+      ceremonyItemDocs,
+      speechDocs,
+      playlistTrackDocs,
     ] = await Promise.all([
       weddingNode ? pullNodeContent(session, spaceId, weddingNode) : Promise.resolve(null),
       pullAll(FIANCE_TYPES.guestGroup),
@@ -526,6 +551,9 @@ export async function hydrateFromSpace(
       pullAll(FIANCE_TYPES.dayOfItem),
       pullAll(FIANCE_TYPES.ideaCollection),
       pullAll(FIANCE_TYPES.idea),
+      pullAll(FIANCE_TYPES.ceremonyItem),
+      pullAll(FIANCE_TYPES.speech),
+      pullAll(FIANCE_TYPES.playlistTrack),
     ]);
 
     // Diagnostic: if the space has content nodes but decryption yielded 0 guests,
@@ -562,6 +590,9 @@ export async function hydrateFromSpace(
     if (dayOfItemDocs.length) usePlanningStore.getState().setDayOfItems(dayOfItemDocs.map(dayOfItemFromDoc) as Parameters<ReturnType<typeof usePlanningStore.getState>['setDayOfItems']>[0]);
     if (ideaCollectionDocs.length) useIdeasStore.getState().setCollections(ideaCollectionDocs.map(ideaCollectionFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setCollections']>[0]);
     if (ideaDocs.length) useIdeasStore.getState().setIdeas(ideaDocs.map(ideaFromDoc) as Parameters<ReturnType<typeof useIdeasStore.getState>['setIdeas']>[0]);
+    if (ceremonyItemDocs.length) useCeremonyStore.getState().setCeremonyItems(ceremonyItemDocs.map(ceremonyItemFromDoc) as Parameters<ReturnType<typeof useCeremonyStore.getState>['setCeremonyItems']>[0]);
+    if (speechDocs.length) useSpeechesMusicStore.getState().setSpeeches(speechDocs.map(speechFromDoc) as Parameters<ReturnType<typeof useSpeechesMusicStore.getState>['setSpeeches']>[0]);
+    if (playlistTrackDocs.length) useSpeechesMusicStore.getState().setPlaylistTracks(playlistTrackDocs.map(playlistTrackFromDoc) as Parameters<ReturnType<typeof useSpeechesMusicStore.getState>['setPlaylistTracks']>[0]);
 
     // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
     await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);

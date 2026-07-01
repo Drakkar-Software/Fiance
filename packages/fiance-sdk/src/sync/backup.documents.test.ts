@@ -23,6 +23,7 @@ function emptySnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapsho
     vendorPayments: [],
     accommodations: [],
     gifts: [],
+    contributors: [],
     invitationTypes: [],
     communications: [],
     weddingRoles: [],
@@ -34,6 +35,9 @@ function emptySnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapsho
     documents: [],
     legalMilestones: [],
     honeymoonPlans: [],
+    ceremonyItems: [],
+    speeches: [],
+    playlistTracks: [],
     ...overrides,
   };
 }
@@ -85,5 +89,64 @@ describe('restoreFromBackup — documents pass through with stripped localUri', 
     const restored = restoreFromBackup(backup);
     expect(restored.documents).toHaveLength(1);
     expect(restored.documents[0].localUri).toBe('');
+  });
+});
+
+describe('v14 → v15 round trip — ceremonyItems, speeches, playlistTracks, DayOfItem live fields', () => {
+  it('preserves the 3 new collections through a backup round trip', () => {
+    const snapshot = emptySnapshot({
+      ceremonyItems: [{
+        id: 'c1', eventId: null, kind: 'READING', title: 'Lecture 1', reference: null,
+        content: 'Un texte', guestId: null, performerName: 'Chorale', roleId: null,
+        notes: null, sortOrder: 1, createdAt: null, updatedAt: null,
+      }],
+      speeches: [{
+        id: 's1', title: 'Discours du témoin', guestId: null, speakerName: 'Alice',
+        roleId: null, durationMin: 5, dayOfItemId: null, content: null,
+        sortOrder: 1, createdAt: null, updatedAt: null,
+      }],
+      playlistTracks: [{
+        id: 't1', title: 'Perfect', artist: 'Ed Sheeran', moment: 'FIRST_DANCE',
+        dayOfItemId: null, mustPlay: true, notes: null, sortOrder: 1,
+        createdAt: null, updatedAt: null,
+      }],
+    });
+    const backup = createBackupDocument(snapshot);
+    const restored = restoreFromBackup(backup);
+    expect(restored.ceremonyItems).toHaveLength(1);
+    expect(restored.ceremonyItems[0].title).toBe('Lecture 1');
+    expect(restored.speeches).toHaveLength(1);
+    expect(restored.speeches[0].speakerName).toBe('Alice');
+    expect(restored.playlistTracks).toHaveLength(1);
+    expect(restored.playlistTracks[0].mustPlay).toBe(true);
+  });
+
+  it('preserves DayOfItem completedAt/roleId through a backup round trip', () => {
+    const snapshot = emptySnapshot({
+      dayOfItems: [{
+        id: 'd1', title: 'Entrée des mariés', date: null, time: '15:00', endTime: null,
+        location: null, responsible: null, notes: null, isPublic: false, sortOrder: 1,
+        eventId: null, completedAt: '2026-09-15T15:05:00.000Z', roleId: 'role1',
+        createdAt: null, updatedAt: null,
+      }],
+    });
+    const backup = createBackupDocument(snapshot);
+    const restored = restoreFromBackup(backup);
+    expect(restored.dayOfItems).toHaveLength(1);
+    expect(restored.dayOfItems[0].completedAt).toBe('2026-09-15T15:05:00.000Z');
+    expect(restored.dayOfItems[0].roleId).toBe('role1');
+  });
+
+  it('defaults the 3 new collections to empty arrays for pre-v15 backups', () => {
+    const snapshot = emptySnapshot();
+    const backup = createBackupDocument(snapshot);
+    // Simulate a pre-v15 backup that never had these keys.
+    delete (backup as any).ceremonyItems;
+    delete (backup as any).speeches;
+    delete (backup as any).playlistTracks;
+    const restored = restoreFromBackup(backup);
+    expect(restored.ceremonyItems).toEqual([]);
+    expect(restored.speeches).toEqual([]);
+    expect(restored.playlistTracks).toEqual([]);
   });
 });

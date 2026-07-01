@@ -53,6 +53,11 @@ export default function PlanningLayout() {
       <Stack.Screen name="events" options={{ title: t("events.title") }} />
       <Stack.Screen name="legal" options={{ title: t("legal.title") }} />
       <Stack.Screen name="honeymoon" options={{ title: t("honeymoon.title") }} />
+      <Stack.Screen name="ceremony" options={{ title: t("ceremony.title") }} />
+      <Stack.Screen name="ceremony-item" options={{ title: t("ceremony.newItem") }} />
+      <Stack.Screen name="speeches-music" options={{ title: t("music.title") }} />
+      <Stack.Screen name="speech" options={{ title: t("speeches.newSpeech") }} />
+      <Stack.Screen name="live" options={{ title: t("live.title") }} />
     </Stack>
   );
 }

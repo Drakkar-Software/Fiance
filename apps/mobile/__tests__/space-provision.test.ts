@@ -29,7 +29,7 @@ vi.mock("@fiance/sdk", () => ({
   ownerEnsureSpaceKeyring: (...args: unknown[]) => mockOwnerEnsureSpaceKeyring(...args),
   readSpaces: (...args: unknown[]) => mockReadSpaces(...args),
   writeSpaces: (...args: unknown[]) => mockWriteSpaces(...args),
-  buildSpace: (...args: unknown[]) => mockBuildSpace(...args),
+  buildSpace: (spaceId: string, name: string) => mockBuildSpace(spaceId, name),
 }));
 
 // space-provision now calls the Zustand store action (not updateWeddingEntry directly)
@@ -65,6 +65,7 @@ const session = {
 const freshWedding: WeddingRegistryEntry = {
   id: "w1",
   label: "Notre mariage",
+  dbFileName: "w1.db",
   spaceId: undefined,
   seedPhrase: "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12",
   serverUrl: "https://sync.example.com",

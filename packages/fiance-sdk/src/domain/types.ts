@@ -102,6 +102,30 @@ export type WeddingEventType =
   | "BRUNCH"
   | "OTHER";
 
+export type CeremonyItemKind =
+  | "ENTRANCE"
+  | "READING"
+  | "SONG"
+  | "PRAYER"
+  | "VOWS"
+  | "RINGS"
+  | "BLESSING"
+  | "HOMILY"
+  | "PROCESSION"
+  | "OTHER";
+
+export type PlaylistMoment =
+  | "ARRIVAL"
+  | "CEREMONY"
+  | "COCKTAIL"
+  | "ENTRANCE"
+  | "FIRST_DANCE"
+  | "DINNER"
+  | "PARTY"
+  | "CAKE"
+  | "EXIT"
+  | "OTHER";
+
 export type MealChoice = "STANDARD" | "VEGETARIAN" | "VEGAN" | "CHILD" | "CUSTOM";
 
 export type CommunicationChannel = "EMAIL" | "POSTAL" | "SMS" | "WHATSAPP" | "OTHER";
@@ -265,6 +289,32 @@ export const WEDDING_EVENT_TYPE_LABELS: Record<WeddingEventType, string> = {
   DINNER: "planning:events.type.DINNER",
   BRUNCH: "planning:events.type.BRUNCH",
   OTHER: "planning:events.type.OTHER",
+};
+
+export const CEREMONY_ITEM_KIND_LABELS: Record<CeremonyItemKind, string> = {
+  ENTRANCE: "planning:ceremony.kinds.ENTRANCE",
+  READING: "planning:ceremony.kinds.READING",
+  SONG: "planning:ceremony.kinds.SONG",
+  PRAYER: "planning:ceremony.kinds.PRAYER",
+  VOWS: "planning:ceremony.kinds.VOWS",
+  RINGS: "planning:ceremony.kinds.RINGS",
+  BLESSING: "planning:ceremony.kinds.BLESSING",
+  HOMILY: "planning:ceremony.kinds.HOMILY",
+  PROCESSION: "planning:ceremony.kinds.PROCESSION",
+  OTHER: "planning:ceremony.kinds.OTHER",
+};
+
+export const PLAYLIST_MOMENT_LABELS: Record<PlaylistMoment, string> = {
+  ARRIVAL: "planning:music.moments.ARRIVAL",
+  CEREMONY: "planning:music.moments.CEREMONY",
+  COCKTAIL: "planning:music.moments.COCKTAIL",
+  ENTRANCE: "planning:music.moments.ENTRANCE",
+  FIRST_DANCE: "planning:music.moments.FIRST_DANCE",
+  DINNER: "planning:music.moments.DINNER",
+  PARTY: "planning:music.moments.PARTY",
+  CAKE: "planning:music.moments.CAKE",
+  EXIT: "planning:music.moments.EXIT",
+  OTHER: "planning:music.moments.OTHER",
 };
 
 export const MEAL_CHOICE_LABELS: Record<MealChoice, string> = {

@@ -26,11 +26,11 @@ const mockWedding: Wedding = {
 };
 
 const mockDayOfItems: DayOfItem[] = [
-  { id: "1", title: "Ceremony", date: "2026-09-15", time: "14:00", endTime: "15:00", location: "Church", isPublic: true, sortOrder: 1, eventId: null, responsible: null, notes: null, createdAt: null, updatedAt: null },
-  { id: "2", title: "Lunch prep", date: "2026-09-15", time: "12:00", endTime: null, location: null, isPublic: false, sortOrder: 2, eventId: null, responsible: null, notes: null, createdAt: null, updatedAt: null },
-  { id: "3", title: "Reception", date: "2026-09-15", time: "18:00", endTime: "23:00", location: "Grand Hotel", isPublic: true, sortOrder: 3, eventId: null, responsible: null, notes: null, createdAt: null, updatedAt: null },
-  { id: "4", title: "Brunch", date: "2026-09-16", time: "10:00", endTime: "12:00", location: "Garden", isPublic: true, sortOrder: 4, eventId: null, responsible: null, notes: null, createdAt: null, updatedAt: null },
-  { id: "5", title: "Setup", date: null, time: "08:00", endTime: null, location: null, isPublic: false, sortOrder: 0, eventId: null, responsible: null, notes: null, createdAt: null, updatedAt: null },
+  { id: "1", title: "Ceremony", date: "2026-09-15", time: "14:00", endTime: "15:00", location: "Church", isPublic: true, sortOrder: 1, eventId: null, responsible: null, notes: null, completedAt: null, roleId: null, createdAt: null, updatedAt: null },
+  { id: "2", title: "Lunch prep", date: "2026-09-15", time: "12:00", endTime: null, location: null, isPublic: false, sortOrder: 2, eventId: null, responsible: null, notes: null, completedAt: null, roleId: null, createdAt: null, updatedAt: null },
+  { id: "3", title: "Reception", date: "2026-09-15", time: "18:00", endTime: "23:00", location: "Grand Hotel", isPublic: true, sortOrder: 3, eventId: null, responsible: null, notes: null, completedAt: null, roleId: null, createdAt: null, updatedAt: null },
+  { id: "4", title: "Brunch", date: "2026-09-16", time: "10:00", endTime: "12:00", location: "Garden", isPublic: true, sortOrder: 4, eventId: null, responsible: null, notes: null, completedAt: null, roleId: null, createdAt: null, updatedAt: null },
+  { id: "5", title: "Setup", date: null, time: "08:00", endTime: null, location: null, isPublic: false, sortOrder: 0, eventId: null, responsible: null, notes: null, completedAt: null, roleId: null, createdAt: null, updatedAt: null },
 ];
 
 describe("buildPublicPage", () => {

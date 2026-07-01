@@ -28,7 +28,7 @@ export function parseInlineMarkdown(text: string): TextSegment[] {
       label: match[1],
       href: normalizeHref(match[2]),
     });
-    lastIndex = match.lastIndex;
+    lastIndex = MARKDOWN_LINK_RE.lastIndex;
   }
 
   if (lastIndex < text.length) {

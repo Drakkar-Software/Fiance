@@ -4,7 +4,7 @@
  */
 
 import { Platform } from "react-native";
-import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding, VendorPayment, GuestMealSelection, WeddingEvent } from "@/db/schema";
+import type { Guest, Table, GuestGroup, Vendor, DayOfItem, Wedding, VendorPayment, GuestMealSelection, WeddingEvent, CeremonyItem, Speech, PlaylistTrack, WeddingRole } from "@/db/schema";
 import type { BudgetSummary } from "@/store/useBudgetStore";
 
 function escapeHtml(str: string): string {
@@ -322,6 +322,180 @@ export function buildPublicTimelineHtml(
   <div class="footer">Fiancé</div>
 </body>
 </html>`;
+}
+
+// ─── Ceremony booklet HTML (livret de messe) ────────────────────────────────
+
+const BOOKLET_STYLES = `
+  ${PUBLIC_STYLES}
+  body { padding: 32px 40px; }
+  .kind-eyebrow {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #C9956B;
+    text-align: center;
+    margin-top: 26px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .divider {
+    text-align: center;
+    color: #E3C9AE;
+    margin: 6px 0 14px 0;
+    font-size: 12px;
+    letter-spacing: 8px;
+  }
+  .ceremony-item-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+  }
+  .ceremony-reference {
+    text-align: center;
+    font-size: 11px;
+    color: #9CA3AF;
+    margin-top: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .ceremony-content {
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 14px auto 0;
+    max-width: 480px;
+  }
+  .ceremony-performer {
+    text-align: center;
+    font-size: 11px;
+    color: #C9956B;
+    margin-top: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+`;
+
+export function buildCeremonyBookletHtml(
+  items: CeremonyItem[],
+  wedding: Wedding | null,
+  guests: Guest[],
+  roles: WeddingRole[],
+  kindLabels: Record<string, string>,
+  labels: { programOf: string; performedBy: string },
+): string {
+  const guestMap = new Map(guests.map((g) => [g.id, `${g.firstName} ${g.lastName}`.trim()]));
+  const roleMap = new Map(roles.map((r) => [r.id, r.name]));
+  const sorted = [...items].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  const coupleNames = wedding
+    ? [wedding.partner1Name, wedding.partner2Name].filter(Boolean).join(" & ")
+    : "";
+
+  const body = sorted
+    .map((item) => {
+      const performer = item.guestId ? guestMap.get(item.guestId) ?? item.performerName : item.performerName;
+      const roleName = item.roleId ? roleMap.get(item.roleId) : null;
+      const performerLine = performer
+        ? `<div class="ceremony-performer">${escapeHtml(labels.performedBy)} ${escapeHtml(performer)}${roleName ? ` — ${escapeHtml(roleName)}` : ""}</div>`
+        : "";
+      const referenceLine = item.reference ? `<div class="ceremony-reference">${escapeHtml(item.reference)}</div>` : "";
+      const contentBlock = item.content
+        ? `<div class="ceremony-content">${escapeHtml(item.content).replace(/\n/g, "<br/>")}</div>`
+        : "";
+      return `
+    <div class="kind-eyebrow">${escapeHtml(kindLabels[item.kind] ?? item.kind)}</div>
+    <div class="divider">✦</div>
+    <div class="ceremony-item-title">${escapeHtml(item.title)}</div>
+    ${referenceLine}
+    ${contentBlock}
+    ${performerLine}`;
+    })
+    .join("");
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>${BOOKLET_STYLES}</style></head>
+<body>
+  <div class="header">
+    <div class="subtitle">${escapeHtml(labels.programOf)}</div>
+    <div class="couple">${escapeHtml(coupleNames || "—")}</div>
+  </div>
+  ${body}
+  <div class="footer">Fiancé</div>
+</body>
+</html>`;
+}
+
+// ─── DJ / witness pack HTML (speeches + playlist) ───────────────────────────
+
+export function buildDjWitnessPackHtml(
+  speeches: Speech[],
+  tracks: PlaylistTrack[],
+  dayOfItems: DayOfItem[],
+  djVendor: Vendor | null,
+  guests: Guest[],
+  roles: WeddingRole[],
+  momentLabels: Record<string, string>,
+): string {
+  const guestMap = new Map(guests.map((g) => [g.id, `${g.firstName} ${g.lastName}`.trim()]));
+  const roleMap = new Map(roles.map((r) => [r.id, r.name]));
+  const dayOfMap = new Map(dayOfItems.map((d) => [d.id, d.time]));
+
+  const speechRows = [...speeches]
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+    .map((s, i) => {
+      const speaker = s.guestId ? guestMap.get(s.guestId) ?? s.speakerName : s.speakerName;
+      const roleName = s.roleId ? roleMap.get(s.roleId) : null;
+      const cueTime = s.dayOfItemId ? dayOfMap.get(s.dayOfItemId) : null;
+      return `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${escapeHtml(s.title ?? "")}</td>
+      <td>${speaker ? escapeHtml(speaker) : ""}${roleName ? ` (${escapeHtml(roleName)})` : ""}</td>
+      <td>${s.durationMin != null ? `${s.durationMin} min` : ""}</td>
+      <td>${cueTime ? escapeHtml(cueTime) : ""}</td>
+    </tr>`;
+    })
+    .join("");
+
+  const byMoment = new Map<string, PlaylistTrack[]>();
+  for (const t of tracks) {
+    const list = byMoment.get(t.moment) ?? [];
+    list.push(t);
+    byMoment.set(t.moment, list);
+  }
+
+  const playlistSections = [...byMoment.entries()]
+    .map(([moment, momentTracks]) => {
+      const rows = [...momentTracks]
+        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        .map(
+          (t) => `
+    <tr>
+      <td>${t.mustPlay ? "★ " : ""}${escapeHtml(t.title)}</td>
+      <td>${t.artist ? escapeHtml(t.artist) : ""}</td>
+      <td>${t.notes ? escapeHtml(t.notes) : ""}</td>
+    </tr>`,
+        )
+        .join("");
+      return `
+    <h2>${escapeHtml(momentLabels[moment] ?? moment)}</h2>
+    <table><thead><tr><th>Titre</th><th>Artiste</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`;
+    })
+    .join("");
+
+  const djContact = djVendor
+    ? `<p><strong>${escapeHtml(djVendor.name)}</strong>${djVendor.contactName ? ` — ${escapeHtml(djVendor.contactName)}` : ""}${djVendor.phone ? ` · ${escapeHtml(djVendor.phone)}` : ""}${djVendor.email ? ` · ${escapeHtml(djVendor.email)}` : ""}</p>`
+    : "";
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${BASE_STYLES}</style></head><body>
+    <h1>Discours &amp; musique</h1>
+    ${djContact}
+    <h2>Discours</h2>
+    <table><thead><tr><th>#</th><th>Titre</th><th>Intervenant</th><th>Durée</th><th>Heure</th></tr></thead><tbody>${speechRows}</tbody></table>
+    <h2>Playlist</h2>
+    ${playlistSections}
+    <div class="footer">Exporté depuis Fiancé</div>
+  </body></html>`;
 }
 
 // ─── Day-of timeline HTML ────────────────────────────────────────────────────

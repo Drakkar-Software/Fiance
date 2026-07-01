@@ -89,6 +89,7 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     vendorPayments: [{ id: 'vp1', vendorId: 'v1', amount: 500 } as never],
     accommodations: [],
     gifts: [{ id: 'gift1', title: 'Cadeau' } as never],
+    contributors: [],
     invitationTypes: [{ id: 'it1', name: 'Cérémonie' } as never],
     taskCategories: [{ id: 'tc1', name: 'Admin' } as never],
     tasks: [{ id: 'task1', categoryId: 'tc1', title: 'Réserver' } as never],
@@ -106,6 +107,9 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     documents: [{ id: 'doc1', ownerType: 'VENDOR', ownerId: 'v1', label: 'Devis', fileName: 'devis.pdf', mimeType: 'application/pdf', localUri: 'file:///d.pdf', fileSize: 100, uploadedAt: null, notes: null, createdAt: null, updatedAt: null } as never],
     legalMilestones: [{ id: 'lm1', type: 'CIVIL_APPOINTMENT', title: 'RDV mairie', dueDate: null, completedDate: null, status: 'TODO', location: null, notes: null, documentIds: null, reminderDaysBefore: null, createdAt: null, updatedAt: null } as never],
     honeymoonPlans: [{ id: 'hp1', destination: 'Toscane', startDate: null, endDate: null, budgetTarget: null, spentAmount: null, notes: null, itinerary: null, createdAt: null, updatedAt: null } as never],
+    ceremonyItems: [],
+    speeches: [],
+    playlistTracks: [],
     ...overrides,
   };
 }
