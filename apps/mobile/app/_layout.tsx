@@ -41,7 +41,7 @@ import { View, ActivityIndicator, Text } from "react-native-css/components";
 import { Stack, useSegments, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ForgeThemeProvider } from "@drakkar.software/seahorse/theme";
+import { ForgeThemeProvider } from "@fiance/ui/theme";
 import { theme as GP } from "@/lib/theme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLockEnabled } from "@/lib/app-lock";

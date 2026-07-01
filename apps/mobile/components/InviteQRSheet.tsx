@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Pressable, Text, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { shareLink } from "@/lib/share";
-import { Sheet } from "@drakkar.software/seahorse/components";
+import { Sheet } from "@fiance/ui/components";
 import { AlertCircle, Link2 } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
 import { theme } from "@/lib/theme";

@@ -4,7 +4,7 @@ import { useWindowDimensions } from "react-native";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useGuestsStore } from "@/store/useGuestsStore";
-import { Sheet } from "@drakkar.software/seahorse/components";
+import { Sheet } from "@fiance/ui/components";
 
 interface CompanionPickerModalProps {
   visible: boolean;

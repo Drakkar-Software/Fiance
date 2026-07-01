@@ -3,7 +3,18 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"],
-      "@fiance/sdk": ["../../packages/fiance-sdk/src/index.ts"]
+      "@fiance/sdk": ["../../packages/fiance-sdk/src/index.ts"],
+      "@fiance/ui": ["../../packages/fiance-ui/src/index.ts"],
+      "@fiance/ui/components": ["../../packages/fiance-ui/src/components/index.ts"],
+      "@fiance/ui/theme": ["../../packages/fiance-ui/src/theme/index.ts"],
+      "@fiance/ui/garden-theme": ["../../packages/fiance-ui/src/garden-theme.ts"],
+      "@fiance/ui/utils/file-export": ["../../packages/fiance-ui/src/utils/file-export.ts"],
+      "@fiance/ui/utils/app-lock": ["../../packages/fiance-ui/src/utils/app-lock.ts"],
+      "@fiance/ui/utils/secure-store": ["../../packages/fiance-ui/src/utils/secure-store.ts"],
+      "@fiance/ui/utils/kv-storage": ["../../packages/fiance-ui/src/utils/kv-storage.ts"],
+      "@fiance/ui/utils/links": ["../../packages/fiance-ui/src/utils/links.ts"],
+      "@fiance/ui/utils/pwa-install": ["../../packages/fiance-ui/src/utils/pwa-install.ts"],
+      "@fiance/ui/utils/toast": ["../../packages/fiance-ui/src/utils/toast/sonner.ts"]
     },
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM"],

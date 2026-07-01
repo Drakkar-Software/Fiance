@@ -1,1 +1,1 @@
-export * from "@drakkar.software/seahorse/utils/app-lock";
+export * from "@fiance/ui/utils/app-lock";

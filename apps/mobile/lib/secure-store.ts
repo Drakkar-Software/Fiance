@@ -1,1 +1,1 @@
-export * from "@drakkar.software/seahorse/utils/secure-store";
+export * from "@fiance/ui/utils/secure-store";

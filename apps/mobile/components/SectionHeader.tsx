@@ -1,1 +1,1 @@
-export { SectionHeader } from "@drakkar.software/seahorse/components";
+export { SectionHeader } from "@fiance/ui/components";

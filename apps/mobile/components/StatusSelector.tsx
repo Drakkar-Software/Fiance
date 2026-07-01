@@ -1,10 +1,11 @@
 import React from "react";
 import { ScrollView, Pressable } from "react-native-css/components";
-import { StatusBadge } from "@drakkar.software/seahorse/components";
+import { StatusBadge } from "@fiance/ui/components";
 
-// Local re-implementation: seahorse StatusSelector passes "rgb(165, 163, 163)" for
-// inactive badges, which when concatenated with "18" in StatusBadge produces invalid
-// CSS ("rgb(165, 163, 163)18"). Using a hex value instead makes the alpha suffix valid.
+// Local re-implementation: seahorse's StatusSelector (never vendored into @fiance/ui)
+// passes "rgb(165, 163, 163)" for inactive badges, which when concatenated with "18"
+// in StatusBadge produces invalid CSS ("rgb(165, 163, 163)18"). Using a hex value
+// instead makes the alpha suffix valid.
 const INACTIVE_COLOR = "#A5A3A3";
 
 interface StatusOption {

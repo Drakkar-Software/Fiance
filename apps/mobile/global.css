@@ -3,15 +3,15 @@
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
-@import "@drakkar.software/seahorse/tailwind-theme";
+@import "@fiance/ui/tailwind-theme";
 
-/* Class-based dark mode: required for seahorse :root.dark tokens + theme switcher */
+/* Class-based dark mode: required for seahorse-derived :root.dark tokens + theme switcher */
 @custom-variant dark (&:is(.dark *));
 
 @source "./app/**/*.{ts,tsx}";
 @source "./components/**/*.{ts,tsx}";
 @source "./components/**/*.stories.{ts,tsx}";
-@source "./node_modules/@drakkar.software/seahorse/dist/**/*.js";
+@source "../../packages/fiance-ui/src/**/*.{ts,tsx}";
 
 /* Garden Press design system — palette, fonts, tokens */
 @theme inline {

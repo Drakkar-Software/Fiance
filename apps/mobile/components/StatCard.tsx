@@ -1,1 +1,1 @@
-export { StatCard } from "@drakkar.software/seahorse/components";
+export { StatCard } from "@fiance/ui/components";

@@ -1,1 +1,1 @@
-export { DeleteButton } from "@drakkar.software/seahorse/components";
+export { DeleteButton } from "@fiance/ui/components";

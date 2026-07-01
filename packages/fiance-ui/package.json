@@ -1,0 +1,156 @@
+{
+  "name": "@fiance/ui",
+  "version": "0.1.0",
+  "description": "UI components and utilities for the Fiancé wedding planner app (vendored from @drakkar.software/seahorse).",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "source": "./src/index.ts",
+  "react-native": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "react-native": "./src/index.ts",
+      "require": "./src/index.ts",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components": {
+      "source": "./src/components/index.ts",
+      "react-native": "./src/components/index.ts",
+      "require": "./src/components/index.ts",
+      "import": "./dist/components/index.js",
+      "types": "./dist/components/index.d.ts"
+    },
+    "./theme": {
+      "source": "./src/theme/index.ts",
+      "react-native": "./src/theme/index.ts",
+      "require": "./src/theme/index.ts",
+      "import": "./dist/theme/index.js",
+      "types": "./dist/theme/index.d.ts"
+    },
+    "./garden-theme": {
+      "source": "./src/garden-theme.ts",
+      "react-native": "./src/garden-theme.ts",
+      "require": "./src/garden-theme.ts",
+      "import": "./dist/garden-theme.js",
+      "types": "./dist/garden-theme.d.ts"
+    },
+    "./utils/file-export": {
+      "source": "./src/utils/file-export.ts",
+      "react-native": "./src/utils/file-export.ts",
+      "require": "./src/utils/file-export.ts",
+      "import": "./dist/utils/file-export.js",
+      "types": "./dist/utils/file-export.d.ts"
+    },
+    "./utils/app-lock": {
+      "source": "./src/utils/app-lock.ts",
+      "react-native": "./src/utils/app-lock.ts",
+      "require": "./src/utils/app-lock.ts",
+      "import": "./dist/utils/app-lock.js",
+      "types": "./dist/utils/app-lock.d.ts"
+    },
+    "./utils/secure-store": {
+      "source": "./src/utils/secure-store.ts",
+      "react-native": "./src/utils/secure-store.ts",
+      "require": "./src/utils/secure-store.ts",
+      "import": "./dist/utils/secure-store.js",
+      "types": "./dist/utils/secure-store.d.ts"
+    },
+    "./utils/kv-storage": {
+      "source": "./src/utils/kv-storage.ts",
+      "react-native": "./src/utils/kv-storage.ts",
+      "require": "./src/utils/kv-storage.ts",
+      "import": "./dist/utils/kv-storage.js",
+      "types": "./dist/utils/kv-storage.d.ts"
+    },
+    "./utils/links": {
+      "source": "./src/utils/links.ts",
+      "react-native": "./src/utils/links.ts",
+      "require": "./src/utils/links.ts",
+      "import": "./dist/utils/links.js",
+      "types": "./dist/utils/links.d.ts"
+    },
+    "./utils/pwa-install": {
+      "source": "./src/utils/pwa-install.ts",
+      "react-native": "./src/utils/pwa-install.ts",
+      "require": "./src/utils/pwa-install.ts",
+      "import": "./dist/utils/pwa-install.js",
+      "types": "./dist/utils/pwa-install.d.ts"
+    },
+    "./utils/toast": {
+      "source": "./src/utils/toast/sonner.ts",
+      "react-native": "./src/utils/toast/sonner.ts",
+      "require": "./src/utils/toast/sonner.ts",
+      "import": "./dist/utils/toast/sonner.js",
+      "types": "./dist/utils/toast/sonner.d.ts"
+    },
+    "./tailwind-preset": {
+      "require": "./tailwind/preset.js",
+      "import": "./tailwind/preset.js"
+    },
+    "./tailwind-theme": {
+      "style": "./tailwind/theme.css",
+      "import": "./tailwind/theme.css"
+    }
+  },
+  "files": [
+    "src",
+    "dist",
+    "tailwind"
+  ],
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --skipLibCheck || true",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "peerDependencies": {
+    "react": "19.2.3",
+    "react-native": "0.86.0",
+    "nativewind": "5.0.0-preview.3",
+    "react-native-css": "^3.0.7",
+    "lucide-react-native": "^1.8.0",
+    "@expo/ui": "~57.0.1",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "date-fns": "^3.6.0",
+    "expo-local-authentication": "~57.0.0",
+    "expo-secure-store": "~57.0.0",
+    "expo-sqlite": "~57.0.0",
+    "expo-print": "~57.0.0",
+    "expo-sharing": "~57.0.1",
+    "expo-file-system": "~57.0.0",
+    "expo-document-picker": "~57.0.0",
+    "sonner": "2.0.5",
+    "sonner-native": "0.21.0",
+    "react-native-svg": "15.15.4",
+    "react-native-safe-area-context": "~5.7.0"
+  },
+  "peerDependenciesMeta": {
+    "@expo/ui": { "optional": true },
+    "@react-native-async-storage/async-storage": { "optional": true },
+    "date-fns": { "optional": true },
+    "expo-local-authentication": { "optional": true },
+    "expo-secure-store": { "optional": true },
+    "expo-sqlite": { "optional": true },
+    "expo-print": { "optional": true },
+    "expo-sharing": { "optional": true },
+    "expo-file-system": { "optional": true },
+    "expo-document-picker": { "optional": true },
+    "sonner": { "optional": true },
+    "sonner-native": { "optional": true },
+    "react-native-svg": { "optional": true },
+    "react-native-safe-area-context": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.14",
+    "tsup": "^8.0.0",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.4"
+  }
+}

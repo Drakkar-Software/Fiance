@@ -1,1 +1,1 @@
-export * from "@drakkar.software/seahorse/utils/pwa-install";
+export * from "@fiance/ui/utils/pwa-install";

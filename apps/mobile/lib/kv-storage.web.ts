@@ -2,9 +2,9 @@
  * Web stub for kv-storage — uses localStorage + in-memory cache.
  * No expo-sqlite imports (no SQLite/WASM on web).
  *
- * Mirror of @drakkar.software/seahorse kv-storage.web.ts — duplicated here
- * because seahorse's package.json exports don't expose the web build via a
- * 'browser' condition, so Metro always resolves to the native (sqlite) build.
+ * Mirror of @fiance/ui kv-storage.web.ts — duplicated here because its
+ * package.json exports don't expose the web build via a 'browser' condition,
+ * so Metro always resolves to the native (sqlite) build.
  *
  * Each wedding is namespaced in localStorage as `<dbFileName>::<key>` to
  * prevent data leaking across weddings when switching or after deletion.

@@ -1,1 +1,1 @@
-export { RatingStars } from "@drakkar.software/seahorse/components";
+export { RatingStars } from "@fiance/ui/components";

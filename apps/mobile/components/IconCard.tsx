@@ -1,1 +1,1 @@
-export { IconCard } from "@drakkar.software/seahorse/components";
+export { IconCard } from "@fiance/ui/components";

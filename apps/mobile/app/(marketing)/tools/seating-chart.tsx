@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft } from "lucide-react-native";
 import { Seo } from "@/components/Seo";
-import { exportToPdf } from "@drakkar.software/seahorse/utils/file-export";
+import { exportToPdf } from "@fiance/ui/utils/file-export";
 
 type TableShape = "round" | "rectangular";
 

@@ -13,7 +13,7 @@ module.exports = {
     "./components/**/*.stories.{ts,tsx}",
   ],
   darkMode: "class",
-  presets: [require("nativewind/preset"), require("@drakkar.software/seahorse/tailwind-preset")],
+  presets: [require("nativewind/preset"), require("@fiance/ui/tailwind-preset")],
   theme: {
     extend: {
       colors: {

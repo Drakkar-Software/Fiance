@@ -13,9 +13,6 @@ importers:
       '@babel/runtime':
         specifier: ^7.29.2
         version: 7.29.7
-      '@drakkar.software/seahorse':
-        specifier: 0.11.0
-        version: 0.11.0(b1daec16a76d7ac4f71ef9c90adc1eb6)
       '@drakkar.software/starfish-client':
         specifier: 3.0.0-alpha.51
         version: 3.0.0-alpha.51(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))
@@ -67,6 +64,9 @@ importers:
       '@fiance/sdk':
         specifier: workspace:*
         version: link:../../packages/fiance-sdk
+      '@fiance/ui':
+        specifier: workspace:*
+        version: link:../../packages/fiance-ui
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.80.0(react@19.2.3))
@@ -345,6 +345,85 @@ importers:
       vitest:
         specifier: ^4.1.4
         version: 4.1.9(@types/node@22.20.0)(vite@8.1.0(@types/node@22.20.0)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
+
+  packages/fiance-ui:
+    dependencies:
+      '@expo/ui':
+        specifier: ~57.0.1
+        version: 57.0.1(@babel/core@7.29.7)(@types/react@19.2.17)(expo@57.0.1)(react-dom@19.2.3(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      '@react-native-async-storage/async-storage':
+        specifier: ^2.2.0
+        version: 2.2.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
+      clsx:
+        specifier: ^2.1.0
+        version: 2.1.1
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
+      expo-document-picker:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)
+      expo-file-system:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
+      expo-local-authentication:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)
+      expo-print:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
+      expo-secure-store:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)
+      expo-sharing:
+        specifier: ~57.0.1
+        version: 57.0.1(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)
+      expo-sqlite:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      lucide-react-native:
+        specifier: ^1.8.0
+        version: 1.21.0(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      nativewind:
+        specifier: 5.0.0-preview.3
+        version: 5.0.0-preview.3(react-native-css@3.0.7(@expo/metro-config@57.0.2(expo@57.0.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(tailwindcss@4.3.1)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.86.0
+        version: 0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
+      react-native-css:
+        specifier: ^3.0.7
+        version: 3.0.7(@expo/metro-config@57.0.2(expo@57.0.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      react-native-safe-area-context:
+        specifier: ~5.7.0
+        version: 5.7.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      react-native-svg:
+        specifier: 15.15.4
+        version: 15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      sonner:
+        specifier: 2.0.5
+        version: 2.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      sonner-native:
+        specifier: 0.21.0
+        version: 0.21.0(5283287ecce7ec9bf8c2120a700d5f25)
+      tailwind-merge:
+        specifier: ^3.0.0
+        version: 3.6.0
+    devDependencies:
+      '@types/react':
+        specifier: ~19.2.14
+        version: 19.2.17
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.9.0)
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.9(@types/node@25.9.4)(vite@8.1.0(@types/node@25.9.4)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
 
 packages:
 
@@ -742,79 +821,6 @@ packages:
 
   '@craftzdog/react-native-buffer@6.1.2':
     resolution: {integrity: sha512-KV1HitN05FHLLDG7Zb/yftDsa+mKBYBzFMQ0PMldvUicq6vWOtAvz9mDavt7Fzozh+WNqORE+yFDkkdWysZ/SA==}
-
-  '@drakkar.software/seahorse@0.11.0':
-    resolution: {integrity: sha512-OuQMexXdOJALPt8k+I5z9txm4bewI2QgVfoZYYalrYul+7ycuUEyWBR2EVQx7VJg8qKUe4+L00JxMFKzg0lfFw==}
-    peerDependencies:
-      '@expo/html-elements': ^57.0.0
-      '@expo/material-symbols': ^0.1.1
-      '@expo/ui': 57.0.1
-      '@legendapp/list': ^2.0.19
-      '@legendapp/motion': ^2.5.3
-      '@react-native-async-storage/async-storage': ^2.0.0
-      date-fns: ^3.6.0
-      expo-document-picker: ^57.0.0
-      expo-file-system: ^57.0.0
-      expo-haptics: ^57.0.0
-      expo-local-authentication: ^57.0.0
-      expo-print: ^57.0.0
-      expo-secure-store: ^57.0.0
-      expo-sharing: ^57.0.1
-      expo-sqlite: ^57.0.0
-      expo-updates: ^57.0.4
-      lucide-react-native: ^1.8.0
-      nativewind: ^5.0.0-preview.3
-      react: 19.2.3
-      react-native: 0.86.0
-      react-native-css: ^3.0.6
-      react-native-reanimated: 4.5.0
-      react-native-svg: ^15.0.0
-      react-native-worklets: ^0.10.0
-      sonner: ^2.0.0
-      sonner-native: ^0.20.0
-    peerDependenciesMeta:
-      '@expo/html-elements':
-        optional: true
-      '@expo/material-symbols':
-        optional: true
-      '@expo/ui':
-        optional: true
-      '@legendapp/list':
-        optional: true
-      '@legendapp/motion':
-        optional: true
-      '@react-native-async-storage/async-storage':
-        optional: true
-      date-fns:
-        optional: true
-      expo-document-picker:
-        optional: true
-      expo-file-system:
-        optional: true
-      expo-haptics:
-        optional: true
-      expo-local-authentication:
-        optional: true
-      expo-print:
-        optional: true
-      expo-secure-store:
-        optional: true
-      expo-sharing:
-        optional: true
-      expo-sqlite:
-        optional: true
-      expo-updates:
-        optional: true
-      react-native-reanimated:
-        optional: true
-      react-native-svg:
-        optional: true
-      react-native-worklets:
-        optional: true
-      sonner:
-        optional: true
-      sonner-native:
-        optional: true
 
   '@drakkar.software/starfish-client@3.0.0-alpha.50':
     resolution: {integrity: sha512-pbAQcQgyUNKzXYvi0oFtBR5raULnGnAFEcDeSnWoaLfoKr8tyPSAj4otT8uB0aZlB2sqPbmEi3zC50C3kOxvQA==}
@@ -7129,37 +7135,6 @@ snapshots:
       - react
       - react-native
 
-  '@drakkar.software/seahorse@0.11.0(b1daec16a76d7ac4f71ef9c90adc1eb6)':
-    dependencies:
-      clsx: 2.1.1
-      lucide-react-native: 1.21.0(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      nativewind: 5.0.0-preview.3(react-native-css@3.0.7(@expo/metro-config@57.0.2(expo@57.0.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(tailwindcss@4.3.1)
-      react: 19.2.3
-      react-native: 0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
-      react-native-css: 3.0.7(@expo/metro-config@57.0.2(expo@57.0.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      tailwind-merge: 3.6.0
-    optionalDependencies:
-      '@expo/html-elements': 57.0.0(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      '@expo/ui': 57.0.1(@babel/core@7.29.7)(@types/react@19.2.17)(expo@57.0.1)(react-dom@19.2.3(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      '@legendapp/list': 2.0.19(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      '@legendapp/motion': 2.5.3(nativewind@5.0.0-preview.3(react-native-css@3.0.7(@expo/metro-config@57.0.2(expo@57.0.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(tailwindcss@4.3.1))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      '@react-native-async-storage/async-storage': 2.2.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
-      date-fns: 3.6.0
-      expo-document-picker: 57.0.0(expo@57.0.1)
-      expo-file-system: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
-      expo-haptics: 57.0.0(expo@57.0.1)
-      expo-local-authentication: 57.0.0(expo@57.0.1)
-      expo-print: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))
-      expo-secure-store: 57.0.0(expo@57.0.1)
-      expo-sharing: 57.0.1(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)
-      expo-sqlite: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      expo-updates: 57.0.4(expo-dev-client@57.0.3(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)))(expo@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      react-native-reanimated: 4.5.0(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      react-native-svg: 15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      react-native-worklets: 0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      sonner: 2.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      sonner-native: 0.21.0(5283287ecce7ec9bf8c2120a700d5f25)
-
   '@drakkar.software/starfish-client@3.0.0-alpha.50(react@19.2.3)(zustand@5.0.14(@types/react@19.2.17)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)))':
     dependencies:
       '@drakkar.software/starfish-protocol': 3.0.0-alpha.50
@@ -12980,6 +12955,34 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.15
       typescript: 5.9.3
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
+  tsup@8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.9.0):
+    dependencies:
+      bundle-require: 5.1.0(esbuild@0.27.7)
+      cac: 6.7.14
+      chokidar: 4.0.3
+      consola: 3.4.2
+      debug: 4.4.3
+      esbuild: 0.27.7
+      fix-dts-default-cjs-exports: 1.0.1
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(yaml@2.9.0)
+      resolve-from: 5.0.0
+      rollup: 4.62.2
+      source-map: 0.7.6
+      sucrase: 3.35.1
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.17
+      tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.15
+      typescript: 6.0.3
     transitivePeerDependencies:
       - jiti
       - supports-color

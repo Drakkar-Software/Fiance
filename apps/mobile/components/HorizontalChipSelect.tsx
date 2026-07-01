@@ -1,1 +1,1 @@
-export { HorizontalChipSelect } from "@drakkar.software/seahorse/components";
+export { HorizontalChipSelect } from "@fiance/ui/components";

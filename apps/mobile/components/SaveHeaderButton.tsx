@@ -1,1 +1,1 @@
-export { SaveHeaderButton } from "@drakkar.software/seahorse/components";
+export { SaveHeaderButton } from "@fiance/ui/components";

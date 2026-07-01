@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
-    "@drakkar.software/seahorse": "0.11.0",
     "@drakkar.software/starfish-client": "3.0.0-alpha.51",
     "@drakkar.software/starfish-identities": "3.0.0-alpha.50",
     "@drakkar.software/starfish-keyring": "3.0.0-alpha.59",
@@ -58,6 +57,7 @@
     "@expo/log-box": "~56.0.13",
     "@expo/ui": "~57.0.1",
     "@fiance/sdk": "workspace:*",
+    "@fiance/ui": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
     "@legendapp/list": "^2.0.19",
     "@legendapp/motion": "^2.5.3",

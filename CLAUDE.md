@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Monorepo layout
 
-This is a **pnpm workspace** with two packages:
+This is a **pnpm workspace** with three packages:
 
 | Package | Path | Description |
 |---------|------|-------------|
 | `fiance` | `apps/mobile/` | Expo app (iOS · Android · Web) |
 | `@fiance/sdk` | `packages/fiance-sdk/` | Pure headless business logic (no RN deps) |
+| `@fiance/ui` | `packages/fiance-ui/` | UI components, primitives, and utils (RN/Expo) |
 
 ## Commands
 
@@ -31,6 +32,7 @@ pnpm --filter fiance storybook      # Start Storybook dev server (localhost:6006
 Tests use Vitest. Test files:
 - `apps/mobile/__tests__/` — integration tests that depend on RN mocks
 - `packages/fiance-sdk/src/**/*.test.ts` — pure-logic unit tests (no RN)
+- `packages/fiance-ui/src/**/*.test.ts` — none yet (`passWithNoTests` keeps the recursive `pnpm test` green)
 
 ## Production domain
 
@@ -83,6 +85,15 @@ Import alias: `@fiance/sdk` (declared as `workspace:*` dep in `apps/mobile`; Typ
 
 Currently `useGuestsStore` delegates to SDK reducers. Budget/planning/vendor-config/registry libs have SDK copies but the app still calls its own local copies — this is a known TODO.
 
+### `@fiance/ui` — vendored UI components
+
+`packages/fiance-ui/` holds RN/Expo UI code the app depends on, resolved from source in Metro the same way as `@fiance/sdk` (source/`react-native`/`require` export conditions → `./src/...`; `import`/`types` → the tsup `dist/` build for non-RN consumers). Two origins:
+
+- **Vendored from `@drakkar.software/seahorse`** (the external registry package this app used to depend on, now fully removed): `src/components/{ui,pin,sheets,form}/`, `src/primitives/`, `src/theme/` (`ForgeThemeProvider`), `src/utils/{app-lock,secure-store,kv-storage,links,pwa-install,file-export,cn,pin-helpers}`, `src/utils/toast/`, `tailwind/{preset.js,theme.css}`. Only the subset the app actually uses was copied (not the whole seahorse package) — see `src/components/index.ts` for the exact re-export list. `Sheet` (`src/components/sheets/SheetShell.tsx`) was recovered from seahorse's 0.11.0 release since the 0.12.0 working tree it was vendored from had dropped it.
+- **Garden Press primitives moved from `apps/mobile/components/`**: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`, `ScriptButton`, `PageHeader`, `FAB`, `SearchBar`, `ProgressBar`, `FilterTabs`, `MoneyDisplay` live at `src/components/*.tsx` (flat, sibling to the seahorse-derived subdirs). `src/garden-theme.ts` is the Garden Press hex-token source of truth (moved from `apps/mobile/lib/theme.ts`).
+
+Every `apps/mobile/components/{Name}.tsx` for a moved/vendored component is now a one-line re-export (`export { Name } from "@fiance/ui/components";`), so existing `@/components/Name` import paths across the app didn't need to change. `apps/mobile/lib/theme.ts` is likewise `export { theme } from "@fiance/ui/garden-theme";`. Domain-specific or app-shell components (`PriorityBadge`, `DesktopShell`/`DesktopSidebar`, `OfflineBanner`, `StackMenu`, `Seo.*`, `QRScannerScreen`, `UpdateBanner`, `SegmentedControl`) stayed in `apps/mobile/components/` — either wedding-domain-typed or coupled to app stores/routing.
+
 ### Starfish sync — encryption contract
 
 The `wedding` collection uses **client-side AES-256-GCM encryption**. The server stores an opaque `{ "_encrypted": "<base64>" }` blob and never sees plaintext. All server collections are configured with `encryption: "none"` (server pass-through; encryption is handled entirely on the client by `SyncManager`).
@@ -125,7 +136,7 @@ Run `pnpm test` — `blog-jsonld.test.ts` asserts every slug has valid `datePubl
 
 ### Styling
 
-NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`). Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `apps/mobile/lib/theme.ts` exports hex literals for JS consumers. Shared UI components in `apps/mobile/components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.
+NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`), imported from `@fiance/ui/tailwind-theme`. Garden Press palette: primary clay `#b96a4a`, accent olive `#6e7a4a` / mustard `#c9922f`, paper `#f2ece0` bg, card `#fdfaf1` bg, ink `#2a2418`. Type stack: Fraunces (Display component), Caveat (Script component), Inter (Label + body). `apps/mobile/lib/theme.ts` re-exports hex literals from `packages/fiance-ui/src/garden-theme.ts` for JS consumers. Shared UI components live in `packages/fiance-ui/src/components/` (see "`@fiance/ui` — vendored UI components" above) and are re-exported through thin wrappers in `apps/mobile/components/` — notably `FormSection.tsx` exports form building blocks (SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect). Primitive GP components: `Display`, `Script`, `Label`, `Card`, `Chip`, `Avatar`, `Sprig`, `Postit`, `Underline`, `Seal`.
 
 ### CI/CD
 

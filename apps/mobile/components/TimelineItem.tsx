@@ -1,1 +1,1 @@
-export { TimelineItem } from "@drakkar.software/seahorse/components";
+export { TimelineItem } from "@fiance/ui/components";

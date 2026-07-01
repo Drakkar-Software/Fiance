@@ -1,1 +1,1 @@
-export { CollapsibleSection } from "@drakkar.software/seahorse/components";
+export { CollapsibleSection } from "@fiance/ui/components";

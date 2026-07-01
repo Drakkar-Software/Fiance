@@ -7,7 +7,7 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
-import { Sheet } from "@drakkar.software/seahorse/components";
+import { Sheet } from "@fiance/ui/components";
 import type { Table, Guest } from "@/db/schema";
 
 const CANVAS_W = 700;

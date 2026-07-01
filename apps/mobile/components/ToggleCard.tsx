@@ -1,1 +1,1 @@
-export { ToggleCard } from "@drakkar.software/seahorse/components";
+export { ToggleCard } from "@fiance/ui/components";

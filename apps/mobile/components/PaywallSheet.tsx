@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Sheet } from "@drakkar.software/seahorse/components";
+import { Sheet } from "@fiance/ui/components";
 import { Sparkles } from "lucide-react-native";
 import { purchasePremium, restorePurchases, fetchPremiumProduct, PREMIUM_SKU } from "@/lib/iap";
 import { redirectToCheckout } from "@/lib/stripe";

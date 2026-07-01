@@ -6,20 +6,20 @@ import {
   InputRow,
   ToggleRow,
   ChipSelect,
-  DateRow as SeahorseDateRow,
-  TimeRow as SeahorseTimeRow,
-} from "@drakkar.software/seahorse/components";
+  DateRow as UiDateRow,
+  TimeRow as UiTimeRow,
+} from "@fiance/ui/components";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
 import type { ComponentProps } from "react";
 
 export { SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect };
 
-type DateRowProps = ComponentProps<typeof SeahorseDateRow>;
+type DateRowProps = ComponentProps<typeof UiDateRow>;
 
 export function DateRow({ dateLocale, selectDateLabel, todayLabel, clearLabel, ...props }: DateRowProps) {
   const { t } = useTranslation("common");
   return (
-    <SeahorseDateRow
+    <UiDateRow
       dateLocale={dateLocale ?? getDateLocale()}
       selectDateLabel={selectDateLabel ?? t("selectDate")}
       todayLabel={todayLabel ?? t("today")}
@@ -29,12 +29,12 @@ export function DateRow({ dateLocale, selectDateLabel, todayLabel, clearLabel, .
   );
 }
 
-type TimeRowProps = ComponentProps<typeof SeahorseTimeRow>;
+type TimeRowProps = ComponentProps<typeof UiTimeRow>;
 
 export function TimeRow({ selectTimeLabel, confirmLabel, clearLabel, hoursLabel, minutesLabel, ...props }: TimeRowProps) {
   const { t } = useTranslation("common");
   return (
-    <SeahorseTimeRow
+    <UiTimeRow
       selectTimeLabel={selectTimeLabel ?? t("selectTime")}
       confirmLabel={confirmLabel ?? t("confirm")}
       clearLabel={clearLabel ?? t("clear")}

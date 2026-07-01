@@ -1,0 +1,513 @@
+/*
+ * @fiance/ui semantic color token theme — Tailwind CSS v4
+ *
+ * Usage in your app's global.css:
+ *   @import "@fiance/ui/tailwind-theme";
+ *
+ * Override brand colors in your :root after the import:
+ *   :root { --color-primary-500: 59 130 246; }
+ *   :root.dark { --color-primary-500: 96 165 250; }
+ *
+ * All values are RGB triplets (no rgb() wrapper) for Tailwind opacity modifier support.
+ */
+
+@layer theme {
+  :root {
+    /* Primary — default: blue-500 scale. Override with your brand color. */
+    --color-primary-0: 239 246 255;
+    --color-primary-50: 219 234 254;
+    --color-primary-100: 191 219 254;
+    --color-primary-200: 147 197 253;
+    --color-primary-300: 96 165 250;
+    --color-primary-400: 59 130 246;
+    --color-primary-500: 37 99 235;
+    --color-primary-600: 29 78 216;
+    --color-primary-700: 30 64 175;
+    --color-primary-800: 30 58 138;
+    --color-primary-900: 23 37 84;
+    --color-primary-950: 18 27 63;
+
+    /* Secondary — default: slate scale. Override with your secondary brand color. */
+    --color-secondary-0: 248 250 252;
+    --color-secondary-50: 241 245 249;
+    --color-secondary-100: 226 232 240;
+    --color-secondary-200: 203 213 225;
+    --color-secondary-300: 148 163 184;
+    --color-secondary-400: 100 116 139;
+    --color-secondary-500: 71 85 105;
+    --color-secondary-600: 51 65 85;
+    --color-secondary-700: 30 41 59;
+    --color-secondary-800: 15 23 42;
+    --color-secondary-900: 10 15 30;
+    --color-secondary-950: 5 8 18;
+
+    /* Tertiary — amber scale */
+    --color-tertiary-0: 255 251 235;
+    --color-tertiary-50: 254 243 199;
+    --color-tertiary-100: 253 230 138;
+    --color-tertiary-200: 252 211 77;
+    --color-tertiary-300: 251 191 36;
+    --color-tertiary-400: 245 158 11;
+    --color-tertiary-500: 217 119 6;
+    --color-tertiary-600: 180 83 9;
+    --color-tertiary-700: 146 64 14;
+    --color-tertiary-800: 120 53 15;
+    --color-tertiary-900: 78 35 12;
+    --color-tertiary-950: 55 24 9;
+
+    /* Error — red scale */
+    --color-error-0: 254 242 242;
+    --color-error-50: 254 226 226;
+    --color-error-100: 254 202 202;
+    --color-error-200: 252 165 165;
+    --color-error-300: 248 113 113;
+    --color-error-400: 239 68 68;
+    --color-error-500: 220 38 38;
+    --color-error-600: 185 28 28;
+    --color-error-700: 153 27 27;
+    --color-error-800: 127 29 29;
+    --color-error-900: 83 19 19;
+    --color-error-950: 63 14 14;
+
+    /* Success — green scale */
+    --color-success-0: 240 253 244;
+    --color-success-50: 220 252 231;
+    --color-success-100: 187 247 208;
+    --color-success-200: 134 239 172;
+    --color-success-300: 74 222 128;
+    --color-success-400: 34 197 94;
+    --color-success-500: 22 163 74;
+    --color-success-600: 21 128 61;
+    --color-success-700: 22 101 52;
+    --color-success-800: 20 83 45;
+    --color-success-900: 14 59 31;
+    --color-success-950: 7 37 21;
+
+    /* Warning — orange scale */
+    --color-warning-0: 255 247 237;
+    --color-warning-50: 255 237 213;
+    --color-warning-100: 254 215 170;
+    --color-warning-200: 253 186 116;
+    --color-warning-300: 251 146 60;
+    --color-warning-400: 249 115 22;
+    --color-warning-500: 234 88 12;
+    --color-warning-600: 194 65 12;
+    --color-warning-700: 154 52 18;
+    --color-warning-800: 124 45 18;
+    --color-warning-900: 80 29 13;
+    --color-warning-950: 60 22 10;
+
+    /* Info — sky scale */
+    --color-info-0: 240 249 255;
+    --color-info-50: 224 242 254;
+    --color-info-100: 186 230 253;
+    --color-info-200: 125 211 252;
+    --color-info-300: 56 189 248;
+    --color-info-400: 14 165 233;
+    --color-info-500: 2 132 199;
+    --color-info-600: 3 105 161;
+    --color-info-700: 7 89 133;
+    --color-info-800: 12 74 110;
+    --color-info-900: 8 47 73;
+    --color-info-950: 5 33 53;
+
+    /* Typography — neutral scale */
+    --color-typography-0: 254 254 255;
+    --color-typography-50: 245 245 245;
+    --color-typography-100: 229 229 229;
+    --color-typography-200: 219 219 220;
+    --color-typography-300: 212 212 212;
+    --color-typography-400: 163 163 163;
+    --color-typography-500: 140 140 140;
+    --color-typography-600: 115 115 115;
+    --color-typography-700: 82 82 82;
+    --color-typography-800: 64 64 64;
+    --color-typography-900: 38 38 39;
+    --color-typography-950: 23 23 23;
+
+    /* Outline — neutral scale */
+    --color-outline-0: 253 254 254;
+    --color-outline-50: 243 243 243;
+    --color-outline-100: 230 230 230;
+    --color-outline-200: 221 220 219;
+    --color-outline-300: 211 211 211;
+    --color-outline-400: 165 163 163;
+    --color-outline-500: 140 141 141;
+    --color-outline-600: 115 116 116;
+    --color-outline-700: 83 82 82;
+    --color-outline-800: 65 65 65;
+    --color-outline-900: 39 38 36;
+    --color-outline-950: 26 23 23;
+
+    /* Background */
+    --color-background-0: 255 255 255;
+    --color-background-50: 255 255 255;
+    --color-background-100: 255 255 255;
+    --color-background-200: 255 255 255;
+    --color-background-300: 255 255 255;
+    --color-background-400: 255 255 255;
+    --color-background-500: 255 255 255;
+    --color-background-600: 255 255 255;
+    --color-background-700: 255 255 255;
+    --color-background-800: 255 255 255;
+    --color-background-900: 247 249 250;
+    --color-background-950: 247 249 255;
+
+    /* Background semantic */
+    --color-background-error: 254 241 241;
+    --color-background-warning: 255 243 234;
+    --color-background-success: 237 252 242;
+    --color-background-muted: 247 248 247;
+    --color-background-info: 235 248 254;
+
+    /* Focus Ring Indicator */
+    --color-indicator-primary: 55 55 55;
+    --color-indicator-info: 83 153 236;
+    --color-indicator-error: 185 28 28;
+  }
+
+  :root.dark {
+    /* Primary — invert to light scale in dark mode */
+    --color-primary-0: 18 27 63;
+    --color-primary-50: 23 37 84;
+    --color-primary-100: 30 58 138;
+    --color-primary-200: 30 64 175;
+    --color-primary-300: 29 78 216;
+    --color-primary-400: 37 99 235;
+    --color-primary-500: 96 165 250;
+    --color-primary-600: 147 197 253;
+    --color-primary-700: 191 219 254;
+    --color-primary-800: 219 234 254;
+    --color-primary-900: 239 246 255;
+    --color-primary-950: 249 252 255;
+
+    /* Secondary */
+    --color-secondary-0: 5 8 18;
+    --color-secondary-50: 10 15 30;
+    --color-secondary-100: 15 23 42;
+    --color-secondary-200: 30 41 59;
+    --color-secondary-300: 51 65 85;
+    --color-secondary-400: 71 85 105;
+    --color-secondary-500: 100 116 139;
+    --color-secondary-600: 148 163 184;
+    --color-secondary-700: 203 213 225;
+    --color-secondary-800: 226 232 240;
+    --color-secondary-900: 241 245 249;
+    --color-secondary-950: 248 250 252;
+
+    /* Tertiary — inverted amber */
+    --color-tertiary-0: 55 24 9;
+    --color-tertiary-50: 78 35 12;
+    --color-tertiary-100: 120 53 15;
+    --color-tertiary-200: 146 64 14;
+    --color-tertiary-300: 180 83 9;
+    --color-tertiary-400: 217 119 6;
+    --color-tertiary-500: 245 158 11;
+    --color-tertiary-600: 251 191 36;
+    --color-tertiary-700: 252 211 77;
+    --color-tertiary-800: 253 230 138;
+    --color-tertiary-900: 254 243 199;
+    --color-tertiary-950: 255 251 235;
+
+    /* Error — red inverted */
+    --color-error-0: 63 14 14;
+    --color-error-50: 83 19 19;
+    --color-error-100: 127 29 29;
+    --color-error-200: 153 27 27;
+    --color-error-300: 185 28 28;
+    --color-error-400: 220 38 38;
+    --color-error-500: 239 68 68;
+    --color-error-600: 248 113 113;
+    --color-error-700: 252 165 165;
+    --color-error-800: 254 202 202;
+    --color-error-900: 254 226 226;
+    --color-error-950: 254 242 242;
+
+    /* Success — green inverted */
+    --color-success-0: 7 37 21;
+    --color-success-50: 14 59 31;
+    --color-success-100: 20 83 45;
+    --color-success-200: 22 101 52;
+    --color-success-300: 21 128 61;
+    --color-success-400: 22 163 74;
+    --color-success-500: 74 222 128;
+    --color-success-600: 134 239 172;
+    --color-success-700: 187 247 208;
+    --color-success-800: 220 252 231;
+    --color-success-900: 240 253 244;
+    --color-success-950: 249 255 252;
+
+    /* Warning — orange inverted */
+    --color-warning-0: 60 22 10;
+    --color-warning-50: 80 29 13;
+    --color-warning-100: 124 45 18;
+    --color-warning-200: 154 52 18;
+    --color-warning-300: 194 65 12;
+    --color-warning-400: 234 88 12;
+    --color-warning-500: 249 115 22;
+    --color-warning-600: 251 146 60;
+    --color-warning-700: 253 186 116;
+    --color-warning-800: 254 215 170;
+    --color-warning-900: 255 237 213;
+    --color-warning-950: 255 247 237;
+
+    /* Info — sky inverted */
+    --color-info-0: 5 33 53;
+    --color-info-50: 8 47 73;
+    --color-info-100: 12 74 110;
+    --color-info-200: 7 89 133;
+    --color-info-300: 3 105 161;
+    --color-info-400: 2 132 199;
+    --color-info-500: 56 189 248;
+    --color-info-600: 125 211 252;
+    --color-info-700: 186 230 253;
+    --color-info-800: 224 242 254;
+    --color-info-900: 240 249 255;
+    --color-info-950: 250 253 255;
+
+    /* Typography */
+    --color-typography-0: 23 23 23;
+    --color-typography-50: 38 38 39;
+    --color-typography-100: 64 64 64;
+    --color-typography-200: 82 82 82;
+    --color-typography-300: 115 115 115;
+    --color-typography-400: 140 140 140;
+    --color-typography-500: 163 163 163;
+    --color-typography-600: 212 212 212;
+    --color-typography-700: 219 219 220;
+    --color-typography-800: 229 229 229;
+    --color-typography-900: 245 245 245;
+    --color-typography-950: 254 254 255;
+
+    /* Outline */
+    --color-outline-0: 26 23 23;
+    --color-outline-50: 39 38 36;
+    --color-outline-100: 65 65 65;
+    --color-outline-200: 83 82 82;
+    --color-outline-300: 115 116 116;
+    --color-outline-400: 140 141 141;
+    --color-outline-500: 165 163 163;
+    --color-outline-600: 211 211 211;
+    --color-outline-700: 221 220 219;
+    --color-outline-800: 230 230 230;
+    --color-outline-900: 243 243 243;
+    --color-outline-950: 253 254 254;
+
+    /* Background */
+    --color-background-0: 18 18 18;
+    --color-background-50: 39 38 37;
+    --color-background-100: 65 64 64;
+    --color-background-200: 83 82 82;
+    --color-background-300: 116 116 116;
+    --color-background-400: 142 142 142;
+    --color-background-500: 162 163 163;
+    --color-background-600: 213 212 212;
+    --color-background-700: 229 228 228;
+    --color-background-800: 242 241 241;
+    --color-background-900: 246 246 246;
+    --color-background-950: 255 255 255;
+
+    /* Background semantic */
+    --color-background-error: 66 43 43;
+    --color-background-warning: 65 47 35;
+    --color-background-success: 28 43 33;
+    --color-background-muted: 51 51 51;
+    --color-background-info: 26 40 46;
+
+    /* Focus Ring Indicator */
+    --color-indicator-primary: 247 247 247;
+    --color-indicator-info: 161 199 245;
+    --color-indicator-error: 232 70 69;
+  }
+}
+
+@theme inline {
+  /* Primary */
+  --color-primary-0: rgb(var(--color-primary-0));
+  --color-primary-50: rgb(var(--color-primary-50));
+  --color-primary-100: rgb(var(--color-primary-100));
+  --color-primary-200: rgb(var(--color-primary-200));
+  --color-primary-300: rgb(var(--color-primary-300));
+  --color-primary-400: rgb(var(--color-primary-400));
+  --color-primary-500: rgb(var(--color-primary-500));
+  --color-primary-600: rgb(var(--color-primary-600));
+  --color-primary-700: rgb(var(--color-primary-700));
+  --color-primary-800: rgb(var(--color-primary-800));
+  --color-primary-900: rgb(var(--color-primary-900));
+  --color-primary-950: rgb(var(--color-primary-950));
+
+  /* Secondary */
+  --color-secondary-0: rgb(var(--color-secondary-0));
+  --color-secondary-50: rgb(var(--color-secondary-50));
+  --color-secondary-100: rgb(var(--color-secondary-100));
+  --color-secondary-200: rgb(var(--color-secondary-200));
+  --color-secondary-300: rgb(var(--color-secondary-300));
+  --color-secondary-400: rgb(var(--color-secondary-400));
+  --color-secondary-500: rgb(var(--color-secondary-500));
+  --color-secondary-600: rgb(var(--color-secondary-600));
+  --color-secondary-700: rgb(var(--color-secondary-700));
+  --color-secondary-800: rgb(var(--color-secondary-800));
+  --color-secondary-900: rgb(var(--color-secondary-900));
+  --color-secondary-950: rgb(var(--color-secondary-950));
+
+  /* Tertiary */
+  --color-tertiary-0: rgb(var(--color-tertiary-0));
+  --color-tertiary-50: rgb(var(--color-tertiary-50));
+  --color-tertiary-100: rgb(var(--color-tertiary-100));
+  --color-tertiary-200: rgb(var(--color-tertiary-200));
+  --color-tertiary-300: rgb(var(--color-tertiary-300));
+  --color-tertiary-400: rgb(var(--color-tertiary-400));
+  --color-tertiary-500: rgb(var(--color-tertiary-500));
+  --color-tertiary-600: rgb(var(--color-tertiary-600));
+  --color-tertiary-700: rgb(var(--color-tertiary-700));
+  --color-tertiary-800: rgb(var(--color-tertiary-800));
+  --color-tertiary-900: rgb(var(--color-tertiary-900));
+  --color-tertiary-950: rgb(var(--color-tertiary-950));
+
+  /* Error */
+  --color-error-0: rgb(var(--color-error-0));
+  --color-error-50: rgb(var(--color-error-50));
+  --color-error-100: rgb(var(--color-error-100));
+  --color-error-200: rgb(var(--color-error-200));
+  --color-error-300: rgb(var(--color-error-300));
+  --color-error-400: rgb(var(--color-error-400));
+  --color-error-500: rgb(var(--color-error-500));
+  --color-error-600: rgb(var(--color-error-600));
+  --color-error-700: rgb(var(--color-error-700));
+  --color-error-800: rgb(var(--color-error-800));
+  --color-error-900: rgb(var(--color-error-900));
+  --color-error-950: rgb(var(--color-error-950));
+
+  /* Success */
+  --color-success-0: rgb(var(--color-success-0));
+  --color-success-50: rgb(var(--color-success-50));
+  --color-success-100: rgb(var(--color-success-100));
+  --color-success-200: rgb(var(--color-success-200));
+  --color-success-300: rgb(var(--color-success-300));
+  --color-success-400: rgb(var(--color-success-400));
+  --color-success-500: rgb(var(--color-success-500));
+  --color-success-600: rgb(var(--color-success-600));
+  --color-success-700: rgb(var(--color-success-700));
+  --color-success-800: rgb(var(--color-success-800));
+  --color-success-900: rgb(var(--color-success-900));
+  --color-success-950: rgb(var(--color-success-950));
+
+  /* Warning */
+  --color-warning-0: rgb(var(--color-warning-0));
+  --color-warning-50: rgb(var(--color-warning-50));
+  --color-warning-100: rgb(var(--color-warning-100));
+  --color-warning-200: rgb(var(--color-warning-200));
+  --color-warning-300: rgb(var(--color-warning-300));
+  --color-warning-400: rgb(var(--color-warning-400));
+  --color-warning-500: rgb(var(--color-warning-500));
+  --color-warning-600: rgb(var(--color-warning-600));
+  --color-warning-700: rgb(var(--color-warning-700));
+  --color-warning-800: rgb(var(--color-warning-800));
+  --color-warning-900: rgb(var(--color-warning-900));
+  --color-warning-950: rgb(var(--color-warning-950));
+
+  /* Info */
+  --color-info-0: rgb(var(--color-info-0));
+  --color-info-50: rgb(var(--color-info-50));
+  --color-info-100: rgb(var(--color-info-100));
+  --color-info-200: rgb(var(--color-info-200));
+  --color-info-300: rgb(var(--color-info-300));
+  --color-info-400: rgb(var(--color-info-400));
+  --color-info-500: rgb(var(--color-info-500));
+  --color-info-600: rgb(var(--color-info-600));
+  --color-info-700: rgb(var(--color-info-700));
+  --color-info-800: rgb(var(--color-info-800));
+  --color-info-900: rgb(var(--color-info-900));
+  --color-info-950: rgb(var(--color-info-950));
+
+  /* Typography */
+  --color-typography-0: rgb(var(--color-typography-0));
+  --color-typography-50: rgb(var(--color-typography-50));
+  --color-typography-100: rgb(var(--color-typography-100));
+  --color-typography-200: rgb(var(--color-typography-200));
+  --color-typography-300: rgb(var(--color-typography-300));
+  --color-typography-400: rgb(var(--color-typography-400));
+  --color-typography-500: rgb(var(--color-typography-500));
+  --color-typography-600: rgb(var(--color-typography-600));
+  --color-typography-700: rgb(var(--color-typography-700));
+  --color-typography-800: rgb(var(--color-typography-800));
+  --color-typography-900: rgb(var(--color-typography-900));
+  --color-typography-950: rgb(var(--color-typography-950));
+  --color-typography-white: #FFFFFF;
+  --color-typography-gray: #D4D4D4;
+  --color-typography-black: #181718;
+
+  /* Outline */
+  --color-outline-0: rgb(var(--color-outline-0));
+  --color-outline-50: rgb(var(--color-outline-50));
+  --color-outline-100: rgb(var(--color-outline-100));
+  --color-outline-200: rgb(var(--color-outline-200));
+  --color-outline-300: rgb(var(--color-outline-300));
+  --color-outline-400: rgb(var(--color-outline-400));
+  --color-outline-500: rgb(var(--color-outline-500));
+  --color-outline-600: rgb(var(--color-outline-600));
+  --color-outline-700: rgb(var(--color-outline-700));
+  --color-outline-800: rgb(var(--color-outline-800));
+  --color-outline-900: rgb(var(--color-outline-900));
+  --color-outline-950: rgb(var(--color-outline-950));
+
+  /* Background */
+  --color-background-0: rgb(var(--color-background-0));
+  --color-background-50: rgb(var(--color-background-50));
+  --color-background-100: rgb(var(--color-background-100));
+  --color-background-200: rgb(var(--color-background-200));
+  --color-background-300: rgb(var(--color-background-300));
+  --color-background-400: rgb(var(--color-background-400));
+  --color-background-500: rgb(var(--color-background-500));
+  --color-background-600: rgb(var(--color-background-600));
+  --color-background-700: rgb(var(--color-background-700));
+  --color-background-800: rgb(var(--color-background-800));
+  --color-background-900: rgb(var(--color-background-900));
+  --color-background-950: rgb(var(--color-background-950));
+  --color-background-error: rgb(var(--color-background-error));
+  --color-background-warning: rgb(var(--color-background-warning));
+  --color-background-muted: rgb(var(--color-background-muted));
+  --color-background-success: rgb(var(--color-background-success));
+  --color-background-info: rgb(var(--color-background-info));
+  --color-background-light: #FBFBFB;
+  --color-background-dark: #181719;
+
+  /* Focus Ring Indicator */
+  --color-indicator-primary: rgb(var(--color-indicator-primary));
+  --color-indicator-info: rgb(var(--color-indicator-info));
+  --color-indicator-error: rgb(var(--color-indicator-error));
+
+  /* Font families */
+  --font-heading: system-ui, -apple-system, sans-serif;
+  --font-body: system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Font sizes */
+  --font-size-2xs: 10px;
+
+  /* Box shadows */
+  --shadow-hard-1: -2px 2px 8px 0px rgba(38, 38, 38, 0.20);
+  --shadow-hard-2: 0px 3px 10px 0px rgba(38, 38, 38, 0.20);
+  --shadow-hard-3: 2px 2px 8px 0px rgba(38, 38, 38, 0.20);
+  --shadow-hard-4: 0px -3px 10px 0px rgba(38, 38, 38, 0.20);
+  --shadow-hard-5: 0px 2px 10px 0px rgba(38, 38, 38, 0.10);
+  --shadow-soft-1: 0px 0px 10px rgba(38, 38, 38, 0.1);
+  --shadow-soft-2: 0px 0px 20px rgba(38, 38, 38, 0.2);
+  --shadow-soft-3: 0px 0px 30px rgba(38, 38, 38, 0.1);
+  --shadow-soft-4: 0px 0px 40px rgba(38, 38, 38, 0.1);
+}
+
+/*
+ * Force-generate all Tailwind utility classes used internally by SeaHorse primitives.
+ * Without this, apps that don't reference these classes in their own source will
+ * end up with missing styles (e.g. Avatar background, Button variants).
+ */
+@source inline("bg-{primary,secondary,error,success,info,warning}-{500,600,700,800}");
+@source inline("bg-primary-{500/70,700/80}");
+@source inline("bg-background-{0,50,100,200,300,400,800}");
+@source inline("bg-yellow-500");
+@source inline("border-{primary,secondary,error,success,info,warning,outline}-{100,200,300,400,500,600,700,800}");
+@source inline("border-primary-{300/80,500/20}");
+@source inline("text-{primary,secondary,error,success,info,warning}-{500,600,700,800}");
+@source inline("text-typography-{0,50,400,500,600,700,800,900,950}");
+@source inline("text-background-{500,800}");

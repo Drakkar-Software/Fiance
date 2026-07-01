@@ -1,8 +1,8 @@
 import React from "react";
-import { EmptyState as SeahorseEmptyState } from "@drakkar.software/seahorse/components";
+import { EmptyState as UiEmptyState } from "@fiance/ui/components";
 import type { ComponentProps } from "react";
 
-type EmptyStateProps = ComponentProps<typeof SeahorseEmptyState>;
+type EmptyStateProps = ComponentProps<typeof UiEmptyState>;
 
 export function EmptyState({
   iconBgClassName = "bg-accent-clay-soft",
@@ -10,6 +10,6 @@ export function EmptyState({
   ...props
 }: EmptyStateProps) {
   return (
-    <SeahorseEmptyState iconBgClassName={iconBgClassName} iconColor={iconColor} {...props} />
+    <UiEmptyState iconBgClassName={iconBgClassName} iconColor={iconColor} {...props} />
   );
 }

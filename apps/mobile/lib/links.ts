@@ -1,1 +1,1 @@
-export * from "@drakkar.software/seahorse/utils/links";
+export * from "@fiance/ui/utils/links";

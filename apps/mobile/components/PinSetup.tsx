@@ -1,14 +1,14 @@
 import React from "react";
-import { PinSetup as SeahorsePinSetup } from "@drakkar.software/seahorse/components";
+import { PinSetup as UiPinSetup } from "@fiance/ui/components";
 import { useTranslation } from "react-i18next";
 import type { ComponentProps } from "react";
 
-type PinSetupProps = ComponentProps<typeof SeahorsePinSetup>;
+type PinSetupProps = ComponentProps<typeof UiPinSetup>;
 
 export function PinSetup(props: PinSetupProps) {
   const { t } = useTranslation("settings");
   return (
-    <SeahorsePinSetup
+    <UiPinSetup
       labels={{
         createTitle: t("pinSetup.createTitle"),
         confirmTitle: t("pinSetup.confirmTitle"),

@@ -1,1 +1,1 @@
-export { StatusBadge } from "@drakkar.software/seahorse/components";
+export { StatusBadge } from "@fiance/ui/components";
