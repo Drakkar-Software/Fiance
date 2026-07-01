@@ -13,7 +13,18 @@ import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
 import { useMealSelectionsStore } from "@/store/useMealSelectionsStore";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
-import { GUEST_ROLE_LABELS, MEAL_CHOICE_LABELS, type GuestRole, type MealChoice } from "@fiance/sdk";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
+import { useCommunicationsStore } from "@/store/useCommunicationsStore";
+import {
+  GUEST_ROLE_LABELS,
+  MEAL_CHOICE_LABELS,
+  SEATING_CONSTRAINT_TYPE_LABELS,
+  COMMUNICATION_CHANNEL_LABELS,
+  type GuestRole,
+  type MealChoice,
+  type SeatingConstraintType,
+  type CommunicationChannel,
+} from "@fiance/sdk";
 import { useGuestRsvpUrl } from "@/lib/rsvp-sync";
 import {
   RSVP_STATUS_LABELS,
@@ -35,11 +46,14 @@ import {
   ChevronRight,
   Mail,
   CheckCircle2,
+  Circle,
   LayoutGrid,
   Utensils,
   Car,
   Gift,
   FileText,
+  UsersRound,
+  Ban,
   type LucideIcon,
 } from "lucide-react-native";
 import { Sheet } from "@fiance/ui/components";
@@ -72,7 +86,7 @@ const DIETS: Diet[] = [
   "ALLERGY",
 ];
 
-type SheetKey = "contact" | "rsvp" | "placement" | "meal" | "transport" | "postWedding" | "notes";
+type SheetKey = "role" | "contact" | "rsvp" | "placement" | "meal" | "transport" | "postWedding" | "notes";
 
 export default function GuestDetailScreen() {
   const { t } = useTranslation("guests");
@@ -87,6 +101,11 @@ export default function GuestDetailScreen() {
   const linkCompanion = useGuestsStore((s) => s.linkCompanion);
   const unlinkCompanion = useGuestsStore((s) => s.unlinkCompanion);
   const weddingRoleAssignments = useWeddingPartyStore((s) => s.weddingRoleAssignments);
+  const addRoleAssignment = useWeddingPartyStore((s) => s.addRoleAssignment);
+  const removeRoleAssignment = useWeddingPartyStore((s) => s.removeRoleAssignment);
+  const seatingConstraints = useSeatingConstraintsStore((s) => s.seatingConstraints);
+  const communications = useCommunicationsStore((s) => s.communications);
+  const toggleRecipient = useCommunicationsStore((s) => s.toggleRecipient);
   const mealSelections = useMealSelectionsStore((s) => s.mealSelections);
   const addMealSelection = useMealSelectionsStore((s) => s.addMealSelection);
   const updateMealSelection = useMealSelectionsStore((s) => s.updateMealSelection);
@@ -220,6 +239,7 @@ export default function GuestDetailScreen() {
   };
 
   const guestRoles = isNew ? [] : weddingRoleAssignments.filter((a) => a.guestId === id);
+  const guestConstraints = isNew ? [] : seatingConstraints.filter((c) => c.guestIds.includes(id!));
   const mealSelection = isNew ? null : mealSelections.find((m) => m.guestId === id) ?? null;
   const handleMealChoiceChange = (mealChoice: MealChoice) => {
     if (isNew || !id) return;
@@ -244,6 +264,10 @@ export default function GuestDetailScreen() {
 
   // ─── Section summaries (drive the compact rows below) ────────────────────
 
+  const roleSummary = guestRoles.length > 0
+    ? guestRoles.map((r) => t(GUEST_ROLE_LABELS[r.role as GuestRole])).join(", ")
+    : t("sections.roleEmpty");
+
   const contactSummary = [email, phone].filter(Boolean).join(" · ") || t("sections.contactEmpty");
 
   const invitationTypeLabel = invitationTypes.find((it) => it.id === invitationType)?.label ?? invitationType;
@@ -253,16 +277,20 @@ export default function GuestDetailScreen() {
     ? t("common:noTableNeeded")
     : tables.find((tbl) => tbl.id === tableId)?.name ?? t("unassigned");
   const accommodationName = accommodations.find((a) => a.id === accommodationId)?.name;
-  const placementSummary = accommodationName ? `${tableName} · ${accommodationName}` : tableName;
+  const placementSummary = guestConstraints.length > 0
+    ? `${tableName} · ${t("sections.constraintCount", { count: guestConstraints.length })}`
+    : tableName;
 
   const mealLabel = !isNew
     ? t(MEAL_CHOICE_LABELS[(mealSelection?.mealChoice as MealChoice) || "STANDARD"])
     : null;
   const mealDietSummary = mealLabel ? `${t(DIET_LABELS[diet])} · ${mealLabel}` : t(DIET_LABELS[diet]);
 
-  const transportSummary = parkingNeeded
-    ? `${t(TRANSPORT_MODE_LABELS[transportMode])} · ${t("logistics.parkingNeeded")}`
-    : t(TRANSPORT_MODE_LABELS[transportMode]);
+  const transportSummary = [
+    t(TRANSPORT_MODE_LABELS[transportMode]),
+    accommodationName,
+    parkingNeeded ? t("logistics.parkingNeeded") : null,
+  ].filter(Boolean).join(" · ");
 
   const postWeddingSummary = thankYouSent ? t("thankYouSent") : t("sections.postWeddingPending");
 
@@ -314,6 +342,14 @@ export default function GuestDetailScreen() {
         </FormCard>
 
         {/* Everything else: compact summary rows, each opening a bottom sheet */}
+        {!isNew && (
+          <GuestSectionRow
+            icon={UsersRound}
+            title={t("sections.role")}
+            summary={roleSummary}
+            onPress={() => setActiveSheet("role")}
+          />
+        )}
         <GuestSectionRow
           icon={Mail}
           title={t("sections.contact")}
@@ -535,6 +571,45 @@ export default function GuestDetailScreen() {
         </View>
       </GuestSheet>
 
+      {!isNew && (
+        <GuestSheet title={t("sections.role")} visible={activeSheet === "role"} onDismiss={() => setActiveSheet(null)}>
+          {guestRoles.length > 0 && (
+            <View className="mb-3">
+              {guestRoles.map((r) => (
+                <View key={r.id} className="flex-row items-center justify-between py-2 border-b border-hair">
+                  <Text className="text-sm text-ink">{t(GUEST_ROLE_LABELS[r.role as GuestRole])}</Text>
+                  <Pressable onPress={() => removeRoleAssignment(r.id)}>
+                    <XCircle size={16} color="#9CA3AF" />
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          )}
+          <Text className="text-xs text-mute mb-2 font-medium">{t("weddingParty.addRole")}</Text>
+          <HorizontalChipSelect
+            options={(Object.keys(GUEST_ROLE_LABELS) as GuestRole[])
+              .filter((role) => !guestRoles.some((r) => r.role === role))
+              .map((role) => ({ key: role, label: t(GUEST_ROLE_LABELS[role]) }))}
+            activeKey=""
+            onSelect={(role) => {
+              const now = new Date().toISOString();
+              addRoleAssignment({
+                id: Crypto.randomUUID(),
+                role: role as GuestRole,
+                guestId: id!,
+                displayName: `${firstName} ${lastName}`.trim(),
+                phone: null,
+                email: null,
+                notes: null,
+                sortOrder: null,
+                createdAt: now,
+                updatedAt: now,
+              });
+            }}
+          />
+        </GuestSheet>
+      )}
+
       <GuestSheet title={t("sections.rsvpInvitation")} visible={activeSheet === "rsvp"} onDismiss={() => setActiveSheet(null)}>
         <Text className="text-xs text-mute mb-2 font-medium">{t("rsvpLabel")}</Text>
         <StatusSelector
@@ -566,6 +641,42 @@ export default function GuestDetailScreen() {
             </Text>
           </Pressable>
         )}
+
+        {!isNew && (
+          <>
+            <Text className="text-xs text-mute mb-2 mt-4 font-medium">{t("sections.communications")}</Text>
+            {communications.length > 0 ? (
+              communications.map((comm) => {
+                const sent = comm.recipients.some((r) => r.guestId === id);
+                return (
+                  <Pressable
+                    key={comm.id}
+                    onPress={() => toggleRecipient(comm.id, id!, new Date().toISOString())}
+                    className="flex-row items-center py-2 border-b border-hair"
+                  >
+                    {sent ? <CheckCircle2 size={16} color="#6e7a4a" /> : <Circle size={16} color="#C0C0C8" />}
+                    <View className="flex-1 ml-2.5">
+                      <Text className="text-sm text-ink" numberOfLines={1}>{comm.label}</Text>
+                      {comm.channel && (
+                        <Text className="text-xs text-mute mt-0.5">
+                          {t(COMMUNICATION_CHANNEL_LABELS[comm.channel as CommunicationChannel])}
+                        </Text>
+                      )}
+                    </View>
+                  </Pressable>
+                );
+              })
+            ) : (
+              <Text className="text-xs text-mute mb-2">{t("sections.communicationsEmpty")}</Text>
+            )}
+            <Pressable
+              onPress={() => router.push("/(tabs)/guests/communications")}
+              className="mt-2 active:opacity-60"
+            >
+              <Text className="text-xs text-primary-500 font-medium">{t("sections.viewAllCommunications")}</Text>
+            </Pressable>
+          </>
+        )}
       </GuestSheet>
 
       <GuestSheet title={t("sections.placement")} visible={activeSheet === "placement"} onDismiss={() => setActiveSheet(null)}>
@@ -583,38 +694,41 @@ export default function GuestDetailScreen() {
           }}
         />
 
-        <Text className="text-xs text-mute mb-2 mt-3 font-medium">{t("accommodationSection")}</Text>
-        {accommodations.length > 0 ? (
+        {!isNew && (
           <>
-            <HorizontalChipSelect
-              options={[
-                { key: "", label: t("none") },
-                ...accommodations.map((a) => ({ key: a.id, label: a.name })),
-              ]}
-              activeKey={accommodationId}
-              onSelect={setAccommodationId}
-            />
-            {accommodationId && (
-              <View className="mt-2">
-                <InputRow
-                  label={t("roomNumber")}
-                  value={roomNumber}
-                  onChangeText={setRoomNumber}
-                />
-              </View>
+            <Text className="text-xs text-mute mb-2 mt-4 font-medium">{t("sections.placementConstraints")}</Text>
+            {guestConstraints.length > 0 ? (
+              guestConstraints.map((c) => {
+                const otherNames = c.guestIds
+                  .filter((gid) => gid !== id)
+                  .map((gid) => {
+                    const g = guests.find((gg) => gg.id === gid);
+                    return g ? `${g.firstName} ${g.lastName}` : "";
+                  })
+                  .filter(Boolean)
+                  .join(", ");
+                return (
+                  <View key={c.id} className="flex-row items-center py-2 border-b border-hair">
+                    <Ban size={14} color="#EF4444" />
+                    <View className="flex-1 ml-2.5">
+                      <Text className="text-sm text-ink">
+                        {t(SEATING_CONSTRAINT_TYPE_LABELS[c.type as SeatingConstraintType])}
+                      </Text>
+                      {otherNames && <Text className="text-xs text-mute mt-0.5">{otherNames}</Text>}
+                    </View>
+                  </View>
+                );
+              })
+            ) : (
+              <Text className="text-xs text-mute mb-2">{t("sections.constraintsEmpty")}</Text>
             )}
+            <Pressable
+              onPress={() => router.push("/(tabs)/guests/seating-constraints")}
+              className="mt-2 active:opacity-60"
+            >
+              <Text className="text-xs text-primary-500 font-medium">{t("sections.manageConstraints")}</Text>
+            </Pressable>
           </>
-        ) : (
-          <Pressable
-            onPress={() => router.push("/(tabs)/guests/accommodations")}
-            className="flex-row items-center gap-1.5 active:opacity-60"
-          >
-            <BedDouble size={14} color="#9CA3AF" />
-            <Text className="text-xs text-mute dark:text-mute">
-              {t("noAccommodations")} —{" "}
-              <Text className="text-primary-500 font-medium">{t("newAccommodation")}</Text>
-            </Text>
-          </Pressable>
         )}
       </GuestSheet>
 
@@ -662,6 +776,41 @@ export default function GuestDetailScreen() {
             (["car", "train", "shuttle", "taxi"] as TransportMode[]).map((m) => [m, t(TRANSPORT_MODE_LABELS[m])])
           ) as Record<TransportMode, string>}
         />
+
+        <Text className="text-xs text-mute mb-2 mt-4 font-medium">{t("accommodationSection")}</Text>
+        {accommodations.length > 0 ? (
+          <>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("none") },
+                ...accommodations.map((a) => ({ key: a.id, label: a.name })),
+              ]}
+              activeKey={accommodationId}
+              onSelect={setAccommodationId}
+            />
+            {accommodationId && (
+              <View className="mt-2">
+                <InputRow
+                  label={t("roomNumber")}
+                  value={roomNumber}
+                  onChangeText={setRoomNumber}
+                />
+              </View>
+            )}
+          </>
+        ) : (
+          <Pressable
+            onPress={() => router.push("/(tabs)/guests/accommodations")}
+            className="flex-row items-center gap-1.5 active:opacity-60"
+          >
+            <BedDouble size={14} color="#9CA3AF" />
+            <Text className="text-xs text-mute dark:text-mute">
+              {t("noAccommodations")} —{" "}
+              <Text className="text-primary-500 font-medium">{t("newAccommodation")}</Text>
+            </Text>
+          </Pressable>
+        )}
+
         {transportMode === "shuttle" && shuttleVendors.length > 0 && (
           <View className="mt-3">
             <Text className="text-xs text-mute mb-2 font-medium">{t("logistics.shuttleVendor")}</Text>

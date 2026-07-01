@@ -54,11 +54,26 @@ Visual breakdowns by vendor category. Know exactly where every euro goes.
 **📋 Planning**
 Task management with priorities and deadlines — from "12 months before" to day-of checklists.
 
+**🎭 Wedding Party & Roles**
+Assign officiants, witnesses, and ceremony roles to guests — or to people outside your guest list.
+
+**🪑 Seating Constraints**
+Must-sit-together / must-not-sit-together rules, with automatic conflict warnings on the seating plan and table list.
+
+**📅 Multi-Day Events**
+Civil ceremony, religious ceremony, cocktail, dinner, brunch — each with its own date, time, and venue, shown on the public page timeline.
+
+**🍽️ Meal Choices**
+Per-guest, per-event menu selection with a one-click caterer menu summary export.
+
+**🚌 Guest Logistics**
+Shuttle assignment, parking needs, and arrival notes per guest, with a dedicated logistics export.
+
 </td>
 <td width="50%">
 
 **🏢 Vendor Directory**
-Compare vendors across 20+ categories. Side-by-side caterer comparison with scoring and pricing.
+Compare vendors across 20+ categories. Side-by-side comparison for any category — mark a winner, only they count toward your budget.
 
 **🖼️ Mood Board**
 Collect inspiration images, tag them, and organize into themed collections.
@@ -75,11 +90,23 @@ Shareable page for guests: program, RSVP, practical info. No account needed.
 **⏱️ Wedding Day View**
 Live countdown and day-of agenda — your schedule at a glance as the day unfolds.
 
+**📨 Communication Templates**
+Reusable email, SMS, and postal templates with `{{guest.firstName}}`-style placeholders.
+
+**📎 Documents**
+Attach quotes, contracts, and files to vendors, guests, or legal milestones — stored on-device, binaries never leave your phone.
+
+**⚖️ Legal & Admin Checklist**
+Civil-marriage milestones (bans, city hall appointment, contract signing) with due dates and a dashboard reminder.
+
+**🌴 Honeymoon Planner**
+Destination, dates, budget vs. spent, and a day-by-day itinerary.
+
 </td>
 </tr>
 </table>
 
-**Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · App Lock (PIN + biometrics) · Cloud sync (AES-256-GCM, zero-knowledge) · Full French & English localization
+**Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · App Lock (PIN + biometrics) · Cloud backup (AES-256-GCM, zero-knowledge) · Full French & English localization
 
 ---
 

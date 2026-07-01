@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Cloud, Users, Globe, BadgeCheck } from "lucide-react-native";
+import { Sparkles, Users, Globe, BadgeCheck } from "lucide-react-native";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
@@ -18,7 +18,6 @@ import { analytics } from "@/lib/analytics";
 type PurchaseState = "idle" | "loading" | "unlocking" | "success" | "error";
 
 const BENEFITS = [
-  { key: "premiumBenefit1", icon: Cloud },
   { key: "premiumBenefit2", icon: Users },
   { key: "premiumBenefit3", icon: Globe },
   { key: "premiumBenefit4", icon: BadgeCheck },
