@@ -178,7 +178,7 @@ export default function CommunicationRosterScreen() {
                 </View>
               )}
 
-              <Text className="text-xs font-semibold text-mute uppercase tracking-wider mt-5 px-4">
+              <Text className="text-xs font-semibold text-mute uppercase tracking-wider mt-5 mb-1 px-4">
                 {t("communicationRecipients")} — {comm.recipients.length}/{guests.length}
               </Text>
             </>
