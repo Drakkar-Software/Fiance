@@ -20,6 +20,7 @@ import {
   CalendarRange,
   FileCheck2,
   Palmtree,
+  Armchair,
   type LucideIcon,
 } from "lucide-react-native";
 import { theme as GP } from "@/lib/theme";
@@ -61,7 +62,7 @@ const GUESTS_SUBNAV: SubNavItem[] = [
   { key: "invitation-types", route: "/(tabs)/guests/invitation-types", icon: Tag, labelKey: "invitationTypesScreen" },
   { key: "communications", route: "/(tabs)/guests/communications", icon: Mail, labelKey: "communicationsScreen" },
   { key: "wedding-party", route: "/(tabs)/guests/wedding-party", icon: UsersRound, labelKey: "weddingParty.title" },
-  { key: "seating-constraints", route: "/(tabs)/guests/seating-constraints", icon: UsersRound, labelKey: "seatingConstraints.title" },
+  { key: "seating-constraints", route: "/(tabs)/guests/seating-constraints", icon: Armchair, labelKey: "seatingConstraints.title" },
 ];
 
 // Agenda/Jour J are real routes now (see app/(tabs)/planning/) so they can be

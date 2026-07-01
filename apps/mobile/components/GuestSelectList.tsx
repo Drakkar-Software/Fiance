@@ -36,15 +36,19 @@ export function GuestSelectList({
             <Pressable
               key={g.id}
               onPress={() => onToggle(g.id)}
-              className="flex-row items-center justify-between py-2 px-1 border-b border-hair"
+              className={`flex-row items-center justify-between py-2 px-2.5 mb-1 rounded-xl border ${
+                selected
+                  ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
+                  : "border-transparent"
+              }`}
             >
               <View className="flex-row items-center gap-2.5 flex-1">
                 <Avatar ini={`${g.firstName[0] ?? ""}${g.lastName[0] ?? ""}`} size={28} />
-                <Text className="text-sm text-ink flex-1" numberOfLines={1}>
+                <Text className={`text-sm flex-1 ${selected ? "text-primary-600 font-medium" : "text-ink"}`} numberOfLines={1}>
                   {g.firstName} {g.lastName}
                 </Text>
               </View>
-              {selected && <Check size={16} color="#6e7a4a" />}
+              {selected && <Check size={18} color="#6e7a4a" />}
             </Pressable>
           );
         })}

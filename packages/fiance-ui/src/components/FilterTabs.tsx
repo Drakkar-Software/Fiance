@@ -26,6 +26,10 @@ export function FilterTabs({ tabs, activeKey, onSelect, className }: FilterTabsP
       horizontal
       showsHorizontalScrollIndicator={false}
       className={className ?? "mb-4"}
+      // react-native-web's ScrollView defaults to flexGrow:1 — without this,
+      // a FilterTabs placed next to a flex-1 sibling (e.g. EmptyState) stretches
+      // vertically and its centered content container floats in the extra space.
+      style={{ flexGrow: 0, flexShrink: 0 }}
       contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: "center" }}
     >
       {tabs.map((tab) => {

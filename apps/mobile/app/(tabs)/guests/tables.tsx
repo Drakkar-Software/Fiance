@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { LayoutGrid } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
@@ -19,6 +20,7 @@ export default function TablesScreen() {
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
   const removeTable = useGuestsStore((s) => s.removeTable);
+  const seatingConstraints = useSeatingConstraintsStore((s) => s.seatingConstraints);
   const [showAdd, setShowAdd] = useState(false);
   const [newTableName, setNewTableName] = useState("");
   const [newTableCapacity, setNewTableCapacity] = useState("");
@@ -108,6 +110,7 @@ export default function TablesScreen() {
           <PlanView
             tables={tables}
             guests={guests}
+            seatingConstraints={seatingConstraints}
             updateTable={(id, updates) => useGuestsStore.getState().updateTable(id, updates)}
           />
         </>

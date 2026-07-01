@@ -7,8 +7,10 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
+import { Ban } from "lucide-react-native";
 import { Sheet } from "@fiance/ui/components";
-import type { Table, Guest } from "@/db/schema";
+import { validateSeatingPlan } from "@fiance/sdk";
+import type { Table, Guest, SeatingConstraint } from "@/db/schema";
 
 const CANVAS_W = 700;
 const CANVAS_H = 600;
@@ -32,6 +34,7 @@ interface DraggableTableProps {
   table: Table;
   guests: Guest[];
   isSelected: boolean;
+  hasConflict: boolean;
   initialX: number;
   initialY: number;
   onSelect: () => void;
@@ -42,6 +45,7 @@ function DraggableTable({
   table,
   guests,
   isSelected,
+  hasConflict,
   initialX,
   initialY,
   onSelect,
@@ -120,22 +124,32 @@ function DraggableTable({
         style={[{ position: "absolute", left: 0, top: 0, width: tableWidth, height: size }, animatedStyle]}
       >
         <View
-          style={{ borderRadius: isRound ? size / 2 : 12, borderWidth: isSelected ? 2.5 : 1, flex: 1 }}
+          style={{ borderRadius: isRound ? size / 2 : 12, borderWidth: isSelected || hasConflict ? 2.5 : 1, flex: 1 }}
           className={`items-center justify-center ${
-            isFull
+            hasConflict
+              ? "bg-red-50 dark:bg-red-950 border-red-400 dark:border-red-600"
+              : isFull
               ? "bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-700"
               : isSelected
               ? "bg-primary-50 dark:bg-primary-950 border-primary-400"
               : "bg-accent-card border-hair dark:border-hair"
           }`}
         >
+          {hasConflict && (
+            <View
+              style={{ position: "absolute", top: -6, right: -6 }}
+              className="w-5 h-5 rounded-full bg-red-500 items-center justify-center"
+            >
+              <Ban size={11} color="#FFFFFF" />
+            </View>
+          )}
           <Text
             className="text-xs font-bold text-ink-soft dark:text-mute text-center px-1"
             numberOfLines={1}
           >
             {table.name}
           </Text>
-          <Text className={`text-xs font-semibold mt-0.5 ${isFull ? "text-red-500" : "text-mute"}`}>
+          <Text className={`text-xs font-semibold mt-0.5 ${isFull || hasConflict ? "text-red-500" : "text-mute"}`}>
             {filled}/{capacity}
           </Text>
         </View>
@@ -147,10 +161,11 @@ function DraggableTable({
 interface Props {
   tables: Table[];
   guests: Guest[];
+  seatingConstraints?: SeatingConstraint[];
   updateTable: (id: string, updates: Partial<Table>) => void;
 }
 
-export function PlanView({ tables, guests, updateTable }: Props) {
+export function PlanView({ tables, guests, seatingConstraints = [], updateTable }: Props) {
   const { t } = useTranslation("guests");
   const allAtOrigin = tables.every((t) => (t.positionX ?? 0) === 0 && (t.positionY ?? 0) === 0);
   const autoPositions = useMemo(
@@ -165,6 +180,11 @@ export function PlanView({ tables, guests, updateTable }: Props) {
 
   const selectedTable = selectedId ? tables.find((t) => t.id === selectedId) : null;
   const selectedGuests = selectedId ? guests.filter((g) => g.tableId === selectedId) : [];
+
+  const conflictedGuestIds = useMemo(() => {
+    const { violations } = validateSeatingPlan(guests, tables, seatingConstraints);
+    return new Set(violations.flatMap((v) => v.guestIds));
+  }, [guests, tables, seatingConstraints]);
 
   return (
     <View className="flex-1">
@@ -201,6 +221,7 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                   table={table}
                   guests={guests}
                   isSelected={selectedId === table.id}
+                  hasConflict={guests.some((g) => g.tableId === table.id && conflictedGuestIds.has(g.id))}
                   initialX={x}
                   initialY={y}
                   onSelect={() => {
@@ -253,6 +274,14 @@ export function PlanView({ tables, guests, updateTable }: Props) {
                         <Text className="flex-1 text-base text-ink">
                           {guest.firstName} {guest.lastName}
                         </Text>
+                        {conflictedGuestIds.has(guest.id) && (
+                          <View className="flex-row items-center gap-1 mr-2">
+                            <Ban size={12} color="#EF4444" />
+                            <Text className="text-xs text-red-500 font-medium">
+                              {t("seatingConflict")}
+                            </Text>
+                          </View>
+                        )}
                         {guest.rsvpStatus && (
                           <View
                             className={`px-2 py-0.5 rounded-full ${

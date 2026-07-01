@@ -3,9 +3,11 @@ import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/c
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, LayoutGrid, Trash2, Map as MapIcon } from "lucide-react-native";
+import { AlertTriangle, LayoutGrid, Trash2, Map as MapIcon, Ban } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
+import { validateSeatingPlan } from "@fiance/sdk";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
 import { DIET_LABELS } from "@/db/types";
 import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
@@ -19,6 +21,7 @@ export default function TableManagementScreen() {
   const addTable = useGuestsStore((s) => s.addTable);
   const updateTable = useGuestsStore((s) => s.updateTable);
   const removeTable = useGuestsStore((s) => s.removeTable);
+  const seatingConstraints = useSeatingConstraintsStore((s) => s.seatingConstraints);
   const [showAdd, setShowAdd] = useState(false);
   const [newTableName, setNewTableName] = useState("");
   const [newTableCapacity, setNewTableCapacity] = useState("");
@@ -50,6 +53,16 @@ export default function TableManagementScreen() {
     [guests]
   );
 
+  const { violations } = useMemo(
+    () => validateSeatingPlan(guests, tables, seatingConstraints),
+    [guests, tables, seatingConstraints]
+  );
+  const conflictedGuestIds = useMemo(
+    () => new Set(violations.flatMap((v) => v.guestIds)),
+    [violations]
+  );
+  const hardViolationCount = violations.filter((v) => v.isHard).length;
+
   return (
     <View className="relative flex-1 bg-accent-paper">
       {/* Unassigned guests warning */}
@@ -62,6 +75,22 @@ export default function TableManagementScreen() {
             {t("guestsAcceptedNoTable", { count: unassignedCount })}
           </Text>
         </View>
+      )}
+
+      {/* Seating constraint conflicts */}
+      {violations.length > 0 && (
+        <Pressable
+          onPress={() => router.push("/(tabs)/guests/seating-constraints")}
+          className="mx-4 mt-3 bg-red-50 dark:bg-red-950 rounded-xl p-3 flex-row items-center border border-red-100 dark:border-red-900 active:opacity-70"
+        >
+          <View className="w-7 h-7 rounded-full bg-red-100 dark:bg-red-900 items-center justify-center mr-2">
+            <Ban size={14} color="#EF4444" />
+          </View>
+          <Text className="text-sm text-red-700 dark:text-red-300 flex-1">
+            {t("seatingConstraintConflicts", { count: violations.length })}
+            {hardViolationCount > 0 ? ` (${t("seatingConstraintHardCount", { count: hardViolationCount })})` : ""}
+          </Text>
+        </Pressable>
       )}
 
       {tables.length === 0 && !showAdd ? (
@@ -132,6 +161,7 @@ export default function TableManagementScreen() {
             const tableGuests = guests.filter((g) => g.tableId === table.id);
             const isFull =
               table.capacity != null && tableGuests.length >= table.capacity;
+            const tableHasConflict = tableGuests.some((g) => conflictedGuestIds.has(g.id));
 
             return (
               <View
@@ -174,6 +204,11 @@ export default function TableManagementScreen() {
                       <Text className="text-base font-semibold text-ink">
                         {table.name}
                       </Text>
+                    )}
+                    {tableHasConflict && (
+                      <View className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-950 items-center justify-center ml-1.5">
+                        <Ban size={13} color="#EF4444" />
+                      </View>
                     )}
                   </Pressable>
                   <View className="flex-row items-center gap-2">
@@ -218,6 +253,14 @@ export default function TableManagementScreen() {
                       <Text className="text-sm text-ink-soft flex-1">
                         {g.firstName} {g.lastName}
                       </Text>
+                      {conflictedGuestIds.has(g.id) && (
+                        <View className="flex-row items-center gap-1 mr-2">
+                          <Ban size={12} color="#EF4444" />
+                          <Text className="text-xs text-red-500 font-medium">
+                            {t("seatingConflict")}
+                          </Text>
+                        </View>
+                      )}
                       {g.diet && g.diet !== "STANDARD" && (
                         <Text className="text-xs text-amber-500 font-medium">
                           {t(DIET_LABELS[g.diet as keyof typeof DIET_LABELS])}
