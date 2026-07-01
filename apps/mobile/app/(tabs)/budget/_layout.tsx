@@ -17,7 +17,15 @@ export default function BudgetLayout() {
         headerTitleStyle: { fontWeight: "600" },
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "",
+          headerShown: !isWide,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: isDark ? "#1a1510" : "#f2ece0" },
+        }}
+      />
     </Stack>
   );
 }
