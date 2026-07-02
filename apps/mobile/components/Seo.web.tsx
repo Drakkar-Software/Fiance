@@ -1,4 +1,5 @@
 import React from "react";
+import { Platform } from "react-native";
 import Head from "expo-router/head";
 
 interface SeoProps {
@@ -25,6 +26,12 @@ export function Seo({
   noindex = false,
   jsonLd,
 }: SeoProps) {
+  // This file only exists to be picked up by Metro's `.web.tsx` platform
+  // resolution. If it ever ends up in a native bundle regardless, `expo-router/head`
+  // resolves to its native Handoff/Spotlight implementation there, which throws
+  // without an `origin` set in the Expo Config — bail out instead of crashing.
+  if (Platform.OS !== "web") return null;
+
   const resolvedTitle = ogTitle ?? title;
   const resolvedDesc = ogDescription ?? description;
 
