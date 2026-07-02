@@ -322,7 +322,7 @@ export function LandingPage() {
           style={{ position: "relative", maxWidth: 1080, width: "100%", alignSelf: "center", gap: 48 }}
         >
           {/* Copy column */}
-          <Reveal style={{ flexGrow: 1, flexBasis: 420, minWidth: isNarrow ? 0 : 300 }}>
+          <Reveal style={{ flexGrow: 1, flexBasis: isNarrow ? "100%" : 420, minWidth: isNarrow ? 0 : 300 }}>
             <View
               className="flex-row items-center self-start"
               style={{
@@ -360,7 +360,7 @@ export function LandingPage() {
             >
               {t("landing.hero.subheadline")}
             </Text>
-            <View className="flex-row gap-3 flex-wrap mb-8">
+            <View className={`flex-row gap-3 flex-wrap mb-8 ${isNarrow ? "justify-center" : ""}`}>
               <Pressable
                 onPress={() => router.replace("/onboarding" as any)}
                 className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70 hover:opacity-90"
@@ -374,7 +374,7 @@ export function LandingPage() {
                 <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
               </Pressable>
             </View>
-            <View className="flex-row flex-wrap items-center" style={{ gap: 22 }}>
+            <View className={`flex-row flex-wrap items-center ${isNarrow ? "justify-center" : ""}`} style={{ gap: 22 }}>
               <View className="flex-row items-center" style={{ gap: 8 }}>
                 <View className="flex-row">
                   <Avatar ini="M" tone={GP.claySoft} size={30} />
@@ -393,7 +393,7 @@ export function LandingPage() {
           </Reveal>
 
           {/* Phone-dashboard mock column */}
-          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: isNarrow ? 0 : 280, alignSelf: "center", alignItems: "center" }}>
+          <View style={{ flexGrow: 1, flexBasis: isNarrow ? "100%" : 320, minWidth: isNarrow ? 0 : 280, alignSelf: "center", alignItems: "center" }}>
             <PhoneMock />
           </View>
         </View>
