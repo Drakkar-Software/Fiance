@@ -658,7 +658,7 @@ export default function GuestDetailScreen() {
           />
         ) : (
           <Pressable
-            onPress={() => router.push("/(tabs)/guests/invitation-types")}
+            onPress={() => { setActiveSheet(null); router.push("/(tabs)/guests/invitation-types"); }}
             className="flex-row items-center gap-1.5 active:opacity-60"
           >
             <Tag size={14} color="#9CA3AF" />
@@ -697,7 +697,7 @@ export default function GuestDetailScreen() {
               <Text className="text-xs text-mute mb-2">{t("sections.communicationsEmpty")}</Text>
             )}
             <Pressable
-              onPress={() => router.push("/(tabs)/guests/communications")}
+              onPress={() => { setActiveSheet(null); router.push("/(tabs)/guests/communications"); }}
               className="mt-2 active:opacity-60"
             >
               <Text className="text-xs text-primary-500 font-medium">{t("sections.viewAllCommunications")}</Text>
@@ -830,7 +830,7 @@ export default function GuestDetailScreen() {
           </>
         ) : (
           <Pressable
-            onPress={() => router.push("/(tabs)/guests/accommodations")}
+            onPress={() => { setActiveSheet(null); router.push("/(tabs)/guests/accommodations"); }}
             className="flex-row items-center gap-1.5 active:opacity-60"
           >
             <BedDouble size={14} color="#9CA3AF" />

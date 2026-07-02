@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text } from "react-native-css/components";
 import type { LucideIcon } from "lucide-react-native";
+import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
+import { useForgeTheme } from "../../theme/context";
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -24,6 +26,7 @@ export function EmptyState({
   iconBgClassName = "bg-background-900",
   iconColor = "rgb(163, 163, 163)",
 }: EmptyStateProps) {
+  const { colors } = useForgeTheme();
   return (
     <View className="flex-1 items-center justify-center p-8">
       <View className={`w-24 h-24 rounded-full ${iconBgClassName} items-center justify-center mb-5`}>
@@ -38,12 +41,18 @@ export function EmptyState({
         </Text>
       )}
       {actionLabel && onAction && (
-        <View className="mt-6">
+        // Full-width (within the padded empty-state column) so the CTA is a
+        // comfortable, prominent pill — never the tiny hug-content button the
+        // native filled variant used to produce. variant="text" + custom fill +
+        // foregroundStyle avoids the .borderedProminent chrome halo.
+        <View className="mt-6 self-stretch">
           <Button
-            variant="filled"
+            fill
+            variant="text"
             label={actionLabel}
             onPress={onAction}
-            style={{ paddingHorizontal: 24, paddingVertical: 12, borderRadius: 9999 }}
+            modifiers={[foregroundStyle(colors.onPrimary)]}
+            style={{ backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16 }}
           />
         </View>
       )}
