@@ -190,6 +190,18 @@
       "android": "Download on Android",
       "web": "Use on web"
     },
+    "stores": {
+      "ios": {
+        "eyebrow": "Download on the",
+        "name": "App Store",
+        "label": "Download Fiancé on the App Store"
+      },
+      "android": {
+        "eyebrow": "Get it on",
+        "name": "Google Play",
+        "label": "Get Fiancé on Google Play"
+      }
+    },
     "blog": {
       "eyebrow": "Fiancé · The Journal",
       "title": "Wedding planning tips",

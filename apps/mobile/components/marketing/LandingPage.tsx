@@ -22,6 +22,7 @@ import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { Reveal, SectionGradient, Grain } from "@/components/marketing/effects";
 import { PhoneMock } from "@/components/marketing/PhoneMock";
 import { MarqueeBar } from "@/components/marketing/MarqueeBar";
+import { StoreBadges } from "@/components/marketing/StoreBadges";
 import { BudgetMiniDemo } from "@/components/marketing/BudgetMiniDemo";
 import { getLandingBlogPosts } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
@@ -364,19 +365,8 @@ export function LandingPage() {
             >
               {t("landing.hero.subheadline")}
             </Text>
-            <View className={`flex-row gap-3 flex-wrap mb-8 ${isNarrow ? "justify-center" : ""}`}>
-              <Pressable
-                onPress={() => router.replace("/onboarding" as any)}
-                className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70 hover:opacity-90"
-              >
-                <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => router.replace("/onboarding" as any)}
-                className="border border-primary-300 px-8 py-4 rounded-full active:opacity-70 hover:opacity-90"
-              >
-                <Text className="text-base font-semibold text-primary-500">{t("landing.hero.ctaSecondary")}</Text>
-              </Pressable>
+            <View className="mb-8">
+              <StoreBadges center={isNarrow} />
             </View>
             <View className={`flex-row flex-wrap items-center ${isNarrow ? "justify-center" : ""}`} style={{ gap: 22 }}>
               <View className="flex-row items-center" style={{ gap: 8 }}>
@@ -531,11 +521,9 @@ export function LandingPage() {
           <Text className="text-base text-typography-500 text-center mb-8">
             {t("landing.download.subtitle")}
           </Text>
-          <Pressable
-            onPress={() => router.push("/home" as any)}
-            className="bg-primary-500 px-10 py-4 rounded-full active:opacity-70 hover:opacity-90"
-          >
-            <Text className="text-base font-semibold text-white">{t("landing.hero.ctaPrimary")}</Text>
+          <StoreBadges center />
+          <Pressable onPress={() => router.push("/home" as any)} className="mt-6 active:opacity-60">
+            <Text className="text-sm font-semibold text-primary-500 underline">{t("landing.download.web")}</Text>
           </Pressable>
         </Reveal>
       </View>

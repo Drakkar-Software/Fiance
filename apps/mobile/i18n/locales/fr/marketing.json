@@ -190,6 +190,18 @@
       "android": "Télécharger sur Android",
       "web": "Utiliser sur le web"
     },
+    "stores": {
+      "ios": {
+        "eyebrow": "Télécharger dans l'",
+        "name": "App Store",
+        "label": "Télécharger Fiancé dans l'App Store"
+      },
+      "android": {
+        "eyebrow": "Disponible sur",
+        "name": "Google Play",
+        "label": "Télécharger Fiancé sur Google Play"
+      }
+    },
     "blog": {
       "eyebrow": "Fiancé · Le Carnet",
       "title": "Conseils pour organiser votre mariage",
