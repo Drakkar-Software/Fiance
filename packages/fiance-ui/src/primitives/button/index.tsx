@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button as ExpoButton } from '@expo/ui'
 import type { ButtonProps } from '@expo/ui'
-import { frame } from '@expo/ui/swift-ui/modifiers'
+import { frame } from '../_host/modifiers'
 import { useHostWrap } from '../_host/ForgeHost'
 
 interface FianceButtonProps extends ButtonProps {

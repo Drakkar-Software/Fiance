@@ -3,7 +3,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import { Switch as ExpoSwitch } from '@expo/ui'
 import type { SwitchProps } from '@expo/ui'
-import { labelsHidden } from '@expo/ui/swift-ui/modifiers'
+import { labelsHidden } from '../_host/modifiers'
 import { useHostWrap } from '../_host/ForgeHost'
 
 function Switch({ modifiers, ...props }: SwitchProps) {

@@ -3,7 +3,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import { Checkbox as ExpoCheckbox } from '@expo/ui'
 import type { CheckboxProps } from '@expo/ui'
-import { labelsHidden } from '@expo/ui/swift-ui/modifiers'
+import { labelsHidden } from '../_host/modifiers'
 import { useHostWrap } from '../_host/ForgeHost'
 
 function Checkbox({ modifiers, ...props }: CheckboxProps) {

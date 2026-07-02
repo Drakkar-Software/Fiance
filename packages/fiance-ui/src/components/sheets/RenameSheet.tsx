@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { Platform } from "react-native";
 import { View } from "react-native-css/components";
-import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Input } from "../../primitives/input";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";

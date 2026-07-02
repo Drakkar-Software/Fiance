@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native-css/components";
-import { foregroundStyle, minimumScaleFactor } from "@expo/ui/swift-ui/modifiers";
+import { foregroundStyle, minimumScaleFactor } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 

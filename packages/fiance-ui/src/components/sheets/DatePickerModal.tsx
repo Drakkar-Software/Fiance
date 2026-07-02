@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
-import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import { foregroundStyle } from "../../primitives/_host/modifiers";
 import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Pressable } from "../../primitives/pressable";
 import { Button } from "../../primitives/button";

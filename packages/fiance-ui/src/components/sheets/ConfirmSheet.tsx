@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
-import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 import { SheetScaffold } from "./SheetScaffold";
