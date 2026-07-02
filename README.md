@@ -212,6 +212,34 @@ claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope 
 
 ---
 
+## iOS Submission (Xcode CLI)
+
+`pnpm --filter fiance submit:ios:xcode -- path/to/app.ipa` uploads a built `.ipa` to App Store Connect via `xcrun altool`, authenticated with an App Store Connect API key (Apple ID + app-specific password auth is deprecated for `altool`).
+
+**Generate the key** (one-time, per Apple Developer account):
+
+1. Go to [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api).
+2. Click **Generate API Key** (or **+**), name it, and give it the **App Manager** role (or higher).
+3. Download the `.p8` file — Apple only lets you download it **once**.
+4. Note the **Key ID** and **Issuer ID** shown next to the key.
+
+**Install the key locally** (one-time, per machine):
+
+```bash
+mkdir -p ~/.appstoreconnect/private_keys
+mv ~/Downloads/AuthKey_<KEY_ID>.p8 ~/.appstoreconnect/private_keys/
+```
+
+**Run the upload**:
+
+```bash
+export ASC_API_KEY_ID=<KEY_ID>
+export ASC_API_ISSUER_ID=<ISSUER_ID>
+pnpm --filter fiance submit:ios:xcode -- path/to/app.ipa
+```
+
+---
+
 <div align="center">
   <sub>Private project · Built with love for the big day</sub>
 </div>

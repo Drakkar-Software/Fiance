@@ -36,7 +36,8 @@
     "build-storybook": "storybook build",
     "deploy": "npm install && npx expo export --platform web && node scripts/inject-pwa.js && dotenv -- wrangler pages deploy dist --project-name fiance",
     "typecheck": "tsc --noEmit",
-    "update:eas": "eas update --auto"
+    "update:eas": "eas update --auto",
+    "submit:ios:xcode": "bash scripts/upload-ipa.sh"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
