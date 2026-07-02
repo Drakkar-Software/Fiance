@@ -25,5 +25,17 @@
       },
       "channel": "production"
     }
+  },
+  "submit": {
+    "staging": {
+      "android": {
+        "releaseStatus": "draft"
+      }
+    },
+    "production": {
+      "android": {
+        "releaseStatus": "draft"
+      }
+    }
   }
 }
