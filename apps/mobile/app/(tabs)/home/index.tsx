@@ -113,9 +113,6 @@ function DashboardScreen() {
 
   useEffect(() => {
     analytics.capture("home_opened", { days_until: daysUntil ?? undefined });
-    if (daysUntil === 0) {
-      router.replace("/(tabs)/home/wedding-day");
-    }
   }, [daysUntil]);
 
   const coupleNames = [wedding?.partner1Name, wedding?.partner2Name].filter(Boolean).join(" & ");
@@ -187,6 +184,18 @@ function DashboardScreen() {
                 ? format(weddingDate, "EEEE d MMMM yyyy", { locale: getDateLocale() })
                 : ""}
             </Text>
+            {daysUntil === 0 && (
+              <Pressable
+                onPress={() => router.push("/(tabs)/home/wedding-day")}
+                className="flex-row items-center mt-4 bg-white self-start pl-4 pr-3 py-2.5 rounded-full active:opacity-80"
+              >
+                <Clock size={16} color={GP.clay} />
+                <Text className="mx-2 font-semibold text-sm" style={{ color: GP.clay }}>
+                  {t("dayOfCta")}
+                </Text>
+                <ChevronRight size={16} color={GP.clay} />
+              </Pressable>
+            )}
           </>
         ) : daysUntil != null && daysUntil < 0 ? (
           <>
