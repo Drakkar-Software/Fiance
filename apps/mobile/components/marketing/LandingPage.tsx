@@ -1,4 +1,5 @@
 import React from "react";
+import { useWindowDimensions } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import Svg, { Rect, Circle, Path, Text as SvgText } from "react-native-svg";
 import { useRouter } from "expo-router";
@@ -272,6 +273,8 @@ function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; titl
 export function LandingPage() {
   const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
+  const { width: winWidth } = useWindowDimensions();
+  const isNarrow = winWidth < 480;
   const lang = i18n.language === "en" ? "en" : "fr";
   const blogPosts = getLandingBlogPosts(lang);
   const seo = localizedSeo(lang, "/");
@@ -306,7 +309,7 @@ export function LandingPage() {
       />
 
       {/* Hero — editorial split: copy + trust badge on the left, phone-dashboard mock on the right */}
-      <View className="w-full pt-24 pb-24 px-6 bg-accent-cream" style={{ position: "relative", overflow: "hidden" }}>
+      <View className={`w-full px-6 bg-accent-cream ${isNarrow ? "pt-14 pb-16" : "pt-24 pb-24"}`} style={{ position: "relative", overflow: "hidden" }}>
         <SectionGradient
           spots={[
             { cx: 82, cy: -12, r: 100, color: "#f0dccf" },
@@ -319,7 +322,7 @@ export function LandingPage() {
           style={{ position: "relative", maxWidth: 1080, width: "100%", alignSelf: "center", gap: 48 }}
         >
           {/* Copy column */}
-          <Reveal style={{ flexGrow: 1, flexBasis: 420, minWidth: 300 }}>
+          <Reveal style={{ flexGrow: 1, flexBasis: 420, minWidth: isNarrow ? 0 : 300 }}>
             <View
               className="flex-row items-center self-start"
               style={{
@@ -338,16 +341,23 @@ export function LandingPage() {
                 {t("landing.hero.badge")}
               </Text>
             </View>
-            <Script size={20} style={{ marginBottom: 6 }}>
+            <Script size={isNarrow ? 17 : 20} style={{ marginBottom: 6 }}>
               {t("landing.hero.tagline")}
             </Script>
-            <Display size={50} weight="600" style={{ marginBottom: 8, lineHeight: 56 }}>
+            <Display
+              size={isNarrow ? 34 : 50}
+              weight="600"
+              style={{ marginBottom: 8, lineHeight: isNarrow ? 39 : 56 }}
+            >
               {t("landing.hero.headline")}
             </Display>
             <View style={{ marginBottom: 18 }}>
               <Underline width={120} />
             </View>
-            <Text className="text-lg text-typography-500 mb-8 leading-7" style={{ maxWidth: 440 }}>
+            <Text
+              className={`text-typography-500 mb-8 ${isNarrow ? "text-base leading-6" : "text-lg leading-7"}`}
+              style={{ maxWidth: 440 }}
+            >
               {t("landing.hero.subheadline")}
             </Text>
             <View className="flex-row gap-3 flex-wrap mb-8">
@@ -383,7 +393,7 @@ export function LandingPage() {
           </Reveal>
 
           {/* Phone-dashboard mock column */}
-          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: 280, alignSelf: "center", alignItems: "center" }}>
+          <View style={{ flexGrow: 1, flexBasis: 320, minWidth: isNarrow ? 0 : 280, alignSelf: "center", alignItems: "center" }}>
             <PhoneMock />
           </View>
         </View>
