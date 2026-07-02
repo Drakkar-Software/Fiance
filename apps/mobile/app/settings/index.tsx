@@ -252,7 +252,8 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Premium */}
+      {/* Premium (hidden for now) */}
+      {false && (
       <View className="px-4 pt-2">
         <IconCard
           icon={
@@ -266,6 +267,7 @@ export default function SettingsScreen() {
           onPress={() => router.push("/settings/premium")}
         />
       </View>
+      )}
 
       {/* Wedding info */}
       <View className="px-4 pt-2">
