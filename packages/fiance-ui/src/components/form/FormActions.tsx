@@ -1,6 +1,5 @@
 import React from "react";
 import { View } from "react-native-css/components";
-import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 
@@ -19,7 +18,7 @@ interface FormActionsProps {
  * Standard side-by-side form action row (primary Save/Create + Cancel), built on
  * the native @expo/ui Button primitive. Replaces the hand-rolled
  * `bg-primary-500` / `bg-accent-paper` Pressable pill pairs repeated across the
- * CRUD screens. Uses the same variant="text" + custom-fill + foregroundStyle
+ * CRUD screens. Uses the same variant="text" + custom-fill + labelColor
  * pattern as ConfirmSheet/RenameSheet so it avoids .borderedProminent's native
  * chrome fighting the custom background, and `fill` so each half spans its
  * flex-1 column.
@@ -42,7 +41,7 @@ export function FormActions({
           label={saveLabel}
           onPress={onSave}
           disabled={saveDisabled}
-          modifiers={[foregroundStyle(colors.onPrimary)]}
+          labelColor={colors.onPrimary}
           style={{
             backgroundColor: destructive ? colors.destructive : colors.primary,
             paddingVertical: 12,

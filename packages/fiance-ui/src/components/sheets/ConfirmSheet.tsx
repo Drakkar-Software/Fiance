@@ -1,7 +1,6 @@
 import React from "react";
 import { Platform } from "react-native";
 import { View, Text } from "react-native-css/components";
-import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 import { SheetScaffold } from "./SheetScaffold";
@@ -39,12 +38,13 @@ export function ConfirmSheet({
           <Button
             fill
             // variant="text" (SwiftUI .plain) avoids .borderedProminent's native
-            // chrome fighting the custom backgroundColor; force white label since
-            // .plain has no automatic on-fill contrast.
+            // chrome fighting the custom backgroundColor; labelColor forces the white
+            // label (iOS foregroundStyle / Android colored Text) since .plain has no
+            // automatic on-fill contrast.
             variant="text"
             label={confirmLabel}
             onPress={onConfirm}
-            modifiers={[foregroundStyle(colors.onPrimary)]}
+            labelColor={colors.onPrimary}
             style={{
               backgroundColor: destructive ? colors.destructive : colors.primary,
               paddingVertical: 14,

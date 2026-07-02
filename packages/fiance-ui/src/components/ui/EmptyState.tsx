@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native-css/components";
+import { View, Text, Pressable } from "react-native-css/components";
 import type { LucideIcon } from "lucide-react-native";
-import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 
@@ -11,6 +10,9 @@ interface EmptyStateProps {
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
+  /** Optional subtle text link shown below the primary CTA. */
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
   /** NativeWind className for the icon background circle. Default: background-900. */
   iconBgClassName?: string;
   /** Color passed to the icon. Default: typography-400. */
@@ -23,6 +25,8 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
+  secondaryActionLabel,
+  onSecondaryAction,
   iconBgClassName = "bg-background-900",
   iconColor = "rgb(163, 163, 163)",
 }: EmptyStateProps) {
@@ -51,10 +55,17 @@ export function EmptyState({
             variant="text"
             label={actionLabel}
             onPress={onAction}
-            modifiers={[foregroundStyle(colors.onPrimary)]}
+            labelColor={colors.onPrimary}
             style={{ backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16 }}
           />
         </View>
+      )}
+      {secondaryActionLabel && onSecondaryAction && (
+        <Pressable onPress={onSecondaryAction} className="mt-4 active:opacity-60">
+          <Text className="text-sm font-medium text-center" style={{ color: colors.primary }}>
+            {secondaryActionLabel}
+          </Text>
+        </Pressable>
       )}
     </View>
   );

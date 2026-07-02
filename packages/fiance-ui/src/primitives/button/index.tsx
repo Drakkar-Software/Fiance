@@ -1,9 +1,9 @@
 'use client'
 import React from 'react'
 import { Platform } from 'react-native'
-import { Button as ExpoButton } from '@expo/ui'
+import { Button as ExpoButton, Text as ExpoText } from '@expo/ui'
 import type { ButtonProps } from '@expo/ui'
-import { frame } from '../_host/modifiers'
+import { frame, foregroundStyle } from '../_host/modifiers'
 import { useHostWrap } from '../_host/ForgeHost'
 
 // Android (Jetpack Compose) Material buttons already carry an intrinsic
@@ -41,19 +41,55 @@ interface FianceButtonProps extends ButtonProps {
    * it take the parent's width via normal RN flex (`align-items: stretch`
    * column, or a `flex-1` wrapper), which the frame modifier then fills. */
   fill?: boolean
+  /** Label text color for buttons drawn on a solid (clay/red) `backgroundColor`.
+   * On iOS it's applied via the SwiftUI `foregroundStyle` modifier. On Android that
+   * modifier is a no-op (Compose keeps Material's dark default content color, which
+   * is invisible on our fills), so the label is instead rendered as a colored
+   * `@expo/ui` `Text` child — the universal Button uses `children` as its content.
+   * Pass `colors.onPrimary`. Web keeps the current behavior (the modifier is a
+   * no-op stub there). */
+  labelColor?: string
 }
 
-function Button({ fill = false, modifiers, style, ...props }: FianceButtonProps) {
-  const mergedModifiers = fill
-    ? [frame({ maxWidth: Infinity }), ...(modifiers ?? [])]
-    : modifiers
+function Button({
+  fill = false,
+  labelColor,
+  label,
+  children,
+  modifiers,
+  style,
+  ...props
+}: FianceButtonProps) {
+  const fillMod = fill ? [frame({ maxWidth: Infinity })] : []
+  const userMods = modifiers ?? []
   const platformStyle = Platform.OS === 'android' ? androidStripVerticalPadding(style) : style
-  return useHostWrap(
-    <ExpoButton {...props} style={platformStyle} modifiers={mergedModifiers} />,
-    fill
-      ? { matchContents: { vertical: true } }
-      : { matchContents: true }
+
+  // Android: `foregroundStyle` (SwiftUI) has no Compose equivalent and the universal
+  // Button never forwards a content color, so a colored `Text` child is the only way
+  // to set the label color. `Text` from `@expo/ui` is native Compose Text here.
+  const androidColoredLabel =
+    Platform.OS === 'android' && labelColor != null && label != null && children == null
+
+  // iOS forces the color via `foregroundStyle`; on web this modifier is a no-op stub.
+  const colorMod = !androidColoredLabel && labelColor != null ? [foregroundStyle(labelColor)] : []
+
+  const node = androidColoredLabel ? (
+    <ExpoButton {...props} style={platformStyle} modifiers={[...fillMod, ...userMods]}>
+      <ExpoText textStyle={{ color: labelColor }}>{label}</ExpoText>
+    </ExpoButton>
+  ) : (
+    <ExpoButton
+      {...props}
+      label={label}
+      style={platformStyle}
+      modifiers={[...fillMod, ...colorMod, ...userMods]}
+    >
+      {children}
+    </ExpoButton>
   )
+
+  // One `useHostWrap` call (a hook) regardless of branch — the node is computed above.
+  return useHostWrap(node, fill ? { matchContents: { vertical: true } } : { matchContents: true })
 }
 
 Button.displayName = 'Button'

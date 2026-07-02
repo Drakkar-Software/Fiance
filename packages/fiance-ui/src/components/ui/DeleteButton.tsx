@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native-css/components";
-import { foregroundStyle, minimumScaleFactor } from "../../primitives/_host/modifiers";
+import { minimumScaleFactor } from "../../primitives/_host/modifiers";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
 
@@ -21,14 +21,12 @@ export function DeleteButton({ label, onPress, compact = false }: DeleteButtonPr
         label={label}
         onPress={onPress}
         // variant="text" avoids "filled"/.borderedProminent's native chrome fighting
-        // our custom backgroundColor (visible as a halo); force white label text
-        // since .plain has no automatic white-on-fill contrast. minimumScaleFactor
-        // lets a long label shrink to fit instead of truncating/overflowing when
-        // the button is squeezed narrower (compact).
-        modifiers={[
-          foregroundStyle(colors.onPrimary),
-          ...(compact ? [minimumScaleFactor(0.75)] : []),
-        ]}
+        // our custom backgroundColor (visible as a halo); labelColor forces the white
+        // label (iOS foregroundStyle / Android colored Text child) since .plain has no
+        // automatic white-on-fill contrast. minimumScaleFactor lets a long label
+        // shrink to fit instead of truncating/overflowing when squeezed narrower.
+        labelColor={colors.onPrimary}
+        modifiers={compact ? [minimumScaleFactor(0.75)] : undefined}
         style={{
           backgroundColor: colors.destructive,
           borderRadius: 16,

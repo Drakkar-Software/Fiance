@@ -336,6 +336,8 @@ function GuestsView() {
           description={t("addFirstGuest")}
           actionLabel={t("addGuest")}
           onAction={() => router.push("/(tabs)/guests/new" as any)}
+          secondaryActionLabel={t("importExternalGuests")}
+          onSecondaryAction={() => router.push("/settings/import-external")}
         />
       ) : (
         <LegendList

@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { Platform } from "react-native";
 import { View } from "react-native-css/components";
-import { foregroundStyle } from "../../primitives/_host/modifiers";
 import { Input } from "../../primitives/input";
 import { Button } from "../../primitives/button";
 import { useForgeTheme } from "../../theme/context";
@@ -52,7 +51,7 @@ export function RenameSheet({
             variant="text"
             label={saveLabel}
             onPress={handleConfirm}
-            modifiers={[foregroundStyle(colors.onPrimary)]}
+            labelColor={colors.onPrimary}
             style={{ backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16 }}
           />
           <Button

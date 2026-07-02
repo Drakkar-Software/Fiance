@@ -73,6 +73,21 @@ const TEMPLATE_TASKS: TemplateTask[] = [
   { titleKey: `${T}.nextDayBrunch`, categoryKey: "planning:categories.catering", monthsBefore: 3, priority: "MEDIUM" },
   { titleKey: `${T}.thankGuests`, categoryKey: "planning:categories.guests", monthsBefore: -1, priority: "MEDIUM" },
   { titleKey: `${T}.collectPhotos`, categoryKey: "planning:categories.photo", monthsBefore: -2, priority: "MEDIUM" },
+  // ── Additional tasks inspired by the Mariages.net retro-planning ──
+  { titleKey: `${T}.findOfficiant`, categoryKey: "planning:categories.admin", monthsBefore: 12, priority: "HIGH" },
+  { titleKey: `${T}.sendSaveTheDate`, categoryKey: "planning:categories.guests", monthsBefore: 10, priority: "MEDIUM" },
+  { titleKey: `${T}.chooseWitnesses`, categoryKey: "planning:categories.guests", monthsBefore: 8, priority: "HIGH" },
+  { titleKey: `${T}.matrimonialRegime`, categoryKey: "planning:categories.admin", monthsBefore: 8, priority: "MEDIUM" },
+  { titleKey: `${T}.religiousDocs`, categoryKey: "planning:categories.admin", monthsBefore: 7, priority: "MEDIUM" },
+  { titleKey: `${T}.createWeddingWebsite`, categoryKey: "planning:categories.guests", monthsBefore: 6, priority: "MEDIUM" },
+  { titleKey: `${T}.chooseGuestGifts`, categoryKey: "planning:categories.misc", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.chooseAccessories`, categoryKey: "planning:categories.attire", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.bookWeddingNightHotel`, categoryKey: "planning:categories.venue", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.bachelorParty`, categoryKey: "planning:categories.misc", monthsBefore: 2, priority: "LOW" },
+  { titleKey: `${T}.ceremonyProgram`, categoryKey: "planning:categories.admin", monthsBefore: 2, priority: "MEDIUM" },
+  { titleKey: `${T}.lastInfoGuests`, categoryKey: "planning:categories.guests", monthsBefore: 1, priority: "MEDIUM" },
+  { titleKey: `${T}.honeymoonDocs`, categoryKey: "planning:categories.honeymoon", monthsBefore: 1, priority: "MEDIUM" },
+  { titleKey: `${T}.pickupOutfits`, categoryKey: "planning:categories.attire", monthsBefore: 0, priority: "HIGH" },
 ];
 
 export const TEMPLATE_TASK_COUNT = TEMPLATE_TASKS.length;

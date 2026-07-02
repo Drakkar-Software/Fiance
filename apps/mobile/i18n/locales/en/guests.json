@@ -257,5 +257,6 @@
     "emptyDesc": "Note who should sit together or apart for the seating plan",
     "deleteConstraint": "Delete this constraint?",
     "deleteConstraintMsg": "This action cannot be undone."
-  }
+  },
+  "importExternalGuests": "Import from an external source"
 }

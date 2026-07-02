@@ -257,5 +257,6 @@
     "emptyDesc": "Indiquez qui doit être assis ensemble ou séparé pour le plan de table",
     "deleteConstraint": "Supprimer cette contrainte ?",
     "deleteConstraintMsg": "Cette action est irréversible."
-  }
+  },
+  "importExternalGuests": "Importer depuis une source externe"
 }

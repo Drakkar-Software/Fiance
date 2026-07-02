@@ -130,7 +130,7 @@ export default function VendorsListScreen() {
               placeholder={t("searchVendor")}
               className="px-4 pt-2"
             />
-            <View className="mt-3">
+            <View className="mt-3 pb-3">
               <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
             </View>
           </>

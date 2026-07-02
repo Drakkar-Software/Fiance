@@ -41,6 +41,8 @@ export default function SettingsLayout() {
         <Stack.Screen name="gifts" options={{ title: t("giftRegistry") }} />
         <Stack.Screen name="documents" options={{ title: t("documentsTitle") }} />
         <Stack.Screen name="export-import" options={{ title: t("exportImportTitle") }} />
+        <Stack.Screen name="import-external" options={{ title: t("importExternalTitle") }} />
+        <Stack.Screen name="import-file" options={{ title: t("importFileTitle") }} />
         <Stack.Screen name="premium" options={{ title: t("premiumTitle") }} />
       </Stack>
     </DesktopShell>

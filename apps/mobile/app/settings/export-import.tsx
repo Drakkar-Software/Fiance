@@ -3,7 +3,8 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Download, Upload, FileText, Table2, Sparkles } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { ChevronRight, Download, Upload, FileText, Table2, Sparkles, FileSpreadsheet } from "lucide-react-native";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -37,6 +38,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function ExportImportScreen() {
   const { t } = useTranslation("settings");
+  const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
   const tables = useGuestsStore((s) => s.tables);
   const groups = useGuestsStore((s) => s.groups);
@@ -366,6 +368,20 @@ export default function ExportImportScreen() {
                 last={index === WEDDING_SAMPLES.length - 1}
               />
             ))}
+          </FormCard>
+        </View>
+
+        {/* External guest import */}
+        <View className="px-4">
+          <SectionTitle>{t("importExternalSection")}</SectionTitle>
+          <FormCard>
+            <ExportRow
+              icon={<FileSpreadsheet size={18} color="#6e7a4a" />}
+              label={t("importExternalRow")}
+              sublabel={t("importExternalRowDesc")}
+              onPress={() => router.push("/settings/import-external")}
+              last
+            />
           </FormCard>
         </View>
 

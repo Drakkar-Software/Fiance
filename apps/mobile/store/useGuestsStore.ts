@@ -50,6 +50,7 @@ interface GuestsState {
   setTables: (tables: Table[]) => void;
   setGroups: (groups: GuestGroup[]) => void;
   addGuest: (guest: Guest) => void;
+  importGuestData: (data: { guests: Guest[]; groups: GuestGroup[]; tables: Table[] }) => void;
   updateGuest: (id: string, updates: Partial<Guest>) => void;
   removeGuest: (id: string) => void;
   linkCompanion: (guestId: string, companionId: string) => void;
@@ -76,6 +77,20 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     set((s) => ({ guests: sdkAddGuest(s.guests, guest) }));
     const storage = getStorage();
     if (storage) persistGuests(storage);
+    notifySync();
+  },
+  importGuestData: ({ guests, groups, tables }) => {
+    set((s) => ({
+      guests: [...s.guests, ...guests],
+      groups: [...s.groups, ...groups],
+      tables: [...s.tables, ...tables],
+    }));
+    const storage = getStorage();
+    if (storage) {
+      persistGuests(storage);
+      if (groups.length) persistGroups(storage);
+      if (tables.length) persistTables(storage);
+    }
     notifySync();
   },
   updateGuest: (id, updates) => {

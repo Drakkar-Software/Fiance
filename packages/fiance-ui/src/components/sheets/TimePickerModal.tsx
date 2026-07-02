@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Platform } from "react-native";
 import { View, Text, ScrollView } from "react-native-css/components";
-import { foregroundStyle } from "../../primitives/_host/modifiers";
 import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Pressable } from "../../primitives/pressable";
 import { Button } from "../../primitives/button";
@@ -115,7 +114,7 @@ export function TimePickerModal({
                 variant="text"
                 label={confirmLabel}
                 onPress={handleConfirm}
-                modifiers={[foregroundStyle(colors.onPrimary)]}
+                labelColor={colors.onPrimary}
                 style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
               />
             </View>
@@ -198,7 +197,7 @@ export function TimePickerModal({
               variant="text"
               label={confirmLabel}
               onPress={handleConfirm}
-              modifiers={[foregroundStyle("#FFFFFF")]}
+              labelColor={colors.onPrimary}
               style={{ backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 16 }}
             />
           </View>

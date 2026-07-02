@@ -60,7 +60,7 @@ export type FianceEvents = {
   sync_enabled:                undefined;
   sync_disabled:               undefined;
   export_data:                 { format: "json" | "pdf" | "csv"; kind?: string };
-  import_data:                 { source: "backup" | "legacy" | "sample"; sample?: string };
+  import_data:                 { source: "backup" | "legacy" | "sample" | "spreadsheet" | "mariagesnet"; sample?: string; count?: number };
   public_page_shared:          undefined;
   gift_added:                  undefined;
   gift_deleted:                undefined;

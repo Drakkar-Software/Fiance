@@ -14,7 +14,6 @@ web-build/
 .env.local
 debug-storybook.log
 storybook-static/
-*.apk
 design-package/
 .DS_Store
 
@@ -28,3 +27,5 @@ apps/mobile/node_modules
 packages/*/node_modules
 android/
 ios/
+
+*.xlsx

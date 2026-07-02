@@ -13,6 +13,7 @@ import {
 import { shareAsync } from "expo-sharing";
 import { getDocumentAsync } from "expo-document-picker";
 import { createBackupDocument, restoreFromBackup } from "./sync";
+import { base64ToBytes } from "./guest-import";
 import { notifySync } from "./starfish";
 import { getStorage } from "@/lib/kv-storage";
 import { parseAndRestore, importLegacyBackup, type ImportResult } from "@fiance/sdk";
@@ -189,6 +190,30 @@ function importWeb(): Promise<string | null> {
     input.click();
     setTimeout(() => document.body.removeChild(input), 60_000);
   });
+}
+
+/**
+ * Native-only: pick an .xlsx/.csv spreadsheet and return its raw bytes.
+ * (On web, screens use a <label>+<input type="file"> row instead — see
+ * WebFilePickRow — to survive Safari PWA user-activation rules.)
+ * Returns null if the user cancelled.
+ */
+export async function pickSpreadsheetFile(): Promise<{ bytes: Uint8Array; name: string } | null> {
+  const result = await getDocumentAsync({
+    type: [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel",
+      "text/csv",
+      "text/comma-separated-values",
+    ],
+    copyToCacheDirectory: true,
+  });
+
+  if (result.canceled || !result.assets?.[0]) return null;
+
+  const asset = result.assets[0];
+  const base64 = await readAsStringAsync(asset.uri, { encoding: EncodingType.Base64 });
+  return { bytes: base64ToBytes(base64), name: asset.name };
 }
 
 async function importNative(): Promise<string | null> {
