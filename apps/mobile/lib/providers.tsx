@@ -48,6 +48,12 @@ export function configureOnBoot(): void {
     // base64 intentionally omitted: starfish-protocol's getBase64() falls back to
     // Hermes btoa/atob (or a pure-JS codec), so no Buffer global is needed.
     configurePlatform({ crypto: QuickCrypto });
+    // starfish-spaces' account-seal.ts (sealToSelf/unsealFromSelf, used by
+    // joinSpaceByLink for QR/invite join) reads globalThis.crypto.subtle directly,
+    // bypassing configurePlatform's getCrypto() abstraction — without this,
+    // globalThis.crypto has no .subtle on native and joining throws
+    // "Cannot read property 'importKey' of undefined".
+    (globalThis as any).crypto = QuickCrypto;
   }
 
   configureFiance(makeGlobalKvAdapter());

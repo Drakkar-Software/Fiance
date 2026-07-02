@@ -7,9 +7,12 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
+import { QRScannerScreen } from "@/components/QRScannerScreen";
+import { parseSpaceInviteUrl } from "@/lib/identity";
+import { joinWeddingByToken } from "@/lib/join-space";
 import {
   teardownStarfish,
   getStarfishStore,
@@ -190,6 +193,24 @@ export default function SettingsScreen() {
     analytics.capture("wedding_created", { method: "new" });
     router.replace("/(tabs)");
   }, [createWedding, t, router]);
+
+  const [showJoinScanner, setShowJoinScanner] = useState(false);
+
+  const handleJoinScanned = useCallback(async (url: string) => {
+    setShowJoinScanner(false);
+    const token = parseSpaceInviteUrl(url);
+    if (!token) {
+      Alert.alert(t("common:error"), t("common:onboarding.invalidQR"));
+      return;
+    }
+    try {
+      await joinWeddingByToken(token);
+      analytics.capture("wedding_created", { method: "invite" });
+      router.replace("/(tabs)");
+    } catch (e: any) {
+      Alert.alert(t("common:error"), e?.message ?? String(e));
+    }
+  }, [router, t]);
 
   // App lock
   const [lockEnabled, setLockEnabledState] = useState(false);
@@ -436,6 +457,19 @@ export default function SettingsScreen() {
             </Text>
           </View>
         </Pressable>
+        <Pressable
+          onPress={() => setShowJoinScanner(true)}
+          className="bg-accent-card rounded-2xl p-4 mb-2 border border-hair dark:border-hair flex-row items-center active:opacity-80"
+        >
+          <View className="w-10 h-10 rounded-xl items-center justify-center mr-3 bg-accent-paper">
+            <QrCode size={20} color="#9CA3AF" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-base font-medium text-mute">
+              {t("common:onboarding.joinWedding")}
+            </Text>
+          </View>
+        </Pressable>
       </View>
 
       {/* Security */}
@@ -635,6 +669,13 @@ export default function SettingsScreen() {
       userId={starfishUserId}
       weddingId={activeEntry?.id}
     />
+
+    {showJoinScanner && (
+      <QRScannerScreen
+        onScanned={handleJoinScanned}
+        onClose={() => setShowJoinScanner(false)}
+      />
+    )}
     </>
   );
 }

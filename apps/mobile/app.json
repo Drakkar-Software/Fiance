@@ -2,8 +2,8 @@
   "expo": {
     "name": "Fiancé",
     "slug": "fiance",
-    "version": "1.8.0",
-    "runtimeVersion": "1.8.0",
+    "version": "1.9.0",
+    "runtimeVersion": "1.9.0",
     "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne, données 100% privées.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,7 +11,7 @@
     "userInterfaceStyle": "automatic",
     "primaryColor": "#EC4899",
     "ios": {
-      "buildNumber": "5",
+      "buildNumber": "6",
       "supportsTablet": true,
       "bundleIdentifier": "software.drakkar.fiance.app",
       "appStoreUrl": "https://apps.apple.com/app/fiance/id000000000",
@@ -23,7 +23,7 @@
       }
     },
     "android": {
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
