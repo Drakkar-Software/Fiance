@@ -23,26 +23,16 @@ import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { ScriptButton } from "@/components/ScriptButton";
+import { Seo } from "@/components/Seo";
+import { BASE_URL } from "@/lib/seo-urls";
 
-function setOgMeta(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string) {
-  if (Platform.OS !== "web") return;
+function weddingSeoTitle(page: PublicWeddingPage, t: (key: string, opts?: Record<string, string>) => string): string {
   const names = [page.about.partner1Name, page.about.partner2Name].filter(Boolean).join(" & ");
-  const title = names ? t("seo:weddingOf", { names }) : "Fiancé";
-  const desc = page.about.description || t("seo:defaultDescription");
+  return names ? t("seo:weddingOf", { names }) : "Fiancé";
+}
 
-  document.title = title;
-  const tags: Record<string, string> = {
-    "og:title": title,
-    "og:description": desc,
-    "twitter:title": title,
-    "twitter:description": desc,
-  };
-  for (const [key, value] of Object.entries(tags)) {
-    const el =
-      document.querySelector(`meta[property="${key}"]`) ??
-      document.querySelector(`meta[name="${key}"]`);
-    if (el) el.setAttribute("content", value);
-  }
+function weddingSeoDescription(page: PublicWeddingPage, t: (key: string) => string): string {
+  return page.about.description || t("seo:defaultDescription");
 }
 
 function LangSwitch() {
@@ -70,6 +60,7 @@ export default function WeddingPublicPage() {
   const [error, setError] = useState(false);
   const [notPublished, setNotPublished] = useState(false);
   // v3 RSVP state — populated when `id` is a combined guest link.
+  const [isGuestLink, setIsGuestLink] = useState(false);
   const [rsvpToken, setRsvpToken] = useState<NodeInviteLinkToken | null>(null);
   const [rsvpSeed, setRsvpSeed] = useState<RsvpSubmission | null>(null);
   const [rsvpStatus, setRsvpStatus] = useState<"ACCEPTED" | "DECLINED" | "MAYBE" | null>(null);
@@ -92,11 +83,11 @@ export default function WeddingPublicPage() {
         // Try combined guest link first ({ v:1, p: pageToken, r: rsvpToken }).
         const combined = decodeGuestLink(id);
         if (combined) {
+          setIsGuestLink(true);
           // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
           const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
           if (result) {
             setPage(result);
-            setOgMeta(result, t);
           } else {
             setNotPublished(true);
             return;
@@ -115,7 +106,6 @@ export default function WeddingPublicPage() {
           const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
           if (result) {
             setPage(result);
-            setOgMeta(result, t);
           } else {
             setNotPublished(true);
           }
@@ -210,6 +200,14 @@ export default function WeddingPublicPage() {
   return (
     <View className="flex-1 bg-accent-cream">
       <Stack.Screen options={{ headerShown: false }} />
+      <Seo
+        title={weddingSeoTitle(page, t)}
+        description={weddingSeoDescription(page, t)}
+        canonical={isGuestLink ? undefined : `${BASE_URL}/wedding/${id}`}
+        ogTitle={weddingSeoTitle(page, t)}
+        ogDescription={weddingSeoDescription(page, t)}
+        noindex={isGuestLink}
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
         <View className="w-full" style={{ maxWidth: 600 }}>
         <LangSwitch />
@@ -234,7 +232,7 @@ export default function WeddingPublicPage() {
                   <Sprig size={16} color="#c9922f" angle={0} />
                 </View>
               </View>
-              <Display size={36} italic style={{ textAlign: "center" }}>
+              <Display as="h1" size={36} italic style={{ textAlign: "center" }}>
                 {coupleNames}
               </Display>
             </View>

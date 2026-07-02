@@ -1,25 +1,22 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seo } from "@/components/Seo";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
-import { getBlogPosts, buildBlogJsonLd } from "@/lib/blog";
+import { getPublishedBlogPosts, buildBlogJsonLd } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
 export function BlogIndexPage() {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
-  const posts = getBlogPosts(lang);
+  const posts = getPublishedBlogPosts(lang);
   const [category, setCategory] = useState("all");
 
-  // Categories present in the actual post data — no guessing at an enum that could
-  // drift from the real `categoryKey`/`category` values across the ~74 posts.
   const categories = useMemo(() => {
     const seen = new Map<string, string>();
     for (const post of posts) {
@@ -42,7 +39,6 @@ export function BlogIndexPage() {
         jsonLd={buildBlogJsonLd(posts, lang, t("blog.meta.description"))}
       />
 
-      {/* Hero */}
       <View className="w-full py-16 px-6 bg-accent-cream items-center">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
           <Script size={17} style={{ marginBottom: 14 }}>
@@ -55,13 +51,13 @@ export function BlogIndexPage() {
             {t("blog.hero.badge")}
           </Text>
           <Display
+            as="h1"
             size={48}
             weight="600"
-            style={{ marginBottom: 12, lineHeight: 52 }}
+            style={{ marginBottom: 12, lineHeight: 52, textAlign: "center" }}
           >
             {t("blog.hero.headline")}
           </Display>
-          {/* Single botanical Sprig divider — the Garden Press restraint */}
           <View style={{ marginVertical: 16 }}>
             <Sprig size={24} />
           </View>
@@ -74,7 +70,6 @@ export function BlogIndexPage() {
         </View>
       </View>
 
-      {/* Category filter */}
       {posts.length > 0 && (
         <View className="w-full pt-6 px-6 bg-accent-cream items-center">
           <View className="flex-row flex-wrap justify-center" style={{ gap: 10, maxWidth: 900 }}>
@@ -99,9 +94,9 @@ export function BlogIndexPage() {
       )}
 
       {posts.length === 0 ? (
-        /* Empty state */
         <View className="w-full py-24 px-6 items-center bg-white">
           <Display
+            as="h2"
             size={26}
             weight="600"
             style={{ textAlign: "center", marginBottom: 14 }}
@@ -118,41 +113,20 @@ export function BlogIndexPage() {
       ) : (
         <View className="w-full py-12 px-6 bg-white">
           <View style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}>
-            {/* Featured post */}
             {featured && (
               <View style={{ marginBottom: 16 }}>
                 <Text className="text-xs font-semibold text-primary-500 uppercase tracking-widest mb-4">
                   {t("blog.featuredLabel")}
                 </Text>
-                <BlogPostCard
-                  post={featured}
-                  featured
-                  lang={lang}
-                  onPress={() =>
-                    router.push(localizedPath(lang, `/blog/${featured.slug}`) as any)
-                  }
-                />
+                <BlogPostCard post={featured} featured lang={lang} />
               </View>
             )}
 
-            {/* Remaining posts — responsive 2-col grid via flexBasis */}
             {rest.length > 0 && (
-              <View
-                className="flex-row flex-wrap"
-                style={{ gap: 20, marginTop: 12 }}
-              >
+              <View className="flex-row flex-wrap" style={{ gap: 20, marginTop: 12 }}>
                 {rest.map((post) => (
-                  <View
-                    key={post.slug}
-                    style={{ flexBasis: 300, flexGrow: 1, maxWidth: 560 }}
-                  >
-                    <BlogPostCard
-                      post={post}
-                      lang={lang}
-                      onPress={() =>
-                        router.push(localizedPath(lang, `/blog/${post.slug}`) as any)
-                      }
-                    />
+                  <View key={post.slug} style={{ flexBasis: 300, flexGrow: 1, maxWidth: 560 }}>
+                    <BlogPostCard post={post} lang={lang} />
                   </View>
                 ))}
               </View>
@@ -166,25 +140,26 @@ export function BlogIndexPage() {
         className="w-full py-16 px-6 bg-accent-cream"
       />
 
-      {/* CTA strip */}
       <View className="w-full py-16 px-6 bg-accent-blush items-center">
         <View style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
           <Display
+            as="h2"
             size={30}
             weight="600"
             style={{ textAlign: "center", marginBottom: 20, lineHeight: 38 }}
           >
             {t("blog.ctaTitle")}
           </Display>
-          <Pressable
-            onPress={() => router.push("/home" as any)}
+          <MarketingLink
+            href="/home"
+            title={t("blog.ctaButton")}
             className="bg-primary-500 rounded-full active:opacity-70"
             style={{ paddingHorizontal: 32, paddingVertical: 14 }}
           >
             <Text className="text-base font-semibold text-white">
               {t("blog.ctaButton")}
             </Text>
-          </Pressable>
+          </MarketingLink>
         </View>
       </View>
     </View>

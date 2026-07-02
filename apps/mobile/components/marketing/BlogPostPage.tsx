@@ -1,19 +1,21 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { View, Text } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { Avatar } from "@/components/Avatar";
 import { Seo } from "@/components/Seo";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import {
-  getBlogPost,
+  getPublishedBlogPost,
   buildPostJsonLd,
   formatBlogDate,
   postAlternates,
-  BLOG_AUTHOR,
+  getPostAuthor,
+  toSchemaDateTime,
   type BlogSection,
 } from "@/lib/blog";
+import { authorProfileUrl } from "@/lib/blog-authors";
 import { localizedUrl, localizedPath } from "@/lib/seo-urls";
 import { RichText } from "@/lib/rich-text";
 import {
@@ -68,6 +70,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
       <View style={{ marginBottom: 32 }}>
         {section.title && (
           <Display
+            as="h2"
             size={22}
             weight="600"
             style={{ marginBottom: 14, lineHeight: 30 }}
@@ -100,6 +103,7 @@ function ArticleSection({ section }: { section: BlogSection }) {
     <View style={{ marginBottom: 32 }}>
       {section.title && (
         <Display
+          as="h2"
           size={22}
           weight="600"
           style={{ marginBottom: 14, lineHeight: 30 }}
@@ -128,43 +132,49 @@ interface BlogPostPageProps {
 
 export function BlogPostPage({ slug }: BlogPostPageProps) {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
-  const post = getBlogPost(lang, slug);
+  const post = getPublishedBlogPost(lang, slug);
 
   if (!post) {
     return (
       <View className="w-full py-24 px-6 items-center bg-white">
         <Display
+          as="h1"
           size={28}
           weight="600"
           style={{ textAlign: "center", marginBottom: 16 }}
         >
           {t("blog.postNotFound")}
         </Display>
-        <Pressable
-          onPress={() => router.push(localizedPath(lang, "/blog") as any)}
-          className="active:opacity-60"
-        >
+        <MarketingLink href={localizedPath(lang, "/blog") as any} title={t("blog.backToBlog")} className="active:opacity-60">
           <Text className="text-primary-500 font-semibold" style={{ fontSize: 15 }}>
             {t("blog.backToBlog")}
           </Text>
-        </Pressable>
+        </MarketingLink>
       </View>
     );
   }
 
   const canonical = localizedUrl(lang, `/blog/${post.slug}`);
+  const author = getPostAuthor(post);
+  const modified = post.updated ?? post.date;
+  const showUpdated = post.updated != null && post.updated !== post.date;
 
   return (
     <View className="w-full">
       <Seo
         title={`${post.title} | Fiancé`}
         description={post.excerpt}
-        ogDescription={t("blog.meta.ogDescription")}
+        ogTitle={post.title}
+        ogDescription={post.excerpt}
         canonical={canonical}
         alternates={postAlternates(post.slug)}
         ogImage={post.heroImage}
+        ogImageAlt={post.heroImageAlt}
+        ogType="article"
+        articlePublishedTime={toSchemaDateTime(post.date)}
+        articleModifiedTime={toSchemaDateTime(modified)}
+        articleAuthor={author.name}
         jsonLd={buildPostJsonLd(post, lang)}
       />
 
@@ -172,15 +182,16 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
       <View className="w-full pt-10 pb-10 px-6 bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>
           {/* Back */}
-          <Pressable
-            onPress={() => router.push(localizedPath(lang, "/blog") as any)}
+          <MarketingLink
+            href={localizedPath(lang, "/blog") as any}
+            title={t("blog.backToBlog")}
             className="active:opacity-60"
             style={{ marginBottom: 20 }}
           >
             <Text className="text-sm text-primary-500 font-semibold">
               {t("blog.backToBlog")}
             </Text>
-          </Pressable>
+          </MarketingLink>
 
           {/* Category chip */}
           <View
@@ -194,6 +205,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
 
           {/* Title */}
           <Display
+            as="h1"
             size={40}
             weight="700"
             style={{ marginBottom: 14, lineHeight: 48 }}
@@ -208,14 +220,26 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
 
           {/* Compact meta row */}
           <View className="flex-row items-center flex-wrap gap-2">
-            <Avatar ini={BLOG_AUTHOR.avatarInitials} size={28} />
-            <Text className="text-sm font-semibold text-typography-700">
-              {BLOG_AUTHOR.name}
-            </Text>
+            <Avatar ini={author.avatarInitials} size={28} />
+            <MarketingLink
+              href={authorProfileUrl(author.slug, lang) as any}
+              title={author.name}
+              className="active:opacity-60"
+            >
+              <Text className="text-sm font-semibold text-typography-700">{author.name}</Text>
+            </MarketingLink>
             <Text className="text-xs text-typography-400">·</Text>
             <Text className="text-xs text-typography-400">
-              {formatBlogDate(post.date, lang)}
+              {t("blog.publishedOn")} {formatBlogDate(post.date, lang)}
             </Text>
+            {showUpdated && (
+              <>
+                <Text className="text-xs text-typography-400">·</Text>
+                <Text className="text-xs text-typography-400">
+                  {t("blog.updatedOn")} {formatBlogDate(post.updated!, lang)}
+                </Text>
+              </>
+            )}
             <Text className="text-xs text-typography-400">·</Text>
             <Text className="text-xs text-typography-400">
               {t("blog.readingTime", { count: post.readingMinutes })}
@@ -249,16 +273,17 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
               {t("blog.authorBioTitle")}
             </Text>
             <View className="flex-row items-center gap-3">
-              <Avatar ini={BLOG_AUTHOR.avatarInitials} size={44} />
-              <View>
-                <Text className="text-base font-semibold text-typography-900">
-                  {BLOG_AUTHOR.name}
-                </Text>
-                <Text
-                  className="text-sm text-typography-400"
-                  style={{ marginTop: 2 }}
+              <Avatar ini={author.avatarInitials} size={44} />
+              <View className="flex-1">
+                <MarketingLink
+                  href={authorProfileUrl(author.slug, lang) as any}
+                  title={author.name}
+                  className="active:opacity-60"
                 >
-                  {t("blog.authorRole")}
+                  <Text className="text-base font-semibold text-typography-900">{author.name}</Text>
+                </MarketingLink>
+                <Text className="text-sm text-typography-400" style={{ marginTop: 2 }}>
+                  {t(`authors.${author.slug}.role`)}
                 </Text>
               </View>
             </View>
@@ -269,8 +294,9 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
             className="border-t border-accent-rose-light"
             style={{ paddingTop: 28, marginTop: 24 }}
           >
-            <Pressable
-              onPress={() => router.push(localizedPath(lang, "/blog") as any)}
+            <MarketingLink
+              href={localizedPath(lang, "/blog") as any}
+              title={t("blog.backToBlog")}
               className="active:opacity-60"
             >
               <Text
@@ -279,7 +305,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
               >
                 {t("blog.backToBlog")}
               </Text>
-            </Pressable>
+            </MarketingLink>
           </View>
         </View>
       </View>

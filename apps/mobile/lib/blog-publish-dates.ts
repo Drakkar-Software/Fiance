@@ -1,80 +1,113 @@
-/** Publication dates spread across Mar–Jul 2026 (older posts first). */
-export const BLOG_PUBLISH_DATES: Record<string, string> = {
-  "premieres-etapes-organiser-mariage": "2026-03-04",
-  "combien-temps-organiser-mariage": "2026-03-05",
-  "retroplanning-mariage-mois-par-mois": "2026-03-07",
-  "organiser-mariage-10-etapes": "2026-03-08",
-  "mariage-6-mois-checklist": "2026-03-10",
-  "mariage-18-24-mois-premieres-actions": "2026-03-11",
-  "sept-decisions-mariage": "2026-03-13",
-  "checklist-mariage-50-taches": "2026-03-14",
-  "repartir-taches-mariage-deux": "2026-03-16",
-  "excel-vs-application-mariage": "2026-03-17",
-  "budget-mariage-2026-combien-prevoir": "2026-03-18",
-  "budget-mariage-cout-par-invite": "2026-03-20",
-  "repartition-budget-mariage-par-poste": "2026-03-21",
-  "acomptes-soldes-mariage-echeances": "2026-03-23",
-  "postes-budget-mariage-depassements": "2026-03-24",
-  "mariage-petit-budget-10-conseils": "2026-03-26",
-  "open-bar-ou-consommation-mariage": "2026-03-27",
-  "comparer-devis-traiteur-mariage": "2026-04-04",
-  "liste-invites-mariage-sans-conflits": "2026-04-05",
-  "rsvp-mariage-quand-relancer": "2026-04-07",
-  "gerer-plus-un-enfants-regimes-alimentaires": "2026-04-08",
-  "mariage-intime-vs-grande-reception": "2026-04-10",
-  "save-the-date-faire-part-calendrier": "2026-04-11",
-  "suivre-communications-invites-mariage": "2026-04-12",
-  "rsvp-en-ligne-sans-compte": "2026-04-14",
-  "taux-reponse-rsvp-mariage": "2026-04-15",
-  "plan-de-table-mariage-guide-complet": "2026-04-16",
-  "plan-de-table-5-regles-placement": "2026-04-18",
-  "tables-rondes-ou-rectangulaires-mariage": "2026-04-19",
-  "plan-de-table-serpentin-mariage": "2026-04-21",
-  "finaliser-plan-de-table-traiteur": "2026-04-22",
-  "ordre-reservation-prestataires-mariage": "2026-04-23",
-  "negocier-devis-mariage": "2026-04-25",
-  "cinq-prestataires-a-booker-priorite": "2026-04-26",
-  "centraliser-devis-prestataires-mariage": "2026-05-04",
-  "tableau-bord-prestataires-mariage": "2026-05-06",
-  "planning-jour-j-minute-par-minute": "2026-05-07",
-  "repartir-roles-jour-j-mariage": "2026-05-09",
-  "mode-jour-j-suivre-deroule": "2026-05-10",
-  "programme-mariage-partager-invites": "2026-05-12",
-  "imprevus-jour-j-mariage": "2026-05-13",
-  "creer-page-web-mariage": "2026-05-15",
-  "faq-mariage-invites-15-questions": "2026-05-16",
-  "liste-cadeaux-mariage-guide": "2026-05-18",
-  "partage-photos-mariage-qr-code": "2026-05-19",
-  "hebergement-invites-mariage": "2026-05-21",
-  "mood-board-mariage-organiser": "2026-05-22",
-  "definir-theme-mariage-5-etapes": "2026-05-24",
-  "organiser-mariage-a-deux-sync": "2026-05-25",
-  "app-mariage-privee-hors-ligne": "2026-05-27",
-  "dossier-mairie-bans-mariage-delais": "2026-06-04",
-  "ceremonie-laique-choisir-officiant": "2026-06-05",
-  "choisir-temoins-role-mariage": "2026-06-07",
-  "assurance-annulation-mariage": "2026-06-08",
-  "pourboires-enveloppes-mariage-jour-j": "2026-06-09",
-  "budget-mariage-par-region-france": "2026-06-10",
-  "faire-part-parents-divorces": "2026-06-12",
-  "remerciements-apres-mariage": "2026-06-13",
-  "protocole-invitations-qui-inviter": "2026-06-14",
-  "table-honneur-formats-mariage": "2026-06-16",
-  "plan-de-table-enfants-mariage": "2026-06-17",
-  "placement-libre-ou-assigne-mariage": "2026-06-18",
-  "choisir-photographe-mariage": "2026-06-20",
-  "choisir-dj-mariage": "2026-06-21",
-  "choisir-fleuriste-mariage": "2026-06-22",
-  "tendances-mariage-2026": "2026-06-23",
-  "palette-couleurs-mariage": "2026-06-25",
-  "choisir-alliances-mariage": "2026-07-01",
-  "fiance-vs-mariages-net": "2026-07-02",
-  "fiance-vs-zankyou": "2026-07-03",
-  "fiance-vs-mywed": "2026-07-05",
-  "top-5-applications-mariage-2026": "2026-07-07",
-  "meilleures-applications-mariage-gratuit-france": "2026-07-08",
-  "top-5-apps-mariage-vie-privee-offline": "2026-07-10",
-};
+/** Earliest date an article may go live (inclusive). */
+export const BLOG_FIRST_PUBLISH_DATE = "2026-06-23";
+
+/**
+ * Publication order by SEO importance (most important first).
+ * Dates are assigned sequentially from BLOG_FIRST_PUBLISH_DATE — max 1 post per day.
+ */
+export const BLOG_PUBLISH_PRIORITY: string[] = [
+  // Tier 1 — landing + core planning
+  "premieres-etapes-organiser-mariage",
+  "combien-temps-organiser-mariage",
+  "budget-mariage-2026-combien-prevoir",
+  "retroplanning-mariage-mois-par-mois",
+  "organiser-mariage-10-etapes",
+  "mariage-6-mois-checklist",
+  "checklist-mariage-50-taches",
+  "excel-vs-application-mariage",
+  "app-mariage-privee-hors-ligne",
+  "mariage-18-24-mois-premieres-actions",
+  "sept-decisions-mariage",
+  "repartir-taches-mariage-deux",
+  // Tier 2 — comparisons & app roundups
+  "fiance-vs-mariages-net",
+  "fiance-vs-zankyou",
+  "fiance-vs-mywed",
+  "top-5-applications-mariage-2026",
+  "meilleures-applications-mariage-gratuit-france",
+  "top-5-apps-mariage-vie-privee-offline",
+  // Tier 3 — budget
+  "budget-mariage-cout-par-invite",
+  "repartition-budget-mariage-par-poste",
+  "acomptes-soldes-mariage-echeances",
+  "postes-budget-mariage-depassements",
+  "mariage-petit-budget-10-conseils",
+  "open-bar-ou-consommation-mariage",
+  "comparer-devis-traiteur-mariage",
+  "budget-mariage-par-region-france",
+  // Tier 4 — guests & RSVP
+  "liste-invites-mariage-sans-conflits",
+  "rsvp-mariage-quand-relancer",
+  "rsvp-en-ligne-sans-compte",
+  "taux-reponse-rsvp-mariage",
+  "suivre-communications-invites-mariage",
+  "save-the-date-faire-part-calendrier",
+  "gerer-plus-un-enfants-regimes-alimentaires",
+  "mariage-intime-vs-grande-reception",
+  "protocole-invitations-qui-inviter",
+  "faire-part-parents-divorces",
+  // Tier 5 — seating
+  "plan-de-table-mariage-guide-complet",
+  "plan-de-table-5-regles-placement",
+  "tables-rondes-ou-rectangulaires-mariage",
+  "plan-de-table-serpentin-mariage",
+  "finaliser-plan-de-table-traiteur",
+  "table-honneur-formats-mariage",
+  "plan-de-table-enfants-mariage",
+  "placement-libre-ou-assigne-mariage",
+  // Tier 6 — vendors
+  "ordre-reservation-prestataires-mariage",
+  "cinq-prestataires-a-booker-priorite",
+  "negocier-devis-mariage",
+  "centraliser-devis-prestataires-mariage",
+  "tableau-bord-prestataires-mariage",
+  "choisir-photographe-mariage",
+  "choisir-dj-mariage",
+  "choisir-fleuriste-mariage",
+  // Tier 7 — day-of
+  "planning-jour-j-minute-par-minute",
+  "repartir-roles-jour-j-mariage",
+  "mode-jour-j-suivre-deroule",
+  "programme-mariage-partager-invites",
+  "imprevus-jour-j-mariage",
+  "pourboires-enveloppes-mariage-jour-j",
+  // Tier 8 — wedding page & digital
+  "creer-page-web-mariage",
+  "faq-mariage-invites-15-questions",
+  "partage-photos-mariage-qr-code",
+  "liste-cadeaux-mariage-guide",
+  "hebergement-invites-mariage",
+  // Tier 9 — inspiration & theme
+  "mood-board-mariage-organiser",
+  "definir-theme-mariage-5-etapes",
+  "tendances-mariage-2026",
+  "palette-couleurs-mariage",
+  "choisir-alliances-mariage",
+  "organiser-mariage-a-deux-sync",
+  // Tier 10 — admin & legal
+  "dossier-mairie-bans-mariage-delais",
+  "ceremonie-laique-choisir-officiant",
+  "choisir-temoins-role-mariage",
+  "assurance-annulation-mariage",
+  "remerciements-apres-mariage",
+];
+
+function addDays(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d + days));
+  return date.toISOString().slice(0, 10);
+}
+
+function buildPublishDates(): Record<string, string> {
+  const dates: Record<string, string> = {};
+  BLOG_PUBLISH_PRIORITY.forEach((slug, index) => {
+    dates[slug] = addDays(BLOG_FIRST_PUBLISH_DATE, index);
+  });
+  return dates;
+}
+
+/** Publication dates from 23 Jun 2026 onward, ordered by SEO importance. */
+export const BLOG_PUBLISH_DATES: Record<string, string> = buildPublishDates();
 
 /** Last content-edit date per slug. Add an entry only when title, excerpt, or sections change. */
 export const BLOG_CONTENT_UPDATED: Record<string, string> = {
@@ -87,9 +120,23 @@ export const BLOG_CONTENT_UPDATED: Record<string, string> = {
 };
 
 export function getBlogPublishDate(slug: string): string {
-  return BLOG_PUBLISH_DATES[slug] ?? "2026-06-29";
+  return BLOG_PUBLISH_DATES[slug] ?? addDays(BLOG_FIRST_PUBLISH_DATE, BLOG_PUBLISH_PRIORITY.length);
 }
 
 export function getBlogContentUpdated(slug: string): string | undefined {
   return BLOG_CONTENT_UPDATED[slug];
+}
+
+/** ISO date (YYYY-MM-DD) used at build time to decide which posts are live. Override via BUILD_DATE env. */
+export function getBuildDate(): string {
+  const raw = typeof process !== "undefined" ? process.env.BUILD_DATE : undefined;
+  if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** True when the post's publish date is on or before the reference date (defaults to build date). */
+export function isBlogPostPublished(slug: string, asOf?: string): boolean {
+  const publishDate = getBlogPublishDate(slug);
+  const reference = asOf ?? getBuildDate();
+  return publishDate <= reference;
 }

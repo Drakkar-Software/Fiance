@@ -94,7 +94,6 @@ const pairs = [
     readingMinutes: 8,
     heroAltFr: "Comparatif Fiancé et Mariages.net",
     heroAltEn: "Fiancé vs Mariages.net comparison",
-    date: "2026-07-02",
     sectionsFr: [
       {
         type: "text",
@@ -205,7 +204,6 @@ const pairs = [
     readingMinutes: 7,
     heroAltFr: "Comparatif Fiancé et Zankyou",
     heroAltEn: "Fiancé vs Zankyou comparison",
-    date: "2026-07-03",
     sectionsFr: [
       {
         type: "text",
@@ -288,7 +286,6 @@ const pairs = [
     readingMinutes: 7,
     heroAltFr: "Comparatif Fiancé et MyWed",
     heroAltEn: "Fiancé vs MyWed comparison",
-    date: "2026-07-05",
     sectionsFr: [
       {
         type: "text",
@@ -388,7 +385,6 @@ const pairs = [
     readingMinutes: 9,
     heroAltFr: "Top 5 applications mariage 2026",
     heroAltEn: "Top 5 wedding apps 2026",
-    date: "2026-07-07",
     disclaimer: true,
     sectionsFr: [
       {
@@ -520,7 +516,6 @@ const pairs = [
     readingMinutes: 8,
     heroAltFr: "Meilleures apps mariage gratuites France",
     heroAltEn: "Best free wedding apps France",
-    date: "2026-07-08",
     disclaimer: true,
     sectionsFr: [
       {
@@ -652,7 +647,6 @@ const pairs = [
     readingMinutes: 7,
     heroAltFr: "Apps mariage confidentialité et offline",
     heroAltEn: "Privacy and offline wedding apps",
-    date: "2026-07-10",
     disclaimer: true,
     sectionsFr: [
       {

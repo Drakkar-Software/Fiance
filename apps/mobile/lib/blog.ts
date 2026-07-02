@@ -9,24 +9,33 @@ import { POSTS_11_30_EN, POSTS_11_30_FR } from "./blog-posts-11-30";
 import { POSTS_31_50_EN, POSTS_31_50_FR } from "./blog-posts-31-50";
 import { POSTS_51_68_EN, POSTS_51_68_FR } from "./blog-posts-51-68";
 import { POSTS_69_74_EN, POSTS_69_74_FR } from "./blog-posts-69-74";
-import { getBlogPublishDate } from "./blog-publish-dates";
+import {
+  getBlogPublishDate,
+  getBuildDate,
+  isBlogPostPublished,
+} from "./blog-publish-dates";
+import {
+  getPostAuthorSlug,
+  BLOG_AUTHORS,
+  BLOG_AUTHOR_SLUGS,
+  authorPersonId,
+  authorProfileUrl,
+  type BlogAuthorSlug,
+} from "./blog-authors";
 import { BASE_URL, localizedUrl, normalizeLang } from "./seo-urls";
 
 export type { BlogAuthor, BlogPost, BlogSection, BlogSectionType };
-
-// ─── Types ─────────────────────────────────────────────────────────────────
-// Defined in blog-types.ts
-
-// ─── Author ────────────────────────────────────────────────────────────────
-
-/** Single source of truth for the blog byline and JSON-LD author node. */
-export const BLOG_AUTHOR: BlogAuthor = {
-  name: "Paul",
-  url: BASE_URL,
-  avatarInitials: "P",
-};
-
-// ─── Content ───────────────────────────────────────────────────────────────
+export {
+  getPostAuthor,
+  getPostAuthorSlug,
+  getBlogAuthor,
+  BLOG_AUTHORS,
+  BLOG_AUTHOR_SLUGS,
+  BLOG_AUTHOR,
+  authorProfileUrl,
+  buildAuthorPersonJsonLd,
+} from "./blog-authors";
+export type { BlogAuthorSlug } from "./blog-authors";
 
 const POSTS: Record<"fr" | "en", BlogPost[]> = {
   fr: [
@@ -469,9 +478,15 @@ export function getBlogPosts(lang: string): BlogPost[] {
   return POSTS[lang === "en" ? "en" : "fr"];
 }
 
+/** Posts whose publish date is on or before the reference date (defaults to build date). */
+export function getPublishedBlogPosts(lang: string, asOf?: string): BlogPost[] {
+  const reference = asOf ?? getBuildDate();
+  return getBlogPosts(lang).filter((p) => isBlogPostPublished(p.slug, reference));
+}
+
 /** Curated posts for the marketing homepage — not the full blog index. */
-export function getLandingBlogPosts(lang: string): BlogPost[] {
-  const posts = getBlogPosts(lang);
+export function getLandingBlogPosts(lang: string, asOf?: string): BlogPost[] {
+  const posts = getPublishedBlogPosts(lang, asOf);
   return LANDING_BLOG_SLUGS.flatMap((slug) => {
     const post = posts.find((p) => p.slug === slug);
     return post ? [post] : [];
@@ -482,9 +497,25 @@ export function getBlogPost(lang: string, slug: string): BlogPost | undefined {
   return getBlogPosts(lang).find((p) => p.slug === slug);
 }
 
-/** All slugs — fed to generateStaticParams so Expo prerenders each post page. */
+/** Published post lookup — returns undefined for scheduled (future) posts. */
+export function getPublishedBlogPost(
+  lang: string,
+  slug: string,
+  asOf?: string
+): BlogPost | undefined {
+  const post = getBlogPost(lang, slug);
+  if (!post || !isBlogPostPublished(slug, asOf)) return undefined;
+  return post;
+}
+
+/** All slugs in the content corpus (published + scheduled). */
 export function getBlogSlugs(): string[] {
   return POSTS.fr.map((p) => p.slug);
+}
+
+/** Slugs to prerender at build time — published posts only. */
+export function getPublishedBlogSlugs(asOf?: string): string[] {
+  return getBlogSlugs().filter((slug) => isBlogPostPublished(slug, asOf));
 }
 
 // ─── Date helpers ──────────────────────────────────────────────────────────
@@ -525,7 +556,6 @@ export function formatBlogYear(iso: string): string {
 
 const SCHEMA_CONTEXT = "https://schema.org";
 const ORG_ID = `${BASE_URL}/#organization`;
-const AUTHOR_ID = `${BASE_URL}/#author-paul`;
 
 function blogIdForLang(lang: string): string {
   return `${localizedUrl(normalizeLang(lang), "/blog")}#blog`;
@@ -542,12 +572,19 @@ const PUBLISHER = {
   },
 };
 
-const AUTHOR = {
-  "@type": "Person",
-  "@id": AUTHOR_ID,
-  name: BLOG_AUTHOR.name,
-  url: BLOG_AUTHOR.url,
-};
+function personStub(slug: BlogAuthorSlug, lang: string): object {
+  return {
+    "@type": "Person",
+    "@id": authorPersonId(slug, lang),
+    name: BLOG_AUTHORS[slug].name,
+    url: authorProfileUrl(slug, lang),
+  };
+}
+
+function authorJsonLdRef(post: BlogPost, lang: string): { "@id": string } {
+  const slug = getPostAuthorSlug(post);
+  return { "@id": authorPersonId(slug, lang) };
+}
 
 function blogNameForLang(lang: string): string {
   return lang === "en" ? "Fiancé Journal" : "Fiancé — Le Carnet";
@@ -630,7 +667,7 @@ export function buildBlogPostingNode(post: BlogPost, lang: string): object {
     thumbnailUrl: post.heroImage,
     datePublished,
     dateModified,
-    author: { "@id": AUTHOR_ID },
+    author: authorJsonLdRef(post, lang),
     publisher: { "@id": ORG_ID },
     inLanguage,
     articleSection: post.category,
@@ -693,7 +730,7 @@ export function buildPostJsonLd(post: BlogPost, lang: string): object {
         inLanguage,
         publisher: { "@id": ORG_ID },
       },
-      AUTHOR,
+      personStub(getPostAuthorSlug(post), lang),
       PUBLISHER,
       {
         ...buildBreadcrumbList([
@@ -707,7 +744,7 @@ export function buildPostJsonLd(post: BlogPost, lang: string): object {
   };
 }
 
-/** Blog index + full BlogPosting entries + BreadcrumbList JSON-LD. */
+/** Blog index JSON-LD — lightweight @id refs on index; full BlogPosting only on post pages. */
 export function buildBlogJsonLd(
   posts: BlogPost[],
   lang: string,
@@ -732,8 +769,7 @@ export function buildBlogJsonLd(
         publisher: { "@id": ORG_ID },
         blogPost: posts.map((p) => ({ "@id": `${postCanonicalUrl(p.slug, lang)}#article` })),
       },
-      ...posts.map((p) => buildBlogPostingNode(p, lang)),
-      AUTHOR,
+      ...BLOG_AUTHOR_SLUGS.map((slug) => personStub(slug, lang)),
       PUBLISHER,
       {
         ...buildBreadcrumbList([
@@ -744,4 +780,8 @@ export function buildBlogJsonLd(
       },
     ],
   };
+}
+
+export function getPostsByAuthor(slug: BlogAuthorSlug, lang: string, asOf?: string): BlogPost[] {
+  return getPublishedBlogPosts(lang, asOf).filter((p) => getPostAuthorSlug(p) === slug);
 }

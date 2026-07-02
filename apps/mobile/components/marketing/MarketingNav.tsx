@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Modal, Dimensions, Image } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter, usePathname } from "expo-router";
+import { usePathname } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X } from "lucide-react-native";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { localizedPath, swapLocaleInPath, type MarketingLang } from "@/lib/seo-urls";
 
 const LANGUAGES = [
@@ -20,7 +21,6 @@ interface MarketingNavProps {
 
 export function MarketingNav({ scrolled = false }: MarketingNavProps) {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -36,10 +36,6 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
     { label: t("nav.blog"), href: localizedPath(currentLang, "/blog") },
   ];
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
-
-  function switchLanguage(lang: MarketingLang) {
-    router.replace(swapLocaleInPath(pathname, lang) as any);
-  }
 
   function handleLangPress() {
     if (langOpen) {
@@ -78,25 +74,31 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
         style={{ maxWidth: 1100, alignSelf: "center", width: "100%" }}
       >
         {/* Logo */}
-        <Pressable onPress={() => router.push(localizedPath(currentLang, "/") as any)} className="flex-row items-center gap-2 active:opacity-70">
+        <MarketingLink
+          href={localizedPath(currentLang, "/") as any}
+          title={t("nav.homeTitle")}
+          className="flex-row items-center gap-2 active:opacity-70"
+        >
           <Image
             // eslint-disable-next-line @typescript-eslint/no-require-imports
             source={require("@/assets/logo.png")}
             style={{ width: 28, height: 28, borderRadius: 7 }}
             resizeMode="cover"
-            accessible={false}
+            accessibilityLabel={t("nav.logoAlt")}
+            alt={t("nav.logoAlt")}
           />
           <Text className="text-lg font-bold text-primary-500">Fiancé</Text>
-        </Pressable>
+        </MarketingLink>
 
         {/* Desktop nav links */}
         <View className="hidden md:flex flex-row items-center gap-1">
           {links.map((link) => {
             const active = isActive(link.href);
             return (
-              <Pressable
+              <MarketingLink
                 key={link.href}
-                onPress={() => router.push(link.href as any)}
+                href={link.href as any}
+                title={link.label}
                 className={`px-3.5 py-2 rounded-full active:opacity-60 ${active ? "bg-accent-blush" : ""}`}
               >
                 <Text
@@ -108,7 +110,7 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
                 >
                   {link.label}
                 </Text>
-              </Pressable>
+              </MarketingLink>
             );
           })}
         </View>
@@ -120,22 +122,25 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
             ref={langButtonRef}
             onPress={handleLangPress}
             className="flex-row items-center gap-1 p-2 active:opacity-60"
+            accessibilityLabel={t("nav.language")}
           >
             <Globe size={16} className="text-typography-500" />
             <Text className="text-xs font-semibold text-typography-500 uppercase">{currentLang}</Text>
           </Pressable>
 
-          <Pressable
-            onPress={() => router.push("/home" as any)}
+          <MarketingLink
+            href="/home"
+            title={t("nav.openApp")}
             className="hidden md:flex bg-primary-500 px-4 py-2 rounded-full active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("nav.openApp")}</Text>
-          </Pressable>
+          </MarketingLink>
 
           {/* Mobile hamburger */}
           <Pressable
             onPress={() => setMenuOpen((o) => !o)}
             className="md:hidden p-2 active:opacity-60"
+            accessibilityLabel={menuOpen ? t("nav.menuClose") : t("nav.menuOpen")}
           >
             {menuOpen ? (
               <X size={20} className="text-typography-700" />
@@ -146,20 +151,17 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
         </View>
       </View>
 
-      {/* Language dropdown — Modal renders via ReactDOM.createPortal on web, escaping all
-          overflow/stacking contexts. Position: absolute inside Modal = viewport coordinates. */}
+      {/* Language dropdown */}
       <Modal
         visible={langOpen}
         transparent
         animationType="none"
         onRequestClose={() => setLangOpen(false)}
       >
-        {/* Backdrop — catches outside clicks */}
         <Pressable
           onPress={() => setLangOpen(false)}
           style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
         />
-        {/* Dropdown panel */}
         {dropdownPos && (
           <View
             className="bg-white border border-accent-rose-light rounded-xl py-1 shadow-sm"
@@ -171,12 +173,12 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
             }}
           >
             {LANGUAGES.map((lang) => (
-              <Pressable
+              <MarketingLink
                 key={lang.code}
-                onPress={() => {
-                  switchLanguage(lang.code);
-                  setLangOpen(false);
-                }}
+                href={swapLocaleInPath(pathname, lang.code) as any}
+                hrefLang={lang.code}
+                title={lang.label}
+                onPress={() => setLangOpen(false)}
                 className="px-4 py-2.5 active:opacity-60"
               >
                 <Text
@@ -188,7 +190,7 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
                 >
                   {lang.label}
                 </Text>
-              </Pressable>
+              </MarketingLink>
             ))}
           </View>
         )}
@@ -198,23 +200,24 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
       {menuOpen && (
         <View className="md:hidden border-t border-accent-rose-light px-6 py-4 gap-4">
           {links.map((link) => (
-            <Pressable
+            <MarketingLink
               key={link.href}
-              onPress={() => {
-                setMenuOpen(false);
-                router.push(link.href as any);
-              }}
+              href={link.href as any}
+              title={link.label}
+              onPress={() => setMenuOpen(false)}
               className="py-2 active:opacity-60"
             >
               <Text className="text-base text-typography-700">{link.label}</Text>
-            </Pressable>
+            </MarketingLink>
           ))}
-          {/* Language selector */}
           <View className="flex-row gap-2">
             {LANGUAGES.map((lang) => (
-              <Pressable
+              <MarketingLink
                 key={lang.code}
-                onPress={() => switchLanguage(lang.code)}
+                href={swapLocaleInPath(pathname, lang.code) as any}
+                hrefLang={lang.code}
+                title={lang.label}
+                onPress={() => setMenuOpen(false)}
                 className={`flex-1 py-2.5 rounded-xl items-center border active:opacity-70 ${
                   currentLang === lang.code
                     ? "bg-primary-500 border-primary-500"
@@ -228,18 +231,17 @@ export function MarketingNav({ scrolled = false }: MarketingNavProps) {
                 >
                   {lang.label}
                 </Text>
-              </Pressable>
+              </MarketingLink>
             ))}
           </View>
-          <Pressable
-            onPress={() => {
-              setMenuOpen(false);
-              router.push("/home" as any);
-            }}
+          <MarketingLink
+            href="/home"
+            title={t("nav.openApp")}
+            onPress={() => setMenuOpen(false)}
             className="bg-primary-500 px-4 py-3 rounded-full items-center active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("nav.openApp")}</Text>
-          </Pressable>
+          </MarketingLink>
         </View>
       )}
     </View>

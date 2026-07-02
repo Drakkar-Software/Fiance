@@ -96,6 +96,11 @@
 - [Meilleures applications mariage gratuites en France (2026)](https://fiance.drakkar.software/fr/blog/meilleures-applications-mariage-gratuit-france): Gratuit ne veut pas dire bridé : notre top des apps mariage sans abonnement obligatoire, avec ce qui est vraiment inclus.
 - [Top 5 des apps mariage respectueuses de la vie privée](https://fiance.drakkar.software/fr/blog/top-5-apps-mariage-vie-privee-offline): RGPD, compte invité, hébergement des données : le classement 2026 pour les couples qui ne veulent pas exposer leur liste invités.
 
+## Authors (Le Carnet)
+
+- [Paul — Fondateur de Fiancé](https://fiance.drakkar.software/fr/author/paul): Organisation globale, outils mariage, vie privée et mode hors ligne. Articles sur le planning et les comparatifs d'applications.
+- [Camille — Experte budget & invités](https://fiance.drakkar.software/fr/author/camille): Budget mariage, liste d'invités, RSVP et plan de table. Méthodes concrètes pour chiffrer et décider sans stress.
+
 ## Privacy
 
 - [Privacy Policy](https://fiance.drakkar.software/fr/privacy): All data stays on-device. Optional sync keeps data secure. Zero tracking, zero ads.

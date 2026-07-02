@@ -13,7 +13,8 @@
       }
     },
     "termsLink": "Conditions d'utilisation",
-    "privacyLink": "Confidentialité"
+    "privacyLink": "Confidentialité",
+    "backToHome": "Retour à Fiancé"
   },
   "nav": {
     "features": "Fonctionnalités",
@@ -26,7 +27,12 @@
     "toolsTimeline": "Planning",
     "download": "Télécharger",
     "openApp": "Ouvrir l'app",
-    "blog": "Le Carnet"
+    "blog": "Le Carnet",
+    "language": "Changer de langue",
+    "homeTitle": "Fiancé — Accueil",
+    "logoAlt": "Logo Fiancé — application mariage",
+    "menuOpen": "Ouvrir le menu",
+    "menuClose": "Fermer le menu"
   },
   "footer": {
     "tagline": "L'organisateur de mariage privé et hors ligne.",
@@ -36,6 +42,8 @@
     "legal": "Mentions légales",
     "madeWith": "Fait avec ♥ pour les futurs mariés",
     "blog": "Le Carnet",
+    "homeTitle": "Fiancé — Accueil",
+    "logoAlt": "Logo Fiancé — icône application mariage",
     "badges": {
       "offline": "HORS LIGNE",
       "private": "100% PRIVÉ"
@@ -238,6 +246,37 @@
     "emptyTitle": "Le Carnet arrive bientôt",
     "emptyBody": "Nos premiers articles de conseils mariage seront publiés prochainement.",
     "postNotFound": "Article introuvable"
+  },
+  "authors": {
+    "expertiseTitle": "Expertises",
+    "articlesBy": "Articles de {{name}}",
+    "noArticlesYet": "Aucun article publié pour le moment.",
+    "paul": {
+      "meta": {
+        "title": "Paul — Auteur | Fiancé Le Carnet",
+        "description": "Paul, fondateur de Fiancé, partage des conseils pratiques pour organiser un mariage en toute sérénité, avec une approche privée et hors ligne."
+      },
+      "role": "Fondateur de Fiancé",
+      "bio": "Paul a créé Fiancé pour aider les couples à planifier leur mariage sans publicité ni collecte de données. Il écrit sur l'organisation globale, les outils et la vie privée des futurs mariés.",
+      "expertise": [
+        "Organisation globale et priorités des préparatifs",
+        "Applications mariage, vie privée et mode hors ligne",
+        "Comparatifs d'outils et bonnes pratiques planning"
+      ]
+    },
+    "camille": {
+      "meta": {
+        "title": "Camille — Experte budget & invités | Fiancé Le Carnet",
+        "description": "Camille conseille sur le budget mariage, la liste d'invités, les RSVP et le plan de table — avec des méthodes concrètes pour les couples en France."
+      },
+      "role": "Experte budget, invités & plan de table",
+      "bio": "Camille accompagne les couples sur les postes budget les plus délicats, la gestion des invités et le plan de table. Ses articles aident à chiffrer, prioriser et décider sans stress.",
+      "expertise": [
+        "Budget mariage, répartition par poste et échéances",
+        "Liste d'invités, RSVP et communications",
+        "Plan de table et contraintes de réception"
+      ]
+    }
   },
   "seatingChart": {
     "meta": {

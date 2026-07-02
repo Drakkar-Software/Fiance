@@ -1,13 +1,12 @@
 import React from "react";
 import { Image } from "react-native";
-import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { View, Text } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { localizedPath, type MarketingLang } from "@/lib/seo-urls";
 
 export function MarketingFooter() {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const lang: MarketingLang = i18n.language === "en" ? "en" : "fr";
 
   const featureLinks = [
@@ -32,15 +31,21 @@ export function MarketingFooter() {
         <View className="flex-row flex-wrap gap-10">
           {/* Brand */}
           <View className="flex-1" style={{ minWidth: 200 }}>
-            <View className="flex-row items-center gap-2 mb-2">
+            <MarketingLink
+              href={localizedPath(lang, "/") as any}
+              title={t("nav.homeTitle")}
+              className="flex-row items-center gap-2 mb-2 active:opacity-70"
+            >
               <Image
                 // eslint-disable-next-line @typescript-eslint/no-require-imports
                 source={require("@/assets/icon-192.png")}
                 style={{ width: 24, height: 24, borderRadius: 5 }}
-                accessible={false}
+                resizeMode="cover"
+                accessibilityLabel={t("footer.logoAlt")}
+                alt={t("footer.logoAlt")}
               />
               <Text className="text-lg font-bold text-white">Fiancé</Text>
-            </View>
+            </MarketingLink>
             <Text className="text-sm text-typography-400 leading-5 mb-3">{t("footer.tagline")}</Text>
             <View className="flex-row flex-wrap gap-2">
               <Text className="text-xs font-semibold tracking-widest text-accent-gold border border-accent-gold rounded-full px-2.5 py-1">
@@ -59,9 +64,14 @@ export function MarketingFooter() {
             </Text>
             <View className="gap-2">
               {featureLinks.map((link) => (
-                <Pressable key={link.href} onPress={() => router.push(link.href as any)} className="active:opacity-60">
+                <MarketingLink
+                  key={link.href}
+                  href={link.href as any}
+                  title={link.label}
+                  className="active:opacity-60"
+                >
                   <Text className="text-sm text-typography-300">{link.label}</Text>
-                </Pressable>
+                </MarketingLink>
               ))}
             </View>
           </View>
@@ -73,9 +83,14 @@ export function MarketingFooter() {
             </Text>
             <View className="gap-2">
               {toolLinks.map((link) => (
-                <Pressable key={link.href} onPress={() => router.push(link.href as any)} className="active:opacity-60">
+                <MarketingLink
+                  key={link.href}
+                  href={link.href as any}
+                  title={link.label}
+                  className="active:opacity-60"
+                >
                   <Text className="text-sm text-typography-300">{link.label}</Text>
-                </Pressable>
+                </MarketingLink>
               ))}
             </View>
           </View>
@@ -86,9 +101,13 @@ export function MarketingFooter() {
               {t("footer.blog")}
             </Text>
             <View className="gap-2">
-              <Pressable onPress={() => router.push(localizedPath(lang, "/blog") as any)} className="active:opacity-60">
+              <MarketingLink
+                href={localizedPath(lang, "/blog") as any}
+                title={t("nav.blog")}
+                className="active:opacity-60"
+              >
                 <Text className="text-sm text-typography-300">{t("nav.blog")}</Text>
-              </Pressable>
+              </MarketingLink>
             </View>
           </View>
 
@@ -98,12 +117,20 @@ export function MarketingFooter() {
               {t("footer.legal")}
             </Text>
             <View className="gap-2">
-              <Pressable onPress={() => router.push(localizedPath(lang, "/terms") as any)} className="active:opacity-60">
+              <MarketingLink
+                href={localizedPath(lang, "/terms") as any}
+                title={t("legal.termsLink")}
+                className="active:opacity-60"
+              >
                 <Text className="text-sm text-typography-300">{t("legal.termsLink")}</Text>
-              </Pressable>
-              <Pressable onPress={() => router.push(localizedPath(lang, "/privacy") as any)} className="active:opacity-60">
+              </MarketingLink>
+              <MarketingLink
+                href={localizedPath(lang, "/privacy") as any}
+                title={t("legal.privacyLink")}
+                className="active:opacity-60"
+              >
                 <Text className="text-sm text-typography-300">{t("legal.privacyLink")}</Text>
-              </Pressable>
+              </MarketingLink>
             </View>
           </View>
         </View>

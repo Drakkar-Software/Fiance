@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Platform } from "react-native";
 import { View, Text, Pressable, TextInput } from "react-native-css/components";
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ArrowLeft, ArrowUp, ArrowDown, Download, RotateCcw } from "lucide-react-native";
+import { Display } from "@/components/Display";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { Seo } from "@/components/Seo";
 import { exportToPdf } from "@fiance/ui/utils/file-export";
 import { localizedSeo, localizedUrl, localizedPath } from "@/lib/seo-urls";
@@ -82,7 +83,6 @@ function EventCard({
 
 export default function TimelineTool() {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const seo = localizedSeo(lang, "/tools/timeline");
 
@@ -187,16 +187,17 @@ export default function TimelineTool() {
       {/* Header */}
       <View className="w-full py-12 px-6 bg-accent-cream">
         <View style={{ maxWidth: 900, width: "100%", alignSelf: "center" }}>
-          <Pressable
-            onPress={() => router.push(localizedPath(lang, "/") as any)}
+          <MarketingLink
+            href={localizedPath(lang, "/") as any}
+            title={t("tools.backToTools")}
             className="flex-row items-center gap-1 mb-6 active:opacity-60"
           >
             <ArrowLeft size={14} className="text-typography-500" />
             <Text className="text-sm text-typography-500">{t("tools.backToTools")}</Text>
-          </Pressable>
-          <Text className="text-3xl font-bold text-typography-900 mb-2">
+          </MarketingLink>
+          <Display as="h1" size={32} weight="700" style={{ marginBottom: 8, lineHeight: 40 }}>
             {t("tools.timeline.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-500">{t("tools.timeline.subtitle")}</Text>
         </View>
       </View>
@@ -313,18 +314,19 @@ export default function TimelineTool() {
       {/* App CTA */}
       <View className="w-full py-12 px-6 bg-accent-blush items-center">
         <View style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
-          <Text className="text-xl font-bold text-typography-900 text-center mb-2">
+          <Display as="h2" size={22} weight="600" style={{ textAlign: "center", marginBottom: 8 }}>
             {t("tools.appCta.title")}
-          </Text>
+          </Display>
           <Text className="text-sm text-typography-500 text-center mb-5">
             {t("tools.appCta.description")}
           </Text>
-          <Pressable
-            onPress={() => router.push("/home" as any)}
+          <MarketingLink
+            href="/home"
+            title={t("tools.appCta.cta")}
             className="bg-primary-500 px-8 py-3 rounded-full active:opacity-70"
           >
             <Text className="text-sm font-semibold text-white">{t("tools.appCta.cta")}</Text>
-          </Pressable>
+          </MarketingLink>
         </View>
       </View>
     </View>
