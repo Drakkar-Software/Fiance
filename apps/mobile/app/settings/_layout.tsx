@@ -41,7 +41,20 @@ export default function SettingsLayout() {
         <Stack.Screen name="gifts" options={{ title: t("giftRegistry") }} />
         <Stack.Screen name="documents" options={{ title: t("documentsTitle") }} />
         <Stack.Screen name="export-import" options={{ title: t("exportImportTitle") }} />
-        <Stack.Screen name="import-external" options={{ title: t("importExternalTitle") }} />
+        <Stack.Screen
+          name="import-external"
+          options={{
+            title: t("importExternalTitle"),
+            headerLeft: () => (
+              <Pressable
+                onPress={() => (router.canGoBack() ? router.back() : router.replace("/settings"))}
+                style={{ padding: 4, marginLeft: -4 }}
+              >
+                <ChevronLeft size={24} color={tintColor} />
+              </Pressable>
+            ),
+          }}
+        />
         <Stack.Screen name="import-file" options={{ title: t("importFileTitle") }} />
         <Stack.Screen name="premium" options={{ title: t("premiumTitle") }} />
       </Stack>
