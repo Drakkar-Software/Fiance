@@ -64,7 +64,13 @@
     "cameraPermissionTitle": "Camera access required",
     "cameraPermissionMessage": "Camera access is needed to scan the invite QR code.",
     "allowCamera": "Allow camera",
-    "invalidQR": "Invalid QR code. Make sure you're scanning a Fiancé invite QR code."
+    "invalidQR": "Invalid QR code. Make sure you're scanning a Fiancé invite QR code.",
+    "partner1Label": "Your first name",
+    "partner2Label": "Their first name",
+    "partnerPlaceholder": "First name",
+    "partner1Required": "Enter at least your first name",
+    "dateLabel": "Wedding date",
+    "dateHint": "Optional — you can change it later"
   },
   "join": {
     "newWedding": "New wedding",

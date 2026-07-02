@@ -13,7 +13,9 @@ import { isBefore } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { getPrimaryEvent } from "@fiance/sdk";
 import { TASK_STATUS_LABELS } from "@/db/types";
 import type { TaskStatus, Priority } from "@/db/types";
 import type { AgendaEvent } from "@/db/schema";
@@ -53,7 +55,11 @@ export function PreparationView() {
   const setCategories = usePlanningStore((s) => s.setCategories);
   const updateTask = usePlanningStore((s) => s.updateTask);
   const weddingDate = useWeddingStore((s) => s.wedding?.weddingDate);
+  const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
   const vendors = useVendorsStore((s) => s.vendors);
+
+  const primaryEvent = useMemo(() => getPrimaryEvent(weddingEvents), [weddingEvents]);
+  const effectiveDate = primaryEvent?.date ?? weddingDate ?? null;
 
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [filter, setFilter] = useState<FilterKey>("ALL");
@@ -61,13 +67,24 @@ export function PreparationView() {
   const now = new Date();
 
   const handleGenerateTemplate = useCallback(() => {
+    if (!effectiveDate) {
+      Alert.alert(
+        t("requireDateTitle"),
+        t("requireDateMsg"),
+        [
+          { text: t("common:cancel"), style: "cancel" },
+          { text: t("requireDateAction"), onPress: () => router.push("/(tabs)/planning/events") },
+        ]
+      );
+      return;
+    }
     const doGenerate = () => {
       let cats = categories;
       if (cats.length === 0) {
         cats = generateDefaultCategories();
         setCategories(cats);
       }
-      const templateTasks = generateTemplateTasks(cats, weddingDate || undefined);
+      const templateTasks = generateTemplateTasks(cats, effectiveDate || undefined);
       setTasks([...tasks, ...templateTasks]);
       analytics.capture("planning_template_generated");
       Alert.alert(t("planningGenerated"), t("planningGeneratedMsg"));
@@ -92,7 +109,7 @@ export function PreparationView() {
         ]
       );
     }
-  }, [categories, tasks, weddingDate]);
+  }, [categories, tasks, effectiveDate, router, t]);
 
   const completionRate = useMemo(() => {
     if (tasks.length === 0) return 0;

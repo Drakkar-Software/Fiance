@@ -88,6 +88,23 @@ const TEMPLATE_TASKS: TemplateTask[] = [
   { titleKey: `${T}.lastInfoGuests`, categoryKey: "planning:categories.guests", monthsBefore: 1, priority: "MEDIUM" },
   { titleKey: `${T}.honeymoonDocs`, categoryKey: "planning:categories.honeymoon", monthsBefore: 1, priority: "MEDIUM" },
   { titleKey: `${T}.pickupOutfits`, categoryKey: "planning:categories.attire", monthsBefore: 0, priority: "HIGH" },
+  // ── More tasks inspired by the Mariages.net retro-planning (batch 2) ──
+  { titleKey: `${T}.announceWedding`, categoryKey: "planning:categories.misc", monthsBefore: 18, priority: "LOW" },
+  { titleKey: `${T}.engagementParty`, categoryKey: "planning:categories.misc", monthsBefore: 16, priority: "LOW" },
+  { titleKey: `${T}.honeymoonDestination`, categoryKey: "planning:categories.honeymoon", monthsBefore: 15, priority: "MEDIUM" },
+  { titleKey: `${T}.bookCeremonyVenue`, categoryKey: "planning:categories.venue", monthsBefore: 14, priority: "HIGH" },
+  { titleKey: `${T}.chooseDecoration`, categoryKey: "planning:categories.flowers", monthsBefore: 8, priority: "MEDIUM" },
+  { titleKey: `${T}.orderStationery`, categoryKey: "planning:categories.misc", monthsBefore: 8, priority: "MEDIUM" },
+  { titleKey: `${T}.confirmGuestAddresses`, categoryKey: "planning:categories.guests", monthsBefore: 7, priority: "MEDIUM" },
+  { titleKey: `${T}.menuTasting`, categoryKey: "planning:categories.catering", monthsBefore: 5, priority: "MEDIUM" },
+  { titleKey: `${T}.planEntertainment`, categoryKey: "planning:categories.music", monthsBefore: 4, priority: "MEDIUM" },
+  { titleKey: `${T}.chooseBouquet`, categoryKey: "planning:categories.flowers", monthsBefore: 3, priority: "MEDIUM" },
+  { titleKey: `${T}.firstDanceMusic`, categoryKey: "planning:categories.music", monthsBefore: 2, priority: "LOW" },
+  { titleKey: `${T}.collectRings`, categoryKey: "planning:categories.admin", monthsBefore: 1, priority: "HIGH" },
+  { titleKey: `${T}.sendSeatingToVenue`, categoryKey: "planning:categories.catering", monthsBefore: 1, priority: "HIGH" },
+  { titleKey: `${T}.confirmVendors`, categoryKey: "planning:categories.misc", monthsBefore: 0, priority: "HIGH" },
+  { titleKey: `${T}.collectBouquet`, categoryKey: "planning:categories.flowers", monthsBefore: 0, priority: "HIGH" },
+  { titleKey: `${T}.reviewVendors`, categoryKey: "planning:categories.misc", monthsBefore: -1, priority: "LOW" },
 ];
 
 export const TEMPLATE_TASK_COUNT = TEMPLATE_TASKS.length;

@@ -6,6 +6,7 @@
 
 import type { SQLiteStorage } from "expo-sqlite/kv-store";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { consumePendingWeddingSeed } from "./pending-wedding-seed";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { hydrateOptimisticPurchase, useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
@@ -188,6 +189,17 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
   useCeremonyStore.getState().setCeremonyItems(readCollection<any[]>("ceremonyItems") ?? []);
   useSpeechesMusicStore.getState().setSpeeches(readCollection<any[]>("speeches") ?? []);
   useSpeechesMusicStore.getState().setPlaylistTracks(readCollection<any[]>("playlistTracks") ?? []);
+
+  // Apply the couple names + date captured during onboarding, now that the
+  // new wedding's DB is active. Consume-once so it never leaks into another wedding.
+  const seed = consumePendingWeddingSeed();
+  if (seed && (seed.partner1Name || seed.partner2Name || seed.weddingDate)) {
+    useWeddingStore.getState().updateWedding({
+      partner1Name: seed.partner1Name,
+      partner2Name: seed.partner2Name,
+      weddingDate: seed.weddingDate,
+    });
+  }
 }
 
 // ─── Collection-level write-through helpers ─────────────────────────────────

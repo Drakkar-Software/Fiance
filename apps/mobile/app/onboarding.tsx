@@ -14,6 +14,8 @@ import { analytics } from "@/lib/analytics";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
 import { PageHeader } from "@/components/PageHeader";
+import { DateRow } from "@/components/FormSection";
+import { setPendingWeddingSeed, consumePendingWeddingSeed } from "@/lib/pending-wedding-seed";
 
 type Mode = "choose" | "create" | "join";
 
@@ -47,9 +49,16 @@ export default function OnboardingScreen() {
     return (
       <CreateWeddingForm
         onBack={() => setMode("choose")}
-        onCreate={async (label) => {
+        onCreate={async ({ partner1Name, partner2Name, weddingDate }) => {
+          const label = [partner1Name, partner2Name].filter(Boolean).join(" & ") || "Mon mariage";
+          setPendingWeddingSeed({ partner1Name, partner2Name, weddingDate });
           const passphrase = generatePassphrase();
-          await createWedding(label, passphrase);
+          try {
+            await createWedding(label, passphrase);
+          } catch (e) {
+            consumePendingWeddingSeed(); // discard the stale seed on failure
+            throw e;
+          }
           analytics.capture("wedding_created", { method: "new" });
           // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
         }}
@@ -123,20 +132,30 @@ function CreateWeddingForm({
   onCreate,
 }: {
   onBack: () => void;
-  onCreate: (label: string) => Promise<void>;
+  onCreate: (data: {
+    partner1Name: string | null;
+    partner2Name: string | null;
+    weddingDate: string | null;
+  }) => Promise<void>;
 }) {
   const { t } = useTranslation("common");
-  const [label, setLabel] = useState("");
+  const [partner1, setPartner1] = useState("");
+  const [partner2, setPartner2] = useState("");
+  const [date, setDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
-    if (!label.trim()) {
-      Alert.alert(t("error"), t("onboarding.weddingNameRequired"));
+    if (!partner1.trim()) {
+      Alert.alert(t("error"), t("onboarding.partner1Required"));
       return;
     }
     setSaving(true);
     try {
-      await onCreate(label.trim());
+      await onCreate({
+        partner1Name: partner1.trim() || null,
+        partner2Name: partner2.trim() || null,
+        weddingDate: date || null,
+      });
     } catch (e: any) {
       Alert.alert(t("error"), e.message);
     } finally {
@@ -170,16 +189,34 @@ function CreateWeddingForm({
           </Text>
 
           <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
-            {t("onboarding.weddingNameLabel")}
+            {t("onboarding.partner1Label")}
           </Text>
           <TextInput
-            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-8"
-            placeholder={t("onboarding.weddingNamePlaceholder")}
+            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-4"
+            placeholder={t("onboarding.partnerPlaceholder")}
             placeholderTextColor="#C0C0C8"
-            value={label}
-            onChangeText={setLabel}
+            value={partner1}
+            onChangeText={setPartner1}
             autoFocus
           />
+
+          <Text className="text-sm font-medium text-mute mb-1.5 ml-1">
+            {t("onboarding.partner2Label")}
+          </Text>
+          <TextInput
+            className="bg-accent-card rounded-xl px-4 py-3.5 text-base text-ink border border-hair mb-4"
+            placeholder={t("onboarding.partnerPlaceholder")}
+            placeholderTextColor="#C0C0C8"
+            value={partner2}
+            onChangeText={setPartner2}
+          />
+
+          <View className="bg-accent-card rounded-xl px-4 border border-hair mb-1.5">
+            <DateRow label={t("onboarding.dateLabel")} value={date} onChange={setDate} />
+          </View>
+          <Text className="text-xs text-mute mb-8 ml-1">
+            {t("onboarding.dateHint")}
+          </Text>
 
           <Pressable
             onPress={handleCreate}

@@ -160,7 +160,23 @@
     "ceremonyProgram": "Prepare the ceremony program and readings",
     "lastInfoGuests": "Share final information with guests",
     "honeymoonDocs": "Check documents and pack for the honeymoon",
-    "pickupOutfits": "Pick up the dress and suit"
+    "pickupOutfits": "Pick up the dress and suit",
+    "announceWedding": "Announce the wedding to loved ones",
+    "engagementParty": "Organize the engagement party",
+    "honeymoonDestination": "Choose the honeymoon destination",
+    "bookCeremonyVenue": "Book the ceremony venue (church, temple)",
+    "chooseDecoration": "Choose the theme and decoration",
+    "orderStationery": "Order the stationery (invitations, menus, place cards)",
+    "confirmGuestAddresses": "Gather guests' postal addresses",
+    "menuTasting": "Do the menu tasting with the caterer",
+    "planEntertainment": "Plan the reception entertainment",
+    "chooseBouquet": "Choose the bridal bouquet and buttonholes",
+    "firstDanceMusic": "Choose and rehearse the first dance",
+    "collectRings": "Pick up the wedding rings",
+    "sendSeatingToVenue": "Send the final headcount to the caterer",
+    "confirmVendors": "Confirm final details with the vendors",
+    "collectBouquet": "Pick up the bouquet and flowers",
+    "reviewVendors": "Leave reviews for the vendors"
   },
   "notifications": {
     "taskReminder": "Reminder: {{title}}",
@@ -340,5 +356,8 @@
     "inMinutes_one": "in {{count}} min",
     "inMinutes_other": "in {{count}} min",
     "fullProgram": "Full program"
-  }
+  },
+  "requireDateTitle": "Wedding date missing",
+  "requireDateMsg": "Set your wedding date first so task deadlines can be calculated.",
+  "requireDateAction": "Set the date"
 }

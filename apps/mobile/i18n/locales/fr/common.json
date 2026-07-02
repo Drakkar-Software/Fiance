@@ -64,7 +64,13 @@
     "cameraPermissionTitle": "Accès à la caméra requis",
     "cameraPermissionMessage": "L'accès à la caméra est nécessaire pour scanner le QR code d'invitation.",
     "allowCamera": "Autoriser la caméra",
-    "invalidQR": "QR code invalide. Assurez-vous de scanner le QR code d'invitation Fiancé."
+    "invalidQR": "QR code invalide. Assurez-vous de scanner le QR code d'invitation Fiancé.",
+    "partner1Label": "Votre prénom",
+    "partner2Label": "Son prénom",
+    "partnerPlaceholder": "Prénom",
+    "partner1Required": "Indiquez au moins votre prénom",
+    "dateLabel": "Date du mariage",
+    "dateHint": "Optionnel — modifiable plus tard"
   },
   "join": {
     "newWedding": "Nouveau mariage",

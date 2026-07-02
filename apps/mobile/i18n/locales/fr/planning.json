@@ -160,7 +160,23 @@
     "ceremonyProgram": "Préparer le programme et les textes de la cérémonie",
     "lastInfoGuests": "Communiquer les dernières informations aux invités",
     "honeymoonDocs": "Vérifier les documents et préparer les valises (lune de miel)",
-    "pickupOutfits": "Récupérer la robe et le costume"
+    "pickupOutfits": "Récupérer la robe et le costume",
+    "announceWedding": "Annoncer le mariage aux proches",
+    "engagementParty": "Organiser la fête de fiançailles",
+    "honeymoonDestination": "Choisir la destination du voyage de noces",
+    "bookCeremonyVenue": "Réserver le lieu de cérémonie (église, temple)",
+    "chooseDecoration": "Choisir le thème et la décoration",
+    "orderStationery": "Commander la papeterie (faire-part, menus, marque-places)",
+    "confirmGuestAddresses": "Rassembler les adresses postales des invités",
+    "menuTasting": "Faire la dégustation du menu avec le traiteur",
+    "planEntertainment": "Prévoir les animations de la soirée",
+    "chooseBouquet": "Choisir le bouquet de la mariée et les boutonnières",
+    "firstDanceMusic": "Choisir et répéter la première danse",
+    "collectRings": "Récupérer les alliances",
+    "sendSeatingToVenue": "Communiquer le nombre final de convives au traiteur",
+    "confirmVendors": "Confirmer les derniers détails avec les prestataires",
+    "collectBouquet": "Récupérer le bouquet et les fleurs",
+    "reviewVendors": "Laisser un avis aux prestataires"
   },
   "notifications": {
     "taskReminder": "Rappel : {{title}}",
@@ -340,5 +356,8 @@
     "inMinutes_one": "dans {{count}} min",
     "inMinutes_other": "dans {{count}} min",
     "fullProgram": "Programme complet"
-  }
+  },
+  "requireDateTitle": "Date du mariage manquante",
+  "requireDateMsg": "Définissez d'abord la date de votre mariage pour calculer les échéances des tâches.",
+  "requireDateAction": "Définir la date"
 }
