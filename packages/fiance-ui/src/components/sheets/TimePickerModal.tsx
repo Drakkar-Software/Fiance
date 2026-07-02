@@ -97,7 +97,7 @@ export function TimePickerModal({
         snapPoints={Platform.OS === "ios" ? ["45%"] : undefined}
         backgroundColor={colors.surface}
       >
-        <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
           <DateTimePicker
             value={timeValue}
             mode="time"
@@ -136,7 +136,7 @@ export function TimePickerModal({
 
   return (
     <BottomSheet visible={visible} onDismiss={onClose}>
-      <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+      <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
         <Text className="text-center text-3xl font-bold text-typography-900 mb-4">
           {selectedHour}:{selectedMinute}
         </Text>

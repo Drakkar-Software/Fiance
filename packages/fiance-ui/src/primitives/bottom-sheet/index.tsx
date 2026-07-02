@@ -1,12 +1,15 @@
 import React from "react";
 import { Platform } from "react-native";
 import BottomSheetNative, { BottomSheetView } from "@expo/ui/community/bottom-sheet";
+import { useForgeTheme } from "../../theme/context";
 
 interface BottomSheetProps {
   visible: boolean;
   onDismiss: () => void;
   children: React.ReactNode;
-  /** Paint the sheet background with this color (all platforms, via backgroundStyle). */
+  /** Paint the sheet background with this color (all platforms, via backgroundStyle).
+   * Defaults to the theme `surface` so every sheet's native chrome matches its
+   * content — no more lighter band around the rounded content card. */
   backgroundColor?: string;
   /**
    * Static detent(s) for the sheet (e.g. `['40%']`). Overrides the default
@@ -22,12 +25,14 @@ interface BottomSheetProps {
  * single import, no platform branching, no native module touched on web.
  */
 export function BottomSheet({ visible, onDismiss, children, backgroundColor, snapPoints }: BottomSheetProps) {
+  const { colors } = useForgeTheme();
+  const bg = backgroundColor ?? colors.surface;
   return (
     <BottomSheetNative
       index={visible ? 0 : -1}
       enablePanDownToClose
       onDismiss={onDismiss}
-      backgroundStyle={backgroundColor ? { backgroundColor } : undefined}
+      backgroundStyle={{ backgroundColor: bg }}
       snapPoints={snapPoints}
       // iOS: fitToContents re-measures + resizes the sheet after present, which
       // desyncs the RNHostView touch handler (rows show a press state but onPress

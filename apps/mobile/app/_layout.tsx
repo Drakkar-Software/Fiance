@@ -218,7 +218,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ForgeThemeProvider theme={{ colors: { primary: GP.clay } }}>
+        <ForgeThemeProvider theme={{ colors: { primary: GP.clay, surface: GP.card } }}>
           <StatusBar style="auto" />
           {!fontsLoaded || locked === null ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

@@ -106,7 +106,7 @@ export function DatePickerModal({
         snapPoints={Platform.OS === "ios" ? ["55%"] : undefined}
         backgroundColor={colors.surface}
       >
-        <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+        <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
           <DateTimePicker
             value={selectedDate ?? new Date()}
             mode="date"
@@ -146,7 +146,7 @@ export function DatePickerModal({
 
   return (
     <BottomSheet visible={visible} onDismiss={onClose} backgroundColor={colors.surface}>
-      <View className="bg-background-0 rounded-t-3xl px-5 pt-5 pb-8">
+      <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
         {/* Month navigation */}
         <View className="flex-row items-center justify-between mb-3">
           <Pressable
