@@ -274,7 +274,11 @@ export function LandingPage() {
   const { t, i18n } = useTranslation("marketing");
   const router = useRouter();
   const { width: winWidth } = useWindowDimensions();
-  const isNarrow = winWidth < 480;
+  // During static web export there's no window, so useWindowDimensions reports 0.
+  // Treat an unmeasured (0) width as the large/desktop layout — otherwise `0 < 480`
+  // bakes the small-screen layout into the exported HTML and it renders on wide
+  // viewports. The client corrects to the real width on mount.
+  const isNarrow = winWidth > 0 && winWidth < 480;
   const lang = i18n.language === "en" ? "en" : "fr";
   const blogPosts = getLandingBlogPosts(lang);
   const seo = localizedSeo(lang, "/");
