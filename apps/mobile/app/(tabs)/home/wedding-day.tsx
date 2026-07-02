@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState, useCallback } from "react";
-import { View, ScrollView, Pressable, StyleSheet } from "react-native";
+import { View, ScrollView, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { Text } from "react-native-css/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect, useNavigation } from "expo-router";
@@ -8,11 +8,12 @@ import { format } from "date-fns";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
-import { Label } from "@/components/Label";
 import { PageHeader } from "@/components/PageHeader";
+import { ChevronLeft } from "lucide-react-native";
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
@@ -29,6 +30,18 @@ export default function WeddingDayScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const now = useClock();
+
+  const appColorScheme = useSettingsStore((s) => s.colorScheme);
+  const systemScheme = useColorScheme();
+  const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
+  const c = isDark
+    ? { bg: GP.paperDark, mute: "#a09585", accent: "#e8c06a", title: GP.inkDark }
+    : { bg: GP.paper, mute: GP.mute, accent: GP.mustard, title: GP.ink };
+
+  const handleBack = useCallback(() => {
+    if (router.canGoBack()) router.back();
+    else router.replace("/(tabs)/home");
+  }, [router]);
 
   useFocusEffect(useCallback(() => {
     const parent = navigation.getParent();
@@ -71,11 +84,13 @@ export default function WeddingDayScreen() {
   }, [sortedItems, nowTimeStr]);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.root, { backgroundColor: c.bg, paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Label color="#a09585" size={9}>{t("common:yourDay")}</Label>
-        <Script size={18} color="#e8c06a">{timeStr}</Script>
+        <Pressable onPress={handleBack} hitSlop={8} style={{ padding: 4, marginLeft: -4 }}>
+          <ChevronLeft size={26} color={c.mute} />
+        </Pressable>
+        <Script size={18} color={c.accent}>{timeStr}</Script>
       </View>
 
       <View style={{ marginTop: 10 }}>
@@ -88,20 +103,20 @@ export default function WeddingDayScreen() {
       </View>
 
       {/* Timeline */}
-      <ScrollView style={{ flex: 1, marginTop: 18 }} showsVerticalScrollIndicator={false}>
-        <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 24 }}>
-          {sortedItems.length === 0 ? (
-            <View style={styles.empty}>
-              <Script size={22} color="#a09585">{t("noMoments")}</Script>
-              <Pressable
-                onPress={() => router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })}
-                style={styles.addBtn}
-              >
-                <Text style={styles.addBtnText}>{t("addMoment")}</Text>
-              </Pressable>
-            </View>
-          ) : (
-            sortedItems.map((item, idx) => {
+      {sortedItems.length === 0 ? (
+        <View style={styles.empty}>
+          <Script size={22} color={c.mute}>{t("noMoments")}</Script>
+          <Pressable
+            onPress={() => router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })}
+            style={styles.addBtn}
+          >
+            <Text style={styles.addBtnText}>{t("addMoment")}</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <ScrollView style={{ flex: 1, marginTop: 18 }} showsVerticalScrollIndicator={false}>
+          <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 24 }}>
+            {sortedItems.map((item, idx) => {
               const isActive = idx === currentIdx;
               const isPast = idx < currentIdx;
               return (
@@ -114,33 +129,25 @@ export default function WeddingDayScreen() {
                     { opacity: isPast ? 0.35 : 1 },
                   ]}
                 >
-                  <Text style={[styles.itemTime, isActive && { color: "#fff" }]}>
+                  <Text style={[styles.itemTime, { color: c.accent }, isActive && { color: "#fff" }]}>
                     {item.time ?? "--:--"}
                   </Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.itemTitle, isActive && { color: "#fff" }]}>
+                    <Text style={[styles.itemTitle, { color: c.title }, isActive && { color: "#fff" }]}>
                       {item.title}
                     </Text>
                     {item.notes ? (
-                      <Text style={[styles.itemNote, isActive && { opacity: 0.8 }]}>
+                      <Text style={[styles.itemNote, { color: c.mute }, isActive && { opacity: 0.8 }]}>
                         {item.notes}
                       </Text>
                     ) : null}
                   </View>
                 </Pressable>
               );
-            })
-          )}
-        </View>
-      </ScrollView>
-
-      {/* Close button */}
-      <Pressable
-        onPress={() => router.back()}
-        style={[styles.closeBtn, { paddingBottom: insets.bottom + 12 }]}
-      >
-        <Script size={16} color={GP.mute}>{t("common:back")}</Script>
-      </Pressable>
+            })}
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -157,9 +164,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   empty: {
+    flex: 1,
     alignItems: "center",
-    paddingTop: 60,
+    justifyContent: "center",
     gap: 16,
+    paddingHorizontal: 20,
   },
   addBtn: {
     backgroundColor: GP.clay,
@@ -199,11 +208,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#a09585",
     marginTop: 1,
-  },
-  closeBtn: {
-    alignItems: "center",
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.08)",
   },
 });
