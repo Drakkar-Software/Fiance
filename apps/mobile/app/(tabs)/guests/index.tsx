@@ -273,7 +273,7 @@ function GuestsView() {
         showsHorizontalScrollIndicator={false}
         className="mt-6 mb-10"
         style={{ flexGrow: 0 }}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: "center" }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 8, alignItems: "center" }}
       >
         {rsvpTabs.map((tab) => {
           const isActive = tab.key === rsvpFilter;
