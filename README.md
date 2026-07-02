@@ -8,10 +8,10 @@
   <p>One app. Every device. Zero compromises on your data.</p>
 
   <p>
-    <img alt="Expo SDK 55" src="https://img.shields.io/badge/Expo_SDK-55-000020?logo=expo&logoColor=white" />
-    <img alt="React Native" src="https://img.shields.io/badge/React_Native-0.83-61DAFB?logo=react&logoColor=white" />
-    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" />
-    <img alt="Cloudflare" src="https://img.shields.io/badge/Sync-Cloudflare_Workers-F38020?logo=cloudflare&logoColor=white" />
+    <img alt="Expo SDK 57" src="https://img.shields.io/badge/Expo_SDK-57-000020?logo=expo&logoColor=white" />
+    <img alt="React Native" src="https://img.shields.io/badge/React_Native-0.86-61DAFB?logo=react&logoColor=white" />
+    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white" />
+    <img alt="Cloudflare" src="https://img.shields.io/badge/Web_App-Cloudflare_Pages-F38020?logo=cloudflare&logoColor=white" />
     <img alt="License" src="https://img.shields.io/badge/License-Private-gray" />
   </p>
 
@@ -114,7 +114,7 @@ Destination, dates, budget vs. spent, and a day-by-day itinerary.
 
 | | |
 |---|---|
-| **Cross-platform** | Expo SDK 55 + Expo Router (iOS, Android, Web) |
+| **Cross-platform** | Expo SDK 57 + Expo Router (iOS, Android, Web) |
 | **UI** | React Native + NativeWind v5 (Tailwind CSS) |
 | **State** | Zustand v5 |
 | **Sync** | Starfish client — AES-256-GCM encrypted push/pull |
@@ -176,12 +176,12 @@ The codebase is a **pnpm monorepo**:
 apps/
   mobile/          Expo app — iOS · Android · Web
     app/(tabs)/    Screens: guests · planning · vendors · budget · ideas
-    components/    Shared UI (22 components, all with Storybook stories)
+    components/    App-specific components
     store/         Zustand domain stores
     lib/           Sync, crypto, persistence, budget, planning logic
-  server/          Starfish sync server (Cloudflare Worker)
 packages/
   fiance-sdk/      Pure headless business logic — no React Native deps
+  fiance-ui/       Shared UI components, primitives, and utils
 ```
 
 ---
