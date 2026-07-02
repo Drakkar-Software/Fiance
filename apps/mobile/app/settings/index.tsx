@@ -282,7 +282,8 @@ export default function SettingsScreen() {
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/settings/public-page")}
         />
-        <IconCard
+        {/* Documents button hidden until feature ready */}
+        {/* <IconCard
           icon={
             <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
               <FileText size={20} color="#b96a4a" />
@@ -292,7 +293,7 @@ export default function SettingsScreen() {
           subtitle={t("documentsDesc")}
           right={<ChevronRight size={18} color="#C0C0C8" />}
           onPress={() => router.push("/settings/documents")}
-        />
+        /> */}
       </View>
 
       {/* Sauvegarde et partage */}

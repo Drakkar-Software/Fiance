@@ -19,6 +19,7 @@ import { toast } from "@/lib/toast/sonner";
 import { recalculateDueDates } from "@/lib/planning";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { IconCard } from "@/components/IconCard";
+import { Chip } from "@/components/Chip";
 import {
   SectionTitle,
   FormCard,
@@ -241,8 +242,8 @@ export default function PublicPageScreen() {
           }
           title={t("eventPhotosTitle")}
           subtitle={t("eventPhotosDesc")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
-          onPress={() => router.push("/settings/event-photos")}
+          right={<Chip>{t("comingSoon")}</Chip>}
+          className="opacity-60"
         />
         <IconCard
           icon={
