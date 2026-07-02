@@ -410,7 +410,6 @@ export default function ExportImportScreen() {
         title={t("importConfirmTitle")}
         message={t("importConfirmMsg")}
         confirmLabel={t("import")}
-        destructive
         onConfirm={doImport}
         onCancel={() => setShowImportConfirm(false)}
       />
@@ -422,7 +421,6 @@ export default function ExportImportScreen() {
           label: selectedSample ? t(selectedSample.labelKey) : "",
         })}
         confirmLabel={t("import")}
-        destructive
         onConfirm={doImportSample}
         onCancel={() => {
           setShowSampleConfirm(false);

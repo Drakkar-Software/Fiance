@@ -1,9 +1,28 @@
 'use client'
 import React from 'react'
+import { Platform } from 'react-native'
 import { Button as ExpoButton } from '@expo/ui'
 import type { ButtonProps } from '@expo/ui'
 import { frame } from '../_host/modifiers'
 import { useHostWrap } from '../_host/ForgeHost'
+
+// Android (Jetpack Compose) Material buttons already carry an intrinsic
+// min-height; the `paddingVertical` we tune for iOS's chrome-less `.plain`
+// buttons stacks on top of it and makes them noticeably too tall (most visible
+// on the full-width destructive button). Drop the vertical padding on Android
+// and let Material own the height — iOS keeps its tuned padding untouched.
+function androidStripVerticalPadding(
+  style: FianceButtonProps['style'],
+): FianceButtonProps['style'] {
+  if (!style) return style
+  const { padding, paddingVertical, paddingTop, paddingBottom, ...rest } =
+    style as Record<string, unknown>
+  // An all-sides `padding` also sets horizontal inset — preserve just that half.
+  if (padding != null && (rest as Record<string, unknown>).paddingHorizontal == null) {
+    ;(rest as Record<string, unknown>).paddingHorizontal = padding
+  }
+  return rest as FianceButtonProps['style']
+}
 
 interface FianceButtonProps extends ButtonProps {
   /** Stretch to fill the container's width (stacked/column or flex-1 half-width
@@ -24,12 +43,13 @@ interface FianceButtonProps extends ButtonProps {
   fill?: boolean
 }
 
-function Button({ fill = false, modifiers, ...props }: FianceButtonProps) {
+function Button({ fill = false, modifiers, style, ...props }: FianceButtonProps) {
   const mergedModifiers = fill
     ? [frame({ maxWidth: Infinity }), ...(modifiers ?? [])]
     : modifiers
+  const platformStyle = Platform.OS === 'android' ? androidStripVerticalPadding(style) : style
   return useHostWrap(
-    <ExpoButton {...props} modifiers={mergedModifiers} />,
+    <ExpoButton {...props} style={platformStyle} modifiers={mergedModifiers} />,
     fill
       ? { matchContents: { vertical: true } }
       : { matchContents: true }

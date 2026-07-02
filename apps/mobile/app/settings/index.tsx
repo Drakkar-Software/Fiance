@@ -601,7 +601,6 @@ export default function SettingsScreen() {
       title={t("disableLock")}
       message={t("disableLockMsg")}
       confirmLabel={t("disable")}
-      destructive
       onConfirm={() => {
         setShowDisableLock(false);
         setLockEnabled(false).then(() => setLockEnabledState(false));
