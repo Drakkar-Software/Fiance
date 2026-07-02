@@ -1,11 +1,11 @@
 import React from "react";
-import { View, type ViewStyle } from "react-native";
+import { View, type StyleProp, type ViewStyle } from "react-native";
 import { theme as GP } from "../garden-theme";
 
 type Props = {
   children: React.ReactNode;
   tinted?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 /** Freeform content card — paper-cream bg, 1px hair border, 14px radius.

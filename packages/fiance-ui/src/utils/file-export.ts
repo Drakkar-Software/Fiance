@@ -34,10 +34,10 @@ export async function exportToCsv(csv: string, filename: string): Promise<void> 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } else {
-    const { writeAsStringAsync, documentDirectory } = await import("expo-file-system/legacy");
+    const { writeAsStringAsync, cacheDirectory, EncodingType } = await import("expo-file-system/legacy");
     const { shareAsync } = await import("expo-sharing");
-    const uri = `${documentDirectory}${filename}`;
-    await writeAsStringAsync(uri, csv, { encoding: "utf8" });
+    const uri = `${cacheDirectory}${filename}`;
+    await writeAsStringAsync(uri, csv, { encoding: EncodingType.UTF8 });
     await shareAsync(uri, { mimeType: "text/csv", UTI: "public.comma-separated-values-text" });
   }
 }
