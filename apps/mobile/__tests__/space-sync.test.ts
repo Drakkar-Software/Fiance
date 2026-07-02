@@ -478,11 +478,16 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
     ];
 
     const pulledPaths: string[] = [];
+    const batchedObjectIds: string[] = [];
     mockGetNodeAccessImpl = async () => ({
       encryptor: null,
       client: {
         pull: vi.fn(async (path: string) => { pulledPaths.push(path); return { data: null, hash: null }; }),
         push: vi.fn(),
+        batchPullMany: vi.fn(async (_collection: string, paramsList: { objectId: string }[]) => {
+          batchedObjectIds.push(...paramsList.map((p) => p.objectId));
+          return paramsList.map(() => ({ data: null }));
+        }),
       },
       isOwnerOpen: false,
       push: vi.fn(),
@@ -491,11 +496,11 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
     const { hydrateFromSpace } = await import("@/lib/space-sync");
     await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
 
-    // The only pull is for the guest node, not a wedding node.
+    // No wedding node exists, so the only content pull is the guest, and it goes
+    // through the batched path (batchPullMany), not a per-node client.pull().
     const weddingPulls = pulledPaths.filter((p) => p.includes("node-A"));
-    // One pull: the guest "guest-1" references "node-A" as parentId, but the
-    // content is pulled for node "guest-1", not "node-A". No wedding pulls.
-    expect(pulledPaths.some((p) => p.includes("guest-1"))).toBe(true);
+    expect(weddingPulls).toHaveLength(0);
+    expect(batchedObjectIds).toContain("guest-1");
   });
 });
 

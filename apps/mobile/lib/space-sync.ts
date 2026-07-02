@@ -488,6 +488,35 @@ export async function hydrateFromSpace(
       return results.filter((r): r is Record<string, unknown> => r !== null);
     };
 
+    // Batched variant of pullAll: one /batch/pull round-trip per collection type
+    // instead of one HTTP request per node, to avoid rate-limiting on hydrate.
+    // Only safe for plain space-member content (objdoc) — nodes with a per-node
+    // 'invite' access entry can resolve to a different client/cap, so those fall
+    // back to the per-node pullAll path.
+    const pullAllBatch = async (type: string): Promise<Record<string, unknown>[]> => {
+      const typeNodes = byType.get(type) ?? [];
+      if (!typeNodes.length) return [];
+      if (typeNodes.some((n) => n.access === 'invite')) return pullAll(type);
+
+      const handle = await getNodeAccess(spaceId, typeNodes[0].id, typeNodes[0], session, null);
+      const entries = await handle.client.batchPullMany(
+        'objdoc',
+        typeNodes.map((n) => ({ spaceId, objectId: n.id })),
+      );
+
+      const results = await Promise.all(entries.map(async (entry, i) => {
+        if (entry.error || !entry.data) {
+          if (entry.error) {
+            console.warn(`[space-sync] pullAllBatch ${type}:${typeNodes[i].id} failed:`, entry.error);
+          }
+          return null;
+        }
+        const data = entry.data as Record<string, unknown>;
+        return handle.encryptor ? await handle.encryptor.decrypt(data) : data;
+      }));
+      return results.filter((r): r is Record<string, unknown> => r !== null);
+    };
+
     // Select the active wedding node at index level (node ids are available here but
     // lost after pullNodeContent decryption — this is the correct place to filter).
     // Fall back to first node when no match (owner's own boot, only one root present).
@@ -526,34 +555,34 @@ export async function hydrateFromSpace(
       playlistTrackDocs,
     ] = await Promise.all([
       weddingNode ? pullNodeContent(session, spaceId, weddingNode) : Promise.resolve(null),
-      pullAll(FIANCE_TYPES.guestGroup),
-      pullAll(FIANCE_TYPES.guest),
-      pullAll(FIANCE_TYPES.table),
-      pullAll(FIANCE_TYPES.vendor),
-      pullAll(FIANCE_TYPES.quotePricing),
-      pullAll(FIANCE_TYPES.vendorPayment),
-      pullAll(FIANCE_TYPES.accommodation),
-      pullAll(FIANCE_TYPES.gift),
-      pullAll(FIANCE_TYPES.invitationType),
-      pullAll(FIANCE_TYPES.communication),
-      pullAll(FIANCE_TYPES.weddingRole),
-      pullAll(FIANCE_TYPES.weddingRoleAssignment),
-      pullAll(FIANCE_TYPES.seatingConstraint),
-      pullAll(FIANCE_TYPES.weddingEvent),
-      pullAll(FIANCE_TYPES.guestMealSelection),
-      pullAll(FIANCE_TYPES.communicationTemplate),
-      pullAll(FIANCE_TYPES.document),
-      pullAll(FIANCE_TYPES.legalMilestone),
-      pullAll(FIANCE_TYPES.honeymoonPlan),
-      pullAll(FIANCE_TYPES.taskCategory),
-      pullAll(FIANCE_TYPES.task),
-      pullAll(FIANCE_TYPES.agendaEvent),
-      pullAll(FIANCE_TYPES.dayOfItem),
-      pullAll(FIANCE_TYPES.ideaCollection),
-      pullAll(FIANCE_TYPES.idea),
-      pullAll(FIANCE_TYPES.ceremonyItem),
-      pullAll(FIANCE_TYPES.speech),
-      pullAll(FIANCE_TYPES.playlistTrack),
+      pullAllBatch(FIANCE_TYPES.guestGroup),
+      pullAllBatch(FIANCE_TYPES.guest),
+      pullAllBatch(FIANCE_TYPES.table),
+      pullAllBatch(FIANCE_TYPES.vendor),
+      pullAllBatch(FIANCE_TYPES.quotePricing),
+      pullAllBatch(FIANCE_TYPES.vendorPayment),
+      pullAllBatch(FIANCE_TYPES.accommodation),
+      pullAllBatch(FIANCE_TYPES.gift),
+      pullAllBatch(FIANCE_TYPES.invitationType),
+      pullAllBatch(FIANCE_TYPES.communication),
+      pullAllBatch(FIANCE_TYPES.weddingRole),
+      pullAllBatch(FIANCE_TYPES.weddingRoleAssignment),
+      pullAllBatch(FIANCE_TYPES.seatingConstraint),
+      pullAllBatch(FIANCE_TYPES.weddingEvent),
+      pullAllBatch(FIANCE_TYPES.guestMealSelection),
+      pullAllBatch(FIANCE_TYPES.communicationTemplate),
+      pullAllBatch(FIANCE_TYPES.document),
+      pullAllBatch(FIANCE_TYPES.legalMilestone),
+      pullAllBatch(FIANCE_TYPES.honeymoonPlan),
+      pullAllBatch(FIANCE_TYPES.taskCategory),
+      pullAllBatch(FIANCE_TYPES.task),
+      pullAllBatch(FIANCE_TYPES.agendaEvent),
+      pullAllBatch(FIANCE_TYPES.dayOfItem),
+      pullAllBatch(FIANCE_TYPES.ideaCollection),
+      pullAllBatch(FIANCE_TYPES.idea),
+      pullAllBatch(FIANCE_TYPES.ceremonyItem),
+      pullAllBatch(FIANCE_TYPES.speech),
+      pullAllBatch(FIANCE_TYPES.playlistTrack),
     ]);
 
     // Diagnostic: if the space has content nodes but decryption yielded 0 guests,
