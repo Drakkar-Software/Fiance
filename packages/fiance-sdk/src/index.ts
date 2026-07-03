@@ -30,6 +30,7 @@ export * from './sync/rsvp.js';
 export * from './sync/export-import-core.js';
 export * from './sync/import-legacy.js';
 export * from './sync/deep-merge.js';
+export * from './sync/collection-doc.js';
 export * from './analytics.js';
 
 // ─── Fiancé config ────────────────────────────────────────────────────────────

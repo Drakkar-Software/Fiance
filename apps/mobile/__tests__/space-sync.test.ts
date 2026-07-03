@@ -843,3 +843,164 @@ describe("pushNodeContent conflict mutator — deep-merges remote content instea
     );
   });
 });
+
+// ─── Release 1 (Expand): per-collection dual-write ────────────────────────────
+//
+// The live-sync path now ALSO writes one doc per collection (col:{type}:{weddingNodeId})
+// alongside the per-entity nodes. A bulk import of N guests mutates only the guest
+// store → exactly ONE collection doc (col:guest) is pushed, regardless of N — the
+// headline metric for the granularity change. Delete-safety rides on in-doc tombstones.
+
+/** All (pushPath, payload) pairs sent to client.push whose path targets a collection doc. */
+function collectionPushes(pushMock: Mock, type: string): Array<{ path: string; payload: Record<string, unknown> }> {
+  return pushMock.mock.calls
+    .filter((c) => typeof c[0] === "string" && (c[0] as string).includes(`col:${type}:`))
+    .map((c) => ({ path: c[0] as string, payload: c[1] as Record<string, unknown> }));
+}
+
+describe("pushSpaceSnapshot — per-collection dual-write", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    mockGuestsData = [];
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    // Missing-doc pull response so the collection doc is created (baseHash "").
+    mockClientPull = vi.fn(async () => ({ data: null, hash: null }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+    mockGuestsData = [];
+  });
+
+  it("bulk import of 120 guests pushes the guest collection doc exactly ONCE", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = Array.from({ length: 120 }, (_, i) => ({ id: `g${i}` }));
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    const pushes = collectionPushes(mockClientPush, "guest");
+    expect(pushes).toHaveLength(1); // one doc for all 120 guests
+    expect(Object.keys((pushes[0].payload.items as Record<string, unknown>))).toHaveLength(120);
+  });
+
+  it("does not push a collection doc for a collection that stays empty", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }];
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(collectionPushes(mockClientPush, "guest")).toHaveLength(1);
+    expect(collectionPushes(mockClientPush, "vendor")).toHaveLength(0); // empty → no sentinel/doc
+  });
+
+  it("a second push with unchanged guests does not re-push the guest collection", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }, { id: "g2" }];
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(collectionPushes(mockClientPush, "guest")).toHaveLength(1);
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+    expect(collectionPushes(mockClientPush, "guest")).toHaveLength(1); // unchanged → skipped
+  });
+
+  it("deleting a guest tombstones it in the collection doc instead of resurrecting it", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }, { id: "g2" }];
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    // Remove g2 locally; the remote still holds it (peer hasn't hydrated the delete).
+    mockClientPull = vi.fn(async () => ({
+      data: { fmt: 2, items: { g1: { id: "g1" }, g2: { id: "g2" } }, rev: { g1: 1, g2: 1 }, tombstones: {} },
+      hash: "H1",
+    }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    mockClientPush.mockClear();
+    mockGuestsData = [{ id: "g1" }];
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    const pushes = collectionPushes(mockClientPush, "guest");
+    expect(pushes).toHaveLength(1);
+    const payload = pushes[0].payload;
+    expect((payload.items as Record<string, unknown>).g2).toBeUndefined(); // not resurrected
+    expect((payload.tombstones as Record<string, unknown>).g2).toBeDefined(); // durable delete
+    expect((payload.items as Record<string, unknown>).g1).toBeDefined();
+  });
+});
+
+// ─── Release 1 (Expand): per-collection dual-read ─────────────────────────────
+//
+// hydrateFromSpace batch-pulls the collection docs (via the sentinel nodes) AND the
+// legacy per-entity nodes, unioning them so a legacy-only entity (written by an
+// old-build peer) survives. Sentinel nodes must NOT be pulled as lone entities.
+
+describe("hydrateFromSpace — per-collection dual-read", () => {
+  afterEach(() => {
+    mockReadObjectTreeImpl = async () => [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null, hash: null })) },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+  });
+
+  it("batch-pulls the collection sentinel AND the legacy per-entity node, unioning both", async () => {
+    // Space has a wedding root, a legacy per-entity guest, and a guest collection sentinel.
+    mockReadObjectTreeImpl = async () => [
+      { id: "w1", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+      { id: "g-legacy", type: "guest", parentId: "w1", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+      { id: "col:guest:w1", type: "guest", parentId: "w1", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+
+    const batchedIds: string[] = [];
+    const setGuests = vi.fn();
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({ data: null, hash: null })),
+        push: vi.fn(),
+        batchPullMany: vi.fn(async (_collection: string, params: { objectId: string }[]) => {
+          batchedIds.push(...params.map((p) => p.objectId));
+          return params.map((p) => {
+            if (p.objectId === "col:guest:w1") {
+              return { data: { fmt: 2, items: { "g-coll": { id: "g-coll" } }, rev: { "g-coll": 5 }, tombstones: {} } };
+            }
+            if (p.objectId === "g-legacy") return { data: { id: "g-legacy" } };
+            return { data: null };
+          });
+        }),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    // Capture the guest store's setGuests via a per-call spy is impractical (fresh spy per
+    // getState). Instead assert on what was batch-pulled — the dual-read wiring.
+    void setGuests;
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "space-1", "w1");
+
+    // The sentinel doc was pulled (collection path) AND the legacy node was pulled (union path).
+    expect(batchedIds).toContain("col:guest:w1");
+    expect(batchedIds).toContain("g-legacy");
+  });
+});

@@ -55,6 +55,77 @@ Fiancé uses [Starfish](https://github.com/Drakkar-Software/starfish) (`@drakkar
 
 Sync is **document-level**: the entire wedding dataset is serialized into a single backup document, encrypted client-side with AES-256-GCM, and pushed/pulled as one blob. There are no per-field diffs — the server stores the latest encrypted snapshot and detects conflicts via content hashing.
 
+> **⚠️ This document describes the original single-blob `SyncManager` model.** Live multi-device
+> sync has since moved to the **ObjectNode space model** (`apps/mobile/lib/space-sync.ts` +
+> `@drakkar.software/starfish-spaces`). The single-blob `createBackupDocument()` path now backs
+> only JSON export/import. The section below documents the current live-sync path; the rest of
+> this file is retained for the export/backup format and key-derivation details, which still apply.
+
+---
+
+## Live sync: ObjectNode space model & per-collection documents (current)
+
+The live, multi-device path no longer pushes one blob. It stores data as an **ObjectNode tree**
+inside a Starfish *space*: a single shared **object index** (all node metadata) plus separate
+encrypted **content docs**. `notifySync()` → `dispatchDocChange('*')` → `scheduleSyncPush()`
+(debounced 2 s) → `pushSpaceSnapshot()`; hydration is `hydrateFromSpace()` on boot/foreground.
+All admin content is `access:'space', enc:true` (client-side AES-256-GCM under the space keyring);
+the server stores opaque `{ "_encrypted": … }`. The guest-facing `publicPage` (one/wedding) and
+`rsvp` (one/guest) nodes are separate `access:'invite'` surfaces and are **never** folded into
+admin data.
+
+### Granularity: one document per collection
+
+Content is stored **one document per collection** — all guests in one doc, all vendors in one,
+etc. — keyed by a deterministic sentinel node id `col:{type}:{weddingNodeId}` at
+`spaces/{spaceId}/objects/docs/{sentinelId}`. (The `wedding` root stays its own singleton doc.)
+Because Starfish has **no batch-push** (one document = one key = one CAS `POST`), collapsing a
+collection means a bulk action — e.g. importing 120 guests — is a **single** write instead of 120.
+
+The collection doc is an **id-keyed map**, not an array, so two devices adding different entities
+touch disjoint keys and merge cleanly:
+
+```ts
+interface CollectionDoc {
+  fmt: 2;
+  items:      Record<string, Entity>;   // entityId → full entity
+  rev:        Record<string, number>;   // entityId → ms of last local change (LWW arbiter)
+  tombstones: Record<string, number>;   // entityId → ms of deletion (durable delete)
+}
+```
+
+Pure helpers live in `packages/fiance-sdk/src/sync/collection-doc.ts`: `mergeCollectionDoc`,
+`buildCollectionDoc`, `collectionNodeId`, `asCollectionDoc`, `liveItems`.
+
+### Delete-safety via tombstones
+
+`mergeCollectionDoc(cur, local)` is used as **both** the normal-push transform and the CAS-retry
+mutator (Starfish runs the mutator against the freshly-pulled remote on every attempt). Per entity
+id: the live copy wins iff a live copy exists and its `rev` ≥ the newest tombstone (add-wins on a
+tie → re-add after delete resurrects); otherwise the tombstone wins. Because the collection node
+never leaves the index, `cur` always carries the tombstone forward, so a peer's stale
+full-collection push **cannot** resurrect a deleted entity — fixing the union-merge deletion
+limitation noted in [Conflict Resolution](#conflict-resolution) below. Tombstones older than a
+90-day TTL are garbage-collected on build/merge.
+
+### Rollout: expand / migrate / contract
+
+The migration from the earlier one-doc-per-**entity** model runs in stages:
+
+- **Expand (current release):** `pushSpaceSnapshot` **dual-writes** — the legacy per-entity nodes
+  *and* the per-collection docs — and `hydrateFromSpace` **dual-reads** — pulling the collection
+  docs (one `batchPullMany` over the sentinel ids) *and* the legacy per-entity nodes, unioning
+  them (collection items win, tombstones remove) so a legacy-only entity written by an old-build
+  peer survives. Old-build devices keep reading per-entity nodes untouched. No request-count win
+  yet (dual-write is strictly more work) — this step exists purely for rollout safety.
+- **Contract (later release):** stop writing per-entity nodes, prune the legacy per-entity entries
+  from the index, set `syncSchemaVersion: 2` on the wedding root, and retire the in-memory
+  `_deletedNodeIds` mechanism (deletes then flow purely through collection tombstones). This is
+  where the bulk-import request-count reduction lands.
+
+**Files:** `apps/mobile/lib/space-sync.ts` (build/push/hydrate),
+`packages/fiance-sdk/src/sync/collection-doc.ts` (pure merge/build helpers).
+
 ---
 
 ## Starfish Client SDK

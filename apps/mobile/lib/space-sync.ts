@@ -17,6 +17,14 @@ import {
   objInvPull,
   deepMerge,
   stableStringify,
+  collectionNodeId,
+  isCollectionNodeId,
+  buildCollectionDoc,
+  mergeCollectionDoc,
+  asCollectionDoc,
+  type CollectionDoc,
+  type CollectionState,
+  type CollectionEntity,
   FIANCE_TYPES,
   weddingToNode, weddingFromDoc,
   guestGroupToNode, guestGroupFromDoc,
@@ -99,6 +107,25 @@ const _lastPushedJson = new Map<string, string>();
  */
 const _deletedNodeIds = new Set<string>();
 
+// ── Per-collection ("one doc per collection") sync state — Release 1 (Expand) ──
+// The live-sync path is transitioning from one objdoc per entity to one objdoc per
+// collection (see @fiance/sdk collection-doc). During the Expand release we DUAL-WRITE:
+// the per-entity nodes above AND a collection doc per type, so a device still on the old
+// build keeps reading per-entity nodes while new-build devices populate collection docs.
+// A later Contract release drops the per-entity writes and prunes the legacy nodes.
+
+/** sentinel node id (`col:{type}:{weddingNodeId}`) → stableStringify() of the collection
+ *  doc last pushed, so an unchanged collection is skipped on the next debounced push. */
+const _lastPushedCollectionJson = new Map<string, string>();
+
+/** entity type → per-entity `rev`/`tombstones` carried between pushes/hydrates. Seeded from
+ *  the pulled collection doc on hydrate; advanced on each successful collection push. */
+const _collectionState = new Map<string, CollectionState>();
+
+/** entity id → stableStringify() of the entity last folded into a collection doc — the
+ *  dirty check that decides whether a given entity's `rev` should be bumped. */
+const _collectionEntityJson = new Map<string, string>();
+
 /** Domain node types managed wholesale by buildAllNodes/pushSpaceSnapshot — excludes the
  *  guest-surface synthetic nodes (publicPage, rsvp) which are written by other code paths
  *  and must survive a snapshot push untouched. */
@@ -144,6 +171,9 @@ export function restoreSyncPush(): void {
 export function resetDirtyPushBaseline(): void {
   _lastPushedJson.clear();
   _deletedNodeIds.clear();
+  _lastPushedCollectionJson.clear();
+  _collectionState.clear();
+  _collectionEntityJson.clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -323,6 +353,120 @@ function buildAllNodes(weddingNodeId: string): BuiltNodes {
 }
 
 // ---------------------------------------------------------------------------
+// Build per-collection docs from current store state (Release 1 dual-write)
+// ---------------------------------------------------------------------------
+
+/** The 28 collapsing admin collections (everything except the `wedding` singleton root and
+ *  the guest-surface publicPage/rsvp invite nodes). `wedding` stays its own per-node doc. */
+function collectionSources(): { type: string; items: CollectionEntity[] }[] {
+  const { guests, tables, groups } = useGuestsStore.getState();
+  const { vendors, quotePricings, vendorPayments } = useVendorsStore.getState();
+  const { accommodations } = useAccommodationsStore.getState();
+  const { categories, tasks, agendaEvents, dayOfItems } = usePlanningStore.getState();
+  const { collections, ideas } = useIdeasStore.getState();
+  const { gifts } = useGiftsStore.getState();
+  const { invitationTypes } = useInvitationTypesStore.getState();
+  const { communications } = useCommunicationsStore.getState();
+  const { weddingRoles, weddingRoleAssignments } = useWeddingPartyStore.getState();
+  const { seatingConstraints } = useSeatingConstraintsStore.getState();
+  const { weddingEvents } = useWeddingEventsStore.getState();
+  const { mealSelections } = useMealSelectionsStore.getState();
+  const { communicationTemplates } = useCommunicationTemplatesStore.getState();
+  const { documents } = useDocumentsStore.getState();
+  const { legalMilestones } = useLegalStore.getState();
+  const { honeymoonPlans } = useHoneymoonStore.getState();
+  const { ceremonyItems } = useCeremonyStore.getState();
+  const { speeches, playlistTracks } = useSpeechesMusicStore.getState();
+
+  const as = (arr: unknown[]) => arr as CollectionEntity[];
+  return [
+    { type: FIANCE_TYPES.guestGroup, items: as(groups) },
+    { type: FIANCE_TYPES.guest, items: as(guests) },
+    { type: FIANCE_TYPES.table, items: as(tables) },
+    { type: FIANCE_TYPES.vendor, items: as(vendors) },
+    { type: FIANCE_TYPES.quotePricing, items: as(quotePricings) },
+    { type: FIANCE_TYPES.vendorPayment, items: as(vendorPayments) },
+    { type: FIANCE_TYPES.accommodation, items: as(accommodations) },
+    { type: FIANCE_TYPES.gift, items: as(gifts) },
+    { type: FIANCE_TYPES.invitationType, items: as(invitationTypes) },
+    { type: FIANCE_TYPES.communication, items: as(communications) },
+    { type: FIANCE_TYPES.weddingRole, items: as(weddingRoles) },
+    { type: FIANCE_TYPES.weddingRoleAssignment, items: as(weddingRoleAssignments) },
+    { type: FIANCE_TYPES.seatingConstraint, items: as(seatingConstraints) },
+    { type: FIANCE_TYPES.weddingEvent, items: as(weddingEvents) },
+    { type: FIANCE_TYPES.guestMealSelection, items: as(mealSelections) },
+    { type: FIANCE_TYPES.communicationTemplate, items: as(communicationTemplates) },
+    { type: FIANCE_TYPES.document, items: as(documents) },
+    { type: FIANCE_TYPES.legalMilestone, items: as(legalMilestones) },
+    { type: FIANCE_TYPES.honeymoonPlan, items: as(honeymoonPlans) },
+    { type: FIANCE_TYPES.taskCategory, items: as(categories) },
+    { type: FIANCE_TYPES.task, items: as(tasks) },
+    { type: FIANCE_TYPES.agendaEvent, items: as(agendaEvents) },
+    { type: FIANCE_TYPES.dayOfItem, items: as(dayOfItems) },
+    { type: FIANCE_TYPES.ideaCollection, items: as(collections) },
+    { type: FIANCE_TYPES.idea, items: as(ideas) },
+    { type: FIANCE_TYPES.ceremonyItem, items: as(ceremonyItems) },
+    { type: FIANCE_TYPES.speech, items: as(speeches) },
+    { type: FIANCE_TYPES.playlistTrack, items: as(playlistTracks) },
+  ];
+}
+
+/** One sentinel ObjectNode per collection — a lightweight index entry addressing the
+ *  collection doc at `col:{type}:{weddingNodeId}` (access:'space', enc:true → same keyring). */
+function collectionNode(type: string, weddingNodeId: string, order: number, now: number): ObjectNode {
+  return {
+    id: collectionNodeId(type, weddingNodeId),
+    type,
+    parentId: weddingNodeId,
+    order,
+    title: type,
+    updatedAt: now,
+    contentKind: 'merge',
+    access: 'space',
+    enc: true,
+    meta: { collection: true },
+  };
+}
+
+interface BuiltCollection {
+  node: ObjectNode;
+  type: string;
+  doc: CollectionDoc;
+  /** commit to _collectionState on a successful push of this collection. */
+  nextState: CollectionState;
+  /** entity id → stableStringify(entity); commit to _collectionEntityJson on success. */
+  entityJson: Map<string, string>;
+}
+
+/** Build the sentinel nodes + collection docs to (dual-)write, reusing the per-collection
+ *  dirty baseline to decide which entities get a fresh `rev`. Pure w.r.t. module state:
+ *  callers commit `nextState`/`entityJson` only after the corresponding push succeeds. */
+function buildCollectionDocs(weddingNodeId: string, now: number): { nodes: ObjectNode[]; built: BuiltCollection[] } {
+  const nodes: ObjectNode[] = [];
+  const built: BuiltCollection[] = [];
+  let order = 0;
+  for (const { type, items } of collectionSources()) {
+    const prev = _collectionState.get(type) ?? { rev: {}, tombstones: {} };
+    // Skip a collection that is empty AND has no carried state — no point minting a
+    // sentinel node or pushing an empty doc for a collection the wedding never used.
+    // Once it holds data (or a pending tombstone/rev), it stays material so deletes propagate.
+    if (!items.length && !Object.keys(prev.rev).length && !Object.keys(prev.tombstones).length) continue;
+    const changedIds = new Set<string>();
+    const entityJson = new Map<string, string>();
+    for (const e of items) {
+      const j = stableStringify(e);
+      entityJson.set(e.id, j);
+      if (_collectionEntityJson.get(e.id) !== j) changedIds.add(e.id);
+    }
+    const { doc, state } = buildCollectionDoc(items, prev, changedIds, now);
+    const node = collectionNode(type, weddingNodeId, order++, now);
+    nodes.push(node);
+    built.push({ node, type, doc, nextState: state, entityJson });
+  }
+  return { nodes, built };
+}
+
+// ---------------------------------------------------------------------------
 // Push snapshot to server
 // ---------------------------------------------------------------------------
 
@@ -346,32 +490,63 @@ async function pushNodeContent(
   }
 }
 
+/** Push a single collection doc, CAS-merging via mergeCollectionDoc so a peer's concurrent
+ *  edit/add/delete to a different entity in the same collection is reconciled, not clobbered. */
+async function pushCollectionDoc(
+  session: Session,
+  spaceId: string,
+  node: ObjectNode,
+  doc: CollectionDoc,
+  now: number,
+): Promise<boolean> {
+  try {
+    const handle = await getNodeAccess(spaceId, node.id, node, session, null);
+    await handle.push(
+      objDocPull(spaceId, node.id),
+      objDocPush(spaceId, node.id),
+      (cur) => mergeCollectionDoc(cur, doc, { now }) as unknown as Record<string, unknown>,
+    );
+    return true;
+  } catch (err) {
+    console.warn(`[space-sync] pushCollectionDoc ${node.id}:`, err);
+    return false;
+  }
+}
+
 export async function pushSpaceSnapshot(
   session: Session,
   spaceId: string,
   weddingNodeId: string,
 ): Promise<void> {
+  const now = Date.now();
   const { nodes, contentMap } = buildAllNodes(weddingNodeId);
   if (!nodes.length) return;
+
+  // Release 1 dual-write: build the per-collection docs alongside the per-entity nodes.
+  // Their sentinel nodes join the index so a new-build device (dual-read) can find them,
+  // while old-build devices keep reading the per-entity nodes untouched.
+  const { nodes: collectionNodes, built } = buildCollectionDocs(weddingNodeId, now);
+  const allNodes = [...nodes, ...collectionNodes];
 
   // Diff against the dirty-push baseline to find ids this device deleted locally since
   // its last successful push/hydrate. Tombstoned so a delete still propagates below even
   // though it's no longer distinguishable from "never seen" once _lastPushedJson is
-  // pruned at the end of this function.
-  const localIds = new Set(nodes.map((n) => n.id));
+  // pruned at the end of this function. (Sentinel ids are never in _lastPushedJson, so
+  // including them in localIds is inert — they simply can't be mistaken for a deletion.)
+  const localIds = new Set(allNodes.map((n) => n.id));
   for (const id of _lastPushedJson.keys()) {
     if (!localIds.has(id)) _deletedNodeIds.add(id);
   }
 
   await withIndexLock(spaceId, () =>
-    updateObjectIndex(session, spaceId, (prev, now) => {
+    updateObjectIndex(session, spaceId, (prev, idxNow) => {
       // Union-merge instead of replace: `prev` is the authoritative current remote index
       // (CAS-pulled), so a managed node present there but absent locally is either (a) a
       // peer's addition this device hasn't hydrated yet — must KEEP, or (b) a node this
       // device deleted — must DROP. _deletedNodeIds disambiguates the two; without it,
       // replacing wholesale silently discards concurrent peer additions.
-      const localById = new Map(nodes.map((n) => [n.id, n]));
-      const merged = nodes.map((n) => ({ ...n, updatedAt: now }));
+      const localById = new Map(allNodes.map((n) => [n.id, n]));
+      const merged = allNodes.map((n) => ({ ...n, updatedAt: idxNow }));
       for (const r of prev) {
         if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; } // publicPage/rsvp untouched
         if (localById.has(r.id)) continue; // local copy already included above
@@ -391,14 +566,28 @@ export async function pushSpaceSnapshot(
     return content !== undefined && stableStringify(content) !== _lastPushedJson.get(n.id);
   });
 
-  await Promise.allSettled(
-    dirtyNodes.map((n) => {
+  // Collection docs whose serialized form changed since last push — a 120-guest import
+  // mutates only the guest store, so exactly one collection doc (guest) is dirty here.
+  const dirtyCollections = built.filter(
+    (b) => stableStringify(b.doc) !== _lastPushedCollectionJson.get(b.node.id),
+  );
+
+  await Promise.allSettled([
+    ...dirtyNodes.map((n) => {
       const content = contentMap.get(n.id)!;
       return pushNodeContent(session, spaceId, n, content).then((ok) => {
         if (ok) _lastPushedJson.set(n.id, stableStringify(content));
       });
     }),
-  );
+    ...dirtyCollections.map((b) =>
+      pushCollectionDoc(session, spaceId, b.node, b.doc, now).then((ok) => {
+        if (!ok) return;
+        _lastPushedCollectionJson.set(b.node.id, stableStringify(b.doc));
+        _collectionState.set(b.type, b.nextState);
+        for (const [id, j] of b.entityJson) _collectionEntityJson.set(id, j);
+      }),
+    ),
+  ]);
 
   // Prune baseline entries for nodes that no longer exist locally (deleted).
   const currentIds = new Set(nodes.map((n) => n.id));
@@ -427,6 +616,36 @@ async function pullNodeContent(
     console.warn(`[space-sync] pullNodeContent ${node.type}:${node.id} failed:`, err instanceof Error ? err.message : String(err));
     return null;
   }
+}
+
+/** Batch-pull the per-collection docs (one /batch/pull over the sentinel ids) and decrypt each,
+ *  keyed by entity type. All sentinels are access:'space', so the single batch fast-path applies. */
+async function pullCollectionDocs(
+  session: Session,
+  spaceId: string,
+  sentinels: ObjectNode[],
+): Promise<Map<string, CollectionDoc>> {
+  const out = new Map<string, CollectionDoc>();
+  if (!sentinels.length) return out;
+  try {
+    const handle = await getNodeAccess(spaceId, sentinels[0].id, sentinels[0], session, null);
+    const entries = await handle.client.batchPullMany(
+      'objdoc',
+      sentinels.map((n) => ({ spaceId, objectId: n.id })),
+    );
+    await Promise.all(entries.map(async (entry: { error?: unknown; data?: unknown }, i: number) => {
+      if (entry.error || !entry.data) {
+        if (entry.error) console.warn(`[space-sync] pullCollectionDocs ${sentinels[i].type} failed:`, entry.error);
+        return;
+      }
+      const data = entry.data as Record<string, unknown>;
+      const decrypted = handle.encryptor ? await handle.encryptor.decrypt(data) : data;
+      out.set(sentinels[i].type, asCollectionDoc(decrypted));
+    }));
+  } catch (err) {
+    console.warn('[space-sync] pullCollectionDocs failed:', err);
+  }
+  return out;
 }
 
 /**
@@ -475,8 +694,12 @@ export async function hydrateFromSpace(
     const nodes = await readObjectTree(session, spaceId);
     if (!nodes.length) return 0;
 
+    // Sentinel (per-collection) nodes share a `type` with legacy per-entity nodes, so bucket
+    // them out first — the legacy pull path must not treat a collection doc as a lone entity.
+    const sentinelNodes: ObjectNode[] = [];
     const byType = new Map<string, ObjectNode[]>();
     for (const n of nodes) {
+      if (isCollectionNodeId(n.id)) { sentinelNodes.push(n); continue; }
       const arr = byType.get(n.type) ?? [];
       arr.push(n);
       byType.set(n.type, arr);
@@ -517,6 +740,36 @@ export async function hydrateFromSpace(
       return results.filter((r): r is Record<string, unknown> => r !== null);
     };
 
+    // Release 1 dual-read: pull the per-collection docs (one batch over the sentinel ids) and
+    // seed the collection state so the next push carries the correct rev/tombstones. Falls back
+    // gracefully to legacy-only when a space has no collection docs yet.
+    const collectionDocsByType = await pullCollectionDocs(session, spaceId, sentinelNodes);
+    // Reset to fresh remote truth (like _deletedNodeIds below): a type with no pulled doc gets no
+    // carried state, so a locally-deleted-but-still-legacy entity re-hydrates rather than sticking.
+    _collectionState.clear();
+    for (const [type, doc] of collectionDocsByType) {
+      _collectionState.set(type, { rev: { ...doc.rev }, tombstones: { ...doc.tombstones } });
+    }
+
+    // Union a collection's legacy per-entity docs with its collection doc: collection live items
+    // win, tombstoned ids are removed. During the transition an old-build device may write only
+    // a per-entity node, so a legacy-only entity (absent from the collection doc) is preserved.
+    const pullCollection = async (type: string): Promise<Record<string, unknown>[]> => {
+      const legacy = await pullAllBatch(type);
+      const cdoc = collectionDocsByType.get(type);
+      if (!cdoc) return legacy;
+      const byId = new Map<string, Record<string, unknown>>();
+      for (const e of legacy) {
+        const id = (e as { id?: unknown }).id;
+        if (typeof id === 'string') byId.set(id, e);
+      }
+      for (const [id, entity] of Object.entries(cdoc.items)) {
+        if (cdoc.tombstones[id] === undefined) byId.set(id, entity); // collection live wins
+      }
+      for (const id of Object.keys(cdoc.tombstones)) byId.delete(id); // tombstone removes
+      return [...byId.values()];
+    };
+
     // Select the active wedding node at index level (node ids are available here but
     // lost after pullNodeContent decryption — this is the correct place to filter).
     // Fall back to first node when no match (owner's own boot, only one root present).
@@ -555,34 +808,34 @@ export async function hydrateFromSpace(
       playlistTrackDocs,
     ] = await Promise.all([
       weddingNode ? pullNodeContent(session, spaceId, weddingNode) : Promise.resolve(null),
-      pullAllBatch(FIANCE_TYPES.guestGroup),
-      pullAllBatch(FIANCE_TYPES.guest),
-      pullAllBatch(FIANCE_TYPES.table),
-      pullAllBatch(FIANCE_TYPES.vendor),
-      pullAllBatch(FIANCE_TYPES.quotePricing),
-      pullAllBatch(FIANCE_TYPES.vendorPayment),
-      pullAllBatch(FIANCE_TYPES.accommodation),
-      pullAllBatch(FIANCE_TYPES.gift),
-      pullAllBatch(FIANCE_TYPES.invitationType),
-      pullAllBatch(FIANCE_TYPES.communication),
-      pullAllBatch(FIANCE_TYPES.weddingRole),
-      pullAllBatch(FIANCE_TYPES.weddingRoleAssignment),
-      pullAllBatch(FIANCE_TYPES.seatingConstraint),
-      pullAllBatch(FIANCE_TYPES.weddingEvent),
-      pullAllBatch(FIANCE_TYPES.guestMealSelection),
-      pullAllBatch(FIANCE_TYPES.communicationTemplate),
-      pullAllBatch(FIANCE_TYPES.document),
-      pullAllBatch(FIANCE_TYPES.legalMilestone),
-      pullAllBatch(FIANCE_TYPES.honeymoonPlan),
-      pullAllBatch(FIANCE_TYPES.taskCategory),
-      pullAllBatch(FIANCE_TYPES.task),
-      pullAllBatch(FIANCE_TYPES.agendaEvent),
-      pullAllBatch(FIANCE_TYPES.dayOfItem),
-      pullAllBatch(FIANCE_TYPES.ideaCollection),
-      pullAllBatch(FIANCE_TYPES.idea),
-      pullAllBatch(FIANCE_TYPES.ceremonyItem),
-      pullAllBatch(FIANCE_TYPES.speech),
-      pullAllBatch(FIANCE_TYPES.playlistTrack),
+      pullCollection(FIANCE_TYPES.guestGroup),
+      pullCollection(FIANCE_TYPES.guest),
+      pullCollection(FIANCE_TYPES.table),
+      pullCollection(FIANCE_TYPES.vendor),
+      pullCollection(FIANCE_TYPES.quotePricing),
+      pullCollection(FIANCE_TYPES.vendorPayment),
+      pullCollection(FIANCE_TYPES.accommodation),
+      pullCollection(FIANCE_TYPES.gift),
+      pullCollection(FIANCE_TYPES.invitationType),
+      pullCollection(FIANCE_TYPES.communication),
+      pullCollection(FIANCE_TYPES.weddingRole),
+      pullCollection(FIANCE_TYPES.weddingRoleAssignment),
+      pullCollection(FIANCE_TYPES.seatingConstraint),
+      pullCollection(FIANCE_TYPES.weddingEvent),
+      pullCollection(FIANCE_TYPES.guestMealSelection),
+      pullCollection(FIANCE_TYPES.communicationTemplate),
+      pullCollection(FIANCE_TYPES.document),
+      pullCollection(FIANCE_TYPES.legalMilestone),
+      pullCollection(FIANCE_TYPES.honeymoonPlan),
+      pullCollection(FIANCE_TYPES.taskCategory),
+      pullCollection(FIANCE_TYPES.task),
+      pullCollection(FIANCE_TYPES.agendaEvent),
+      pullCollection(FIANCE_TYPES.dayOfItem),
+      pullCollection(FIANCE_TYPES.ideaCollection),
+      pullCollection(FIANCE_TYPES.idea),
+      pullCollection(FIANCE_TYPES.ceremonyItem),
+      pullCollection(FIANCE_TYPES.speech),
+      pullCollection(FIANCE_TYPES.playlistTrack),
     ]);
 
     // Diagnostic: if the space has content nodes but decryption yielded 0 guests,
@@ -640,6 +893,21 @@ export async function hydrateFromSpace(
     for (const n of builtNodes) {
       const content = builtContent.get(n.id);
       if (content) _lastPushedJson.set(n.id, stableStringify(content));
+    }
+
+    // Seed the collection baselines too. _collectionEntityJson is set from the hydrated entities
+    // first so the baseline build treats nothing as "changed" (no rev bump); _collectionState was
+    // already seeded from the pulled docs above. A collection that gained a legacy-only entity
+    // (rev absent) will show as dirty on the next push — that is the intended one-shot migration
+    // that folds the straggler into the collection doc.
+    _collectionEntityJson.clear();
+    _lastPushedCollectionJson.clear();
+    for (const { items } of collectionSources()) {
+      for (const e of items) _collectionEntityJson.set(e.id, stableStringify(e));
+    }
+    const { built: builtCollections } = buildCollectionDocs(weddingNodeId, Date.now());
+    for (const b of builtCollections) {
+      _lastPushedCollectionJson.set(b.node.id, stableStringify(b.doc));
     }
 
     return nodes.length;
