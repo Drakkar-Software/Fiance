@@ -34,7 +34,7 @@ export function MarketingFooter() {
             <MarketingLink
               href={localizedPath(lang, "/") as any}
               title={t("nav.homeTitle")}
-              className="flex-row items-center gap-2 mb-2 active:opacity-70"
+              className="flex flex-row items-center gap-2 mb-2 active:opacity-70"
             >
               <Image
                 // eslint-disable-next-line @typescript-eslint/no-require-imports
