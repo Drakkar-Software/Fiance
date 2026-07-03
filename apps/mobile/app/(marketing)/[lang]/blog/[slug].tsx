@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { BlogPostPage } from "@/components/marketing/BlogPostPage";
-import { getBlogSlugs } from "@/lib/blog";
+import { getPublishedBlogSlugs } from "@/lib/blog";
 
 /**
  * Return real slugs so Expo static export prerenders each post to a standalone
@@ -11,7 +11,7 @@ import { getBlogSlugs } from "@/lib/blog";
  * fan out slugs under each locale.
  */
 export async function generateStaticParams({ params }: { params: { lang: string } }) {
-  return getBlogSlugs().map((slug) => ({ lang: params.lang, slug }));
+  return getPublishedBlogSlugs().map((slug) => ({ lang: params.lang, slug }));
 }
 
 export default function BlogPost() {

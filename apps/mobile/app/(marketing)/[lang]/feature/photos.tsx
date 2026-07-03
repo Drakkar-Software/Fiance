@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { View, Text } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import {
   QrCode, Lock, Upload, UserX, Server, Download, CheckCircle, XCircle,
 } from "lucide-react-native";
+import { Display } from "@/components/Display";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { Seo } from "@/components/Seo";
 import { localizedSeo, localizedUrl } from "@/lib/seo-urls";
 
@@ -46,7 +47,6 @@ function ComparisonRow({ feature, hasFiance, hasOthers }: { feature: string; has
 
 export default function PhotosPage() {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const lang = i18n.language === "en" ? "en" : "fr";
   const seo = localizedSeo(lang, "/feature/photos");
 
@@ -74,33 +74,25 @@ export default function PhotosPage() {
           ]},
         ]}
       />
-      {/* Hero */}
       <View className="w-full py-20 px-6 bg-accent-cream items-center">
         <View style={{ maxWidth: 700, width: "100%", alignItems: "center" }}>
-          <Text
-            className="text-typography-900 font-bold text-center mb-4"
-            style={{ fontSize: 40, lineHeight: 48 }}
-          >
+          <Display as="h1" size={40} weight="700" style={{ textAlign: "center", marginBottom: 16, lineHeight: 48 }}>
             {t("photos.hero.headline")}
-          </Text>
+          </Display>
           <Text className="text-lg text-typography-500 text-center mb-8 leading-7">
             {t("photos.hero.subheadline")}
           </Text>
-          <Pressable
-            onPress={() => router.push("/home" as any)}
-            className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
-          >
+          <MarketingLink href="/home" title={t("photos.hero.ctaPrimary")} className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70">
             <Text className="text-base font-semibold text-white">{t("photos.hero.ctaPrimary")}</Text>
-          </Pressable>
+          </MarketingLink>
         </View>
       </View>
 
-      {/* Features */}
       <View className="w-full py-16 px-6 bg-white">
         <View style={{ maxWidth: 800, width: "100%", alignSelf: "center" }}>
-          <Text className="text-2xl font-bold text-typography-900 mb-8">
+          <Display as="h2" size={28} weight="600" style={{ marginBottom: 32 }}>
             {t("photos.features.title")}
-          </Text>
+          </Display>
           <View>
             {features.map((f) => (
               <FeatureRow
@@ -114,13 +106,11 @@ export default function PhotosPage() {
         </View>
       </View>
 
-      {/* Comparison table */}
       <View className="w-full py-16 px-6 bg-accent-cream">
         <View style={{ maxWidth: 700, width: "100%", alignSelf: "center" }}>
-          <Text className="text-2xl font-bold text-typography-900 mb-8">
+          <Display as="h2" size={28} weight="600" style={{ marginBottom: 32 }}>
             {t("photos.comparison.title")}
-          </Text>
-          {/* Header */}
+          </Display>
           <View className="flex-row items-center pb-3 border-b-2 border-typography-200 mb-1">
             <Text className="flex-1 text-xs font-semibold text-typography-400 uppercase tracking-widest" />
             <Text className="w-20 text-center text-sm font-semibold text-primary-500">
@@ -141,21 +131,17 @@ export default function PhotosPage() {
         </View>
       </View>
 
-      {/* App CTA */}
       <View className="w-full py-16 px-6 bg-typography-900 items-center">
         <View style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
-          <Text className="text-2xl font-bold text-white text-center mb-3">
+          <Display as="h2" size={28} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("photos.appCta.title")}
-          </Text>
+          </Display>
           <Text className="text-base text-typography-400 text-center mb-6">
             {t("photos.appCta.description")}
           </Text>
-          <Pressable
-            onPress={() => router.push("/home" as any)}
-            className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70"
-          >
+          <MarketingLink href="/home" title={t("photos.appCta.cta")} className="bg-primary-500 px-8 py-4 rounded-full active:opacity-70">
             <Text className="text-base font-semibold text-white">{t("photos.appCta.cta")}</Text>
-          </Pressable>
+          </MarketingLink>
         </View>
       </View>
     </View>

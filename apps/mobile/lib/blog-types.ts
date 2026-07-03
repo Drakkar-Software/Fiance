@@ -4,6 +4,8 @@ export interface BlogAuthor {
   avatarInitials: string;
 }
 
+export type BlogAuthorSlug = "paul" | "camille";
+
 export type BlogSectionType = "text" | "quote" | "callout" | "list";
 
 export interface BlogSection {
@@ -27,5 +29,7 @@ export interface BlogPost {
   readingMinutes: number;
   heroImage: string;
   heroImageAlt: string;
+  /** Override default category-based author mapping. */
+  authorSlug?: BlogAuthorSlug;
   sections: BlogSection[];
 }

@@ -104,16 +104,18 @@ for (const lang of LANGS) {
   const blogCount = promoteHtmlFilesToDirectories(path.join(langDir, "blog"));
   const toolsCount = promoteHtmlFilesToDirectories(path.join(langDir, "tools"));
   const featureCount = promoteHtmlFilesToDirectories(path.join(langDir, "feature"));
+  const authorCount = promoteHtmlFilesToDirectories(path.join(langDir, "author"));
   for (const page of ["privacy", "terms"]) {
     promoteRootPage(langDir, page);
   }
   console.log(
-    `[${lang}] Clean URLs: promoted ${blogCount} blog, ${toolsCount} tools, ${featureCount} feature pages to directory/index.html`
+    `[${lang}] Clean URLs: promoted ${blogCount} blog, ${toolsCount} tools, ${featureCount} feature, ${authorCount} author pages to directory/index.html`
   );
 
   removeDynamicPlaceholders(path.join(langDir, "blog"));
   removeDynamicPlaceholders(path.join(langDir, "tools"));
   removeDynamicPlaceholders(path.join(langDir, "feature"));
+  removeDynamicPlaceholders(path.join(langDir, "author"));
 }
 
 // Expo also exports the (marketing) route group as a literal folder — duplicate

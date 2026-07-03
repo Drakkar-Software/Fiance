@@ -39,8 +39,8 @@ Tests use Vitest. Test files:
 The web app is deployed at **https://fiance.drakkar.software** (Cloudflare Pages). All canonical URLs, sitemap, robots.txt, llms.txt, and i18n `canonical` fields must use this domain.
 
 When adding or renaming a page, route, or significant feature, update:
-- `apps/mobile/public/sitemap.xml` — add/update the URL entry
 - `apps/mobile/public/llms.txt` — add/update the relevant section
+- Blog posts: add slug to `BLOG_PUBLISH_PRIORITY` in `blog-publish-dates.ts` (sitemap is generated at build)
 - `apps/mobile/i18n/locales/*/marketing.json` — update `canonical` fields
 
 ## Before committing and pushing
@@ -181,15 +181,15 @@ Every blog post must expose **`datePublished`** and **`dateModified`** in JSON-L
 **Adding a new article**
 
 1. Write content in `blog-posts-*.ts` (or inline in `blog.ts` for legacy posts).
-2. Add the slug and first-publication date to `BLOG_PUBLISH_DATES`.
-3. Wire the post in `blog.ts`, and update `sitemap.xml` + `llms.txt`.
+2. Add the slug to `BLOG_PUBLISH_PRIORITY` in `blog-publish-dates.ts`.
+3. Wire the post in `blog.ts`, and update `llms.txt`.
 4. Do **not** add a `BLOG_CONTENT_UPDATED` entry yet.
 
 **Editing article content**
 
 1. Change title, excerpt, or sections.
 2. Add or update `BLOG_CONTENT_UPDATED[slug]` with the edit date (`YYYY-MM-DD`).
-3. Optionally align `sitemap.xml` `<lastmod>` with `updated` (not required for JSON-LD).
+3. Optionally align sitemap `<lastmod>` on next deploy (auto-generated from publish/update dates).
 
 `postPair()` resolves `date` and `updated` from the maps by default. Inline posts in `blog.ts` / `blog-posts-3-10.ts` must set `date: getBlogPublishDate(slug)` manually; add `updated` only after a content edit.
 
@@ -201,5 +201,5 @@ NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`
 
 ### CI/CD
 
-- **Web**: Push to main/master → `.github/workflows/deploy-web.yml` → Cloudflare Pages (`apps/mobile/dist/`)
-- **Android APK**: Push to version tags → `.github/workflows/build-apk.yml` → EAS Build (runs from `apps/mobile/`) → artifact upload
+- **Web**: Deploy via Cloudflare Workers (`apps/mobile/wrangler.toml`, static assets in `apps/mobile/dist/`). Build with `pnpm --filter fiance build:web`; optional `BUILD_DATE=YYYY-MM-DD` env controls which blog posts are included in the export/sitemap.
+- **Android APK**: EAS Build from `apps/mobile/` on version tags (see project EAS config).

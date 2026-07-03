@@ -11,6 +11,12 @@ interface SeoProps {
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: "website" | "article";
+  /** ISO date or datetime for article Open Graph / meta tags. */
+  articlePublishedTime?: string;
+  articleModifiedTime?: string;
+  articleAuthor?: string;
   noindex?: boolean;
   jsonLd?: object | object[];
 }
@@ -23,13 +29,14 @@ export function Seo({
   ogTitle,
   ogDescription,
   ogImage,
+  ogImageAlt,
+  ogType = "website",
+  articlePublishedTime,
+  articleModifiedTime,
+  articleAuthor,
   noindex = false,
   jsonLd,
 }: SeoProps) {
-  // This file only exists to be picked up by Metro's `.web.tsx` platform
-  // resolution. If it ever ends up in a native bundle regardless, `expo-router/head`
-  // resolves to its native Handoff/Spotlight implementation there, which throws
-  // without an `origin` set in the Expo Config — bail out instead of crashing.
   if (Platform.OS !== "web") return null;
 
   const resolvedTitle = ogTitle ?? title;
@@ -45,12 +52,24 @@ export function Seo({
       {alternates && <link rel="alternate" hrefLang="fr" href={alternates.fr} />}
       {alternates && <link rel="alternate" hrefLang="en" href={alternates.en} />}
       {alternates && <link rel="alternate" hrefLang="x-default" href={alternates.fr} />}
+      <meta property="og:type" content={ogType} />
       <meta property="og:title" content={resolvedTitle} />
       <meta property="og:description" content={resolvedDesc} />
       <meta name="twitter:title" content={resolvedTitle} />
       <meta name="twitter:description" content={resolvedDesc} />
       {ogImage && <meta property="og:image" content={ogImage} />}
       {ogImage && <meta name="twitter:image" content={ogImage} />}
+      {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+      {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
+      {ogType === "article" && articlePublishedTime && (
+        <meta property="article:published_time" content={articlePublishedTime} />
+      )}
+      {ogType === "article" && articleModifiedTime && (
+        <meta property="article:modified_time" content={articleModifiedTime} />
+      )}
+      {ogType === "article" && articleAuthor && (
+        <meta property="article:author" content={articleAuthor} />
+      )}
       {jsonLd && (
         // eslint-disable-next-line react/no-danger
         <script type="application/ld+json">

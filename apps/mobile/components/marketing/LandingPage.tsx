@@ -1,8 +1,7 @@
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { View, Text, Pressable } from "react-native-css/components";
+import { View, Text } from "react-native-css/components";
 import Svg, { Rect, Circle, Path, Text as SvgText } from "react-native-svg";
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Store, CalendarCheck, Camera,
@@ -18,6 +17,7 @@ import { Postit } from "@/components/Postit";
 import { Avatar } from "@/components/Avatar";
 import { theme as GP } from "@/lib/theme";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
 import { Reveal, SectionGradient, Grain } from "@/components/marketing/effects";
 import { PhoneMock } from "@/components/marketing/PhoneMock";
@@ -211,7 +211,7 @@ const FlagshipRow = React.memo(function FlagshipRow({
           {tagline}
         </Script>
       ) : null}
-      <Display size={24} weight="600" style={{ marginBottom: 8 }}>
+      <Display as="h3" size={24} weight="600" style={{ marginBottom: 8 }}>
         {t(`landing.features.${featureKey}.title`)}
       </Display>
       <Text className="text-base text-typography-500 leading-6" style={{ maxWidth: 420 }}>
@@ -273,7 +273,6 @@ function PrivacyCard({ icon, title, description }: { icon: React.ReactNode; titl
 
 export function LandingPage() {
   const { t, i18n } = useTranslation("marketing");
-  const router = useRouter();
   const { width: winWidth } = useWindowDimensions();
   // During static web export there's no window, so useWindowDimensions reports 0.
   // Treat an unmeasured (0) width as the large/desktop layout — otherwise `0 < 480`
@@ -350,6 +349,7 @@ export function LandingPage() {
               {t("landing.hero.tagline")}
             </Script>
             <Display
+              as="h1"
               size={isNarrow ? 34 : 50}
               weight="600"
               style={{ marginBottom: 8, lineHeight: isNarrow ? 39 : 56 }}
@@ -399,7 +399,7 @@ export function LandingPage() {
       <View className="w-full py-20 px-6 bg-white">
         <View style={{ maxWidth: 1000, width: "100%", alignSelf: "center" }}>
           <Reveal style={{ marginBottom: 16 }}>
-            <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 10 }}>
+            <Display as="h2" size={34} weight="600" style={{ textAlign: "center", marginBottom: 10 }}>
               {t("landing.features.title")}
             </Display>
             <View className="items-center" style={{ marginBottom: 14 }}>
@@ -443,7 +443,7 @@ export function LandingPage() {
               <Script size={17} style={{ marginBottom: 12, textAlign: "center" }}>
                 {t("landing.blog.eyebrow")}
               </Script>
-              <Display size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+              <Display as="h2" size={34} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
                 {t("landing.blog.title")}
               </Display>
               <Text className="text-base text-typography-500 text-center">
@@ -456,23 +456,20 @@ export function LandingPage() {
                   key={post.slug}
                   style={{ flexBasis: 300, flexGrow: 1, maxWidth: 560 }}
                 >
-                  <BlogPostCard
-                    post={post}
-                    lang={lang}
-                    onPress={() => router.push(localizedPath(lang, `/blog/${post.slug}`) as any)}
-                  />
+                  <BlogPostCard post={post} lang={lang} />
                 </View>
               ))}
             </View>
             <View className="items-center" style={{ marginTop: 28 }}>
-              <Pressable
-                onPress={() => router.push(localizedPath(lang, "/blog") as any)}
+              <MarketingLink
+                href={localizedPath(lang, "/blog") as any}
+                title={t("landing.blog.viewAll")}
                 className="active:opacity-60"
               >
                 <Text className="text-base font-semibold text-primary-500">
                   {t("landing.blog.viewAll")} →
                 </Text>
-              </Pressable>
+              </MarketingLink>
             </View>
           </View>
         </View>
@@ -482,7 +479,7 @@ export function LandingPage() {
       <View className="w-full py-20 px-6 bg-typography-900">
         <View style={{ maxWidth: 1100, width: "100%", alignSelf: "center" }}>
           <Reveal style={{ marginBottom: 12 }}>
-            <Display size={34} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
+            <Display as="h2" size={34} weight="600" color="#ffffff" style={{ textAlign: "center", marginBottom: 12 }}>
               {t("landing.privacy.title")}
             </Display>
             <Text className="text-base text-typography-400 text-center">
@@ -500,12 +497,12 @@ export function LandingPage() {
             ))}
           </View>
           <View className="flex-row justify-center gap-6 mt-12">
-            <Pressable onPress={() => router.push(localizedPath(lang, "/privacy") as any)} className="active:opacity-60">
+            <MarketingLink href={localizedPath(lang, "/privacy") as any} title={t("legal.privacyLink")} className="active:opacity-60">
               <Text className="text-sm text-typography-400 underline">{t("legal.privacyLink")}</Text>
-            </Pressable>
-            <Pressable onPress={() => router.push(localizedPath(lang, "/terms") as any)} className="active:opacity-60">
+            </MarketingLink>
+            <MarketingLink href={localizedPath(lang, "/terms") as any} title={t("legal.termsLink")} className="active:opacity-60">
               <Text className="text-sm text-typography-400 underline">{t("legal.termsLink")}</Text>
-            </Pressable>
+            </MarketingLink>
           </View>
         </View>
       </View>
@@ -515,16 +512,16 @@ export function LandingPage() {
         <SectionGradient spots={[{ cx: 50, cy: 0, r: 90, color: GP.claySoft }]} />
         <Reveal style={{ maxWidth: 600, width: "100%", alignItems: "center" }}>
           <HeartHandshake size={40} className="text-primary-500 mb-6" />
-          <Display size={36} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
+          <Display as="h2" size={36} weight="600" style={{ textAlign: "center", marginBottom: 12 }}>
             {t("landing.download.title")}
           </Display>
           <Text className="text-base text-typography-500 text-center mb-8">
             {t("landing.download.subtitle")}
           </Text>
           <StoreBadges center />
-          <Pressable onPress={() => router.push("/home" as any)} className="mt-6 active:opacity-60">
+          <MarketingLink href="/home" title={t("landing.download.web")} className="mt-6 active:opacity-60">
             <Text className="text-sm font-semibold text-primary-500 underline">{t("landing.download.web")}</Text>
-          </Pressable>
+          </MarketingLink>
         </Reveal>
       </View>
 

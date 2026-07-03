@@ -6,11 +6,13 @@ import {
   extractArticleBody,
   getBlogPosts,
   getBlogSlugs,
+  getPublishedBlogSlugs,
   getLandingBlogPosts,
   LANDING_BLOG_SLUGS,
   toSchemaDateTime,
   type BlogPost,
 } from "@/lib/blog";
+import { getBlogPublishDate } from "@/lib/blog-publish-dates";
 
 const SAMPLE_POST: BlogPost = {
   slug: "test-post",
@@ -76,7 +78,7 @@ describe("buildBlogPostingNode", () => {
       "https://fiance.drakkar.software/fr/blog/test-post"
     );
     expect(node.author).toEqual({
-      "@id": "https://fiance.drakkar.software/#author-paul",
+      "@id": "https://fiance.drakkar.software/fr/author/paul#person",
     });
     expect(node.image).toMatchObject({
       "@type": "ImageObject",
@@ -108,7 +110,7 @@ describe("buildPostJsonLd", () => {
 });
 
 describe("buildBlogJsonLd", () => {
-  it("embeds full BlogPosting nodes for each post on the index", () => {
+  it("uses lightweight @id refs on the index instead of full BlogPosting nodes", () => {
     const jsonLd = buildBlogJsonLd(
       [SAMPLE_POST],
       "fr",
@@ -118,22 +120,45 @@ describe("buildBlogJsonLd", () => {
     const postings = jsonLd["@graph"].filter(
       (n) => n["@type"] === "BlogPosting"
     );
-    expect(postings).toHaveLength(1);
-    expect(postings[0].headline).toBe(SAMPLE_POST.title);
-    expect(postings[0].datePublished).toBe("2026-06-29T08:00:00Z");
+    expect(postings).toHaveLength(0);
 
     const blog = jsonLd["@graph"].find((n) => n["@type"] === "Blog") as Record<
       string,
       unknown
     >;
     expect(blog.description).toBe("Blog description.");
+    expect(blog.blogPost).toEqual([
+      { "@id": "https://fiance.drakkar.software/fr/blog/test-post#article" },
+    ]);
+
+    const types = jsonLd["@graph"].map((n) => n["@type"]);
+    expect(types).toContain("Person");
+    expect(types).toContain("Organization");
+    expect(types).toContain("BreadcrumbList");
   });
 });
 
 describe("getBlogSlugs", () => {
-  it("lists all published post slugs for static export", () => {
+  it("lists all post slugs in the content corpus", () => {
     expect(getBlogSlugs()).toHaveLength(74);
     expect(getBlogSlugs()).toContain("excel-vs-application-mariage");
+  });
+});
+
+describe("getPublishedBlogSlugs", () => {
+  it("returns only posts whose publish date is on or before BUILD_DATE", () => {
+    process.env.BUILD_DATE = "2026-07-02";
+    const published = getPublishedBlogSlugs();
+    expect(published).toContain("premieres-etapes-organiser-mariage");
+    expect(published).not.toContain("fiance-vs-mariages-net");
+    expect(published).toHaveLength(10);
+    delete process.env.BUILD_DATE;
+  });
+
+  it("excludes all posts before the first publish day", () => {
+    process.env.BUILD_DATE = "2026-06-22";
+    expect(getPublishedBlogSlugs()).toHaveLength(0);
+    delete process.env.BUILD_DATE;
   });
 });
 
@@ -157,8 +182,9 @@ describe("blog JSON-LD dates for all posts", () => {
       (p) => p.slug === "fiance-vs-mariages-net"
     )!;
     expect(post.updated).toBe("2026-07-10");
+    expect(post.date).toBe(getBlogPublishDate("fiance-vs-mariages-net"));
     const node = buildBlogPostingNode(post, "fr") as Record<string, string>;
-    expect(node.datePublished).toBe("2026-07-02T08:00:00Z");
+    expect(node.datePublished).toBe(`${post.date}T08:00:00Z`);
     expect(node.dateModified).toBe("2026-07-10T08:00:00Z");
   });
 });

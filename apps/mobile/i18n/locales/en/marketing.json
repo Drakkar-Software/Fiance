@@ -13,7 +13,8 @@
       }
     },
     "termsLink": "Terms of Service",
-    "privacyLink": "Privacy Policy"
+    "privacyLink": "Privacy Policy",
+    "backToHome": "Back to Fiancé"
   },
   "nav": {
     "features": "Features",
@@ -26,7 +27,12 @@
     "toolsTimeline": "Day-of timeline",
     "download": "Download",
     "openApp": "Open app",
-    "blog": "Journal"
+    "blog": "Journal",
+    "language": "Change language",
+    "homeTitle": "Fiancé — Home",
+    "logoAlt": "Fiancé logo — wedding app",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu"
   },
   "footer": {
     "tagline": "The private, offline-first wedding planner.",
@@ -36,6 +42,8 @@
     "legal": "Legal",
     "madeWith": "Made with ♥ for future newlyweds",
     "blog": "Journal",
+    "homeTitle": "Fiancé — Home",
+    "logoAlt": "Fiancé logo — wedding app icon",
     "badges": {
       "offline": "OFFLINE",
       "private": "100% PRIVATE"
@@ -238,6 +246,37 @@
     "emptyTitle": "The Journal is coming soon",
     "emptyBody": "Our first wedding planning articles will be published soon.",
     "postNotFound": "Article not found"
+  },
+  "authors": {
+    "expertiseTitle": "Expertise",
+    "articlesBy": "Articles by {{name}}",
+    "noArticlesYet": "No published articles yet.",
+    "paul": {
+      "meta": {
+        "title": "Paul — Author | Fiancé Journal",
+        "description": "Paul, founder of Fiancé, shares practical wedding planning advice with a privacy-first, offline approach."
+      },
+      "role": "Founder of Fiancé",
+      "bio": "Paul built Fiancé to help couples plan their wedding without ads or data harvesting. He writes about overall planning, tools, and privacy for engaged couples.",
+      "expertise": [
+        "End-to-end planning priorities",
+        "Wedding apps, privacy, and offline-first workflows",
+        "Tool comparisons and planning best practices"
+      ]
+    },
+    "camille": {
+      "meta": {
+        "title": "Camille — Budget & guests expert | Fiancé Journal",
+        "description": "Camille advises on wedding budgets, guest lists, RSVPs, and seating charts — with concrete methods for real-world planning."
+      },
+      "role": "Budget, guests & seating expert",
+      "bio": "Camille helps couples navigate budget trade-offs, guest management, and seating logistics. Her articles focus on numbers, decisions, and calm execution.",
+      "expertise": [
+        "Wedding budgets, categories, and payment schedules",
+        "Guest lists, RSVPs, and guest communications",
+        "Seating charts and reception constraints"
+      ]
+    }
   },
   "seatingChart": {
     "meta": {

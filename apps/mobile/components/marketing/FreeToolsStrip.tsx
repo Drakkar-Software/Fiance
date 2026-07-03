@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { View, Text } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { Users, Wallet, Clock } from "lucide-react-native";
 import { Display } from "@/components/Display";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { theme as GP } from "@/lib/theme";
 import { localizedPath } from "@/lib/seo-urls";
 
@@ -34,11 +34,11 @@ function ToolCard({
   cta: string;
   href: string;
 }) {
-  const router = useRouter();
   const { Icon, tint, color } = TOOL_ICONS[id];
   return (
-    <Pressable
-      onPress={() => router.push(href as any)}
+    <MarketingLink
+      href={href as any}
+      title={title}
       className="bg-white rounded-2xl p-5 border border-accent-rose-light active:opacity-80 hover:shadow-lg"
       style={{ flex: 1, minWidth: 220 }}
     >
@@ -55,7 +55,7 @@ function ToolCard({
         {description}
       </Text>
       <Text className="text-sm font-semibold text-primary-500">{cta} →</Text>
-    </Pressable>
+    </MarketingLink>
   );
 }
 
@@ -82,6 +82,7 @@ export function FreeToolsStrip({
         {showHeader && (
           <>
             <Display
+              as="h2"
               size={28}
               weight="600"
               style={{ textAlign: "center", marginBottom: 8 }}

@@ -1,12 +1,12 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native-css/components";
-import { useRouter } from "expo-router";
+import { View, Text } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/Display";
 import { Script } from "@/components/Script";
+import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { getLegalDocs } from "@/lib/legal";
 import { Seo } from "@/components/Seo";
-import { localizedSeo } from "@/lib/seo-urls";
+import { localizedSeo, localizedPath } from "@/lib/seo-urls";
 
 interface LegalPageProps {
   docKey: "terms" | "privacy";
@@ -15,18 +15,12 @@ interface LegalPageProps {
 }
 
 export function LegalPage({ docKey, metaTitle, metaDescription }: LegalPageProps) {
-  const router = useRouter();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("marketing");
   const lang = i18n.language === "en" ? "en" : "fr";
   const docs = getLegalDocs(lang);
   const doc = docs[docKey];
   const isEn = lang === "en";
   const seo = localizedSeo(lang, `/${docKey}`);
-
-  const handleBack = () => {
-    if (router.canGoBack()) router.back();
-    else router.replace(`/${lang}` as any);
-  };
 
   return (
     <View className="w-full">
@@ -37,7 +31,7 @@ export function LegalPage({ docKey, metaTitle, metaDescription }: LegalPageProps
           <Script size={20} style={{ marginBottom: 12 }}>
             Fiancé · {isEn ? "Legal" : "Légal"}
           </Script>
-          <Display size={44} weight="700" style={{ marginBottom: 12, lineHeight: 52 }}>
+          <Display as="h1" size={44} weight="700" style={{ marginBottom: 12, lineHeight: 52 }}>
             {doc.title}
           </Display>
           <Script size={19} style={{ marginBottom: 20, lineHeight: 27 }}>
@@ -62,7 +56,7 @@ export function LegalPage({ docKey, metaTitle, metaDescription }: LegalPageProps
                 <View className="flex-1 h-px bg-accent-rose-light" />
               </View>
               {/* Section title */}
-              <Display size={19} weight="600" style={{ marginBottom: 12, lineHeight: 26 }}>
+              <Display as="h2" size={19} weight="600" style={{ marginBottom: 12, lineHeight: 26 }}>
                 {section.title}
               </Display>
               {/* Paragraphs */}
@@ -80,11 +74,11 @@ export function LegalPage({ docKey, metaTitle, metaDescription }: LegalPageProps
 
           {/* Back link */}
           <View className="border-t border-accent-rose-light" style={{ paddingTop: 28, marginTop: 8 }}>
-            <Pressable onPress={handleBack} className="active:opacity-60">
+            <MarketingLink href={localizedPath(lang, "/") as any} title={t("legal.backToHome")} className="active:opacity-60">
               <Text className="text-primary-500 font-semibold" style={{ fontSize: 15 }}>
-                ← {isEn ? "Back to Fiancé" : "Retour à Fiancé"}
+                ← {t("legal.backToHome")}
               </Text>
-            </Pressable>
+            </MarketingLink>
           </View>
         </View>
       </View>
