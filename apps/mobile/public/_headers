@@ -18,3 +18,9 @@
 
 /robots.txt
   Cache-Control: public, max-age=86400
+
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+
+/.well-known/assetlinks.json
+  Content-Type: application/json

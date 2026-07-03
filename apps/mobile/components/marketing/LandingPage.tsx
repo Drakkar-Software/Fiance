@@ -16,6 +16,7 @@ import { Chip } from "@/components/Chip";
 import { Postit } from "@/components/Postit";
 import { Avatar } from "@/components/Avatar";
 import { theme as GP } from "@/lib/theme";
+import { BLOG_HERO } from "@/lib/blog-posts-shared";
 import { BlogPostCard } from "@/components/marketing/BlogPostCard";
 import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { FreeToolsStrip } from "@/components/marketing/FreeToolsStrip";
@@ -309,7 +310,7 @@ export function LandingPage() {
         title={t("landing.meta.title")}
         description={t("landing.meta.description")}
         {...seo}
-        ogImage="https://fiance.drakkar.software/assets/og-image.png"
+        ogImage={BLOG_HERO}
       />
 
       {/* Hero — editorial split: copy + trust badge on the left, phone-dashboard mock on the right */}

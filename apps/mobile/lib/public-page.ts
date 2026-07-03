@@ -26,13 +26,14 @@ import {
   type PublicWeddingEvent,
 } from "@fiance/sdk";
 import { withIndexLock } from "@/lib/index-lock";
+import { BASE_URL } from "@/lib/seo-urls";
 
 function getAppOrigin(): string {
   if (Platform.OS === "web" && typeof window !== "undefined") {
     return window.location.origin;
   }
   // On native, share real HTTPS links that open in a browser.
-  return "https://fiance.drakkar.software";
+  return BASE_URL;
 }
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { usePlanningStore } from "@/store/usePlanningStore";

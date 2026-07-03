@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls", "delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "software.drakkar.fiance.app",
+      "sha256_cert_fingerprints": ["47:83:75:12:3D:8A:02:15:F2:8B:83:0B:51:9D:B8:A2:8F:46:19:67:CC:82:1B:A7:14:79:F1:56:58:EA:04:54"]
+    }
+  }
+]

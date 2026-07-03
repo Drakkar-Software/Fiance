@@ -1,8 +1,8 @@
 import type { BlogSection, BlogPost } from "./blog-types";
 import { getBlogPublishDate, getBlogContentUpdated } from "./blog-publish-dates";
+import { BASE_URL } from "./seo-urls";
 
-export const BLOG_HERO =
-  "https://fiance.drakkar.software/assets/og-image.png";
+export const BLOG_HERO = `${BASE_URL}/assets/og-image.png`;
 
 export const DISCLAIMER_FR: BlogSection = {
   type: "text",

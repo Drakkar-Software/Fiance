@@ -1,8 +1,8 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 import type { PropsWithChildren } from "react";
 import seo from "@/i18n/locales/fr/seo.json";
+import { BASE_URL } from "@/lib/seo-urls";
 
-const BASE_URL = "https://fiance.drakkar.software";
 const OG_IMAGE = `${BASE_URL}/assets/og-image.png`;
 
 export default function Root({ children }: PropsWithChildren) {

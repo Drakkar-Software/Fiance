@@ -2,8 +2,8 @@
   "expo": {
     "name": "Fiancé",
     "slug": "fiance",
-    "version": "1.9.0",
-    "runtimeVersion": "1.9.0",
+    "version": "1.9.1",
+    "runtimeVersion": "1.9.1",
     "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne, données 100% privées.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,10 +11,11 @@
     "userInterfaceStyle": "automatic",
     "primaryColor": "#EC4899",
     "ios": {
-      "buildNumber": "6",
+      "buildNumber": "7",
       "supportsTablet": true,
       "bundleIdentifier": "software.drakkar.fiance.app",
       "appStoreUrl": "https://apps.apple.com/fr/app/fianc%C3%A9-organiser-son-mariage/id6786687256",
+      "associatedDomains": ["applinks:fiance.drakkar.software"],
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Fiancé a besoin d'accéder à vos photos pour vos idées d'inspiration mariage.",
         "NSCameraUsageDescription": "Fiancé a besoin de l'appareil photo pour capturer vos inspirations mariage.",
@@ -23,13 +24,32 @@
       }
     },
     "android": {
-      "versionCode": 6,
+      "versionCode": 7,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "software.drakkar.fiance.app",
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=software.drakkar.fiance.app"
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=software.drakkar.fiance.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "fiance.drakkar.software",
+              "pathPrefix": "/wedding"
+            },
+            {
+              "scheme": "https",
+              "host": "fiance.drakkar.software",
+              "path": "/join"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

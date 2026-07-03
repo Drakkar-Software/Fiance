@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["3JP823TL4N.software.drakkar.fiance.app"],
+        "paths": ["/wedding/*", "/join"]
+      }
+    ]
+  }
+}

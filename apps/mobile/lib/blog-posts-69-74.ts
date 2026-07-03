@@ -1,5 +1,6 @@
 import { postPair, pairsToArrays } from "./blog-posts-shared";
 import type { BlogSection } from "./blog-types";
+import { BASE_URL } from "./seo-urls";
 
 const fiancePlanningFr = (paragraphs: string[]): BlogSection => ({
   type: "text",
@@ -703,7 +704,7 @@ const pairs = [
           "Si vous ne payez pas le produit et qu'il n'est pas open source, demandez-vous ce qui est monétisé : souvent vos données ou votre attention.",
       },
       fiancePlanningFr([
-        "Lisez notre article [app mariage privée et hors ligne](/blog/app-mariage-privee-hors-ligne). Testez Fiancé sans compte sur [fiance.drakkar.software](https://fiance.drakkar.software).",
+        `Lisez notre article [app mariage privée et hors ligne](/blog/app-mariage-privee-hors-ligne). Testez Fiancé sans compte sur [${BASE_URL.replace("https://", "")}](${BASE_URL}).`,
       ]),
     ],
     sectionsEn: [
@@ -761,7 +762,7 @@ const pairs = [
           "If you do not pay for the product and it is not open source, ask what is monetized: often your data or your attention.",
       },
       fiancePlanningEn([
-        "Read our [private offline wedding app](/blog/app-mariage-privee-hors-ligne) article. Try Fiancé without an account at [fiance.drakkar.software](https://fiance.drakkar.software).",
+        `Read our [private offline wedding app](/blog/app-mariage-privee-hors-ligne) article. Try Fiancé without an account at [${BASE_URL.replace("https://", "")}](${BASE_URL}).`,
       ]),
     ],
   }),
