@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, Text, ActivityIndicator } from "react-native";
+import { View, Pressable, Text, ActivityIndicator, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { shareLink } from "@/lib/share";
 import { Sheet } from "@fiance/ui/components";
@@ -17,9 +17,17 @@ type State = "generating" | "ready" | "error";
 
 export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps) {
   const { t } = useTranslation("settings");
+  const { width } = useWindowDimensions();
   const [state, setState] = useState<State>("generating");
   const [url, setUrl] = useState("");
   const [detail, setDetail] = useState("");
+
+  // Invite payload embeds a signed cap cert + ephemeral keys (~1.4KB URL) —
+  // dense at default size/ECL. ecl="L" trims the module count to 125, and
+  // sizing up keeps it scannable (real cameras need ~2px/module). Floor of
+  // 250 guarantees that ratio even on the smallest phone widths; capped at
+  // 320 for large screens/web. See __tests__/invite-qr-density.test.ts.
+  const qrSize = Math.max(250, Math.min(320, Math.round(width - 64)));
 
   const run = () => {
     setState("generating");
@@ -87,7 +95,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
                 borderWidth: 1,
                 borderColor: theme.hair,
               }}>
-                <QRCode value={url} size={184} />
+                <QRCode value={url} size={qrSize} ecl="L" />
               </View>
             </View>
 
