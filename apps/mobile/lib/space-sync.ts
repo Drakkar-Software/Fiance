@@ -387,25 +387,12 @@ export async function pushSpaceSnapshot(
 
   const localById = new Map(allNodes.map((n) => [n.id, n]));
 
-  await withIndexLock(spaceId, () =>
-    updateObjectIndex(session, spaceId, (prev, idxNow) => {
-      // The only managed nodes we write are the wedding root and the deterministic collection
-      // sentinels (same id on every device), so no "peer added an unknown node" ambiguity
-      // remains — deletes now ride inside the collection docs as tombstones. Everything else:
-      //  - non-managed (publicPage/rsvp) → keep untouched
-      //  - a collection sentinel or the wedding root not built locally (a collection this device
-      //    hasn't hydrated / has emptied) → keep, so we never orphan a peer's collection doc
-      //  - any other managed node → a LEGACY per-entity node → PRUNE (the migration cutover)
-      const merged = allNodes.map((n) => ({ ...n, updatedAt: idxNow }));
-      for (const r of prev) {
-        if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; }
-        if (localById.has(r.id)) continue;
-        if (isCollectionNodeId(r.id) || r.id === weddingNodeId) { merged.push(r); continue; }
-        // else: legacy per-entity node → drop it
-      }
-      return merged;
-    }),
-  );
+  // ── Push content FIRST, update the index second ──────────────────────────────
+  // Pushing a space+enc content doc is index-independent (access resolves from local caps +
+  // the space keyring, not the object index — see starfish-spaces getNodeAccess/handle.push).
+  // Doing it before the index update means a failed content push can never leave the index
+  // pruned-but-contentless: the legacy-node prune below only fires for collections whose doc is
+  // confirmed durable, so a partial failure keeps the legacy nodes reachable until the retry.
 
   // Push the wedding singleton (deep-merge on conflict) if its content changed.
   const weddingDirty =
@@ -432,6 +419,38 @@ export async function pushSpaceSnapshot(
       }),
     ),
   ]);
+
+  // Collections whose current doc is now durably on the server (just pushed, or already clean
+  // from a prior push). ONLY these may have their legacy per-entity nodes pruned below.
+  const durableSentinels = new Set(
+    built
+      .filter((b) => _lastPushedCollectionJson.get(b.node.id) === stableStringify(b.doc))
+      .map((b) => b.node.id),
+  );
+
+  await withIndexLock(spaceId, () =>
+    updateObjectIndex(session, spaceId, (prev, idxNow) => {
+      // The only managed nodes we write are the wedding root and the deterministic collection
+      // sentinels (same id on every device), so no "peer added an unknown node" ambiguity
+      // remains — deletes now ride inside the collection docs as tombstones. Everything else:
+      //  - non-managed (publicPage/rsvp) → keep untouched
+      //  - a collection sentinel or the wedding root not built locally (a collection this device
+      //    hasn't hydrated / has emptied) → keep, so we never orphan a peer's collection doc
+      //  - a LEGACY per-entity node whose collection is durably written → PRUNE (migration cutover)
+      //  - a LEGACY per-entity node whose collection is NOT yet durable (its push failed, or its
+      //    store was empty so no doc was written) → KEEP, so we never strand data; a later push
+      //    prunes it once the collection doc is confirmed on the server
+      const merged = allNodes.map((n) => ({ ...n, updatedAt: idxNow }));
+      for (const r of prev) {
+        if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; }
+        if (localById.has(r.id)) continue;
+        if (isCollectionNodeId(r.id) || r.id === weddingNodeId) { merged.push(r); continue; }
+        if (durableSentinels.has(collectionNodeId(r.type, weddingNodeId))) continue; // durable → prune
+        merged.push(r); // not yet durable → keep, retry next round
+      }
+      return merged;
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------

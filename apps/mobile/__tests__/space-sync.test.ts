@@ -747,6 +747,38 @@ describe("pushSpaceSnapshot — per-collection push (collection-only)", () => {
     expect(ids).toContain("rsvp-1");
   });
 
+  it("does NOT prune legacy nodes when the collection content push fails (crash-safe)", async () => {
+    // Fail only the guest collection doc push; the wedding push still succeeds. A failed content
+    // push must leave the legacy per-entity nodes in the index so their data stays reachable.
+    mockClientPush = vi.fn(async (path: string) => {
+      if (typeof path === "string" && path.includes("col:guest:")) throw new Error("network down");
+      return { hash: "H2" };
+    });
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }];
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    const updater = mockUpdateObjectIndex.mock.calls.at(-1)![2] as (
+      prev: { id: string; type: string }[],
+      now: number,
+    ) => { id: string }[];
+    const prev = [
+      { id: "w1", type: "wedding" },
+      { id: "g-legacy", type: "guest" }, // col:guest push failed → NOT durable → must be KEPT
+    ];
+    const ids = updater(prev, Date.now()).map((n) => n.id);
+    expect(ids).toContain("g-legacy"); // retained — not stranded
+    expect(ids).toContain("w1");
+  });
+
   it("does not push a collection doc for a collection that stays empty", async () => {
     const { pushSpaceSnapshot } = await import("@/lib/space-sync");
     mockGuestsData = [{ id: "g1" }];
