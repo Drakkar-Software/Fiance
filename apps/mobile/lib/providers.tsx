@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
@@ -150,12 +150,22 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
           console.warn("[providers] hydrateFromSpace failed:", err);
           return -1;
         });
-        // Auto-migrate legacy users (owners only): space is empty but local stores have data.
-        // This happens on first launch after upgrading from Starfish 2.x.
-        // Guard: never let a member-role entry overwrite the owner's space with empty local data.
-        if (!cancelled && nodeCount === 0 && useWeddingStore.getState().wedding && wedding.role !== "member") {
+        // Owner-only one-shot push. Two triggers:
+        //  - nodeCount === 0: empty space + local data (first launch after upgrading from
+        //    Starfish 2.x) → seed the space.
+        //  - hydrateSawLegacyNodes(): the space still has per-entity nodes from the old
+        //    one-doc-per-entity model → migrate them into per-collection docs and prune the
+        //    legacy nodes from the index (see space-sync pushSpaceSnapshot). This is the
+        //    direct dev-phase cutover; it runs once (next boot sees no legacy nodes).
+        // Guard: never let a member-role entry mutate the owner's shared space/index.
+        if (
+          !cancelled &&
+          wedding.role !== "member" &&
+          useWeddingStore.getState().wedding &&
+          (nodeCount === 0 || hydrateSawLegacyNodes())
+        ) {
           await pushSpaceSnapshot(session, spaceId, weddingNodeId).catch((err) => {
-            console.warn("[providers] auto-migrate push failed:", err);
+            console.warn("[providers] migration push failed:", err);
           });
         }
       }

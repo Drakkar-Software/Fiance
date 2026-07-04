@@ -108,22 +108,26 @@ full-collection push **cannot** resurrect a deleted entity — fixing the union-
 limitation noted in [Conflict Resolution](#conflict-resolution) below. Tombstones older than a
 90-day TTL are garbage-collected on build/merge.
 
-### Rollout: expand / migrate / contract
+### Migration: direct owner-device cutover (dev phase)
 
-The migration from the earlier one-doc-per-**entity** model runs in stages:
+The migration from the earlier one-doc-per-**entity** model is a **direct cutover** (we are in a
+development phase; only dev projects exist and migration runs from owner devices):
 
-- **Expand (current release):** `pushSpaceSnapshot` **dual-writes** — the legacy per-entity nodes
-  *and* the per-collection docs — and `hydrateFromSpace` **dual-reads** — pulling the collection
-  docs (one `batchPullMany` over the sentinel ids) *and* the legacy per-entity nodes, unioning
-  them (collection items win, tombstones remove) so a legacy-only entity written by an old-build
-  peer survives. Old-build devices keep reading per-entity nodes untouched. No request-count win
-  yet (dual-write is strictly more work) — this step exists purely for rollout safety.
-- **Contract (later release):** stop writing per-entity nodes, prune the legacy per-entity entries
-  from the index, set `syncSchemaVersion: 2` on the wedding root, and retire the in-memory
-  `_deletedNodeIds` mechanism (deletes then flow purely through collection tombstones). This is
-  where the bulk-import request-count reduction lands.
+- **Write path** writes collection docs only (+ the wedding singleton). `pushSpaceSnapshot` no
+  longer emits per-entity content nodes, and the index merge **prunes** any legacy per-entity node
+  (a managed, non-`wedding`, non-sentinel node) while keeping the wedding root, collection
+  sentinels, and the `publicPage`/`rsvp` invite nodes. Deletes flow purely through collection
+  tombstones (the old in-memory `_deletedNodeIds` mechanism is gone).
+- **Read path** still unions the collection docs with any legacy per-entity nodes — this is the
+  one-time migration read that folds pre-existing per-entity data into the stores. Once pruned,
+  the legacy read returns nothing, so it self-limits.
+- **Trigger:** on **owner** boot (`wedding.role !== "member"`), `providers.tsx` runs a single
+  `pushSpaceSnapshot` after hydrate when the space is empty *or* `hydrateSawLegacyNodes()` reports
+  leftover per-entity nodes. That push writes the collection docs, prunes the legacy nodes, and
+  stamps `meta.syncSchemaVersion = 2` on the wedding root. Members never mutate the shared index.
 
-**Files:** `apps/mobile/lib/space-sync.ts` (build/push/hydrate),
+**Files:** `apps/mobile/lib/space-sync.ts` (build/push/hydrate + `hydrateSawLegacyNodes`),
+`apps/mobile/lib/providers.tsx` (owner-gated migration trigger),
 `packages/fiance-sdk/src/sync/collection-doc.ts` (pure merge/build helpers).
 
 ---

@@ -27,34 +27,34 @@ import {
   type CollectionEntity,
   FIANCE_TYPES,
   weddingToNode, weddingFromDoc,
-  guestGroupToNode, guestGroupFromDoc,
-  guestToNode, guestFromDoc,
-  tableToNode, tableFromDoc,
-  vendorToNode, vendorFromDoc,
-  quotePricingToNode, quotePricingFromDoc,
-  vendorPaymentToNode, vendorPaymentFromDoc,
-  accommodationToNode, accommodationFromDoc,
-  giftToNode, giftFromDoc,
-  invitationTypeToNode, invitationTypeFromDoc,
-  communicationToNode, communicationFromDoc,
-  weddingRoleToNode, weddingRoleFromDoc,
-  weddingRoleAssignmentToNode, weddingRoleAssignmentFromDoc,
-  seatingConstraintToNode, seatingConstraintFromDoc,
-  weddingEventToNode, weddingEventFromDoc,
-  guestMealSelectionToNode, guestMealSelectionFromDoc,
-  communicationTemplateToNode, communicationTemplateFromDoc,
-  documentToNode, documentFromDoc,
-  legalMilestoneToNode, legalMilestoneFromDoc,
-  honeymoonPlanToNode, honeymoonPlanFromDoc,
-  ceremonyItemToNode, ceremonyItemFromDoc,
-  speechToNode, speechFromDoc,
-  playlistTrackToNode, playlistTrackFromDoc,
-  taskCategoryToNode, taskCategoryFromDoc,
-  taskToNode, taskFromDoc,
-  agendaEventToNode, agendaEventFromDoc,
-  dayOfItemToNode, dayOfItemFromDoc,
-  ideaCollectionToNode, ideaCollectionFromDoc,
-  ideaToNode, ideaFromDoc,
+  guestGroupFromDoc,
+  guestFromDoc,
+  tableFromDoc,
+  vendorFromDoc,
+  quotePricingFromDoc,
+  vendorPaymentFromDoc,
+  accommodationFromDoc,
+  giftFromDoc,
+  invitationTypeFromDoc,
+  communicationFromDoc,
+  weddingRoleFromDoc,
+  weddingRoleAssignmentFromDoc,
+  seatingConstraintFromDoc,
+  weddingEventFromDoc,
+  guestMealSelectionFromDoc,
+  communicationTemplateFromDoc,
+  documentFromDoc,
+  legalMilestoneFromDoc,
+  honeymoonPlanFromDoc,
+  ceremonyItemFromDoc,
+  speechFromDoc,
+  playlistTrackFromDoc,
+  taskCategoryFromDoc,
+  taskFromDoc,
+  agendaEventFromDoc,
+  dayOfItemFromDoc,
+  ideaCollectionFromDoc,
+  ideaFromDoc,
   type Session,
   type ObjectNode,
   type NodeDescriptor,
@@ -90,29 +90,16 @@ let _pushTimer: ReturnType<typeof setTimeout> | null = null;
 let _isHydrating = false;
 
 /**
- * Dirty-push tracking: node id → stableStringify() of the content last successfully
- * pushed (or hydrated) for that node. pushSpaceSnapshot only re-pushes nodes whose
- * current content differs from this baseline, so an edit to one guest doesn't re-push
- * (and clobber) every other node's content on the next debounced push.
+ * Dirty-push tracking for the wedding singleton node: node id → stableStringify() of the
+ * content last successfully pushed (or hydrated). Only the `wedding` node flows through
+ * this now — all other content lives in the per-collection docs below.
  */
 const _lastPushedJson = new Map<string, string>();
 
-/**
- * Ids this device has deleted locally (no longer in buildAllNodes' output) but may not
- * yet be reflected on the server. pushSpaceSnapshot's index merge drops a remote-only
- * managed node when its id is here (this device deleted it), but KEEPS a remote-only
- * managed node whose id is unknown (a peer added it and this device hasn't hydrated it
- * yet) — distinguishing "deleted by me" from "added by a peer" requires this baseline,
- * since both cases look identical (managed node present in `prev`, absent locally).
- */
-const _deletedNodeIds = new Set<string>();
-
-// ── Per-collection ("one doc per collection") sync state — Release 1 (Expand) ──
-// The live-sync path is transitioning from one objdoc per entity to one objdoc per
-// collection (see @fiance/sdk collection-doc). During the Expand release we DUAL-WRITE:
-// the per-entity nodes above AND a collection doc per type, so a device still on the old
-// build keeps reading per-entity nodes while new-build devices populate collection docs.
-// A later Contract release drops the per-entity writes and prunes the legacy nodes.
+// ── Per-collection ("one doc per collection") sync state ──
+// Content is one objdoc per collection (see @fiance/sdk collection-doc): an id-keyed map
+// of entities with per-entity rev (LWW) and durable tombstones. Deletes ride inside the
+// doc as tombstones, so no separate per-entity index-deletion bookkeeping is needed.
 
 /** sentinel node id (`col:{type}:{weddingNodeId}`) → stableStringify() of the collection
  *  doc last pushed, so an unchanged collection is skipped on the next debounced push. */
@@ -126,9 +113,20 @@ const _collectionState = new Map<string, CollectionState>();
  *  dirty check that decides whether a given entity's `rev` should be bumped. */
 const _collectionEntityJson = new Map<string, string>();
 
-/** Domain node types managed wholesale by buildAllNodes/pushSpaceSnapshot — excludes the
- *  guest-surface synthetic nodes (publicPage, rsvp) which are written by other code paths
- *  and must survive a snapshot push untouched. */
+/** Set by the last hydrateFromSpace when the space still contained legacy per-entity nodes
+ *  (i.e. a pre-collection wedding). providers.tsx reads it on OWNER boot to run the one-shot
+ *  migration push (which folds the legacy entities into collection docs and prunes the old
+ *  nodes from the index). Owner-only; members never mutate the shared index. */
+let _lastHydrateSawLegacy = false;
+
+/** True when the last hydrate saw legacy per-entity nodes needing migration (owner-only). */
+export function hydrateSawLegacyNodes(): boolean {
+  return _lastHydrateSawLegacy;
+}
+
+/** Domain node types managed wholesale by pushSpaceSnapshot — excludes the guest-surface
+ *  synthetic nodes (publicPage, rsvp) which are written by other code paths and must
+ *  survive a snapshot push untouched. */
 const MANAGED_TYPES = new Set<string>(
   Object.values(FIANCE_TYPES).filter((t) => t !== FIANCE_TYPES.publicPage && t !== FIANCE_TYPES.rsvp),
 );
@@ -165,25 +163,23 @@ export function restoreSyncPush(): void {
   _isHydrating = false;
 }
 
-/** Clears the dirty-push baseline and deletion tombstones. hydrateFromSpace already
- *  reseeds these correctly in production (cold boot / wedding switch); exported so
- *  tests can isolate consecutive pushSpaceSnapshot calls from each other's state. */
+/** Clears the dirty-push baselines and collection state. hydrateFromSpace already reseeds
+ *  these correctly in production (cold boot / wedding switch); exported so tests can isolate
+ *  consecutive pushSpaceSnapshot calls from each other's state. */
 export function resetDirtyPushBaseline(): void {
   _lastPushedJson.clear();
-  _deletedNodeIds.clear();
   _lastPushedCollectionJson.clear();
   _collectionState.clear();
   _collectionEntityJson.clear();
+  _lastHydrateSawLegacy = false;
 }
 
 // ---------------------------------------------------------------------------
-// Build all ObjectNodes from current store state
+// Build the wedding singleton node from current store state
 // ---------------------------------------------------------------------------
 
-interface BuiltNodes {
-  nodes: ObjectNode[];
-  contentMap: Map<string, Record<string, unknown>>;
-}
+/** Sync-model marker stamped on the wedding root `meta`: 2 = per-collection docs. */
+export const SYNC_SCHEMA_VERSION = 2;
 
 function descriptorToNode(desc: NodeDescriptor, order: number, now: number): ObjectNode {
   return {
@@ -200,157 +196,20 @@ function descriptorToNode(desc: NodeDescriptor, order: number, now: number): Obj
   };
 }
 
-function buildAllNodes(weddingNodeId: string): BuiltNodes {
-  const now = Date.now();
-  const nodes: ObjectNode[] = [];
-  const contentMap = new Map<string, Record<string, unknown>>();
-  let order = 0;
-
-  const push = (desc: NodeDescriptor, entity: unknown): void => {
-    nodes.push(descriptorToNode(desc, order++, now));
-    contentMap.set(desc.id, entity as Record<string, unknown>);
-  };
-
+/** The `wedding` root stays its own per-node doc (not collapsed) — `discoverOwnerWeddingRoot`
+ *  relies on a `wedding`/`parentId:null` node existing. Stamps `syncSchemaVersion` on its meta. */
+function buildWeddingNode(weddingNodeId: string, now: number): { node: ObjectNode; content: Record<string, unknown> } | null {
   const { wedding } = useWeddingStore.getState();
-  if (wedding) {
-    push(weddingToNode(wedding, weddingNodeId), wedding);
-  }
-
-  const { guests, tables, groups } = useGuestsStore.getState();
-  const { vendors, quotePricings, vendorPayments } = useVendorsStore.getState();
-  const { accommodations } = useAccommodationsStore.getState();
-  const { categories, tasks, agendaEvents, dayOfItems } = usePlanningStore.getState();
-  const { collections, ideas } = useIdeasStore.getState();
-
-  // Build identity idMap so FK meta fields resolve correctly (entity id === node id in live sync)
-  const idMap: Record<string, string> = {};
-  for (const g of groups) idMap[`guestGroup:${g.id}`] = g.id;
-  for (const t of tables) idMap[`table:${t.id}`] = t.id;
-  for (const a of accommodations) idMap[`accommodation:${a.id}`] = a.id;
-  for (const v of vendors) idMap[`vendor:${v.id}`] = v.id;
-  for (const g of guests) idMap[`guest:${g.id}`] = g.id;
-  for (const tc of categories) idMap[`taskCategory:${tc.id}`] = tc.id;
-  for (const ic of collections) idMap[`ideaCollection:${ic.id}`] = ic.id;
-
-  for (const g of groups) {
-    push(guestGroupToNode(g, g.id, weddingNodeId), g);
-  }
-  for (const t of tables) {
-    push(tableToNode(t, t.id, weddingNodeId), t);
-  }
-  for (const g of guests) {
-    const parentId = (g.groupId && idMap[`guestGroup:${g.groupId}`]) ? g.groupId : weddingNodeId;
-    push(guestToNode(g, g.id, parentId, idMap), g);
-  }
-
-  for (const v of vendors) {
-    push(vendorToNode(v, v.id, weddingNodeId), v);
-  }
-  for (const qp of quotePricings) {
-    const parentId = (qp.vendorId && idMap[`vendor:${qp.vendorId}`]) ? qp.vendorId : weddingNodeId;
-    push(quotePricingToNode(qp, qp.id, parentId), qp);
-  }
-  for (const vp of vendorPayments) {
-    const parentId = (vp.vendorId && idMap[`vendor:${vp.vendorId}`]) ? vp.vendorId : weddingNodeId;
-    push(vendorPaymentToNode(vp, vp.id, parentId), vp);
-  }
-
-  const { gifts } = useGiftsStore.getState();
-  const { invitationTypes } = useInvitationTypesStore.getState();
-  const { communications } = useCommunicationsStore.getState();
-  const { weddingRoles, weddingRoleAssignments } = useWeddingPartyStore.getState();
-  const { seatingConstraints } = useSeatingConstraintsStore.getState();
-  const { weddingEvents } = useWeddingEventsStore.getState();
-  const { mealSelections } = useMealSelectionsStore.getState();
-  const { communicationTemplates } = useCommunicationTemplatesStore.getState();
-  const { documents } = useDocumentsStore.getState();
-  const { legalMilestones } = useLegalStore.getState();
-  const { honeymoonPlans } = useHoneymoonStore.getState();
-  const { ceremonyItems } = useCeremonyStore.getState();
-  const { speeches, playlistTracks } = useSpeechesMusicStore.getState();
-
-  // ceremony/speech/playlist FKs resolve against these — must be populated before their push loops below.
-  for (const e of weddingEvents) idMap[`weddingEvent:${e.id}`] = e.id;
-  for (const r of weddingRoles) idMap[`weddingRole:${r.id}`] = r.id;
-  for (const d of dayOfItems) idMap[`dayOfItem:${d.id}`] = d.id;
-
-  for (const a of accommodations) {
-    push(accommodationToNode(a, a.id, weddingNodeId), a);
-  }
-  for (const g of gifts) {
-    push(giftToNode(g, g.id, weddingNodeId), g);
-  }
-  for (const it of invitationTypes) {
-    push(invitationTypeToNode(it, it.id, weddingNodeId), it);
-  }
-  for (const c of communications) {
-    push(communicationToNode(c, c.id, weddingNodeId), c);
-  }
-  for (const r of weddingRoles) {
-    push(weddingRoleToNode(r, r.id, weddingNodeId), r);
-  }
-  for (const a of weddingRoleAssignments) {
-    push(weddingRoleAssignmentToNode(a, a.id, weddingNodeId), a);
-  }
-  for (const c of seatingConstraints) {
-    push(seatingConstraintToNode(c, c.id, weddingNodeId), c);
-  }
-  for (const e of weddingEvents) {
-    push(weddingEventToNode(e, e.id, weddingNodeId), e);
-  }
-  for (const s of mealSelections) {
-    push(guestMealSelectionToNode(s, s.id, weddingNodeId), s);
-  }
-  for (const tpl of communicationTemplates) {
-    push(communicationTemplateToNode(tpl, tpl.id, weddingNodeId), tpl);
-  }
-  for (const d of documents) {
-    // localUri travels as-is through the (already E2EE) multi-device sync channel —
-    // only the shareable JSON *backup* export strips it (see lib/sync.ts). A device
-    // reading another device's localUri simply finds no local file and offers re-attach.
-    push(documentToNode(d, d.id, weddingNodeId), d);
-  }
-  for (const m of legalMilestones) {
-    push(legalMilestoneToNode(m, m.id, weddingNodeId), m);
-  }
-  for (const p of honeymoonPlans) {
-    push(honeymoonPlanToNode(p, p.id, weddingNodeId), p);
-  }
-
-  for (const tc of categories) {
-    push(taskCategoryToNode(tc, tc.id, weddingNodeId), tc);
-  }
-  for (const t of tasks) {
-    const parentId = (t.categoryId && idMap[`taskCategory:${t.categoryId}`]) ? t.categoryId : weddingNodeId;
-    push(taskToNode(t, t.id, parentId, idMap), t);
-  }
-  for (const ae of agendaEvents) {
-    push(agendaEventToNode(ae, ae.id, weddingNodeId), ae);
-  }
-  for (const d of dayOfItems) {
-    push(dayOfItemToNode(d, d.id, weddingNodeId), d);
-  }
-
-  for (const c of ceremonyItems) {
-    push(ceremonyItemToNode(c, c.id, weddingNodeId, idMap), c);
-  }
-  for (const s of speeches) {
-    push(speechToNode(s, s.id, weddingNodeId, idMap), s);
-  }
-  for (const t of playlistTracks) {
-    push(playlistTrackToNode(t, t.id, weddingNodeId, idMap), t);
-  }
-
-  for (const ic of collections) {
-    push(ideaCollectionToNode(ic, ic.id, weddingNodeId), ic);
-  }
-  for (const i of ideas) {
-    const parentId = (i.collectionId && idMap[`ideaCollection:${i.collectionId}`]) ? i.collectionId : weddingNodeId;
-    push(ideaToNode(i, i.id, parentId, idMap), i);
-  }
-
-  return { nodes, contentMap };
+  if (!wedding) return null;
+  const desc = weddingToNode(wedding, weddingNodeId);
+  const node = descriptorToNode(
+    { ...desc, meta: { ...desc.meta, syncSchemaVersion: SYNC_SCHEMA_VERSION } },
+    0,
+    now,
+  );
+  return { node, content: wedding as unknown as Record<string, unknown> };
 }
+
 
 // ---------------------------------------------------------------------------
 // Build per-collection docs from current store state (Release 1 dual-write)
@@ -519,52 +378,38 @@ export async function pushSpaceSnapshot(
   weddingNodeId: string,
 ): Promise<void> {
   const now = Date.now();
-  const { nodes, contentMap } = buildAllNodes(weddingNodeId);
-  if (!nodes.length) return;
-
-  // Release 1 dual-write: build the per-collection docs alongside the per-entity nodes.
-  // Their sentinel nodes join the index so a new-build device (dual-read) can find them,
-  // while old-build devices keep reading the per-entity nodes untouched.
+  // Content is one doc per collection (+ the wedding singleton). No per-entity content docs.
+  const weddingBuilt = buildWeddingNode(weddingNodeId, now);
   const { nodes: collectionNodes, built } = buildCollectionDocs(weddingNodeId, now);
-  const allNodes = [...nodes, ...collectionNodes];
+  const weddingNode = weddingBuilt?.node ?? null;
+  const allNodes = [...(weddingNode ? [weddingNode] : []), ...collectionNodes];
+  if (!allNodes.length) return; // truly empty state — nothing to sync
 
-  // Diff against the dirty-push baseline to find ids this device deleted locally since
-  // its last successful push/hydrate. Tombstoned so a delete still propagates below even
-  // though it's no longer distinguishable from "never seen" once _lastPushedJson is
-  // pruned at the end of this function. (Sentinel ids are never in _lastPushedJson, so
-  // including them in localIds is inert — they simply can't be mistaken for a deletion.)
-  const localIds = new Set(allNodes.map((n) => n.id));
-  for (const id of _lastPushedJson.keys()) {
-    if (!localIds.has(id)) _deletedNodeIds.add(id);
-  }
+  const localById = new Map(allNodes.map((n) => [n.id, n]));
 
   await withIndexLock(spaceId, () =>
     updateObjectIndex(session, spaceId, (prev, idxNow) => {
-      // Union-merge instead of replace: `prev` is the authoritative current remote index
-      // (CAS-pulled), so a managed node present there but absent locally is either (a) a
-      // peer's addition this device hasn't hydrated yet — must KEEP, or (b) a node this
-      // device deleted — must DROP. _deletedNodeIds disambiguates the two; without it,
-      // replacing wholesale silently discards concurrent peer additions.
-      const localById = new Map(allNodes.map((n) => [n.id, n]));
+      // The only managed nodes we write are the wedding root and the deterministic collection
+      // sentinels (same id on every device), so no "peer added an unknown node" ambiguity
+      // remains — deletes now ride inside the collection docs as tombstones. Everything else:
+      //  - non-managed (publicPage/rsvp) → keep untouched
+      //  - a collection sentinel or the wedding root not built locally (a collection this device
+      //    hasn't hydrated / has emptied) → keep, so we never orphan a peer's collection doc
+      //  - any other managed node → a LEGACY per-entity node → PRUNE (the migration cutover)
       const merged = allNodes.map((n) => ({ ...n, updatedAt: idxNow }));
       for (const r of prev) {
-        if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; } // publicPage/rsvp untouched
-        if (localById.has(r.id)) continue; // local copy already included above
-        if (_deletedNodeIds.has(r.id)) continue; // deleted locally → propagate the deletion
-        merged.push(r); // unknown id → peer added it, keep
+        if (!MANAGED_TYPES.has(r.type)) { merged.push(r); continue; }
+        if (localById.has(r.id)) continue;
+        if (isCollectionNodeId(r.id) || r.id === weddingNodeId) { merged.push(r); continue; }
+        // else: legacy per-entity node → drop it
       }
       return merged;
     }),
   );
 
-  // Only push nodes whose content actually changed since the last successful push/hydrate.
-  // Without this, every snapshot re-pushes the entire tree, and last-writer-wins at the
-  // node level means an unrelated push from this device can clobber a peer's newer edit
-  // to a node this device never touched.
-  const dirtyNodes = nodes.filter((n) => {
-    const content = contentMap.get(n.id);
-    return content !== undefined && stableStringify(content) !== _lastPushedJson.get(n.id);
-  });
+  // Push the wedding singleton (deep-merge on conflict) if its content changed.
+  const weddingDirty =
+    weddingBuilt && stableStringify(weddingBuilt.content) !== _lastPushedJson.get(weddingBuilt.node.id);
 
   // Collection docs whose serialized form changed since last push — a 120-guest import
   // mutates only the guest store, so exactly one collection doc (guest) is dirty here.
@@ -573,12 +418,11 @@ export async function pushSpaceSnapshot(
   );
 
   await Promise.allSettled([
-    ...dirtyNodes.map((n) => {
-      const content = contentMap.get(n.id)!;
-      return pushNodeContent(session, spaceId, n, content).then((ok) => {
-        if (ok) _lastPushedJson.set(n.id, stableStringify(content));
-      });
-    }),
+    ...(weddingDirty && weddingBuilt
+      ? [pushNodeContent(session, spaceId, weddingBuilt.node, weddingBuilt.content).then((ok) => {
+          if (ok) _lastPushedJson.set(weddingBuilt.node.id, stableStringify(weddingBuilt.content));
+        })]
+      : []),
     ...dirtyCollections.map((b) =>
       pushCollectionDoc(session, spaceId, b.node, b.doc, now).then((ok) => {
         if (!ok) return;
@@ -588,12 +432,6 @@ export async function pushSpaceSnapshot(
       }),
     ),
   ]);
-
-  // Prune baseline entries for nodes that no longer exist locally (deleted).
-  const currentIds = new Set(nodes.map((n) => n.id));
-  for (const id of _lastPushedJson.keys()) {
-    if (!currentIds.has(id)) _lastPushedJson.delete(id);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -698,12 +536,18 @@ export async function hydrateFromSpace(
     // them out first — the legacy pull path must not treat a collection doc as a lone entity.
     const sentinelNodes: ObjectNode[] = [];
     const byType = new Map<string, ObjectNode[]>();
+    let sawLegacy = false;
     for (const n of nodes) {
       if (isCollectionNodeId(n.id)) { sentinelNodes.push(n); continue; }
+      // A managed, non-wedding node that isn't a sentinel is a legacy per-entity node from the
+      // old one-doc-per-entity model → this owner boot should migrate + prune it. (`wedding`
+      // stays a per-node doc in the new model, so it never counts as legacy.)
+      if (MANAGED_TYPES.has(n.type) && n.type !== FIANCE_TYPES.wedding) sawLegacy = true;
       const arr = byType.get(n.type) ?? [];
       arr.push(n);
       byType.set(n.type, arr);
     }
+    _lastHydrateSawLegacy = sawLegacy;
 
     const pullAll = async (type: string): Promise<Record<string, unknown>[]> => {
       const typeNodes = byType.get(type) ?? [];
@@ -744,8 +588,8 @@ export async function hydrateFromSpace(
     // seed the collection state so the next push carries the correct rev/tombstones. Falls back
     // gracefully to legacy-only when a space has no collection docs yet.
     const collectionDocsByType = await pullCollectionDocs(session, spaceId, sentinelNodes);
-    // Reset to fresh remote truth (like _deletedNodeIds below): a type with no pulled doc gets no
-    // carried state, so a locally-deleted-but-still-legacy entity re-hydrates rather than sticking.
+    // Reset to fresh remote truth: a type with no pulled doc gets no carried state, so a
+    // locally-deleted-but-still-legacy entity re-hydrates rather than sticking.
     _collectionState.clear();
     for (const [type, doc] of collectionDocsByType) {
       _collectionState.set(type, { rev: { ...doc.rev }, tombstones: { ...doc.tombstones } });
@@ -879,21 +723,11 @@ export async function hydrateFromSpace(
     // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
     await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
 
-    // Seed the dirty-push baseline from what we just hydrated, so the next debounced
-    // push only sends nodes genuinely edited locally after this point (see
-    // _lastPushedJson / pushSpaceSnapshot above) instead of re-pushing everything.
-    // Also clear deletion tombstones: we just pulled fresh remote truth, so there are
-    // no pending local-only deletes left to reconcile (a delete-in-flight can't race
-    // this, since deleting schedules a push that keeps _pushTimer set, and
-    // refreshFromSpaceIfIdle — the only caller that can hydrate mid-session — no-ops
-    // while a push is pending).
-    const { nodes: builtNodes, contentMap: builtContent } = buildAllNodes(weddingNodeId);
+    // Seed the wedding-node dirty baseline from what we just hydrated, so the next debounced
+    // push only sends it if genuinely edited locally after this point.
     _lastPushedJson.clear();
-    _deletedNodeIds.clear();
-    for (const n of builtNodes) {
-      const content = builtContent.get(n.id);
-      if (content) _lastPushedJson.set(n.id, stableStringify(content));
-    }
+    const seedWedding = buildWeddingNode(weddingNodeId, Date.now());
+    if (seedWedding) _lastPushedJson.set(seedWedding.node.id, stableStringify(seedWedding.content));
 
     // Seed the collection baselines too. _collectionEntityJson is set from the hydrated entities
     // first so the baseline build treats nothing as "changed" (no rev bump); _collectionState was

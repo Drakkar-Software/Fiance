@@ -611,194 +611,6 @@ describe("pushSpaceSnapshot — dirty-tracking skips unchanged nodes", () => {
   });
 });
 
-// ─── Regression: deleted nodes drop out of the index instead of lingering ─────
-//
-// Before this fix, the index updater kept any prev node whose id wasn't in the
-// freshly-built local set — true both for a node deleted locally AND for a node a
-// peer just added (this device hasn't hydrated it yet). Unconditionally dropping
-// the former is correct but unconditionally dropping the latter silently discards
-// concurrent peer additions (the user's "only the latest added guest persists"
-// report). The fix distinguishes them with `_deletedNodeIds`: a prev-only managed
-// node is dropped only if THIS device's dirty-push baseline once knew its id (i.e.
-// it was deleted here); otherwise it's a peer's addition and is kept. See the
-// "index merge" describe block below for the concurrent-add coverage; this block
-// keeps the original deletion-only regression, now seeding the baseline so the id
-// is actually "known" before being removed (a prev id this device never knew about
-// must NOT be dropped — that was the bug).
-
-describe("pushSpaceSnapshot — deletion propagation", () => {
-  beforeEach(async () => {
-    vi.useFakeTimers();
-    mockUpdateObjectIndex.mockReset();
-    mockWeddingData = { id: "w1", name: "Test Wedding" };
-    mockGuestsData = [];
-    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
-    resetDirtyPushBaseline();
-    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
-    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
-    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
-    mockGetNodeAccessImpl = async () => ({
-      encryptor: null,
-      client: { pull: mockClientPull, push: mockClientPush },
-      isOwnerOpen: false,
-      push: mockHandlePush,
-    });
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-    mockWeddingData = null;
-    mockGuestsData = [];
-  });
-
-  it("drops a managed node this device deleted, keeps a non-managed (rsvp) node", async () => {
-    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
-
-    // Round 1: guest "deleted-guest" exists locally → pushed, baseline now knows it.
-    mockGuestsData = [{ id: "deleted-guest" }];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-
-    // Round 2: removed locally → tombstoned, no longer in the local set.
-    mockGuestsData = [];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-
-    expect(mockUpdateObjectIndex).toHaveBeenCalledTimes(2);
-    const updater = mockUpdateObjectIndex.mock.calls[1][2] as (prev: { id: string; type: string }[], now: number) => { id: string }[];
-    const prev = [
-      { id: "w1", type: "wedding" },
-      { id: "deleted-guest", type: "guest" }, // peer hasn't hydrated the deletion yet
-      { id: "rsvp-1", type: "rsvp" },         // non-managed type → must survive untouched
-    ];
-    const next = updater(prev, Date.now());
-    const ids = next.map((n) => n.id);
-    expect(ids).not.toContain("deleted-guest");
-    expect(ids).toContain("rsvp-1");
-    expect(ids).toContain("w1");
-  });
-});
-
-// ─── Regression: concurrent additions on different devices must NOT clobber ───
-//
-// Reported by the user: add guest GA on device A and a different guest GB on
-// device B; only the latest writer's set survived, the other device's new guest
-// was overwritten. Root cause: the index updater replaced ALL managed nodes with
-// this device's local set on every push, discarding any peer-added node it hadn't
-// hydrated yet. Fixed by union-merging against `prev` (the authoritative remote
-// index) instead of replacing it — see pushSpaceSnapshot in space-sync.ts.
-
-describe("pushSpaceSnapshot — index merge (concurrent adds)", () => {
-  beforeEach(async () => {
-    vi.useFakeTimers();
-    mockUpdateObjectIndex.mockReset();
-    mockWeddingData = { id: "w1", name: "Test Wedding" };
-    mockGuestsData = [];
-    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
-    resetDirtyPushBaseline();
-    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
-    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
-    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
-    mockGetNodeAccessImpl = async () => ({
-      encryptor: null,
-      client: { pull: mockClientPull, push: mockClientPush },
-      isOwnerOpen: false,
-      push: mockHandlePush,
-    });
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-    mockWeddingData = null;
-    mockGuestsData = [];
-  });
-
-  /** Pushes once, then returns the index updater captured from the LAST call so far. */
-  async function pushAndCaptureUpdater() {
-    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-    const calls = mockUpdateObjectIndex.mock.calls;
-    return calls[calls.length - 1][2] as (prev: { id: string; type: string }[], now: number) => { id: string }[];
-  }
-
-  it("keeps a peer's unknown guest alongside this device's own new guest", async () => {
-    mockGuestsData = [{ id: "GA" }]; // this device's own new guest
-    const updater = await pushAndCaptureUpdater();
-    const prev = [{ id: "w1", type: "wedding" }, { id: "GB", type: "guest" }]; // peer's new guest, unknown here
-    const ids = updater(prev, Date.now()).map((n) => n.id);
-    expect(ids).toEqual(expect.arrayContaining(["w1", "GA", "GB"]));
-  });
-
-  it("dedups a node known both locally and in prev — the local copy wins, no duplicate", async () => {
-    mockGuestsData = [{ id: "G", name: "Local Edit" }];
-    await (await import("@/lib/space-sync")).pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-    const updater = await pushAndCaptureUpdater(); // second push, "G" now known to baseline
-    const prev = [{ id: "w1", type: "wedding" }, { id: "G", type: "guest" }, { id: "P", type: "guest" }];
-    const next = updater(prev, Date.now());
-    expect(next.filter((n) => n.id === "G")).toHaveLength(1);
-    expect(next.map((n) => n.id)).toContain("P");
-  });
-
-  it("in one round, drops a node this device deleted and keeps a node it never knew about", async () => {
-    mockGuestsData = [{ id: "G" }];
-    await (await import("@/lib/space-sync")).pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-    mockGuestsData = []; // delete G locally
-    const updater = await pushAndCaptureUpdater();
-    const prev = [{ id: "w1", type: "wedding" }, { id: "G", type: "guest" }, { id: "P", type: "guest" }];
-    const ids = updater(prev, Date.now()).map((n) => n.id);
-    expect(ids).not.toContain("G");
-    expect(ids).toContain("P");
-  });
-
-  it("does not write the index when there is nothing local to push", async () => {
-    mockWeddingData = null;
-    mockGuestsData = [];
-    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
-    expect(mockUpdateObjectIndex).not.toHaveBeenCalled();
-  });
-
-  it("a node deleted then re-added locally survives despite being tombstoned", async () => {
-    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
-    mockGuestsData = [{ id: "G" }];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // known
-    mockGuestsData = [];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // tombstoned
-    mockGuestsData = [{ id: "G" }];
-    const updater = await pushAndCaptureUpdater(); // re-added locally
-    const prev = [{ id: "w1", type: "wedding" }, { id: "G", type: "guest" }];
-    const next = updater(prev, Date.now());
-    expect(next.filter((n) => n.id === "G")).toHaveLength(1); // local wins, not dropped
-  });
-
-  it("a deletion tombstone stays sticky across pushes until the peer's add is observed", async () => {
-    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
-    mockGuestsData = [{ id: "G" }];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // known
-    mockGuestsData = [];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // tombstoned, baseline pruned
-    mockWeddingData = { id: "w1", name: "Renamed" }; // unrelated edit, third push
-    const updater = await pushAndCaptureUpdater();
-    const prev = [{ id: "w1", type: "wedding" }, { id: "G", type: "guest" }]; // peer still hasn't pulled the delete
-    const ids = updater(prev, Date.now()).map((n) => n.id);
-    expect(ids).not.toContain("G"); // tombstone persisted past the baseline prune
-  });
-
-  it("hydrating clears tombstones — a server-side reappearance after that is treated as a fresh peer add", async () => {
-    const { pushSpaceSnapshot, hydrateFromSpace } = await import("@/lib/space-sync");
-    mockGuestsData = [{ id: "G" }];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // known
-    mockGuestsData = [];
-    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1"); // tombstoned
-
-    mockReadObjectTreeImpl = async () => [{ id: "w1", type: "wedding", parentId: null }];
-    await hydrateFromSpace({ userId: "u1" } as never, "space-1", "w1");
-    mockReadObjectTreeImpl = async () => [];
-
-    const updater = await pushAndCaptureUpdater();
-    const prev = [{ id: "w1", type: "wedding" }, { id: "G", type: "guest" }];
-    const ids = updater(prev, Date.now()).map((n) => n.id);
-    expect(ids).toContain("G"); // tombstone cleared by hydrate → "G" now unknown → kept
-  });
-});
 
 // ─── Regression: conflict-retry mutator deep-merges instead of clobbering ─────
 //
@@ -844,12 +656,13 @@ describe("pushNodeContent conflict mutator — deep-merges remote content instea
   });
 });
 
-// ─── Release 1 (Expand): per-collection dual-write ────────────────────────────
+// ─── Per-collection push (collection-only, direct migration) ──────────────────
 //
-// The live-sync path now ALSO writes one doc per collection (col:{type}:{weddingNodeId})
-// alongside the per-entity nodes. A bulk import of N guests mutates only the guest
-// store → exactly ONE collection doc (col:guest) is pushed, regardless of N — the
-// headline metric for the granularity change. Delete-safety rides on in-doc tombstones.
+// Content is one doc per collection (col:{type}:{weddingNodeId}) — NO per-entity
+// content docs. A bulk import of N guests mutates only the guest store → exactly ONE
+// collection doc (col:guest) is pushed, regardless of N (the headline metric); the
+// only other content push is the wedding singleton. Delete-safety rides on in-doc
+// tombstones, and the index prunes legacy per-entity nodes.
 
 /** All (pushPath, payload) pairs sent to client.push whose path targets a collection doc. */
 function collectionPushes(pushMock: Mock, type: string): Array<{ path: string; payload: Record<string, unknown> }> {
@@ -858,7 +671,7 @@ function collectionPushes(pushMock: Mock, type: string): Array<{ path: string; p
     .map((c) => ({ path: c[0] as string, payload: c[1] as Record<string, unknown> }));
 }
 
-describe("pushSpaceSnapshot — per-collection dual-write", () => {
+describe("pushSpaceSnapshot — per-collection push (collection-only)", () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
@@ -893,6 +706,45 @@ describe("pushSpaceSnapshot — per-collection dual-write", () => {
     const pushes = collectionPushes(mockClientPush, "guest");
     expect(pushes).toHaveLength(1); // one doc for all 120 guests
     expect(Object.keys((pushes[0].payload.items as Record<string, unknown>))).toHaveLength(120);
+  });
+
+  it("writes NO per-entity content — only the wedding node + the guest collection doc", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = Array.from({ length: 120 }, (_, i) => ({ id: `g${i}` }));
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    // Exactly two content pushes: the wedding singleton and one guest collection doc.
+    const paths = mockClientPush.mock.calls.map((c) => c[0] as string);
+    expect(paths).toHaveLength(2);
+    // No push targets a bare guest id (e.g. .../g0) — the per-entity path is gone.
+    expect(paths.some((p) => /\/g\d+$/.test(p))).toBe(false);
+    expect(paths.some((p) => p.includes("col:guest:"))).toBe(true);
+    expect(paths.some((p) => p.endsWith("/w1"))).toBe(true);
+  });
+
+  it("index merge prunes legacy per-entity nodes but keeps the wedding root, sentinels, and rsvp", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }]; // makes the guest collection material → col:guest sentinel is local
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(mockUpdateObjectIndex).toHaveBeenCalled();
+    const updater = mockUpdateObjectIndex.mock.calls.at(-1)![2] as (
+      prev: { id: string; type: string }[],
+      now: number,
+    ) => { id: string }[];
+    const prev = [
+      { id: "w1", type: "wedding" },
+      { id: "g-legacy", type: "guest" },      // legacy per-entity node → must be pruned
+      { id: "col:guest:w1", type: "guest" },  // collection sentinel → must survive
+      { id: "rsvp-1", type: "rsvp" },         // non-managed invite node → must survive
+    ];
+    const ids = updater(prev, Date.now()).map((n) => n.id);
+    expect(ids).not.toContain("g-legacy");
+    expect(ids).toContain("w1");
+    expect(ids).toContain("col:guest:w1");
+    expect(ids).toContain("rsvp-1");
   });
 
   it("does not push a collection doc for a collection that stays empty", async () => {
@@ -946,13 +798,15 @@ describe("pushSpaceSnapshot — per-collection dual-write", () => {
   });
 });
 
-// ─── Release 1 (Expand): per-collection dual-read ─────────────────────────────
+// ─── Per-collection read + legacy migration detection ─────────────────────────
 //
-// hydrateFromSpace batch-pulls the collection docs (via the sentinel nodes) AND the
-// legacy per-entity nodes, unioning them so a legacy-only entity (written by an
-// old-build peer) survives. Sentinel nodes must NOT be pulled as lone entities.
+// hydrateFromSpace batch-pulls the collection docs (via the sentinel nodes) AND any
+// legacy per-entity nodes, unioning them — this is the one-time migration read that
+// folds legacy data into the collection docs. Sentinel nodes must NOT be pulled as
+// lone entities. hydrateSawLegacyNodes() flags an owner boot that still has legacy
+// nodes so providers.tsx runs the migration/prune push.
 
-describe("hydrateFromSpace — per-collection dual-read", () => {
+describe("hydrateFromSpace — per-collection read + migration detection", () => {
   afterEach(() => {
     mockReadObjectTreeImpl = async () => [];
     mockGetNodeAccessImpl = async () => ({
@@ -1002,5 +856,35 @@ describe("hydrateFromSpace — per-collection dual-read", () => {
     // The sentinel doc was pulled (collection path) AND the legacy node was pulled (union path).
     expect(batchedIds).toContain("col:guest:w1");
     expect(batchedIds).toContain("g-legacy");
+  });
+
+  it("hydrateSawLegacyNodes() is true when legacy per-entity nodes remain, false when clean", async () => {
+    const { hydrateFromSpace, hydrateSawLegacyNodes } = await import("@/lib/space-sync");
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({ data: null, hash: null })),
+        push: vi.fn(),
+        batchPullMany: vi.fn(async (_c: string, params: { objectId: string }[]) => params.map(() => ({ data: null }))),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    // Legacy space: a per-entity guest node is present → migration needed.
+    mockReadObjectTreeImpl = async () => [
+      { id: "w1", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+      { id: "g-legacy", type: "guest", parentId: "w1", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    await hydrateFromSpace({ userId: "u1" } as never, "space-1", "w1");
+    expect(hydrateSawLegacyNodes()).toBe(true);
+
+    // Clean space: only the wedding root + a collection sentinel → nothing to migrate.
+    mockReadObjectTreeImpl = async () => [
+      { id: "w1", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+      { id: "col:guest:w1", type: "guest", parentId: "w1", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    await hydrateFromSpace({ userId: "u1" } as never, "space-1", "w1");
+    expect(hydrateSawLegacyNodes()).toBe(false);
   });
 });
