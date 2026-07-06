@@ -24,6 +24,7 @@ import { Reveal, SectionGradient, Grain } from "@/components/marketing/effects";
 import { PhoneMock } from "@/components/marketing/PhoneMock";
 import { MarqueeBar } from "@/components/marketing/MarqueeBar";
 import { StoreBadges } from "@/components/marketing/StoreBadges";
+import { SocialBadges } from "@/components/marketing/SocialBadges";
 import { BudgetMiniDemo } from "@/components/marketing/BudgetMiniDemo";
 import { getLandingBlogPosts } from "@/lib/blog";
 import { localizedSeo, localizedPath } from "@/lib/seo-urls";
@@ -520,6 +521,9 @@ export function LandingPage() {
             {t("landing.download.subtitle")}
           </Text>
           <StoreBadges center />
+          <View className="mt-4">
+            <SocialBadges center />
+          </View>
           <MarketingLink href="/home" title={t("landing.download.web")} className="mt-6 active:opacity-60">
             <Text className="text-sm font-semibold text-primary-500 underline">{t("landing.download.web")}</Text>
           </MarketingLink>

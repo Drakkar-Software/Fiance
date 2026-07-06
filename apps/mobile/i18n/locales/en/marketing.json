@@ -210,6 +210,11 @@
         "label": "Get Fiancé on Google Play"
       }
     },
+    "social": {
+      "youtube": "Fiancé on YouTube",
+      "linkedin": "Fiancé on LinkedIn",
+      "instagram": "Fiancé on Instagram"
+    },
     "blog": {
       "eyebrow": "Fiancé · The Journal",
       "title": "Wedding planning tips",

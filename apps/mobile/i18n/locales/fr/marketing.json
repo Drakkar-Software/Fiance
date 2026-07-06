@@ -210,6 +210,11 @@
         "label": "Télécharger Fiancé sur Google Play"
       }
     },
+    "social": {
+      "youtube": "Fiancé sur YouTube",
+      "linkedin": "Fiancé sur LinkedIn",
+      "instagram": "Fiancé sur Instagram"
+    },
     "blog": {
       "eyebrow": "Fiancé · Le Carnet",
       "title": "Conseils pour organiser votre mariage",
