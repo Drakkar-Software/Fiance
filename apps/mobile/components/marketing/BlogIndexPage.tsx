@@ -71,7 +71,7 @@ export function BlogIndexPage() {
       </View>
 
       {posts.length > 0 && (
-        <View className="w-full pt-6 px-6 bg-accent-cream items-center">
+        <View className="w-full pt-6 pb-6 px-6 bg-accent-cream items-center">
           <View className="flex-row flex-wrap justify-center" style={{ gap: 10, maxWidth: 900 }}>
             {[{ key: "all", label: t("blog.categories.all") }, ...categories].map((c) => {
               const active = category === c.key;
@@ -153,8 +153,7 @@ export function BlogIndexPage() {
           <MarketingLink
             href="/home"
             title={t("blog.ctaButton")}
-            className="bg-primary-500 rounded-full active:opacity-70"
-            style={{ paddingHorizontal: 32, paddingVertical: 14 }}
+            className="bg-primary-500 rounded-full active:opacity-70 px-8 py-3.5"
           >
             <Text className="text-base font-semibold text-white">
               {t("blog.ctaButton")}

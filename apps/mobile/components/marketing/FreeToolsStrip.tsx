@@ -48,13 +48,15 @@ function ToolCard({
       >
         <Icon size={22} color={color} />
       </View>
-      <Text className="text-base font-semibold text-typography-900 mb-1">
-        {title}
-      </Text>
-      <Text className="text-sm text-typography-500 leading-5 mb-4">
-        {description}
-      </Text>
-      <Text className="text-sm font-semibold text-primary-500">{cta} →</Text>
+      <View>
+        <Text className="text-base font-semibold text-typography-900 mb-1">
+          {title}
+        </Text>
+        <Text className="text-sm text-typography-500 leading-5 mb-4">
+          {description}
+        </Text>
+        <Text className="text-sm font-semibold text-primary-500">{cta} →</Text>
+      </View>
     </MarketingLink>
   );
 }
