@@ -549,7 +549,12 @@ export async function hydrateFromSpace(
   _isHydrating = true;
   try {
     const nodes = await readObjectTree(session, spaceId);
-    if (!nodes.length) return 0;
+    if (!nodes.length) {
+      console.warn(
+        `[space-sync] hydrateFromSpace: empty object index for ${spaceId} — owner published no content, or space-access credential unrestored`,
+      );
+      return 0;
+    }
 
     // Sentinel (per-collection) nodes share a `type` with legacy per-entity nodes, so bucket
     // them out first — the legacy pull path must not treat a collection doc as a lone entity.

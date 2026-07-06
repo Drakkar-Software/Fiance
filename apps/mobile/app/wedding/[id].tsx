@@ -95,37 +95,45 @@ export default function WeddingPublicPage() {
         if (!serverUrl) { setError(true); return; }
         const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
 
-        // Try combined guest link first ({ v:1, p: pageToken, r: rsvpToken }).
-        const combined = decodeGuestLink(id);
-        if (combined) {
-          setIsGuestLink(true);
-          // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
-          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
-          if (result) {
-            setPage(result);
-          } else {
-            setNotPublished(true);
-            return;
-          }
-          // Read rsvp node to get seed data (guest name, companion info).
-          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: syncNamespace() }) as RsvpSubmission | null;
-          if (rsvpResult?.guestId) setRsvpSeed(rsvpResult);
-          setRsvpToken(combined.rsvp);
+        // Decode first, separately from the network calls below — a decode failure means the
+        // link itself is malformed, the one case that should show "invalid link".
+        let combined: ReturnType<typeof decodeGuestLink> = null;
+        let pageToken: NodeInviteLinkToken | null = null;
+        try {
+          combined = decodeGuestLink(id);
+          if (!combined) pageToken = decodeNodeInviteLink(id);
+        } catch {
+          setError(true);
           return;
         }
 
-        // Plain page-only link (bare NodeInviteLinkToken from getPublicPageInviteLink).
         try {
-          const pageToken = decodeNodeInviteLink(id);
-          // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
-          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
-          if (result) {
+          if (combined) {
+            setIsGuestLink(true);
+            // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
+            const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
+            if (!result) { setNotPublished(true); return; }
             setPage(result);
-          } else {
-            setNotPublished(true);
+            // Read rsvp node to get seed data (guest name, companion info) — best-effort, a
+            // failure here must not undo the page content that already loaded above.
+            try {
+              const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: syncNamespace() }) as RsvpSubmission | null;
+              if (rsvpResult?.guestId) setRsvpSeed(rsvpResult);
+            } catch { /* rsvp seed is optional, page still renders */ }
+            setRsvpToken(combined.rsvp);
+          } else if (pageToken) {
+            const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
+            if (result) {
+              setPage(result);
+            } else {
+              setNotPublished(true);
+            }
           }
         } catch {
-          setError(true);
+          // The link decoded fine, so the wedding/space likely exists — a fetch/server failure
+          // here reads as "details not available yet", not "invalid link" (reserved for decode
+          // failures above).
+          setNotPublished(true);
         }
       } catch {
         setError(true);
