@@ -183,6 +183,12 @@ Create `apps/mobile/store/useNewStore.ts` with Zustand `create()`. Add KV key to
 
 Create file under `apps/mobile/app/(tabs)/feature/`. Expo Router auto-discovers it. Add tab entry in `apps/mobile/app/(tabs)/_layout.tsx` if it's a new tab.
 
+### `LegendList` — pass `extraData` when a row reads state outside its own item
+
+`LegendList` (`@legendapp/list`) memoizes rows by item identity and only re-invokes `renderItem` for a row when that row's item reference changes. If a row's visual state is derived from something *other* than the item itself — e.g. a lookup into a second Zustand store keyed by the item's id (like `comm.recipients.find((r) => r.guestId === guest.id)` in `apps/mobile/app/(tabs)/guests/communication/[id].tsx`) — toggling that external state does not change the item reference, so the row silently keeps rendering stale content. It only catches up later when something unrelated forces a fresh set of item references (e.g. the foreground re-hydrate in `providers.tsx`), which can look like a ~30s hang instead of an instant UI bug.
+
+**Fix**: pass `extraData={theExternalState}` (or a `Set`/`Map` derived from it) to `LegendList` so a change in that external state forces `renderItem` to re-run for all rows. This is safe even when the lookup is a component reading its own store selector directly inside the row (e.g. `GuestCard` in `apps/mobile/app/(tabs)/guests/index.tsx`) — that pattern doesn't need `extraData` since the row component re-renders itself via its own hook subscription regardless of list memoization.
+
 ### Blog (Le Carnet) — publication dates and JSON-LD
 
 Every blog post must expose **`datePublished`** and **`dateModified`** in JSON-LD via `buildBlogPostingNode()` in `apps/mobile/lib/blog.ts`.
