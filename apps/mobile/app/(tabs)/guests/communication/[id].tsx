@@ -85,6 +85,7 @@ export default function CommunicationRosterScreen() {
       ) : (
         <LegendList
           data={filteredGuests}
+          extraData={recipientIds}
           renderItem={({ item: guest }: { item: Guest }) => {
             const recipient = comm.recipients.find((r) => r.guestId === guest.id);
             const received = !!recipient;
