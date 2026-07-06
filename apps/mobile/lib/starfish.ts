@@ -10,7 +10,7 @@
  *   onSyncStatusChange(fn)  → wraps onSseStatus for on/off subscription
  *   getSyncStatus()         → reads the last SSE connection state
  *   getLastSyncTimestamp()  → last successful push timestamp
- *   pullEntitlements()      → v3 cap-cert pull from the fiance namespace
+ *   pullEntitlements()      → v3 cap-cert pull from the active sync namespace ("dk")
  *   initSync()              → initialise with a v3 Session + spaceId
  *   teardownSync()          → clearLiveSyncBus() + reset state
  *
@@ -115,11 +115,16 @@ export function getLastSyncTimestamp(): string | null {
 // ---------------------------------------------------------------------------
 
 /**
- * Pull the user's entitlements (premium feature flags) from the fiance namespace
- * using cap-cert auth. Replaces the v2 `pullEntitlements(sfClient, userId)` API.
+ * Pull the user's entitlements (premium feature flags) via the active sync
+ * session's contentClient — same namespace ("dk") the client syncs everything
+ * else on (`entitlements` was ported from the retired `fiance` namespace onto
+ * `dk` server-side; see Infra's docs/sync/FIANCE_ENTITLEMENTS.md). Replaces the
+ * v2 `pullEntitlements(sfClient, userId)` API.
  *
- * The entitlements collection is read-only via cap-cert; Doubloon writes it via
- * the legacy Bearer path (both share the same R2 key).
+ * Read-only from the client; the Doubloon/IAP payments service writes it,
+ * signing as the platform identity (`admin` role). As of this writing the
+ * payments service still targets the legacy `fiance` namespace, not `dk` — see
+ * the Infra doc above for that pending repoint.
  */
 export async function pullEntitlements(
   _sfClientOrSession: unknown,
