@@ -6,6 +6,7 @@ import * as Linking from "expo-linking";
 import { getRandomBytes } from "expo-crypto";
 import { entropyToMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english";
+import { createResilientFetch } from "@drakkar.software/starfish-client/fetch";
 import {
   isValidSeed as _isValidSeed,
   deriveSession as _deriveSession,
@@ -70,9 +71,13 @@ export async function deriveSessionFromPhrase(
   serverUrl: string,
 ): Promise<{ session: Session; userId: string }> {
   const words = normalizePhrase(phrase).split(" ");
+  // Retries 429/5xx honoring Retry-After (falls back to exponential backoff); covers the
+  // owner's content/account/index clients. Collaborator node-push clients are rebuilt
+  // without this fetch.
+  const { fetch: resilientFetch } = createResilientFetch();
   const session = await _deriveSession(
     words,
-    { baseUrl: normalizeSyncBase(serverUrl), namespace: syncNamespace() },
+    { baseUrl: normalizeSyncBase(serverUrl), namespace: syncNamespace(), fetch: resilientFetch },
     { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return { session, userId: session.userId };
