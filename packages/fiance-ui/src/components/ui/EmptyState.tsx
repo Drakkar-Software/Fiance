@@ -1,4 +1,5 @@
 import React from "react";
+import { Platform } from "react-native";
 import { View, Text, Pressable } from "react-native-css/components";
 import type { LucideIcon } from "lucide-react-native";
 import { Button } from "../../primitives/button";
@@ -40,7 +41,7 @@ export function EmptyState({
         {title}
       </Text>
       {description && (
-        <Text className="text-sm text-typography-400 mt-2 text-center leading-5">
+        <Text className="text-sm text-typography-600 mt-2 text-center leading-5">
           {description}
         </Text>
       )}
@@ -56,7 +57,15 @@ export function EmptyState({
             label={actionLabel}
             onPress={onAction}
             labelColor={colors.onPrimary}
-            style={{ backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16 }}
+            style={{
+              backgroundColor: colors.primary,
+              paddingVertical: 14,
+              borderRadius: 16,
+              // `fill` drives full-width natively (SwiftUI `frame` modifier), but
+              // that modifier is a no-op on web, where the underlying @expo/ui
+              // Button renders `display:inline-flex` and hugs its label instead.
+              ...(Platform.OS === "web" ? { width: "100%" } : null),
+            }}
           />
         </View>
       )}
