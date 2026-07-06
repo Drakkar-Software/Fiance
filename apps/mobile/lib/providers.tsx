@@ -16,7 +16,7 @@ import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes, resetDirtyPushBaseline } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig, normalizeSyncBase } from "@/lib/server";
-import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
+import { ensurePublicPageNode, pushPublicPageContent, publicPageNodeId } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { isPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
@@ -175,10 +175,12 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       // Retried with backoff: pull errors and transient 409s are common on first
       // boot (Garage consistency lag, CDN cache). Each outer attempt runs runCas
       // internally; delays give the server time to settle between attempts.
+      let publicPageNodeReady = false;
       if (!cancelled) {
         for (let attempt = 0; attempt < 5 && !cancelled; attempt++) {
           try {
             await ensurePublicPageNode(session, spaceId, weddingNodeId);
+            publicPageNodeReady = true;
             break;
           } catch {
             if (attempt < 4 && !cancelled) {
@@ -186,6 +188,18 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
             }
           }
         }
+      }
+
+      // ensurePublicPageNode only creates the index entry — it never pushes content,
+      // so a brand-new wedding's public link 404s ("not published") until the owner's
+      // first edit triggers the debounced push below. Push once now so the link is
+      // live immediately after creation. Owner-only: a member's first sync must never
+      // push its local (possibly stale/empty) snapshot over the owner's real content
+      // (mirrors the wedding.role !== "member" guard on pushSpaceSnapshot above).
+      if (!cancelled && publicPageNodeReady && wedding.role !== "member") {
+        await pushPublicPageContent(session, spaceId, publicPageNodeId(weddingNodeId)).catch(
+          (err) => console.warn("[providers] initial public page push failed:", err),
+        );
       }
 
       // Pull entitlements using cap-cert.

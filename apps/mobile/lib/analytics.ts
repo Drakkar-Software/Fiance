@@ -1,4 +1,5 @@
 import { createTelemetry, createTelemetryClient } from "@drakkar.software/dk-spaces-analytics-sdk";
+import { DEFAULT_SYNC_NAMESPACE } from "@fiance/sdk";
 
 export type FianceEvents = {
   // Lifecycle
@@ -86,8 +87,9 @@ export async function initAnalytics(): Promise<void> {
     // Bare host, no /v1 — StarfishClient prepends /v1/{namespace} internally.
     syncBaseUrl: ANALYTICS_BASE,
     app: ANALYTICS_APP,
-    namespace: "analytics",
-    // Effective push endpoint: ANALYTICS_BASE/v1/analytics/push/events/fiance/{uuid}
+    namespace: DEFAULT_SYNC_NAMESPACE,
+    // Effective push endpoint: ANALYTICS_BASE/v1/dk/push/events/fiance/{uuid}
+    // (the standalone "analytics" namespace was merged into "dk" server-side)
     appName: "fiance-mobile",
     defaultOptIn: true,
     debug: __DEV__,
