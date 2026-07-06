@@ -7,13 +7,21 @@
  * `resolveSessionConfig` in new code.
  */
 
-import { deriveSession, getSyncNamespace, type Session } from "@fiance/sdk";
+import { deriveSession, getSyncNamespace, DEFAULT_SYNC_NAMESPACE, type Session } from "@fiance/sdk";
 import { normalizePhrase } from "@/lib/identity";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
-/** Sync namespace: sourced from configureFiance() at boot; "dk" is the fallback. */
+/**
+ * Sync namespace: sourced from configureFiance() at boot; DEFAULT_SYNC_NAMESPACE
+ * is the fallback. getSyncNamespace() throws (not returns undefined) before
+ * configureFiance() has run, so the fallback needs a try/catch to actually apply.
+ */
 function syncNamespace(): string {
-  return getSyncNamespace() ?? "dk";
+  try {
+    return getSyncNamespace() ?? DEFAULT_SYNC_NAMESPACE;
+  } catch {
+    return DEFAULT_SYNC_NAMESPACE;
+  }
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────

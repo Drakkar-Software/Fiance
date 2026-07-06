@@ -34,7 +34,7 @@ export * from './sync/collection-doc.js';
 export * from './analytics.js';
 
 // ─── Fiancé config ────────────────────────────────────────────────────────────
-export { configureFiance } from './core/config.js';
+export { configureFiance, DEFAULT_SYNC_NAMESPACE } from './core/config.js';
 export type { FianceConfig, KvAdapter } from './core/config.js';
 
 // ─── Re-export from dk-spaces-sdk: transport config + getters ───────────────

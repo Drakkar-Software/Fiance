@@ -21,6 +21,7 @@ import {
   writeSpaces,
   buildSpace,
   getSyncNamespace,
+  DEFAULT_SYNC_NAMESPACE,
   type Session,
 } from '@fiance/sdk';
 import { type WeddingRegistryEntry } from '@/lib/wedding-registry';
@@ -95,7 +96,7 @@ export async function ensureSpaceProvisioned(
   //    on the next activation and prevents orphan-space churn.
   await useWeddingRegistryStore.getState().updateWedding(wedding.id, {
     spaceId,
-    syncNamespace: getSyncNamespace() ?? 'dk',
+    syncNamespace: getSyncNamespace() ?? DEFAULT_SYNC_NAMESPACE,
   });
 
   return spaceId;

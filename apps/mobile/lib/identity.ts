@@ -13,13 +13,22 @@ import {
   fingerprintFromUserId,
   decodeSpaceInviteLink,
   getSyncNamespace,
+  DEFAULT_SYNC_NAMESPACE,
   type Session,
   type SpaceInviteLinkToken,
 } from "@fiance/sdk";
 
-/** Sync namespace: sourced from configureFiance() at boot; "dk" is the fallback. */
+/**
+ * Sync namespace: sourced from configureFiance() at boot; DEFAULT_SYNC_NAMESPACE
+ * is the fallback. getSyncNamespace() throws (not returns undefined) before
+ * configureFiance() has run, so the fallback needs a try/catch to actually apply.
+ */
 function syncNamespace(): string {
-  return getSyncNamespace() ?? "dk";
+  try {
+    return getSyncNamespace() ?? DEFAULT_SYNC_NAMESPACE;
+  } catch {
+    return DEFAULT_SYNC_NAMESPACE;
+  }
 }
 
 // ─── Seed phrase helpers ──────────────────────────────────────────────────────

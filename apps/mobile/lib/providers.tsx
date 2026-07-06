@@ -13,7 +13,7 @@ import {
   getActiveWeddingNodeId,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
-import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes } from "@/lib/space-sync";
+import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes, resetDirtyPushBaseline } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig, normalizeSyncBase } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
@@ -52,6 +52,16 @@ export function configureOnBoot(): void {
  * subsequent re-activation after teardownSync works normally.
  */
 const _activating = new Map<string, Promise<{ userId: string } | null>>();
+
+/**
+ * Drop any in-flight activation for a wedding id so a subsequent activateSync()
+ * call can't return a stale promise built from a since-changed registry entry
+ * (e.g. a resync that cleared spaceId while a boot activation with the old
+ * entry was still in flight — see resyncWeddingToCurrentNamespace).
+ */
+export function clearActivation(weddingId: string): void {
+  _activating.delete(weddingId);
+}
 
 /**
  * Core sync activation: resolves session, provisions space, and calls initSync.
@@ -106,7 +116,13 @@ export function activateSync(
 /** Initializes starfish-spaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
   useEffect(() => {
-    if (isSyncActive()) teardownSync();
+    if (isSyncActive()) {
+      teardownSync();
+      // Dirty-push baselines are keyed by weddingNodeId — clear them on every
+      // space switch so a stale baseline from the previous wedding/space can
+      // never make a later pushSpaceSnapshot() see fresh content as already-pushed.
+      resetDirtyPushBaseline();
+    }
 
     if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
 

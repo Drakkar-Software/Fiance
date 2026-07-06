@@ -21,6 +21,15 @@ import { fianceLayout } from './layout.js';
 
 export type { KvAdapter };
 
+/**
+ * The sync namespace Fiancé targets. Single source of truth for the "dk"
+ * literal — used both to seed `configureDKSpaces` below and as the fallback
+ * value everywhere `getSyncNamespace()` is read before/without config (see
+ * `apps/mobile/lib/server.ts`/`identity.ts`, `app/wedding/[id].tsx`,
+ * `lib/space-resync.ts`, `lib/space-provision.ts`).
+ */
+export const DEFAULT_SYNC_NAMESPACE = 'dk';
+
 export interface FianceConfig {
   /** Starfish sync server base URL (no trailing `/v1`). */
   syncBase: string;
@@ -45,7 +54,7 @@ export interface FianceConfig {
 export function configureFiance(cfg: FianceConfig, kv: KvAdapter): void {
   configureDKSpaces({
     syncBase: cfg.syncBase,
-    syncNamespace: 'dk',
+    syncNamespace: DEFAULT_SYNC_NAMESPACE,
   });
   // Also wires configureSpaces({ kvAdapter }) + configureSpaceAccessStore
   // (kvKeyPrefix: 'dk.spaceaccess.') internally.

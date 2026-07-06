@@ -123,13 +123,16 @@ describe("ensureSpaceProvisioned", () => {
     expect(opts).toMatchObject({ name: "Notre mariage" });
   });
 
-  it("persists spaceId on the registry entry via the store action", async () => {
+  it("persists spaceId and syncNamespace on the registry entry via the store action", async () => {
     const result = await ensureSpaceProvisioned(session, freshWedding);
 
     expect(mockUpdateWedding).toHaveBeenCalledOnce();
     const [id, patch] = mockUpdateWedding.mock.calls[0];
     expect(id).toBe("w1");
-    expect(patch).toMatchObject({ spaceId: result });
+    // syncNamespace must be stamped alongside spaceId — needsNamespaceResync()
+    // (lib/space-resync.ts) depends on this to detect a space provisioned under
+    // a retired namespace.
+    expect(patch).toEqual({ spaceId: result, syncNamespace: "dk" });
   });
 
   it("appends the new space to the existing spaces list", async () => {
