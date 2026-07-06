@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
-import { configureFiance, recoverSpaceAccess, readSpaces } from "@fiance/sdk";
+import { configureFiance, recoverSpaceAccess, readSpaces, getSpaceAccessEntry } from "@fiance/sdk";
 import { configureStarfishPlatform, kvGet, kvSet, kvRemove } from "@drakkar.software/dk-spaces-platform-sdk";
 import {
   initSync,
@@ -88,8 +88,26 @@ export function activateSync(
     // settings sync-toggle path, which previously never restored member credentials.
     let weddingNodeId = wedding.weddingNodeId ?? wedding.id;
     if (wedding.role === "member") {
+      // Diagnostics for the "member sees no data" (objdoc 403) bug: pullCollectionDocs
+      // signs with the device key (→ 403) unless getSpaceAccessEntry(spaceId) holds the
+      // "link" credential restored below. Log what recoverSpaceAccess had to work with.
       await readSpaces(session.spacesRegistryClient, session)
-        .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
+        .then(async ({ caps, pubAccess }) => {
+          await recoverSpaceAccess(session, { caps, pubAccess });
+          const entry = getSpaceAccessEntry(spaceId);
+          console.log("[member-access] restore", {
+            spaceId,
+            userId,
+            capsKeys: Object.keys(caps),
+            pubAccessKeys: Object.keys(pubAccess),
+            pubAccessHasSpace: spaceId in pubAccess,
+            entryKind: entry?.kind ?? null,
+            signsWith:
+              entry?.kind === "link" ? "ephemeral"
+              : entry?.kind === "member" ? "device+membercap"
+              : "device-fallback (WILL 403)",
+          });
+        })
         .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
 
       if (!wedding.weddingNodeId) {

@@ -12,6 +12,7 @@ import {
   updateObjectIndex,
   readObjectTree,
   getNodeAccess,
+  getSpaceAccessEntry,
   objDocPush,
   objDocPull,
   objInvPull,
@@ -485,6 +486,15 @@ async function pullCollectionDocs(
   const out = new Map<string, CollectionDoc>();
   if (!sentinels.length) return out;
   try {
+    // Diagnostics for the "member sees no data" (objdoc 403) bug: the entry backing
+    // getNodeAccess's client is what decides the signing key (ephemeral link key vs.
+    // device-key fallback). Log it right before the pull that 403s.
+    const entry = getSpaceAccessEntry(spaceId);
+    console.log("[member-access] pullCollectionDocs", {
+      spaceId,
+      entryKind: entry?.kind ?? null,
+      signsWith: entry?.kind === "link" ? "ephemeral" : entry ? entry.kind : "device-fallback (WILL 403)",
+    });
     const handle = await getNodeAccess(spaceId, sentinels[0].id, sentinels[0], session, null);
     const entries = await handle.client.batchPullMany(
       'objdoc',

@@ -73,6 +73,7 @@ vi.mock("@drakkar.software/starfish-spaces", () => ({
   updateObjectIndex: (...args: unknown[]) => mockUpdateObjectIndex(...args),
   readObjectTree: (..._args: unknown[]) => mockReadObjectTreeImpl(),
   getNodeAccess: vi.fn(async (..._args: unknown[]) => mockGetNodeAccessImpl()),
+  getSpaceAccessEntry: vi.fn(() => null),
   objDocPush: vi.fn((s: string, n: string) => `push/${s}/${n}`),
   objDocPull: vi.fn((s: string, n: string) => `pull/${s}/${n}`),
   objInvPull: vi.fn((s: string, n: string) => `invpull/${s}/${n}`),
