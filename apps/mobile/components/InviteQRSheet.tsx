@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Pressable, Text, ActivityIndicator, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
+import * as Clipboard from "expo-clipboard";
 import { shareLink } from "@/lib/share";
 import { Sheet } from "@fiance/ui/components";
 import { AlertCircle } from "lucide-react-native";
@@ -55,6 +56,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   }, [visible]);
 
   const handleShare = async () => {
+    await Clipboard.setStringAsync(url);
     await shareLink(url, "", t("linkCopied"));
   };
 
