@@ -839,7 +839,7 @@ The `hash` is a SHA-256 digest of the stable-stringified (sorted keys) encrypted
 | `apps/mobile/app/(tabs)/settings/index.tsx` | Sync toggle UI, derived sync status display, import/export |
 | `apps/mobile/store/*.ts` | Domain stores — each mutation calls `notifySync()` |
 | `apps/mobile/db/schema.ts` | Type shim → re-exports entity types from `@fiance/sdk` |
-| `drakkar_sync/apps/fiance/collections.py` | Server-side collection config (16 collections in `/v1/fiance` namespace) |
+| `drakkar_sync/apps/dk_spaces/collections.py` | Server-side collection config (`/v1/dk` namespace — migrated from the retired `/v1/fiance` app) |
 
 ---
 
