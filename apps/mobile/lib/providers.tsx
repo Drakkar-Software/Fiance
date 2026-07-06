@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
 import { configureFiance, recoverSpaceAccess, readSpaces } from "@fiance/sdk";
-import { makeGlobalKvAdapter } from "@/lib/global-kv";
+import { configureStarfishPlatform, kvGet, kvSet, kvRemove } from "@drakkar.software/dk-spaces-platform-sdk";
 import {
   initSync,
   teardownSync,
@@ -15,7 +15,7 @@ import {
 import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
-import { resolveServerUrl, resolveSessionConfig } from "@/lib/server";
+import { resolveServerUrl, resolveSessionConfig, normalizeSyncBase } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { isPremium } from "@/lib/premium";
@@ -28,35 +28,17 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
-/** Strip legacy `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/` prefix. */
-function normalizeSyncBase(url: string): string {
-  return url.replace(/\/v1\/?$/, "");
-}
-
 /** Call once at app boot (before any store access) to configure the fiance SDK. */
 export function configureOnBoot(): void {
-  // Platform crypto: on native, install react-native-quick-crypto.
-  // Web/Node uses globalThis.crypto which is always available — no setup needed.
-  if (Platform.OS !== "web") {
-    // Dynamic require so Metro doesn't bundle this on web where quick-crypto is absent.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { configurePlatform } = require("@fiance/sdk") as {
-      configurePlatform: (cfg: { crypto: unknown }) => void;
-    };
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const QuickCrypto = require("react-native-quick-crypto");
-    // base64 intentionally omitted: starfish-protocol's getBase64() falls back to
-    // Hermes btoa/atob (or a pure-JS codec), so no Buffer global is needed.
-    configurePlatform({ crypto: QuickCrypto });
-    // starfish-spaces' account-seal.ts (sealToSelf/unsealFromSelf, used by
-    // joinSpaceByLink for QR/invite join) reads globalThis.crypto.subtle directly,
-    // bypassing configurePlatform's getCrypto() abstraction — without this,
-    // globalThis.crypto has no .subtle on native and joining throws
-    // "Cannot read property 'importKey' of undefined".
-    (globalThis as any).crypto = QuickCrypto;
-  }
+  // Platform crypto: dk-spaces-platform-sdk is platform-split (index.js /
+  // index.native.js), so Metro/Node each resolve the right implementation —
+  // native installs react-native-quick-crypto (including globalThis.crypto,
+  // needed by starfish-spaces' account-seal.ts for joinSpaceByLink) and web
+  // is a no-op (globalThis.crypto is always available there).
+  configureStarfishPlatform();
 
-  configureFiance(makeGlobalKvAdapter());
+  const syncBase = normalizeSyncBase(resolveServerUrl() ?? "");
+  configureFiance({ syncBase }, { get: kvGet, set: kvSet, remove: kvRemove });
 }
 
 // ---------------------------------------------------------------------------

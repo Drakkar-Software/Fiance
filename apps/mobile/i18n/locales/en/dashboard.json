@@ -35,6 +35,8 @@
   "installApp": "Install the app",
   "installAppDesc": "Access Fiancé from your home screen",
   "installIosSteps": "Tap the Share button then \"Add to Home Screen\"",
+  "resyncBannerTitle": "Online backup interrupted",
+  "resyncBannerDesc": "Reconnect this wedding in Settings to keep backing up",
   "progress": "Progress",
   "upcoming": "Upcoming",
   "nothingUpcoming": "Nothing coming up",

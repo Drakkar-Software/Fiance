@@ -11,9 +11,15 @@ import {
   deriveSession as _deriveSession,
   fingerprintFromUserId,
   decodeSpaceInviteLink,
+  getSyncNamespace,
   type Session,
   type SpaceInviteLinkToken,
 } from "@fiance/sdk";
+
+/** Sync namespace: sourced from configureFiance() at boot; "dk" is the fallback. */
+function syncNamespace(): string {
+  return getSyncNamespace() ?? "dk";
+}
 
 // ─── Seed phrase helpers ──────────────────────────────────────────────────────
 
@@ -66,8 +72,8 @@ export async function deriveSessionFromPhrase(
   const words = normalizePhrase(phrase).split(" ");
   const session = await _deriveSession(
     words,
-    { baseUrl: normalizeSyncBase(serverUrl), namespace: "fiance" },
-    { sharedNamespace: "fiance", autoProfile: false },
+    { baseUrl: normalizeSyncBase(serverUrl), namespace: syncNamespace() },
+    { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return { session, userId: session.userId };
 }

@@ -1,8 +1,4 @@
-import { Platform } from "react-native";
-import { SunglassesCore, createLazyClient } from "@drakkar.software/sunglasses-core";
-import { AsyncStorageAdapter } from "@drakkar.software/sunglasses-storage-async-storage";
-import { StarfishAnalyticsAdapter } from "@drakkar.software/sunglasses-adapter-starfish";
-import { StarfishClient } from "@drakkar.software/starfish-client";
+import { createTelemetry, createTelemetryClient } from "@drakkar.software/dk-spaces-analytics-sdk";
 
 export type FianceEvents = {
   // Lifecycle
@@ -59,6 +55,7 @@ export type FianceEvents = {
   // Settings
   sync_enabled:                undefined;
   sync_disabled:               undefined;
+  wedding_resynced:            undefined;
   export_data:                 { format: "json" | "pdf" | "csv"; kind?: string };
   import_data:                 { source: "backup" | "legacy" | "sample" | "spreadsheet" | "mariagesnet"; sample?: string; count?: number };
   public_page_shared:          undefined;
@@ -70,7 +67,7 @@ export type FianceEvents = {
   premium_restored:            undefined;
 };
 
-export const analytics = createLazyClient<FianceEvents>();
+export const analytics = createTelemetryClient<FianceEvents>();
 
 const ANALYTICS_BASE =
   process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "";
@@ -85,27 +82,14 @@ export async function initAnalytics(): Promise<void> {
   if (g[INIT_KEY]) return;
   g[INIT_KEY] = true;
 
-  const syncClient = new StarfishClient({
-    baseUrl: ANALYTICS_BASE,
+  const client = await createTelemetry({
+    // Bare host, no /v1 — StarfishClient prepends /v1/{namespace} internally.
+    syncBaseUrl: ANALYTICS_BASE,
+    app: ANALYTICS_APP,
     namespace: "analytics",
-  });
-
-  const client = await SunglassesCore.create({
-    storage: new AsyncStorageAdapter(),
-    adapters: [
-      new StarfishAnalyticsAdapter({
-        client: syncClient,
-        app: ANALYTICS_APP,
-        // StarfishClient.push() does NOT add /push/ — applyNamespace() only prepends
-        // /v1/{namespace}. Must include /push/ explicitly to reach:
-        //   ANALYTICS_BASE/v1/analytics/push/events/fiance/{uuid}
-        pathTemplate: "/push/events/{app}/{batchId}",
-      }),
-    ],
-    platform: Platform.OS === "web" ? "web" : "react-native",
+    // Effective push endpoint: ANALYTICS_BASE/v1/analytics/push/events/fiance/{uuid}
     appName: "fiance-mobile",
     defaultOptIn: true,
-    enableSessionTracking: true,
     debug: __DEV__,
   });
 

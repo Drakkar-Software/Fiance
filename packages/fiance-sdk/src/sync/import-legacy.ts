@@ -31,7 +31,7 @@ import {
   type Session,
   type ObjectNode,
 } from '@drakkar.software/starfish-spaces';
-import { objDocPush } from './object-paths.js';
+import { objDocPush } from '@drakkar.software/dk-spaces-sdk';
 import type { WeddingSnapshot } from './backup.js';
 import {
   weddingToNode,

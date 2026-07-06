@@ -7,9 +7,14 @@
  * `resolveSessionConfig` in new code.
  */
 
-import { deriveSession, type Session } from "@fiance/sdk";
+import { deriveSession, getSyncNamespace, type Session } from "@fiance/sdk";
 import { normalizePhrase } from "@/lib/identity";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
+
+/** Sync namespace: sourced from configureFiance() at boot; "dk" is the fallback. */
+function syncNamespace(): string {
+  return getSyncNamespace() ?? "dk";
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,13 +54,13 @@ export function resolveServerUrl(
 }
 
 /** Strip a trailing `/v1` suffix — starfish-spaces client adds its own `/v1/{namespace}/`. */
-function normalizeSyncBase(url: string): string {
+export function normalizeSyncBase(url: string): string {
   return url.replace(/\/v1\/?$/, "");
 }
 
 /** Build the starfish-spaces ClientOpts from a resolved server URL. */
 function makeClientOpts(serverUrl: string) {
-  return { baseUrl: normalizeSyncBase(serverUrl), namespace: "fiance" as const };
+  return { baseUrl: normalizeSyncBase(serverUrl), namespace: syncNamespace() };
 }
 
 // ─── v3 session helpers ───────────────────────────────────────────────────────
@@ -74,8 +79,8 @@ export async function deriveUserId(
   const baseUrl = serverUrl ? normalizeSyncBase(serverUrl) : "http://localhost";
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
-    { baseUrl, namespace: "fiance" },
-    { sharedNamespace: "fiance", autoProfile: false },
+    { baseUrl, namespace: syncNamespace() },
+    { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return session.userId;
 }
@@ -93,7 +98,7 @@ export async function resolveSessionConfig(
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
     makeClientOpts(serverUrl),
-    { sharedNamespace: "fiance", autoProfile: false },
+    { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return { serverUrl, session, userId: session.userId };
 }
@@ -115,7 +120,7 @@ export async function resolveServerConfig(
   const session = await deriveSession(
     normalizePhrase(seedPhrase).split(" "),
     makeClientOpts(serverUrl),
-    { sharedNamespace: "fiance", autoProfile: false },
+    { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return {
     serverUrl,

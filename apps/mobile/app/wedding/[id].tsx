@@ -14,8 +14,14 @@ import {
   decodeNodeInviteLink,
   readNodeWithLinkCap,
   writeNodeWithLinkCap,
+  getSyncNamespace,
   type NodeInviteLinkToken,
 } from "@fiance/sdk";
+
+/** Sync namespace: sourced from configureFiance() at boot; "dk" is the fallback. */
+function syncNamespace(): string {
+  return getSyncNamespace() ?? "dk";
+}
 import { decodeGuestLink } from "@/lib/guest-link";
 import { TimelineItem } from "@/components/TimelineItem";
 import { Display } from "@/components/Display";
@@ -85,7 +91,7 @@ export default function WeddingPublicPage() {
         if (combined) {
           setIsGuestLink(true);
           // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
-          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
+          const result = await readNodeWithLinkCap(combined.page, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
           if (result) {
             setPage(result);
           } else {
@@ -93,7 +99,7 @@ export default function WeddingPublicPage() {
             return;
           }
           // Read rsvp node to get seed data (guest name, companion info).
-          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: "fiance" }) as RsvpSubmission | null;
+          const rsvpResult = await readNodeWithLinkCap(combined.rsvp, { baseUrl, namespace: syncNamespace() }) as RsvpSubmission | null;
           if (rsvpResult?.guestId) setRsvpSeed(rsvpResult);
           setRsvpToken(combined.rsvp);
           return;
@@ -103,7 +109,7 @@ export default function WeddingPublicPage() {
         try {
           const pageToken = decodeNodeInviteLink(id);
           // readNodeWithLinkCap returns the already-unwrapped content (json.data), not {data}.
-          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: "fiance" }) as PublicWeddingPage | null;
+          const result = await readNodeWithLinkCap(pageToken, { baseUrl, namespace: syncNamespace() }) as PublicWeddingPage | null;
           if (result) {
             setPage(result);
           } else {
@@ -605,7 +611,7 @@ export default function WeddingPublicPage() {
                         if (serverUrl) {
                           try {
                             const baseUrl = serverUrl.replace(/\/v1\/?$/, "");
-                            await writeNodeWithLinkCap(rsvpToken, submission as unknown as Record<string, unknown>, { baseUrl, namespace: "fiance" });
+                            await writeNodeWithLinkCap(rsvpToken, submission as unknown as Record<string, unknown>, { baseUrl, namespace: syncNamespace() });
                             ok = true;
                           } catch { ok = false; }
                         }

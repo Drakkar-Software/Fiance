@@ -69,7 +69,7 @@ vi.mock('@drakkar.software/starfish-spaces', () => {
   };
 });
 
-vi.mock('../sync/object-paths.js', () => ({
+vi.mock('@drakkar.software/dk-spaces-sdk', () => ({
   objDocPush: vi.fn((spaceId: string, nodeId: string) => `push/${spaceId}/objdoc/${nodeId}`),
 }));
 

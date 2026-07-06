@@ -8,6 +8,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { needsNamespaceResync } from "@/lib/space-resync";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -38,6 +40,9 @@ function DashboardScreen() {
   const router = useRouter();
   const isWide = useIsWideScreen();
   const wedding = useWeddingStore((s) => s.wedding);
+  const registry = useWeddingRegistryStore((s) => s.registry);
+  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
+  const showResyncBanner = needsNamespaceResync(activeEntry);
   const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
   const primaryEvent = React.useMemo(() => getPrimaryEvent(weddingEvents), [weddingEvents]);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -302,6 +307,23 @@ function DashboardScreen() {
               <X size={18} color={GP.mute} />
             </Pressable>
           </View>
+        )}
+
+        {/* Sync-namespace resync banner — space provisioned under a retired namespace */}
+        {showResyncBanner && (
+          <Pressable
+            onPress={() => router.push("/settings")}
+            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
+          >
+            <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: "#FBF0DD" }}>
+              <AlertTriangle size={20} color="#c9922f" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-ink">{t("resyncBannerTitle")}</Text>
+              <Text className="text-xs text-mute mt-0.5">{t("resyncBannerDesc")}</Text>
+            </View>
+            <ChevronRight size={18} color={GP.mute} />
+          </Pressable>
         )}
 
         {/* Progression: Invités · Budget · Tâches */}

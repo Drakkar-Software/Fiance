@@ -34,6 +34,14 @@ export interface WeddingRegistryEntry {
    * Effective node id = weddingNodeId ?? id.
    */
   weddingNodeId?: string;
+  /**
+   * The sync namespace `spaceId` was provisioned under (set alongside `spaceId`
+   * in space-provision.ts). Missing/mismatched vs the currently configured
+   * namespace (`getSyncNamespace()`) means this space is stale — provisioned
+   * under a retired namespace — and needs `resyncWeddingToCurrentNamespace()`
+   * (see lib/space-resync.ts) before sync will work again.
+   */
+  syncNamespace?: string;
 }
 
 export interface WeddingRegistry {
@@ -112,7 +120,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

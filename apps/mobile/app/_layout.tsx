@@ -49,7 +49,7 @@ import { LockScreen } from "@/components/LockScreen";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
-import { SunglassesProvider, SunglassesGlobalErrorBoundary, useExpoRouterScreenTracking } from "@drakkar.software/sunglasses-react-native";
+import { TelemetryProvider, useTelemetryScreenTracking } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
@@ -139,7 +139,7 @@ function AppContent() {
 }
 
 function InnerApp() {
-  useExpoRouterScreenTracking(analytics);
+  useTelemetryScreenTracking(analytics);
   useAutoApplyUpdate();
   return (
     <>
@@ -227,11 +227,9 @@ export default function RootLayout() {
           ) : locked ? (
             <LockScreen onUnlock={handleUnlock} />
           ) : (
-            <SunglassesProvider client={analytics} autoCaptureErrors={{ globalHandlers: true, console: true }}>
-              <SunglassesGlobalErrorBoundary fallback={crashFallback} includeNonFatalGlobalErrors>
-                <InnerApp />
-              </SunglassesGlobalErrorBoundary>
-            </SunglassesProvider>
+            <TelemetryProvider client={analytics} fallback={crashFallback}>
+              <InnerApp />
+            </TelemetryProvider>
           )}
         </ForgeThemeProvider>
       </GestureHandlerRootView>

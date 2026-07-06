@@ -117,7 +117,7 @@ Destination, dates, budget vs. spent, and a day-by-day itinerary.
 | **Cross-platform** | Expo SDK 57 + Expo Router (iOS, Android, Web) |
 | **UI** | React Native + NativeWind v5 (Tailwind CSS) |
 | **State** | Zustand v5 |
-| **Sync** | Starfish client — AES-256-GCM encrypted push/pull |
+| **Sync** | `@drakkar.software/dk-spaces-sdk` (Starfish client) — AES-256-GCM E2EE object-space sync |
 | **Security** | expo-secure-store · expo-local-authentication · expo-crypto |
 | **Forms** | React Hook Form + Zod |
 | **i18n** | i18next (FR / EN) |
@@ -153,7 +153,7 @@ Sync is **100% optional** — all data stays on-device by default.
 To enable: go to **Settings › Synchronisation** and enter your Starfish server URL + auth token. An AES-256-GCM key is generated on-device and stored in the secure keychain. The server only ever sees encrypted blobs.
 
 ```bash
-# Point the app at the production drakkar_sync server
+# Point the app at the production drakkar_sync server (dk namespace)
 echo 'EXPO_PUBLIC_SYNC_URL=https://sync.drakkar.software/sync' > apps/mobile/.env.local
 pnpm --filter fiance run web
 ```

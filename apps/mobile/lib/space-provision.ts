@@ -20,6 +20,7 @@ import {
   readSpaces,
   writeSpaces,
   buildSpace,
+  getSyncNamespace,
   type Session,
 } from '@fiance/sdk';
 import { type WeddingRegistryEntry } from '@/lib/wedding-registry';
@@ -85,11 +86,17 @@ export async function ensureSpaceProvisioned(
     console.warn('[space-provision] _spaces registration failed (non-fatal):', err);
   }
 
-  // 5. Persist so subsequent sessions skip provisioning.
+  // 5. Persist so subsequent sessions skip provisioning. Also stamp the
+  //    namespace this spaceId was provisioned under — needsNamespaceResync()
+  //    (lib/space-resync.ts) compares this against the currently configured
+  //    namespace to detect a space left over from a retired namespace.
   //    Use the store action (not the raw KV writer) so the in-memory registry is
   //    updated immediately — the fast-path at the top of this function then holds
   //    on the next activation and prevents orphan-space churn.
-  await useWeddingRegistryStore.getState().updateWedding(wedding.id, { spaceId });
+  await useWeddingRegistryStore.getState().updateWedding(wedding.id, {
+    spaceId,
+    syncNamespace: getSyncNamespace() ?? 'dk',
+  });
 
   return spaceId;
 }

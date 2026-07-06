@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { useSunglasses } from "@drakkar.software/sunglasses-react-native";
+import { useTelemetry as useSunglasses } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode, RefreshCw } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
 import { QRScannerScreen } from "@/components/QRScannerScreen";
@@ -23,6 +23,7 @@ import {
   subscribeSyncStatus,
 } from "@/lib/starfish";
 import { activateSync } from "@/lib/providers";
+import { needsNamespaceResync, resyncWeddingToCurrentNamespace } from "@/lib/space-resync";
 import { generatePassphrase } from "@/lib/identity";
 import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
 import { createInviteLink } from "@/lib/invite-link";
@@ -255,6 +256,24 @@ export default function SettingsScreen() {
   const [deleteWeddingId, setDeleteWeddingId] = useState<string | null>(null);
   const deleteWeddingEntry = registry?.weddings.find((w) => w.id === deleteWeddingId);
 
+  const [showResyncConfirm, setShowResyncConfirm] = useState(false);
+  const [resyncing, setResyncing] = useState(false);
+  const handleResync = useCallback(async () => {
+    if (!activeEntry) return;
+    setShowResyncConfirm(false);
+    setResyncing(true);
+    try {
+      await resyncWeddingToCurrentNamespace(activeEntry);
+      analytics.capture("wedding_resynced");
+      toast.success(t("resyncWeddingSuccess"));
+    } catch (err) {
+      toast.error(t("resyncWeddingError"));
+      console.warn("[settings] resync failed:", err);
+    } finally {
+      setResyncing(false);
+    }
+  }, [activeEntry, t]);
+
   return (
     <>
     <ScrollView
@@ -364,6 +383,19 @@ export default function SettingsScreen() {
             subtitle={t("sendLinkToJoin")}
             right={<ChevronRight size={18} color="#C0C0C8" />}
             onPress={handleInvite}
+          />
+        )}
+        {needsNamespaceResync(activeEntry) && (
+          <IconCard
+            icon={
+              <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: "#FBF0DD" }}>
+                <RefreshCw size={20} color="#c9922f" />
+              </View>
+            }
+            title={t("resyncWedding")}
+            subtitle={t("resyncWeddingDesc")}
+            right={resyncing ? undefined : <ChevronRight size={18} color="#C0C0C8" />}
+            onPress={resyncing ? undefined : () => setShowResyncConfirm(true)}
           />
         )}
 
@@ -643,6 +675,15 @@ export default function SettingsScreen() {
         setLockEnabled(false).then(() => setLockEnabledState(false));
       }}
       onCancel={() => setShowDisableLock(false)}
+    />
+
+    <ConfirmSheet
+      visible={showResyncConfirm}
+      title={t("resyncWeddingTitle")}
+      message={t("resyncWeddingMsg")}
+      confirmLabel={t("resyncWeddingConfirm")}
+      onConfirm={handleResync}
+      onCancel={() => setShowResyncConfirm(false)}
     />
 
     <RenameSheet

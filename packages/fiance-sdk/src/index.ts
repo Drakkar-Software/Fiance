@@ -35,22 +35,30 @@ export * from './analytics.js';
 
 // ─── Fiancé config ────────────────────────────────────────────────────────────
 export { configureFiance } from './core/config.js';
-export type { KvAdapter } from './core/config.js';
+export type { FianceConfig, KvAdapter } from './core/config.js';
 
-// ─── Vendored: per-node content-doc path builders ────────────────────────────
+// ─── Re-export from dk-spaces-sdk: transport config + getters ───────────────
+// Source of truth for the sync namespace ('dk') — apps/mobile/lib/server.ts
+// and identity.ts read getSyncNamespace() instead of hardcoding the string.
+export {
+  configureDKSpaces, getSyncBase, getSyncNamespace, getSharedSpacesNamespace,
+} from '@drakkar.software/dk-spaces-sdk';
+
+// ─── Re-export from dk-spaces-sdk: per-node content-doc path builders ────────
 // starfish-spaces' SpaceLayout does not expose per-node objdoc/objinv paths;
-// these are app-specific and must mirror drakkar_sync/apps/fiance/collections.py.
-export { objDocPush, objDocPull, objInvPush, objInvPull } from './sync/object-paths.js';
+// these mirror the server's registered collections (drakkar_sync/apps/dk_spaces).
+export { objDocPush, objDocPull, objInvPush, objInvPull } from '@drakkar.software/dk-spaces-sdk';
 
-// ─── Vendored: in-process live-sync bus ──────────────────────────────────────
-// starfish-spaces is lean and ships no built-in event bus.
+// ─── Re-export from dk-spaces-sdk: in-process live-sync bus ─────────────────
 export {
   registerPull, dispatchDocChange,
   onSseStatus, emitSseStatus, clearLiveSyncBus,
-} from './sync/live-bus.js';
+} from '@drakkar.software/dk-spaces-sdk';
 
 // ─── Re-export from starfish-spaces (all public API) ─────────────────────────
 export * from '@drakkar.software/starfish-spaces';
 
 // ─── Re-export from starfish-protocol (re-homed symbols) ─────────────────────
-export { randomId, encodeLinkFragment, decodeLinkFragment, configurePlatform } from '@drakkar.software/starfish-protocol';
+// configurePlatform is NOT re-exported here — platform crypto setup now goes
+// through @drakkar.software/dk-spaces-platform-sdk's configureStarfishPlatform().
+export { randomId, encodeLinkFragment, decodeLinkFragment } from '@drakkar.software/starfish-protocol';

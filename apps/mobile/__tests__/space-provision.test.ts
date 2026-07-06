@@ -30,6 +30,7 @@ vi.mock("@fiance/sdk", () => ({
   readSpaces: (...args: unknown[]) => mockReadSpaces(...args),
   writeSpaces: (...args: unknown[]) => mockWriteSpaces(...args),
   buildSpace: (spaceId: string, name: string) => mockBuildSpace(spaceId, name),
+  getSyncNamespace: () => "dk",
 }));
 
 // space-provision now calls the Zustand store action (not updateWeddingEntry directly)
