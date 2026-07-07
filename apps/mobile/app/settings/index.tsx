@@ -7,6 +7,8 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
+import Constants from "expo-constants";
+import { useUpdates } from "expo-updates";
 import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode, RefreshCw } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
@@ -56,6 +58,10 @@ export default function SettingsScreen() {
   const colorScheme = useSettingsStore((s) => s.colorScheme);
   const setColorScheme = useSettingsStore((s) => s.setColorScheme);
   const tasks = usePlanningStore((s) => s.tasks);
+
+  const appVersion = Constants.expoConfig?.version ?? "";
+  const { currentlyRunning } = useUpdates();
+  const updateDate = currentlyRunning?.createdAt ?? null;
 
   const registry = useWeddingRegistryStore((s) => s.registry);
   const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
@@ -630,7 +636,8 @@ export default function SettingsScreen() {
             Fiancé
           </Text>
           <Text className="text-sm text-mute mt-1">
-            Version 1.0.0
+            Version {appVersion}
+            {updateDate ? ` (${format(updateDate, "dd/MM/yyyy")})` : ""}
           </Text>
           <Text className="text-xs text-mute mt-2">
             {t("madeBy")}
