@@ -90,6 +90,9 @@ Shareable page for guests: program, RSVP, practical info. No account needed.
 **⏱️ Wedding Day View**
 Live countdown and day-of agenda — your schedule at a glance as the day unfolds.
 
+**📲 iOS Widget**
+Home-screen widget with your countdown, urgent warnings, upcoming agenda, and next tasks — a glance without opening the app.
+
 **📨 Communication Templates**
 Reusable email, SMS, and postal templates with `{{guest.firstName}}`-style placeholders.
 
@@ -106,7 +109,7 @@ Destination, dates, budget vs. spent, and a day-by-day itinerary.
 </tr>
 </table>
 
-**Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · App Lock (PIN + biometrics) · Cloud backup (AES-256-GCM, zero-knowledge) · Full French & English localization
+**Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · iOS home-screen widget · App Lock (PIN + biometrics) · Cloud backup (AES-256-GCM, zero-knowledge) · Full French & English localization
 
 ---
 

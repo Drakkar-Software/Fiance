@@ -4,6 +4,9 @@ All notable changes to Fiancé are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- iOS home-screen widget (`expo-widgets`, Small + Medium) that mirrors the home dashboard. It shows the countdown plus a priority-ordered summary — warnings first (overdue tasks, vendor deposits due, expiring quotes, critical unstarted tasks, guests without a table, over-budget), then upcoming agenda events, then next tasks — so a shorter widget fills its space with whatever matters most. Refreshes on data changes and when the app returns to the foreground; fully localized (FR/EN). A dismissible home banner explains how to add it. iOS-only (no-op on Android and web).
+
 ## [1.10.0]
 
 ### Changed
