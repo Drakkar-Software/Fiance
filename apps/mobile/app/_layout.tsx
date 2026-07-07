@@ -55,6 +55,7 @@ import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializ
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { useAutoApplyUpdate } from "@/lib/use-app-update";
+import { ObserveRoot, useObserve } from "expo-observe";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
 // available before any screen renders (home, settings, public-page all call
@@ -141,6 +142,14 @@ function AppContent() {
 function InnerApp() {
   useTelemetryScreenTracking(analytics);
   useAutoApplyUpdate();
+  // EAS Observe: signal Time to Interactive once the real app content renders.
+  // InnerApp mounts only after fonts load + unlock, and every entry screen
+  // (public page, onboarding, tabs) renders under it. markInteractive() is
+  // idempotent — only the first call per session is recorded.
+  const { markInteractive } = useObserve();
+  useEffect(() => {
+    markInteractive();
+  }, [markInteractive]);
   return (
     <>
       <AppContent />
@@ -155,7 +164,7 @@ const crashFallback = (
   </View>
 );
 
-export default function RootLayout() {
+function RootLayout() {
   // On web, fonts are loaded via Google Fonts <link> in +html.tsx — skip TTF bundling
   const [fontsLoaded] = useFonts(
     Platform.OS === "web"
@@ -236,3 +245,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+export default ObserveRoot.wrap(RootLayout);
