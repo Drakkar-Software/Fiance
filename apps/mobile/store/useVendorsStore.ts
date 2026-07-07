@@ -6,6 +6,7 @@ import {
   persistVendors, persistQuotePricings, persistVendorPayments,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { maybeRequestReview } from "@/lib/store-review";
 
 interface VendorsState {
   vendors: Vendor[];
@@ -43,6 +44,7 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistVendors(storage);
     notifySync();
+    maybeRequestReview("vendors", get().vendors.length);
   },
   updateVendor: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };

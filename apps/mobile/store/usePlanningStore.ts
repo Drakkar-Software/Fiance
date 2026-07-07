@@ -7,6 +7,7 @@ import {
   persistAgendaEvents, persistDayOfItems,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { maybeRequestReview } from "@/lib/store-review";
 import { onTaskMutation, onAgendaMutation } from "@/lib/notifications";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
@@ -57,6 +58,7 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     if (storage) persistTasks(storage);
     notifySync();
     if (useSettingsStore.getState().notificationsEnabled) onTaskMutation(task, "add");
+    maybeRequestReview("tasks", get().tasks.length);
   },
   updateTask: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };

@@ -1,6 +1,6 @@
 {
   "name": "fiance",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "private": true,
   "description": "Application gratuite, privée et hors ligne pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board d'inspiration.",
   "keywords": [
@@ -95,6 +95,7 @@
     "expo-splash-screen": "~57.0.1",
     "expo-sqlite": "~57.0.0",
     "expo-status-bar": "~57.0.0",
+    "expo-store-review": "~57.0.0",
     "expo-system-ui": "^57.0.0",
     "expo-updates": "~57.0.5",
     "fflate": "^0.8.3",

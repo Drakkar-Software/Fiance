@@ -28,6 +28,7 @@ import {
   persistMealSelections,
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
+import { maybeRequestReview } from "@/lib/store-review";
 import {
   removeGuestFromAll,
   removeRoleAssignmentsForGuest,
@@ -78,6 +79,7 @@ export const useGuestsStore = create<GuestsState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistGuests(storage);
     notifySync();
+    maybeRequestReview("guests", get().guests.length);
   },
   importGuestData: ({ guests, groups, tables }) => {
     set((s) => ({
