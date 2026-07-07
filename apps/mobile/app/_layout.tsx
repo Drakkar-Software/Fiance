@@ -51,7 +51,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
 import { TelemetryProvider, useTelemetryScreenTracking } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics, initAnalytics } from "@/lib/analytics";
-import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer } from "@/lib/providers";
+import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer, WidgetInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { useAutoApplyUpdate } from "@/lib/use-app-update";
@@ -125,6 +125,7 @@ function AppContent() {
       {activeWedding && <SyncInitializer wedding={activeWedding} />}
       {activeWedding && <NotificationInitializer />}
       {activeWedding && <IAPInitializer wedding={activeWedding} />}
+      {activeWedding && <WidgetInitializer />}
       <>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="onboarding" />

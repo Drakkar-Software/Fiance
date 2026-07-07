@@ -98,6 +98,7 @@
     "expo-store-review": "~57.0.0",
     "expo-system-ui": "^57.0.0",
     "expo-updates": "~57.0.5",
+    "expo-widgets": "~57.0.3",
     "fflate": "^0.8.3",
     "i18next": "^24.2.3",
     "lucide-react-native": "^1.8.0",

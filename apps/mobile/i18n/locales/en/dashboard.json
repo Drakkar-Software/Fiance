@@ -45,5 +45,8 @@
   "dietChart": "Dietary requirements",
   "inviteTypeChart": "Invitation types",
   "thankYouPending_one": "{{count}} thank-you to send",
-  "thankYouPending_other": "{{count}} thank-yous to send"
+  "thankYouPending_other": "{{count}} thank-yous to send",
+  "widgetToday": "The big day",
+  "widgetBannerTitle": "Add the widget",
+  "widgetBannerDesc": "Long-press your home screen, then tap + to add the Fiancé widget"
 }

@@ -25,7 +25,11 @@ import { handleReturnFromCheckout } from "@/lib/stripe";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
+import { useVendorsStore } from "@/store/useVendorsStore";
+import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { updateWidget } from "@/lib/widget";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 /** Call once at app boot (before any store access) to configure the fiance SDK. */
@@ -300,6 +304,50 @@ export function IAPInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
     return () => { teardown?.(); };
   }, [starfishUserId]);
 
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// WidgetInitializer — feeds the iOS home-screen widget
+// ---------------------------------------------------------------------------
+
+/**
+ * Keeps the iOS widget's snapshot in sync with the active wedding. Debounced
+ * refresh on any relevant store change, plus an immediate refresh on mount and
+ * whenever the app returns to the foreground. Inert off iOS: `updateWidget` is
+ * the platform stub there, and the effect early-returns anyway.
+ */
+export function WidgetInitializer() {
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        updateWidget();
+      }, 1500);
+    };
+
+    updateWidget();
+    const unsubs = [
+      usePlanningStore.subscribe(schedule),
+      useVendorsStore.subscribe(schedule),
+      useGuestsStore.subscribe(schedule),
+      useWeddingStore.subscribe(schedule),
+      useWeddingEventsStore.subscribe(schedule),
+    ];
+    const appSub = AppState.addEventListener("change", (state) => {
+      if (state === "active") updateWidget();
+    });
+
+    return () => {
+      unsubs.forEach((u) => u());
+      appSub.remove();
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
   return null;
 }
 

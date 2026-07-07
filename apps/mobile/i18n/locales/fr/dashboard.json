@@ -45,5 +45,8 @@
   "dietChart": "Régimes alimentaires",
   "inviteTypeChart": "Types d'invitation",
   "thankYouPending_one": "{{count}} remerciement à envoyer",
-  "thankYouPending_other": "{{count}} remerciements à envoyer"
+  "thankYouPending_other": "{{count}} remerciements à envoyer",
+  "widgetToday": "Jour J",
+  "widgetBannerTitle": "Ajoutez le widget",
+  "widgetBannerDesc": "Appui long sur l'écran d'accueil, puis + pour ajouter le widget Fiancé"
 }

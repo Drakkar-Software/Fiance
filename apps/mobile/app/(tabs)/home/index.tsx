@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, X, Clock, Circle } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, LayoutGrid, Clock, Circle } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
@@ -19,6 +19,8 @@ import { useIdeasStore } from "@/store/useIdeasStore";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
+import { useWidgetBanner } from "@/lib/useWidgetBanner";
+import { HomeBanner } from "@/components/HomeBanner";
 import { analytics } from "@/lib/analytics";
 import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
@@ -111,6 +113,9 @@ function DashboardScreen() {
     urgentDeposits.length > 0 || expiringQuotes.length > 0 || criticalUnstarted.length > 0;
 
   const { canInstall, install: installPwa, isIosSafari, dismissIosBanner } = usePwaInstall();
+  const { visible: showWidgetBanner, dismiss: dismissWidgetBanner } = useWidgetBanner(
+    agendaEvents.length > 0 || tasks.length > 0,
+  );
   const install = useCallback(() => {
     analytics.capture("pwa_install_clicked");
     installPwa();
@@ -278,52 +283,45 @@ function DashboardScreen() {
 
         {/* PWA install banner — Chromium browsers */}
         {canInstall && (
-          <Pressable
+          <HomeBanner
+            icon={<Download size={20} color={GP.clay} />}
+            title={t("installApp")}
+            description={t("installAppDesc")}
             onPress={install}
-            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
-          >
-            <View className="w-10 h-10 rounded-xl bg-accent-clay-soft items-center justify-center mr-3">
-              <Download size={20} color={GP.clay} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{t("installApp")}</Text>
-              <Text className="text-xs text-mute mt-0.5">{t("installAppDesc")}</Text>
-            </View>
-            <ChevronRight size={18} color={GP.mute} />
-          </Pressable>
+            showChevron
+          />
         )}
 
         {/* PWA install banner — iOS Safari */}
         {isIosSafari && (
-          <View className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center">
-            <View className="w-10 h-10 rounded-xl bg-accent-clay-soft items-center justify-center mr-3">
-              <Download size={20} color={GP.clay} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{t("installApp")}</Text>
-              <Text className="text-xs text-mute mt-0.5">{t("installIosSteps")}</Text>
-            </View>
-            <Pressable onPress={dismissIosBanner} className="p-1">
-              <X size={18} color={GP.mute} />
-            </Pressable>
-          </View>
+          <HomeBanner
+            icon={<Download size={20} color={GP.clay} />}
+            title={t("installApp")}
+            description={t("installIosSteps")}
+            onDismiss={dismissIosBanner}
+          />
+        )}
+
+        {/* iOS home-screen widget banner */}
+        {showWidgetBanner && (
+          <HomeBanner
+            icon={<LayoutGrid size={20} color={GP.clay} />}
+            title={t("widgetBannerTitle")}
+            description={t("widgetBannerDesc")}
+            onDismiss={dismissWidgetBanner}
+          />
         )}
 
         {/* Sync-namespace resync banner — space provisioned under a retired namespace */}
         {showResyncBanner && (
-          <Pressable
+          <HomeBanner
+            icon={<AlertTriangle size={20} color="#c9922f" />}
+            iconBg="#FBF0DD"
+            title={t("resyncBannerTitle")}
+            description={t("resyncBannerDesc")}
             onPress={() => router.push("/settings")}
-            className="bg-accent-card rounded-2xl px-4 py-3 mb-3 border border-hair flex-row items-center active:opacity-70"
-          >
-            <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: "#FBF0DD" }}>
-              <AlertTriangle size={20} color="#c9922f" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{t("resyncBannerTitle")}</Text>
-              <Text className="text-xs text-mute mt-0.5">{t("resyncBannerDesc")}</Text>
-            </View>
-            <ChevronRight size={18} color={GP.mute} />
-          </Pressable>
+            showChevron
+          />
         )}
 
         {/* Progression: Invités · Budget · Tâches */}

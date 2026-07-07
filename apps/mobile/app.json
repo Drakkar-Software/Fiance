@@ -15,7 +15,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "software.drakkar.fiance.app",
       "appStoreUrl": "https://apps.apple.com/fr/app/fianc%C3%A9-organiser-son-mariage/id6786687256",
-      "associatedDomains": ["applinks:fiance.drakkar.software"],
+      "associatedDomains": [
+        "applinks:fiance.drakkar.software"
+      ],
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Fiancé a besoin d'accéder à vos photos pour vos idées d'inspiration mariage.",
         "NSCameraUsageDescription": "Fiancé a besoin de l'appareil photo pour capturer vos inspirations mariage.",
@@ -47,7 +49,10 @@
               "path": "/join"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -113,7 +118,22 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "software.drakkar.fiance.app.widgets",
+          "groupIdentifier": "group.software.drakkar.fiance.app",
+          "widgets": [
+            {
+              "name": "PlanningWidget",
+              "displayName": "Fiancé",
+              "description": "Compte à rebours, alertes et prochaines tâches",
+              "supportedFamilies": ["systemSmall", "systemMedium"]
+            }
+          ]
+        }
+      ]
     ],
     "extra": {
       "eas": {
