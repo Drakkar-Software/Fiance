@@ -24,8 +24,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@drakkar.software/starfish-spaces": "3.0.0-alpha.65",
-    "@drakkar.software/starfish-protocol": "3.0.0-alpha.65",
+    "@drakkar.software/starfish-spaces": "3.0.0-alpha.67",
+    "@drakkar.software/starfish-protocol": "3.0.0-alpha.67",
     "@drakkar.software/dk-spaces-sdk": "0.32.0",
     "@noble/curves": "^2.2.0",
     "@noble/hashes": "^2.2.0",
@@ -34,10 +34,10 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@drakkar.software/starfish-client": "3.0.0-alpha.65",
-    "@drakkar.software/starfish-identities": "3.0.0-alpha.65",
-    "@drakkar.software/starfish-keyring": "3.0.0-alpha.65",
-    "@drakkar.software/starfish-sharing": "3.0.0-alpha.65",
+    "@drakkar.software/starfish-client": "3.0.0-alpha.67",
+    "@drakkar.software/starfish-identities": "3.0.0-alpha.67",
+    "@drakkar.software/starfish-keyring": "3.0.0-alpha.67",
+    "@drakkar.software/starfish-sharing": "3.0.0-alpha.67",
     "@types/node": "^22.0.0",
     "tsup": "^8.3.0",
     "typescript": "~5.9.3",
