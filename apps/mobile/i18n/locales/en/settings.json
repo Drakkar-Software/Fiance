@@ -292,6 +292,8 @@
   "rolePickerEyebrow": "Invitation",
   "rolePickerTitle": "Invite with a role",
   "rolePickerSubtitle": "Choose what the invited person can do",
+  "inviteNameLabel": "Name (optional)",
+  "inviteNamePlaceholder": "e.g. Mum, Julie, wedding planner",
   "roleFullAccess": "Full access",
   "roleNoAccessSummary": "No access"
 }

@@ -20,7 +20,7 @@ export const SPACE_INVITE_STORE_KEY = "spaceInviteStore";
  * invite's ephemeral subject id and pushed so the joining member can resolve its
  * per-feature permissions (Phase 1). Throws a human-readable message on failure.
  */
-export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: string): Promise<string> {
+export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: string, name?: string): Promise<string> {
   const cfg = await resolveSessionConfig(entry);
   if (!cfg) throw new Error("INVITE_NO_SESSION");
   const spaceId = await ensureSpaceProvisioned(cfg.session, entry);
@@ -35,7 +35,10 @@ export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: str
   // providers.tsx (skipped once any node, e.g. a publicPage node, already exists in the index).
   // Publish now so an invite never points a member at a contentless space.
   const origin = Linking.createURL("").replace(/\/$/, "");
-  const { token, link, inviteUserId } = await createSpaceInviteLink(cfg.session, spaceId, entry.label, canWrite, origin);
+  // Name the invite after the collaborator when provided, so it's identifiable in the
+  // invite store / roster; fall back to the wedding label.
+  const collaboratorName = name?.trim() || undefined;
+  const { token, link, inviteUserId } = await createSpaceInviteLink(cfg.session, spaceId, collaboratorName ?? entry.label, canWrite, origin);
 
   // Persist the (in-memory) invite store so this link's revocation handle survives an app
   // restart — revokeSpaceAccess needs getSpaceInviteEntry(spaceId, inviteUserId) to resolve.
@@ -51,7 +54,7 @@ export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: str
         id: Crypto.randomUUID(),
         subjectUserId,
         roleId: role.id,
-        label: null,
+        label: collaboratorName ?? null,
         createdAt: now,
         updatedAt: now,
       });

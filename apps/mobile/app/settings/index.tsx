@@ -187,7 +187,7 @@ export default function SettingsScreen() {
   }, [activeEntry, syncEnabled, premium, t]);
 
   const generateInvite = useCallback(
-    (roleId?: string) => createInviteLink(activeEntry!, roleId),
+    (roleId?: string, name?: string) => createInviteLink(activeEntry!, roleId, name),
     [activeEntry],
   );
 

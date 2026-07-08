@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, Text, ActivityIndicator, useWindowDimensions } from "react-native";
+import { View, Pressable, Text, TextInput, ActivityIndicator, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Clipboard from "expo-clipboard";
 import { shareLink } from "@/lib/share";
@@ -16,7 +16,7 @@ import { roleCanWrite, FEATURE_SURFACES, type FeatureSurface, type RoleDefinitio
 interface InviteQRSheetProps {
   visible: boolean;
   onClose: () => void;
-  generate: (roleId?: string) => Promise<string>;
+  generate: (roleId?: string, name?: string) => Promise<string>;
 }
 
 type State = "selecting" | "generating" | "ready" | "error";
@@ -28,6 +28,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   const [state, setState] = useState<State>("selecting");
   const [url, setUrl] = useState("");
   const [detail, setDetail] = useState("");
+  const [name, setName] = useState("");
 
   const roleLabel = (r: RoleDefinition) => (r.isSystem ? t(r.name) : r.name);
   const surfaceLabel = (s: FeatureSurface) =>
@@ -55,7 +56,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
     setRoleId(selectedRoleId);
     setState("generating");
     setDetail("");
-    generate(selectedRoleId)
+    generate(selectedRoleId, name.trim() || undefined)
       .then((link) => {
         setUrl(link);
         setState("ready");
@@ -75,6 +76,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
       setUrl("");
       setDetail("");
       setRoleId(undefined);
+      setName("");
     }
   }, [visible]);
 
@@ -100,6 +102,28 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
               <Display size={13} color={theme.mute} style={{ marginTop: 3, lineHeight: 18 }}>
                 {t("rolePickerSubtitle")}
               </Display>
+            </View>
+
+            <View style={{ marginBottom: 16 }}>
+              <Label color={theme.mute} style={{ marginBottom: 6 }}>{t("inviteNameLabel")}</Label>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder={t("inviteNamePlaceholder")}
+                placeholderTextColor={theme.mute}
+                autoCapitalize="words"
+                returnKeyType="done"
+                style={{
+                  backgroundColor: theme.paper,
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: theme.hair,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  fontSize: 16,
+                  color: theme.ink,
+                }}
+              />
             </View>
 
             <View style={{ gap: 10 }}>
