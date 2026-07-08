@@ -3,6 +3,8 @@ import i18n from "@/i18n";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { getPrimaryEvent } from "@fiance/sdk";
+
+import { isAgendaEventUpcoming } from "@/lib/agenda-upcoming";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -139,9 +141,8 @@ export function buildWidgetData(): WidgetData {
   }
 
   // ── 2. Upcoming agenda events (soonest first) ──
-  const today = safeFormat(now, "yyyy-MM-dd");
   [...agendaEvents]
-    .filter((e) => e.date >= today)
+    .filter((e) => isAgendaEventUpcoming(e, now))
     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || "").localeCompare(b.time || ""))
     .forEach((e) =>
       lines.push({

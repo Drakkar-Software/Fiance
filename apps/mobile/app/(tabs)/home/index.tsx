@@ -9,6 +9,7 @@ import { differenceInDays, format } from "date-fns";
 import { getDateLocale, safeFormat } from "@/i18n/dateFnsLocale";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { isAgendaEventUpcoming } from "@/lib/agenda-upcoming";
 import { needsNamespaceResync } from "@/lib/space-resync";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
@@ -57,9 +58,9 @@ function DashboardScreen() {
   );
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
   const next3Events = React.useMemo(() => {
-    const today = format(new Date(), "yyyy-MM-dd");
+    const now = new Date();
     return [...agendaEvents]
-      .filter((e) => e.date >= today)
+      .filter((e) => isAgendaEventUpcoming(e, now))
       .sort((a, b) => {
         const d = a.date.localeCompare(b.date);
         if (d !== 0) return d;
