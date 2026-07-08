@@ -16,7 +16,9 @@
   </p>
 
   <p>
-    <a href="https://fiance.drakkar.software"><strong>🌐 Try the Web App →</strong></a>
+    <a href="https://apps.apple.com/fr/app/fianc%C3%A9-organiser-son-mariage/id6786687256"><img alt="Download on the App Store" src="https://img.shields.io/badge/App_Store-Download-0D96F6?logo=apple&logoColor=white" /></a>
+    <a href="https://play.google.com/store/apps/details?id=software.drakkar.fiance.app"><img alt="Get it on Google Play" src="https://img.shields.io/badge/Google_Play-Download-414141?logo=googleplay&logoColor=white" /></a>
+    <a href="https://fiance.drakkar.software"><img alt="Try the Web App" src="https://img.shields.io/badge/Web_App-Try_it-F38020?logo=googlechrome&logoColor=white" /></a>
   </p>
 </div>
 
