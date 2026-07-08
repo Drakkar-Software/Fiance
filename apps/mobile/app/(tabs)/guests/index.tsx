@@ -16,6 +16,7 @@ import type { RsvpStatus } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FAB } from "@/components/FAB";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
@@ -99,6 +100,7 @@ function GuestsView() {
   const { t } = useTranslation("guests");
   const router = useRouter();
   const isWide = useIsWideScreen();
+  const canEditGuests = useCan("guests");
   const guests = useGuestsStore((s) => s.guests);
   const groups = useGuestsStore((s) => s.groups);
   const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
@@ -352,7 +354,7 @@ function GuestsView() {
         />
       )}
 
-      {isWide && (
+      {isWide && canEditGuests && (
         <FAB
           onPress={() =>
             router.push({

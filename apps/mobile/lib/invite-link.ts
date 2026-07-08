@@ -1,25 +1,55 @@
 import * as Linking from "expo-linking";
-import { createSpaceInviteLink, getSyncNamespace } from "@fiance/sdk";
+import * as Crypto from "expo-crypto";
+import { createSpaceInviteLink, getSyncNamespace, roleCanWrite } from "@fiance/sdk";
 import { resolveSessionConfig } from "@/lib/server";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { pushSpaceSnapshot } from "@/lib/space-sync";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 /**
- * Generate a space invite link for the given wedding entry.
- * Throws an error with a human-readable message on failure.
+ * Generate a space invite link for the given wedding entry, scoped to a role.
+ *
+ * The role's `canWrite` drives the invite cap's write flag (Phase 2 — a read-only
+ * role mints a read-only member cap). The role assignment is recorded against the
+ * invite's ephemeral subject id and pushed so the joining member can resolve its
+ * per-feature permissions (Phase 1). Throws a human-readable message on failure.
  */
-export async function createInviteLink(entry: WeddingRegistryEntry): Promise<string> {
+export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: string): Promise<string> {
   const cfg = await resolveSessionConfig(entry);
   if (!cfg) throw new Error("INVITE_NO_SESSION");
   const spaceId = await ensureSpaceProvisioned(cfg.session, entry);
+
+  // Record the assignment BEFORE snapshotting so it's part of the pushed content
+  // the member will hydrate. Keyed by the invite's ephemeral subject id (below).
+  const role = roleId ? usePermissionsStore.getState().roles.find((r) => r.id === roleId) : undefined;
+  const canWrite = role ? roleCanWrite(role) : true;
+
   // ensureSpaceProvisioned only creates an empty index + keyring — otherwise content reaches the
   // space via the debounced push on a later mutation, or the nodeCount===0 one-shot in
   // providers.tsx (skipped once any node, e.g. a publicPage node, already exists in the index).
   // Publish now so an invite never points a member at a contentless space.
-  await pushSpaceSnapshot(cfg.session, spaceId, entry.weddingNodeId ?? entry.id);
   const origin = Linking.createURL("").replace(/\/$/, "");
-  const { token, link } = await createSpaceInviteLink(cfg.session, spaceId, entry.label, true, origin);
+  const { token, link, inviteUserId } = await createSpaceInviteLink(cfg.session, spaceId, entry.label, canWrite, origin);
+
+  if (role) {
+    const subjectUserId = inviteUserId ?? (token.cap as { subUserId?: string }).subUserId;
+    if (subjectUserId) {
+      const now = new Date().toISOString();
+      usePermissionsStore.getState().upsertAssignment({
+        id: Crypto.randomUUID(),
+        subjectUserId,
+        roleId: role.id,
+        label: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  }
+
+  // Publish the snapshot (incl. the new assignment) so the invite never points a
+  // member at a contentless space and their role resolves on first hydrate.
+  await pushSpaceSnapshot(cfg.session, spaceId, entry.weddingNodeId ?? entry.id);
 
   // Diagnostics for the "member joins but sees no data" (objdoc 403) bug: a link invitee
   // only earns space:member if its ephemeral subUserId is in the server _access roster.

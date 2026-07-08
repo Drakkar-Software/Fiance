@@ -28,8 +28,9 @@ import { useLegalStore } from "@/store/useLegalStore";
 import { useHoneymoonStore } from "@/store/useHoneymoonStore";
 import { useCeremonyStore } from "@/store/useCeremonyStore";
 import { useSpeechesMusicStore } from "@/store/useSpeechesMusicStore";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
 import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from "@/db/types";
-import { synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
+import { synthesizePrimaryEvent, migrateRoleAssignments, DEFAULT_PERMISSION_ROLES } from "@fiance/sdk";
 import { readCollection, writeCollection } from "./kv-storage";
 
 // ─── Clear all stores (for wedding switching) ──────────────────────────────
@@ -67,6 +68,8 @@ export function clearAllStores(): void {
   useCeremonyStore.getState().setCeremonyItems([]);
   useSpeechesMusicStore.getState().setSpeeches([]);
   useSpeechesMusicStore.getState().setPlaylistTracks([]);
+  usePermissionsStore.getState().setRoles([]);
+  usePermissionsStore.getState().setAssignments([]);
 }
 
 // ─── Hydrate all stores from KV on boot ────────────────────────────────────
@@ -189,6 +192,17 @@ export function hydrateAllStores(_storage: SQLiteStorage): void {
   useCeremonyStore.getState().setCeremonyItems(readCollection<any[]>("ceremonyItems") ?? []);
   useSpeechesMusicStore.getState().setSpeeches(readCollection<any[]>("speeches") ?? []);
   useSpeechesMusicStore.getState().setPlaylistTracks(readCollection<any[]>("playlistTracks") ?? []);
+
+  usePermissionsStore.getState().setAssignments(readCollection<any[]>("permissionAssignments") ?? []);
+  const storedPermissionRoles = readCollection<any[]>("permissionRoles");
+  if (storedPermissionRoles && storedPermissionRoles.length > 0) {
+    usePermissionsStore.getState().setRoles(storedPermissionRoles);
+  } else {
+    const now = new Date().toISOString();
+    const defaultRoles = DEFAULT_PERMISSION_ROLES.map((r) => ({ ...r, createdAt: now, updatedAt: now }));
+    usePermissionsStore.getState().setRoles(defaultRoles);
+    writeCollection("permissionRoles", defaultRoles);
+  }
 
   // Apply the couple names + date captured during onboarding, now that the
   // new wedding's DB is active. Consume-once so it never leaks into another wedding.
@@ -325,6 +339,14 @@ export function persistPlaylistTracks(_storage: SQLiteStorage): void {
   writeCollection("playlistTracks", useSpeechesMusicStore.getState().playlistTracks);
 }
 
+export function persistPermissionRoles(_storage: SQLiteStorage): void {
+  writeCollection("permissionRoles", usePermissionsStore.getState().roles);
+}
+
+export function persistPermissionAssignments(_storage: SQLiteStorage): void {
+  writeCollection("permissionAssignments", usePermissionsStore.getState().assignments);
+}
+
 // ─── Bulk restore (for sync pull and import) ────────────────────────────────
 
 export function restoreAllTables(_storage: SQLiteStorage, data: {
@@ -358,6 +380,8 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   ceremonyItems?: any[];
   speeches?: any[];
   playlistTracks?: any[];
+  permissionRoles?: any[];
+  permissionAssignments?: any[];
 }): void {
   writeCollection("wedding", data.wedding);
   writeCollection("guestGroups", data.guestGroups);
@@ -389,4 +413,6 @@ export function restoreAllTables(_storage: SQLiteStorage, data: {
   writeCollection("ceremonyItems", data.ceremonyItems ?? []);
   writeCollection("speeches", data.speeches ?? []);
   writeCollection("playlistTracks", data.playlistTracks ?? []);
+  writeCollection("permissionRoles", data.permissionRoles ?? []);
+  writeCollection("permissionAssignments", data.permissionAssignments ?? []);
 }

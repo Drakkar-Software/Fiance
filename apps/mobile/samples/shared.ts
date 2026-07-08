@@ -1046,6 +1046,8 @@ export function buildWeddingSnapshot(profile: SampleProfile): WeddingSnapshot {
     ceremonyItems,
     speeches,
     playlistTracks,
+    permissionRoles: [],
+    permissionAssignments: [],
   };
 }
 

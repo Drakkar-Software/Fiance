@@ -8,6 +8,7 @@
  */
 
 import * as Crypto from "expo-crypto";
+import type { PermissionMatrix } from "@fiance/sdk";
 import { secureGet, secureSet } from "./secure-store";
 import { resolveServerUrl } from "./server";
 import { purgeStorage } from "./kv-storage";
@@ -38,6 +39,10 @@ export interface WeddingRegistryEntry {
    * Effective node id = weddingNodeId ?? id.
    */
   weddingNodeId?: string;
+  /** Collaborator permissions cached for this device (members only). See wedding-registry.ts. */
+  roleId?: string;
+  permissions?: PermissionMatrix;
+  inviteSubjectId?: string;
 }
 
 export interface WeddingRegistry {
@@ -113,7 +118,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "roleId" | "permissions" | "inviteSubjectId">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

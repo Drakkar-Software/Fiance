@@ -14,6 +14,7 @@ import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
+import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterTabs } from "@/components/FilterTabs";
 import { SearchBar } from "@/components/SearchBar";
@@ -26,6 +27,7 @@ export default function VendorsListScreen() {
   const { t } = useTranslation("vendors");
   const router = useRouter();
   const isWide = useIsWideScreen();
+  const canEdit = useCan("vendors");
   const vendors = useVendorsStore((s) => s.vendors);
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
@@ -140,14 +142,14 @@ export default function VendorsListScreen() {
             icon={Briefcase}
             title={t("noVendors")}
             description={t("addFirstVendor")}
-            actionLabel={t("addVendor")}
-            onAction={handleAdd}
+            actionLabel={canEdit ? t("addVendor") : undefined}
+            onAction={canEdit ? handleAdd : undefined}
           />
         }
         ListFooterComponent={<View className="h-24" />}
       />
 
-      {isWide && <FAB onPress={handleAdd} />}
+      {isWide && canEdit && <FAB onPress={handleAdd} />}
     </View>
   );
 }

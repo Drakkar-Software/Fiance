@@ -47,6 +47,7 @@ import type {
   Speech,
   PlaylistTrack,
 } from '../domain/schema.js';
+import type { RoleDefinition, PermissionAssignment } from '../domain/permissions.js';
 
 // ─── Index-level node descriptors (passed to addObject / updateObjectIndex) ───
 
@@ -487,6 +488,50 @@ export function weddingRoleAssignmentToNode(
 
 export function weddingRoleAssignmentFromDoc(doc: unknown): WeddingRoleAssignment {
   return doc as WeddingRoleAssignment;
+}
+
+// ─── Collaborator permissions (owner-authored role catalog + assignments) ──────
+
+export function permissionRoleToNode(
+  r: RoleDefinition,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.permissionRole,
+    parentId: weddingNodeId,
+    title: r.id,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: r.id },
+  };
+}
+
+export function permissionRoleFromDoc(doc: unknown): RoleDefinition {
+  return doc as RoleDefinition;
+}
+
+export function permissionAssignmentToNode(
+  a: PermissionAssignment,
+  id: string,
+  weddingNodeId: string,
+): NodeDescriptor {
+  return {
+    id,
+    type: FIANCE_TYPES.permissionAssignment,
+    parentId: weddingNodeId,
+    title: a.roleId,
+    access: 'space',
+    enc: true,
+    contentKind: 'merge',
+    meta: { legacyId: a.id },
+  };
+}
+
+export function permissionAssignmentFromDoc(doc: unknown): PermissionAssignment {
+  return doc as PermissionAssignment;
 }
 
 // ─── SeatingConstraint ────────────────────────────────────────────────────────

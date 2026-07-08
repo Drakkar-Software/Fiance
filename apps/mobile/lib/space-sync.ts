@@ -49,6 +49,8 @@ import {
   ceremonyItemFromDoc,
   speechFromDoc,
   playlistTrackFromDoc,
+  permissionRoleFromDoc,
+  permissionAssignmentFromDoc,
   taskCategoryFromDoc,
   taskFromDoc,
   agendaEventFromDoc,
@@ -78,6 +80,7 @@ import { useLegalStore } from '@/store/useLegalStore';
 import { useHoneymoonStore } from '@/store/useHoneymoonStore';
 import { useCeremonyStore } from '@/store/useCeremonyStore';
 import { useSpeechesMusicStore } from '@/store/useSpeechesMusicStore';
+import { usePermissionsStore } from '@/store/usePermissionsStore';
 import { getActiveSession, getActiveSpaceId, getActiveWeddingNodeId } from '@/lib/starfish';
 import { applyRsvpSubmissionsByGuestId, type RsvpSubmission } from '@/lib/rsvp-sync';
 import { withIndexLock } from '@/lib/index-lock';
@@ -236,6 +239,7 @@ function collectionSources(): { type: string; items: CollectionEntity[] }[] {
   const { honeymoonPlans } = useHoneymoonStore.getState();
   const { ceremonyItems } = useCeremonyStore.getState();
   const { speeches, playlistTracks } = useSpeechesMusicStore.getState();
+  const { roles: permissionRoles, assignments: permissionAssignments } = usePermissionsStore.getState();
 
   const as = (arr: unknown[]) => arr as CollectionEntity[];
   return [
@@ -267,6 +271,8 @@ function collectionSources(): { type: string; items: CollectionEntity[] }[] {
     { type: FIANCE_TYPES.ceremonyItem, items: as(ceremonyItems) },
     { type: FIANCE_TYPES.speech, items: as(speeches) },
     { type: FIANCE_TYPES.playlistTrack, items: as(playlistTracks) },
+    { type: FIANCE_TYPES.permissionRole, items: as(permissionRoles) },
+    { type: FIANCE_TYPES.permissionAssignment, items: as(permissionAssignments) },
   ];
 }
 
@@ -674,6 +680,8 @@ export async function hydrateFromSpace(
       ceremonyItemDocs,
       speechDocs,
       playlistTrackDocs,
+      permissionRoleDocs,
+      permissionAssignmentDocs,
     ] = await Promise.all([
       weddingNode ? pullNodeContent(session, spaceId, weddingNode) : Promise.resolve(null),
       pullCollection(FIANCE_TYPES.guestGroup),
@@ -704,6 +712,8 @@ export async function hydrateFromSpace(
       pullCollection(FIANCE_TYPES.ceremonyItem),
       pullCollection(FIANCE_TYPES.speech),
       pullCollection(FIANCE_TYPES.playlistTrack),
+      pullCollection(FIANCE_TYPES.permissionRole),
+      pullCollection(FIANCE_TYPES.permissionAssignment),
     ]);
 
     // Diagnostic: if the space has content nodes but decryption yielded 0 guests,
@@ -743,6 +753,8 @@ export async function hydrateFromSpace(
     if (ceremonyItemDocs.length) useCeremonyStore.getState().setCeremonyItems(ceremonyItemDocs.map(ceremonyItemFromDoc) as Parameters<ReturnType<typeof useCeremonyStore.getState>['setCeremonyItems']>[0]);
     if (speechDocs.length) useSpeechesMusicStore.getState().setSpeeches(speechDocs.map(speechFromDoc) as Parameters<ReturnType<typeof useSpeechesMusicStore.getState>['setSpeeches']>[0]);
     if (playlistTrackDocs.length) useSpeechesMusicStore.getState().setPlaylistTracks(playlistTrackDocs.map(playlistTrackFromDoc) as Parameters<ReturnType<typeof useSpeechesMusicStore.getState>['setPlaylistTracks']>[0]);
+    if (permissionRoleDocs.length) usePermissionsStore.getState().setRoles(permissionRoleDocs.map(permissionRoleFromDoc) as Parameters<ReturnType<typeof usePermissionsStore.getState>['setRoles']>[0]);
+    if (permissionAssignmentDocs.length) usePermissionsStore.getState().setAssignments(permissionAssignmentDocs.map(permissionAssignmentFromDoc) as Parameters<ReturnType<typeof usePermissionsStore.getState>['setAssignments']>[0]);
 
     // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
     await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);

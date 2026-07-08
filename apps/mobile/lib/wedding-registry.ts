@@ -5,6 +5,7 @@
 
 import * as Crypto from "expo-crypto";
 import { deleteDatabaseAsync } from "expo-sqlite";
+import type { PermissionMatrix } from "@fiance/sdk";
 import { secureGet, secureSet } from "./secure-store";
 import { resolveServerUrl } from "./server";
 
@@ -42,6 +43,20 @@ export interface WeddingRegistryEntry {
    * (see lib/space-resync.ts) before sync will work again.
    */
   syncNamespace?: string;
+  /**
+   * Collaborator permissions cached for THIS device (members only). Resolved at
+   * join time from the owner-authored permission assignment matching this device's
+   * invite subject, and refreshed when the synced permissions collection updates.
+   * `roleId`/`permissions` undefined ⇒ unrestricted (owners, or legacy members).
+   */
+  roleId?: string;
+  permissions?: PermissionMatrix;
+  /**
+   * The invite token's ephemeral subject id this device joined as. Kept so the
+   * member can re-resolve its role once the owner's permission assignments finish
+   * syncing in (they may arrive after the join completes).
+   */
+  inviteSubjectId?: string;
 }
 
 export interface WeddingRegistry {
@@ -120,7 +135,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace" | "roleId" | "permissions" | "inviteSubjectId">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

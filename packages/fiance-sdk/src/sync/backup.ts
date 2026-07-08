@@ -7,6 +7,8 @@
 import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES } from '../domain/types.js';
 import { synthesizePrimaryEvent } from '../domain/wedding-events.js';
 import { migrateRoleAssignments } from '../domain/wedding-party.js';
+import { DEFAULT_PERMISSION_ROLES } from '../domain/permissions.js';
+import type { RoleDefinition, PermissionAssignment } from '../domain/permissions.js';
 import type {
   Wedding,
   Guest,
@@ -57,7 +59,9 @@ import type {
 // v13 → v14: added contributors collection (additive, no migration)
 // v14 → v15: added ceremonyItems, speeches, playlistTracks collections
 //            (additive, no migration); dayOfItems gained completedAt/roleId fields
-export const BACKUP_VERSION = 15;
+// v15 → v16: added collaborator permission model — permissionRoles (seeded with 3
+//            system roles when empty) + permissionAssignments (additive, no migration)
+export const BACKUP_VERSION = 16;
 
 // ─── WeddingSnapshot ────────────────────────────────────────────────────────
 
@@ -92,6 +96,8 @@ export interface WeddingSnapshot {
   ceremonyItems: CeremonyItem[];
   speeches: Speech[];
   playlistTracks: PlaylistTrack[];
+  permissionRoles: RoleDefinition[];
+  permissionAssignments: PermissionAssignment[];
 }
 
 // ─── BackupData ─────────────────────────────────────────────────────────────
@@ -129,6 +135,8 @@ export interface BackupData {
   ceremonyItems?: unknown[];
   speeches?: unknown[];
   playlistTracks?: unknown[];
+  permissionRoles?: unknown[];
+  permissionAssignments?: unknown[];
 }
 
 // ─── Serialiser ─────────────────────────────────────────────────────────────
@@ -170,6 +178,8 @@ export function createBackupDocument(snapshot: WeddingSnapshot): BackupData {
     ceremonyItems: snapshot.ceremonyItems,
     speeches: snapshot.speeches,
     playlistTracks: snapshot.playlistTracks,
+    permissionRoles: snapshot.permissionRoles,
+    permissionAssignments: snapshot.permissionAssignments,
   };
 }
 
@@ -271,6 +281,8 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   // v13 → v14: added contributors collection (additive, no migration)
   // v14 → v15: added ceremonyItems, speeches, playlistTracks collections
   //            (additive, no migration); dayOfItems gained completedAt/roleId fields
+  // v15 → v16: added permissionRoles (seeded with 3 system roles when empty) +
+  //            permissionAssignments (additive, no migration)
 
   const now = new Date().toISOString();
   const rawInvTypes = ((doc.invitationTypes || []) as unknown[]) as Record<string, unknown>[];
@@ -303,6 +315,12 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
   const restoredRoleAssignments = migratedRoles
     ? migratedRoles.assignments
     : (rawRoleAssignments as unknown as WeddingRoleAssignment[]);
+
+  const rawPermissionRoles = (doc.permissionRoles || []) as unknown as RoleDefinition[];
+  const restoredPermissionRoles =
+    rawPermissionRoles.length > 0
+      ? rawPermissionRoles
+      : DEFAULT_PERMISSION_ROLES.map((r) => ({ ...r, createdAt: now, updatedAt: now }));
 
   const rawLegalMilestones = ((doc.legalMilestones || []) as unknown[]) as Record<string, unknown>[];
   const restoredLegalMilestones =
@@ -368,6 +386,8 @@ export function restoreFromBackup(doc: BackupData): WeddingSnapshot {
     ceremonyItems: (doc.ceremonyItems || []) as unknown as CeremonyItem[],
     speeches: (doc.speeches || []) as unknown as Speech[],
     playlistTracks: (doc.playlistTracks || []) as unknown as PlaylistTrack[],
+    permissionRoles: restoredPermissionRoles,
+    permissionAssignments: (doc.permissionAssignments || []) as unknown as PermissionAssignment[],
   };
 }
 

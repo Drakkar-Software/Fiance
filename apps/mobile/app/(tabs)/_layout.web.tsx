@@ -9,9 +9,11 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { usePermissions } from "@/lib/permissions/usePermissions";
 
 export default function TabLayout() {
   const { t } = useTranslation("common");
+  const { can } = usePermissions();
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
@@ -71,6 +73,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.vendors"),
           headerShown: false,
+          href: can("vendors", "view") ? undefined : null,
           tabBarIcon: ({ color }) => <Briefcase size={22} color={color} />,
         }}
       />
@@ -79,6 +82,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.guests"),
           headerShown: false,
+          href: can("guests", "view") ? undefined : null,
           tabBarIcon: ({ color }) => <Users size={22} color={color} />,
         }}
       />
@@ -87,6 +91,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.planning"),
           headerShown: false,
+          href: can("planning", "view") ? undefined : null,
           tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
           tabBarBadge: overdueTasks.length > 0 ? overdueTasks.length : undefined,
           tabBarBadgeStyle: {
@@ -103,6 +108,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.budget"),
           headerShown: false,
+          href: can("budget", "view") ? undefined : null,
           tabBarIcon: ({ color }) => <PieChart size={22} color={color} />,
         }}
       />

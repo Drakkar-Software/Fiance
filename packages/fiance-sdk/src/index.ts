@@ -8,6 +8,7 @@ export * from './domain/planning.js';
 export * from './domain/vendor-config.js';
 export * from './domain/registry.js';
 export * from './domain/wedding-party.js';
+export * from './domain/permissions.js';
 export * from './domain/seating.js';
 export * from './domain/wedding-events.js';
 export * from './domain/meal-selections.js';

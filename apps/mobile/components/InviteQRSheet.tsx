@@ -4,24 +4,42 @@ import { useTranslation } from "react-i18next";
 import * as Clipboard from "expo-clipboard";
 import { shareLink } from "@/lib/share";
 import { Sheet } from "@fiance/ui/components";
-import { AlertCircle } from "lucide-react-native";
+import { AlertCircle, ChevronRight } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
 import { theme } from "@/lib/theme";
+import { Display } from "@/components/Display";
+import { Label } from "@/components/Label";
+import { Chip } from "@/components/Chip";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { roleCanWrite, FEATURE_SURFACES, type FeatureSurface, type RoleDefinition } from "@fiance/sdk";
 
 interface InviteQRSheetProps {
   visible: boolean;
   onClose: () => void;
-  generate: () => Promise<string>;
+  generate: (roleId?: string) => Promise<string>;
 }
 
-type State = "generating" | "ready" | "error";
+type State = "selecting" | "generating" | "ready" | "error";
 
 export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps) {
   const { t } = useTranslation("settings");
   const { width } = useWindowDimensions();
-  const [state, setState] = useState<State>("generating");
+  const roles = usePermissionsStore((s) => s.roles);
+  const [state, setState] = useState<State>("selecting");
   const [url, setUrl] = useState("");
   const [detail, setDetail] = useState("");
+
+  const roleLabel = (r: RoleDefinition) => (r.isSystem ? t(r.name) : r.name);
+  const surfaceLabel = (s: FeatureSurface) =>
+    t(`surface${s.charAt(0).toUpperCase()}${s.slice(1)}`);
+  const roleSummary = (r: RoleDefinition) => {
+    const granted = FEATURE_SURFACES.filter((s) => r.matrix[s]);
+    if (granted.length === 0) return t("roleNoAccessSummary");
+    if (granted.length === FEATURE_SURFACES.length && granted.every((s) => r.matrix[s] === "edit")) {
+      return t("roleFullAccess");
+    }
+    return granted.map(surfaceLabel).join(" · ");
+  };
 
   // Invite payload embeds a signed cap cert + ephemeral keys (~1.4KB URL) —
   // dense at default size/ECL. ecl="L" trims the module count to 125, and
@@ -30,10 +48,14 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
   // 320 for large screens/web. See __tests__/invite-qr-density.test.ts.
   const qrSize = Math.max(250, Math.min(320, Math.round(width - 64)));
 
-  const run = () => {
+  // The last-picked role, so the error-state "retry" regenerates the same scope.
+  const [roleId, setRoleId] = useState<string | undefined>(undefined);
+
+  const run = (selectedRoleId?: string) => {
+    setRoleId(selectedRoleId);
     setState("generating");
     setDetail("");
-    generate()
+    generate(selectedRoleId)
       .then((link) => {
         setUrl(link);
         setState("ready");
@@ -47,11 +69,12 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
 
   useEffect(() => {
     if (visible) {
-      run();
+      setState("selecting");
     } else {
-      setState("generating");
+      setState("selecting");
       setUrl("");
       setDetail("");
+      setRoleId(undefined);
     }
   }, [visible]);
 
@@ -66,6 +89,76 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
           paddingTop: BottomSheet handles drag indicator + 16px top chrome — no extra top padding needed.
           Web fallback: these insets substitute for the BottomSheet chrome that only exists on native. */}
       <View style={{ backgroundColor: theme.card, paddingHorizontal: 8, paddingTop: 8, paddingBottom: 40 }}>
+
+        {state === "selecting" && (
+          <>
+            <View style={{ marginBottom: 18 }}>
+              <Label color={theme.clay} style={{ marginBottom: 4 }}>{t("rolePickerEyebrow")}</Label>
+              <Display size={21} weight="500" color={theme.ink}>
+                {t("rolePickerTitle")}
+              </Display>
+              <Display size={13} color={theme.mute} style={{ marginTop: 3, lineHeight: 18 }}>
+                {t("rolePickerSubtitle")}
+              </Display>
+            </View>
+
+            <View style={{ gap: 10 }}>
+              {roles.map((r) => {
+                const tone = r.isSystem ? theme.olive : theme.clay;
+                const editable = roleCanWrite(r);
+                return (
+                  <Pressable
+                    key={r.id}
+                    onPress={() => run(r.id)}
+                    style={({ pressed }) => ({
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 13,
+                      backgroundColor: theme.paper,
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: theme.hair,
+                      paddingHorizontal: 14,
+                      paddingVertical: 13,
+                      opacity: pressed ? 0.7 : 1,
+                    })}
+                  >
+                    <View
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 21,
+                        backgroundColor: `${tone}1f`,
+                        borderWidth: 1.5,
+                        borderColor: `${tone}55`,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Display size={18} weight="500" color={tone}>
+                        {(roleLabel(r).trim()[0] ?? "?").toUpperCase()}
+                      </Display>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Display size={16} weight="500" color={theme.ink} numberOfLines={1}>
+                        {roleLabel(r)}
+                      </Display>
+                      <Display size={12} color={theme.mute} numberOfLines={1} style={{ marginTop: 1 }}>
+                        {roleSummary(r)}
+                      </Display>
+                    </View>
+                    <Chip color={editable ? theme.clay : theme.olive}>
+                      <Label color={editable ? theme.clay : theme.olive}>
+                        {editable ? t("roleCanEditLabel") : t("roleCanView")}
+                      </Label>
+                    </Chip>
+                    <ChevronRight size={17} color={theme.mute} />
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>
+        )}
 
         {state === "generating" && (
           <View style={{ alignItems: "center", paddingVertical: 48, gap: 16 }}>
@@ -160,7 +253,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
             )}
 
             <Pressable
-              onPress={run}
+              onPress={() => run(roleId)}
               style={({ pressed }) => ({
                 backgroundColor: theme.clay,
                 borderRadius: 16,

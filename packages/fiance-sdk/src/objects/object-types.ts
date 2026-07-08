@@ -39,6 +39,8 @@ export const FIANCE_TYPES = {
   ceremonyItem:          'ceremonyItem',
   speech:                'speech',
   playlistTrack:         'playlistTrack',
+  permissionRole:        'permissionRole',
+  permissionAssignment:  'permissionAssignment',
   // ─── 2 guest-surface synthetic nodes (access:'invite', enc:false) ─────────
   /** Invite-only guest page (about/timeline/FAQ/gifts). One per wedding. */
   publicPage:     'publicPage',

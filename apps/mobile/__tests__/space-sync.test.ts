@@ -154,6 +154,7 @@ const emptyStore = { getState: () => ({
   categories: [], tasks: [], agendaEvents: [], dayOfItems: [],
   collections: [], ideas: [],
   ceremonyItems: [], speeches: [], playlistTracks: [],
+  roles: [], assignments: [],
   setWedding: vi.fn(), setGroups: vi.fn(), setTables: vi.fn(), setGuests: vi.fn(),
   setVendors: vi.fn(), setQuotePricings: vi.fn(), setVendorPayments: vi.fn(),
   setAccommodations: vi.fn(), setGifts: vi.fn(), setInvitationTypes: vi.fn(),
@@ -168,6 +169,7 @@ const emptyStore = { getState: () => ({
   setCategories: vi.fn(), setTasks: vi.fn(), setAgendaEvents: vi.fn(),
   setDayOfItems: vi.fn(), setCollections: vi.fn(), setIdeas: vi.fn(),
   setCeremonyItems: vi.fn(), setSpeeches: vi.fn(), setPlaylistTracks: vi.fn(),
+  setRoles: vi.fn(), setAssignments: vi.fn(),
 }) };
 
 vi.mock("@/store/useWeddingStore", () => ({
@@ -193,6 +195,7 @@ vi.mock("@/store/useLegalStore", () => ({ useLegalStore: emptyStore }));
 vi.mock("@/store/useHoneymoonStore", () => ({ useHoneymoonStore: emptyStore }));
 vi.mock("@/store/useCeremonyStore", () => ({ useCeremonyStore: emptyStore }));
 vi.mock("@/store/useSpeechesMusicStore", () => ({ useSpeechesMusicStore: emptyStore }));
+vi.mock("@/store/usePermissionsStore", () => ({ usePermissionsStore: emptyStore }));
 
 vi.mock("@/lib/rsvp-sync", () => ({
   applyRsvpSubmissionsByGuestId: vi.fn(),

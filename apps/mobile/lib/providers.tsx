@@ -29,6 +29,8 @@ import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { resolveActiveMemberPermissions } from "@/lib/permissions/resolve";
 import { updateWidget } from "@/lib/widget";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
@@ -273,7 +275,15 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
         schedulePublicPagePush();
       }
     });
-    return () => { unsubPlanning(); unsubWedding(); if (pushTimer) clearTimeout(pushTimer); };
+
+    // A scoped member's role assignment may sync in after the join completes (or the
+    // owner may change it live) — re-resolve + cache the matrix whenever it changes.
+    resolveActiveMemberPermissions().catch(() => {});
+    const unsubPermissions = usePermissionsStore.subscribe(() => {
+      resolveActiveMemberPermissions().catch(() => {});
+    });
+
+    return () => { unsubPlanning(); unsubWedding(); unsubPermissions(); if (pushTimer) clearTimeout(pushTimer); };
   }, []);
 
   return null;

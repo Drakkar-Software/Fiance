@@ -24,7 +24,8 @@ import { useLegalStore } from "@/store/useLegalStore";
 import { useHoneymoonStore } from "@/store/useHoneymoonStore";
 import { useCeremonyStore } from "@/store/useCeremonyStore";
 import { useSpeechesMusicStore } from "@/store/useSpeechesMusicStore";
-import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES, synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { DEFAULT_INVITATION_TYPES, DEFAULT_COMMUNICATION_TEMPLATES, DEFAULT_LEGAL_MILESTONES, DEFAULT_PERMISSION_ROLES, synthesizePrimaryEvent, migrateRoleAssignments } from "@fiance/sdk";
 import { restoreAllTables, hydrateAllStores } from "./persistence";
 
 export interface BackupData {
@@ -60,6 +61,8 @@ export interface BackupData {
   ceremonyItems?: unknown[];
   speeches?: unknown[];
   playlistTracks?: unknown[];
+  permissionRoles?: unknown[];
+  permissionAssignments?: unknown[];
 }
 
 // v8 → v9: added weddingEvents + guestMealSelections collections;
@@ -75,7 +78,9 @@ export interface BackupData {
 // v13 → v14: added contributors collection (additive, no migration)
 // v14 → v15: added ceremonyItems, speeches, playlistTracks collections
 //            (additive, no migration); dayOfItems gained completedAt/roleId fields
-const BACKUP_VERSION = 15;
+// v15 → v16: added collaborator permissionRoles (seeded with 3 system roles when empty)
+//            + permissionAssignments (additive, no migration)
+const BACKUP_VERSION = 16;
 
 /** Collect all domain store state into a single backup document */
 export function createBackupDocument(): Record<string, unknown> {
@@ -113,6 +118,8 @@ export function createBackupDocument(): Record<string, unknown> {
     ceremonyItems: useCeremonyStore.getState().ceremonyItems,
     speeches: useSpeechesMusicStore.getState().speeches,
     playlistTracks: useSpeechesMusicStore.getState().playlistTracks,
+    permissionRoles: usePermissionsStore.getState().roles,
+    permissionAssignments: usePermissionsStore.getState().assignments,
   };
 }
 
@@ -178,6 +185,11 @@ export function restoreFromBackup(
   const restoredWeddingRoles = migratedRoles ? migratedRoles.roles : rawWeddingRoles;
   const restoredRoleAssignments = migratedRoles ? migratedRoles.assignments : rawRoleAssignments;
 
+  const rawPermissionRoles = (backup.permissionRoles || []) as any[];
+  const restoredPermissionRoles = rawPermissionRoles.length > 0
+    ? rawPermissionRoles
+    : DEFAULT_PERMISSION_ROLES.map((r) => ({ ...r, createdAt: now, updatedAt: now }));
+
   const rawLegalMilestones = (backup.legalMilestones || []) as any[];
   const restoredLegalMilestones = rawLegalMilestones.length > 0
     ? rawLegalMilestones
@@ -237,6 +249,8 @@ export function restoreFromBackup(
     ceremonyItems: (backup.ceremonyItems || []) as any[],
     speeches: (backup.speeches || []) as any[],
     playlistTracks: (backup.playlistTracks || []) as any[],
+    permissionRoles: restoredPermissionRoles,
+    permissionAssignments: (backup.permissionAssignments || []) as any[],
   };
 
   // Write to KV storage then re-hydrate stores from it
@@ -275,6 +289,8 @@ export function restoreFromBackup(
     useCeremonyStore.getState().setCeremonyItems(restoredData.ceremonyItems);
     useSpeechesMusicStore.getState().setSpeeches(restoredData.speeches);
     useSpeechesMusicStore.getState().setPlaylistTracks(restoredData.playlistTracks);
+    usePermissionsStore.getState().setRoles(restoredData.permissionRoles);
+    usePermissionsStore.getState().setAssignments(restoredData.permissionAssignments);
   }
 }
 

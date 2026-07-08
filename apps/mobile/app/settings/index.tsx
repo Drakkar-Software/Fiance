@@ -9,7 +9,7 @@ import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
 import Constants from "expo-constants";
 import { useUpdates } from "expo-updates";
-import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode, RefreshCw } from "lucide-react-native";
+import { Share2, ChevronRight, Cloud, CloudOff, Heart, CheckCircle2, Lock, Bell, PlusCircle, Trash2, Download, Globe, Pencil, Sparkles, FileText, QrCode, RefreshCw, Users } from "lucide-react-native";
 import { isLockEnabled, setLockEnabled } from "@/lib/app-lock";
 import { PinSetup } from "@/components/PinSetup";
 import { QRScannerScreen } from "@/components/QRScannerScreen";
@@ -187,7 +187,7 @@ export default function SettingsScreen() {
   }, [activeEntry, syncEnabled, premium, t]);
 
   const generateInvite = useCallback(
-    () => createInviteLink(activeEntry!),
+    (roleId?: string) => createInviteLink(activeEntry!, roleId),
     [activeEntry],
   );
 
@@ -389,6 +389,19 @@ export default function SettingsScreen() {
             subtitle={t("sendLinkToJoin")}
             right={<ChevronRight size={18} color="#C0C0C8" />}
             onPress={handleInvite}
+          />
+        )}
+        {activeEntry?.seedPhrase && activeEntry.role !== "member" && (
+          <IconCard
+            icon={
+              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+                <Users size={20} color="#b96a4a" />
+              </View>
+            }
+            title={t("rolesTitle")}
+            subtitle={t("rolesDesc")}
+            right={<ChevronRight size={18} color="#C0C0C8" />}
+            onPress={() => router.push("/settings/roles")}
           />
         )}
         {needsNamespaceResync(activeEntry) && (

@@ -1,6 +1,6 @@
 {
-  "version": 15,
-  "timestamp": "2026-07-07T16:02:50.571Z",
+  "version": 16,
+  "timestamp": "2026-07-08T05:46:54.092Z",
   "wedding": {
     "id": 1,
     "partner1Name": "Sophie",
@@ -8864,5 +8864,7 @@
       "createdAt": "2026-07-01T10:00:00.000Z",
       "updatedAt": "2026-07-01T10:00:00.000Z"
     }
-  ]
+  ],
+  "permissionRoles": [],
+  "permissionAssignments": []
 }

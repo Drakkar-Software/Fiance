@@ -38,6 +38,8 @@ function emptySnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapsho
     ceremonyItems: [],
     speeches: [],
     playlistTracks: [],
+    permissionRoles: [],
+    permissionAssignments: [],
     ...overrides,
   };
 }

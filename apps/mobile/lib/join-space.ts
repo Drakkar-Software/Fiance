@@ -13,6 +13,7 @@ import { joinSpaceByLink, hydrateSpaceAccessStore, type SpaceInviteLinkToken } f
 import { generatePassphrase, deriveSessionFromPhrase } from "@/lib/identity";
 import { resolveServerUrl } from "@/lib/server";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { resolveActiveMemberPermissions } from "@/lib/permissions/resolve";
 
 /**
  * Join a wedding from a space-invite link token.
@@ -58,11 +59,21 @@ export async function joinWeddingByToken(token: SpaceInviteLinkToken): Promise<v
 
   // Create the local wedding entry. spaceId is persisted atomically so
   // ensureSpaceProvisioned fast-paths and never runs owner setup.
-  await store.createWedding(
+  const entry = await store.createWedding(
     token.spaceName,
     seed,
     serverUrl,
     token.spaceId,
     "member",
   );
+
+  // Remember the invite's ephemeral subject id so we can resolve (and later
+  // re-resolve) the role the owner assigned to this link, keyed by that id.
+  const inviteSubjectId = (token.cap as { subUserId?: string }).subUserId;
+  if (inviteSubjectId) {
+    await store.updateWedding(entry.id, { inviteSubjectId });
+    // Best-effort immediate resolve; providers re-runs it once the owner's
+    // permission assignments sync in (they may not be present yet).
+    await resolveActiveMemberPermissions().catch(() => {});
+  }
 }
