@@ -87,6 +87,8 @@
   "perGuestUnit": "€/guest",
   "guestCountBadge_one": "{{count}} guest",
   "guestCountBadge_other": "{{count}} guests",
+  "guestCountBadgeConfirmed_one": "{{count}} confirmed",
+  "guestCountBadgeConfirmed_other": "{{count}} confirmed",
   "depositPaid": "Deposit paid",
   "personalRating": "Personal rating",
   "notesLabel": "Notes",

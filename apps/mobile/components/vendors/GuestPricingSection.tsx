@@ -104,7 +104,7 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
             <View className="flex-1">
               <Text className="text-sm font-medium text-ink">{labelOf(line.pricingKey)}</Text>
               <Text className="text-xs text-mute mt-0.5">
-                {t("guestCountBadge", { count })}
+                {t(countAll ? "guestCountBadge" : "guestCountBadgeConfirmed", { count })}
                 {subtotal > 0 ? ` · ${formatMoney(subtotal)}` : ""}
               </Text>
             </View>

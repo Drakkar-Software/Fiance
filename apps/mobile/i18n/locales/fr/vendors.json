@@ -88,6 +88,8 @@
   "perGuestUnit": "€/inv.",
   "guestCountBadge_one": "{{count}} invité",
   "guestCountBadge_other": "{{count}} invités",
+  "guestCountBadgeConfirmed_one": "{{count}} confirmé",
+  "guestCountBadgeConfirmed_other": "{{count}} confirmés",
   "personalRating": "Note personnelle",
   "notesLabel": "Notes",
   "notesPlaceholder": "Observations, détails du devis...",
