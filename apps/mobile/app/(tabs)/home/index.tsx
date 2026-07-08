@@ -456,14 +456,14 @@ function DashboardScreen() {
         </View>
 
         {/* À venir: appointments + tasks merged */}
-        <Pressable
-          onPress={() => router.push("/(tabs)/planning/agenda")}
-          className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair"
-        >
-          <View className="flex-row items-center justify-between mb-3">
+        <View className="bg-accent-card rounded-2xl p-4 mb-3 border border-hair">
+          <Pressable
+            onPress={() => router.push("/(tabs)/planning/agenda")}
+            className="flex-row items-center justify-between mb-3 active:opacity-80"
+          >
             <Label>{t("upcoming")}</Label>
             <ChevronRight size={16} color={GP.mute} />
-          </View>
+          </Pressable>
           {next3Events.length === 0 && next3Tasks.length === 0 ? (
             <Text className="text-sm text-mute">{t("nothingUpcoming")}</Text>
           ) : (
@@ -473,6 +473,12 @@ function DashboardScreen() {
                   {next3Events.map((event) => (
                     <TimelineItem
                       key={event.id}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/(tabs)/planning/agenda-event",
+                          params: { id: event.id },
+                        })
+                      }
                       left={
                         <>
                           <Display size={20} weight="500" color={GP.clay}>
@@ -516,7 +522,16 @@ function DashboardScreen() {
               {next3Tasks.length > 0 && (
                 <View className="gap-2.5">
                   {next3Tasks.map((task) => (
-                    <View key={task.id} className="flex-row items-center">
+                    <Pressable
+                      key={task.id}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/(tabs)/planning/[id]",
+                          params: { id: task.id },
+                        })
+                      }
+                      className="flex-row items-center active:opacity-80"
+                    >
                       <Circle size={14} color={GP.mute} />
                       <View className="flex-1 ml-3">
                         <Text className="text-sm text-ink" numberOfLines={1}>
@@ -530,13 +545,13 @@ function DashboardScreen() {
                           </Text>
                         )}
                       </View>
-                    </View>
+                    </Pressable>
                   ))}
                 </View>
               )}
             </>
           )}
-        </Pressable>
+        </View>
 
         {/* Prestataires */}
         <Pressable
