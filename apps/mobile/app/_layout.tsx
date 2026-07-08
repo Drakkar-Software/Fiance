@@ -54,7 +54,6 @@ import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer, WidgetInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
-import { useAutoApplyUpdate } from "@/lib/use-app-update";
 import { ObserveRoot, useObserve } from "expo-observe";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -142,7 +141,6 @@ function AppContent() {
 
 function InnerApp() {
   useTelemetryScreenTracking(analytics);
-  useAutoApplyUpdate();
   // EAS Observe: signal Time to Interactive once the real app content renders.
   // InnerApp mounts only after fonts load + unlock, and every entry screen
   // (public page, onboarding, tabs) renders under it. markInteractive() is
