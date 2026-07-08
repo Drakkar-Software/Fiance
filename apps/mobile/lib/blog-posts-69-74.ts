@@ -86,7 +86,7 @@ const pairs = [
     categoryKey: "planning",
     categoryFr: "Préparatifs",
     categoryEn: "Planning",
-    titleFr: "Fiancé vs Mariages.net : quel outil pour organiser votre mariage ?",
+    titleFr: "Fiancé vs Mariages.net : quel outil pour organiser un mariage ?",
     titleEn: "Fiancé vs Mariages.net: which tool to plan your wedding?",
     excerptFr:
       "Annuaire prestataires vs app privée : budget, RSVP, plan de table, pubs et données. Un comparatif honnête entre les deux approches.",

@@ -174,11 +174,11 @@ export default function TimelineTool() {
         description={t("tools.timeline.meta.description")}
         {...seo}
         jsonLd={[
-          { "@type": "WebApplication", name: t("tools.timeline.meta.title"),
+          { "@context": "https://schema.org", "@type": "WebApplication", name: t("tools.timeline.meta.title"),
             url: seo.canonical,
             applicationCategory: "UtilityApplication",
             offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
-          { "@type": "BreadcrumbList", itemListElement: [
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
             { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
             { "@type": "ListItem", position: 2, name: t("tools.timeline.meta.title"), item: seo.canonical },
           ]},

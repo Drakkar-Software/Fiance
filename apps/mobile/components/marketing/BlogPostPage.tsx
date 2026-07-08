@@ -163,7 +163,7 @@ export function BlogPostPage({ slug }: BlogPostPageProps) {
   return (
     <View className="w-full">
       <Seo
-        title={`${post.title} | Fiancé`}
+        title={post.title}
         description={post.excerpt}
         ogTitle={post.title}
         ogDescription={post.excerpt}

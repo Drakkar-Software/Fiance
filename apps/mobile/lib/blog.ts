@@ -561,7 +561,7 @@ function blogIdForLang(lang: string): string {
   return `${localizedUrl(normalizeLang(lang), "/blog")}#blog`;
 }
 
-const PUBLISHER = {
+export const PUBLISHER = {
   "@type": "Organization",
   "@id": ORG_ID,
   name: "Fiancé",

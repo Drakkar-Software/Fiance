@@ -11,9 +11,10 @@ import {
   getBlogAuthor,
   getPostsByAuthor,
   buildAuthorPersonJsonLd,
+  PUBLISHER,
   type BlogAuthorSlug,
 } from "@/lib/blog";
-import { localizedSeo, localizedPath } from "@/lib/seo-urls";
+import { localizedSeo, localizedPath, localizedUrl } from "@/lib/seo-urls";
 
 interface AuthorPageProps {
   slug: BlogAuthorSlug;
@@ -39,6 +40,7 @@ export function AuthorPage({ slug }: AuthorPageProps) {
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
+            PUBLISHER,
             buildAuthorPersonJsonLd(slug, lang, { role, bio }),
             {
               "@type": "ProfilePage",
@@ -52,8 +54,8 @@ export function AuthorPage({ slug }: AuthorPageProps) {
             {
               "@type": "BreadcrumbList",
               itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedPath(lang, "/") },
-                { "@type": "ListItem", position: 2, name: t("blog.hero.headline"), item: localizedPath(lang, "/blog") },
+                { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
+                { "@type": "ListItem", position: 2, name: t("blog.hero.headline"), item: localizedUrl(lang, "/blog") },
                 { "@type": "ListItem", position: 3, name: author.name, item: seo.canonical },
               ],
             },

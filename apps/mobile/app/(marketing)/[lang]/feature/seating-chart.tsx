@@ -44,7 +44,7 @@ export default function SeatingChartPage() {
         description={t("seatingChart.meta.description")}
         {...seo}
         jsonLd={[
-          { "@type": "BreadcrumbList", itemListElement: [
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
             { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
             { "@type": "ListItem", position: 2, name: t("seatingChart.meta.title"), item: seo.canonical },
           ]},

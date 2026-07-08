@@ -68,7 +68,7 @@ export default function PhotosPage() {
         description={t("photos.meta.description")}
         {...seo}
         jsonLd={[
-          { "@type": "BreadcrumbList", itemListElement: [
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
             { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
             { "@type": "ListItem", position: 2, name: t("photos.meta.title"), item: seo.canonical },
           ]},

@@ -96,11 +96,11 @@ export default function BudgetCalculatorTool() {
         description={t("tools.budgetCalculator.meta.description")}
         {...seo}
         jsonLd={[
-          { "@type": "WebApplication", name: t("tools.budgetCalculator.meta.title"),
+          { "@context": "https://schema.org", "@type": "WebApplication", name: t("tools.budgetCalculator.meta.title"),
             url: seo.canonical,
             applicationCategory: "UtilityApplication",
             offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" } },
-          { "@type": "BreadcrumbList", itemListElement: [
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
             { "@type": "ListItem", position: 1, name: "Fiancé", item: localizedUrl(lang, "/") },
             { "@type": "ListItem", position: 2, name: t("tools.budgetCalculator.meta.title"), item: seo.canonical },
           ]},
