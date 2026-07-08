@@ -502,78 +502,6 @@ export default function GuestDetailScreen() {
         <InputRow label={t("email")} value={email} onChangeText={setEmail} keyboardType="email-address" />
         <InputRow label={t("phone")} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
         <InputRow label={t("address")} value={address} onChangeText={setAddress} />
-
-        {groups.length > 0 && (
-          <>
-            <Text className="text-xs text-mute mt-3 mb-2 font-medium">{t("groupLabel")}</Text>
-            <HorizontalChipSelect
-              options={[
-                { key: "", label: t("none") },
-                ...groups.map((g) => ({ key: g.id, label: g.name })),
-              ]}
-              activeKey={groupId}
-              onSelect={setGroupId}
-              className="mb-0"
-            />
-          </>
-        )}
-
-        <Text className="text-xs text-mute mt-3 mb-2 font-medium">
-          {t("companionLabel")}
-        </Text>
-        <Pressable
-          onPress={() => setShowCompanionPicker(true)}
-          className={`px-3.5 py-2.5 rounded-xl border flex-row items-center ${
-            companionId
-              ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
-              : "bg-accent-card border-hair"
-          }`}
-        >
-          {companionId ? (
-            <>
-              <UserPlus size={16} color="#b96a4a" />
-              <Text className="text-sm text-primary-500 font-medium ml-2 flex-1">
-                {(() => {
-                  const c = guests.find((g) => g.id === companionId);
-                  return c ? `${c.firstName} ${c.lastName}` : "";
-                })()}
-              </Text>
-              <Pressable
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setCompanionId("");
-                }}
-              >
-                <XCircle size={16} color="#9CA3AF" />
-              </Pressable>
-            </>
-          ) : (
-            <>
-              <UserPlus size={16} color="#9CA3AF" />
-              <Text className="text-sm text-mute ml-2">
-                {t("selectCompanion")}
-              </Text>
-            </>
-          )}
-        </Pressable>
-        <View className="flex-row items-center justify-between py-3 border-b border-hair mt-1">
-          <Text className="text-base text-ink-soft">{t("childrenLabel")}</Text>
-          <View className="flex-row items-center gap-3">
-            <Pressable
-              onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-              className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
-            >
-              <Text className="text-lg text-mute">−</Text>
-            </Pressable>
-            <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
-            <Pressable
-              onPress={() => setChildrenCount(childrenCount + 1)}
-              className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
-            >
-              <Text className="text-lg text-mute">+</Text>
-            </Pressable>
-          </View>
-        </View>
       </GuestSheet>
 
       {!isNew && (
@@ -669,6 +597,63 @@ export default function GuestDetailScreen() {
           </Pressable>
         )}
 
+        <Text className="text-xs text-mute mt-4 mb-2 font-medium">
+          {t("companionLabel")}
+        </Text>
+        <Pressable
+          onPress={() => setShowCompanionPicker(true)}
+          className={`px-3.5 py-2.5 rounded-xl border flex-row items-center ${
+            companionId
+              ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
+              : "bg-accent-card border-hair"
+          }`}
+        >
+          {companionId ? (
+            <>
+              <UserPlus size={16} color="#b96a4a" />
+              <Text className="text-sm text-primary-500 font-medium ml-2 flex-1">
+                {(() => {
+                  const c = guests.find((g) => g.id === companionId);
+                  return c ? `${c.firstName} ${c.lastName}` : "";
+                })()}
+              </Text>
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation();
+                  setCompanionId("");
+                }}
+              >
+                <XCircle size={16} color="#9CA3AF" />
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <UserPlus size={16} color="#9CA3AF" />
+              <Text className="text-sm text-mute ml-2">
+                {t("selectCompanion")}
+              </Text>
+            </>
+          )}
+        </Pressable>
+        <View className="flex-row items-center justify-between py-3 border-b border-hair mt-1">
+          <Text className="text-base text-ink-soft">{t("childrenLabel")}</Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+              className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
+            >
+              <Text className="text-lg text-mute">−</Text>
+            </Pressable>
+            <Text className="text-base font-semibold text-ink w-6 text-center">{childrenCount}</Text>
+            <Pressable
+              onPress={() => setChildrenCount(childrenCount + 1)}
+              className="w-8 h-8 rounded-full bg-accent-paper items-center justify-center"
+            >
+              <Text className="text-lg text-mute">+</Text>
+            </Pressable>
+          </View>
+        </View>
+
         {!isNew && (
           <>
             <Text className="text-xs text-mute mb-2 mt-4 font-medium">{t("sections.communications")}</Text>
@@ -720,6 +705,21 @@ export default function GuestDetailScreen() {
             else { setTableId(key); setNoTableNeeded(false); }
           }}
         />
+
+        {groups.length > 0 && (
+          <>
+            <Text className="text-xs text-mute mt-4 mb-2 font-medium">{t("groupLabel")}</Text>
+            <HorizontalChipSelect
+              options={[
+                { key: "", label: t("none") },
+                ...groups.map((g) => ({ key: g.id, label: g.name })),
+              ]}
+              activeKey={groupId}
+              onSelect={setGroupId}
+              className="mb-0"
+            />
+          </>
+        )}
 
         {!isNew && (
           <>
