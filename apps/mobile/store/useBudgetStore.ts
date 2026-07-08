@@ -168,6 +168,15 @@ export function computeBudgetSummary(
   let depositsPaid = 0;
   const payments = vendorPayments ?? [];
 
+  // A comparison group only has a "loser" once some vendor in it has actually
+  // been retained. Without a winner, a deselected vendor (e.g. "Retenu" toggled
+  // off, or the winner deleted) is still the active quote and must count.
+  const groupsWithWinner = new Set(
+    vendors
+      .filter((v) => v.comparisonGroupId && v.isSelected === true)
+      .map((v) => v.comparisonGroupId),
+  );
+
   const categories: BudgetCategoryItem[] = Object.entries(BUDGET_CATEGORIES).map(
     ([name, types]) => {
       const categoryVendors = vendors
@@ -182,9 +191,14 @@ export function computeBudgetSummary(
             vendorPricings
           );
           const isBooked = vendor.status === "BOOKED";
-          // Vendors in a comparison group that lost out (isSelected === false) are
-          // quotes, not commitments — they never count toward engaged/confirmed spend.
-          const countsTowardBudget = !(vendor.comparisonGroupId && vendor.isSelected === false);
+          // A comparison-group vendor is only a losing quote when a sibling in the
+          // same group actually won. Deselected with no winner (lone vendor, or the
+          // winner was deleted) still counts toward engaged/confirmed spend.
+          const countsTowardBudget = !(
+            vendor.comparisonGroupId &&
+            vendor.isSelected === false &&
+            groupsWithWinner.has(vendor.comparisonGroupId)
+          );
 
           if (vendor.status !== "CANCELLED" && countsTowardBudget) {
             totalEngaged += calculatedTotal;

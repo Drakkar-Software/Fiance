@@ -98,6 +98,37 @@ describe("computeBudgetSummary — vendor comparison exclusion", () => {
     expect(catererCategory?.vendors).toHaveLength(2);
     expect(catererCategory?.vendors.find((v) => v.vendor.id === "v2")?.countsTowardBudget).toBe(false);
   });
+
+  // Regression: a caterer in a comparison group but deselected with NO winning
+  // sibling (Retenu toggled off, or the winner was deleted) was wrongly dropped
+  // from the category/global engaged total — category showed 0€.
+  it("counts a lone deselected comparison-group vendor when its group has no winner", () => {
+    const vendors = [
+      makeVendor({ id: "v1", comparisonGroupId: "cmp-caterer", isSelected: false, status: "BOOKED", basePrice: 7888 }),
+    ];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts);
+    const catering = summary.categories.find((c) => c.categoryName === "catering");
+    expect(catering?.totalEngaged).toBe(7888);
+    expect(catering?.vendors[0]?.countsTowardBudget).toBe(true);
+    expect(summary.totalEngaged).toBe(7888);
+  });
+
+  it("counts the remaining loser after the winner was deleted (group left with no winner)", () => {
+    const vendors = [
+      makeVendor({ id: "v2", comparisonGroupId: "cmp-caterer", isSelected: false, status: "QUOTE_RECEIVED", basePrice: 1500 }),
+    ];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts);
+    expect(summary.categories.find((c) => c.categoryName === "catering")?.totalEngaged).toBe(1500);
+  });
+
+  it("counts every vendor when a whole group is deselected (no winner)", () => {
+    const vendors = [
+      makeVendor({ id: "v1", comparisonGroupId: "cmp-caterer", isSelected: false, status: "BOOKED", basePrice: 1000 }),
+      makeVendor({ id: "v2", comparisonGroupId: "cmp-caterer", isSelected: false, status: "BOOKED", basePrice: 1500 }),
+    ];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts);
+    expect(summary.categories.find((c) => c.categoryName === "catering")?.totalEngaged).toBe(2500);
+  });
 });
 
 describe("computeBudgetSummary — deposits already paid (additive)", () => {
