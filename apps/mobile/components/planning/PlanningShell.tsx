@@ -20,7 +20,7 @@ const ASPECT_ROUTES: Record<PlanningAspect, string> = {
 
 interface PlanningShellProps {
   aspect: PlanningAspect;
-  onAdd: () => void;
+  onAdd?: () => void;
   children: React.ReactNode;
 }
 
@@ -50,7 +50,7 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
                   <Play size={20} color="#b96a4a" />
                 </Pressable>
               )}
-              <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />
+              {onAdd && <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />}
               <StackMenu
                 items={[
                   {

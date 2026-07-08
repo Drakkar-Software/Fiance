@@ -4,7 +4,7 @@ import { useVendorsStore } from "./useVendorsStore";
 import { useGuestsStore, computeCounts, type GuestCounts } from "./useGuestsStore";
 import type { Vendor, QuotePricing, VendorPayment } from "@/db/schema";
 import type { VendorType, PppSource } from "@/db/types";
-import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE, INVITATION_TYPE_GUEST_SOURCE } from "@/db/types";
+import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE } from "@/db/types";
 
 /**
  * Whether a vendor's total is computed dynamically from per-invitation-type guest lines.
@@ -58,7 +58,8 @@ export function calculateVendorTotal(
   // Dynamic per-invitation-type pricing (any vendor); legacy caterer rows fall in here too.
   const pricings = quotePricings ?? [];
   if (isVendorDynamicPricing(vendor, pricings)) {
-    return calculateCatererTotal(pricings, counts) + (vendor.fixedFee || 0);
+    const countAll = vendor.countAllGuests !== false; // default: count all invited guests
+    return calculateCatererTotal(pricings, counts, countAll) + (vendor.fixedFee || 0);
   }
 
   // Standard vendor: base_price + (price_per_person * guest_count)
@@ -78,45 +79,43 @@ export function calculateVendorTotal(
 function getGuestCountForPricingKey(
   key: string,
   override: number | null,
-  counts: GuestCounts
+  counts: GuestCounts,
+  countAll: boolean
 ): number {
   if (override != null && override > 0) return override;
-
-  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) map to exact per-type counts that
-  // already bake in the pre-RSVP estimate — never fall through to the whole-guest-list total.
-  const invKey = INVITATION_TYPE_GUEST_SOURCE[
-    key as keyof typeof INVITATION_TYPE_GUEST_SOURCE
-  ] as keyof GuestCounts | undefined;
-  if (invKey) {
-    const v = counts[invKey];
-    return typeof v === "number" ? v : 0;
-  }
 
   // Legacy lowercase caterer pricing keys (dinner/cocktail/…) keep the whole-list estimate.
   const sourceKey = PRICING_KEY_GUEST_SOURCE[
     key as keyof typeof PRICING_KEY_GUEST_SOURCE
   ] as keyof GuestCounts | undefined;
 
-  if (!sourceKey || sourceKey === ("manual" as any)) return 0;
-
-  const useEstimate = counts.accepted === 0 && counts.total > 0;
-  const value = counts[sourceKey];
-  if (typeof value === "number") {
-    return value || (useEstimate ? counts.total : 0);
+  if (sourceKey && sourceKey !== ("manual" as any)) {
+    const useEstimate = counts.accepted === 0 && counts.total > 0;
+    const value = counts[sourceKey];
+    if (typeof value === "number") {
+      return value || (useEstimate ? counts.total : 0);
+    }
+    return 0;
   }
-  return 0;
+
+  // Otherwise the key is an invitation-type id (the dynamic useInvitationTypesStore id,
+  // including custom types). Resolve against the all-invited or confirmed-only count map.
+  const byType = countAll ? counts.inv_by_type_all : counts.inv_by_type;
+  return byType[key] ?? 0;
 }
 
 export function calculateCatererTotal(
   pricings: QuotePricing[],
-  counts: GuestCounts
+  counts: GuestCounts,
+  countAll: boolean = true
 ): number {
   let total = 0;
   for (const p of pricings) {
     const guestCount = getGuestCountForPricingKey(
       p.pricingKey,
       p.guestCountOverride,
-      counts
+      counts,
+      countAll
     );
     total += (p.pricePerPerson || 0) * guestCount;
     total += p.staffFee || 0;
@@ -192,16 +191,16 @@ export function computeBudgetSummary(
             if (isBooked) totalConfirmed += calculatedTotal;
           }
 
-          // Use vendorPayments if available, else fall back to legacy deposit fields
+          // Additive: the legacy deposit (when marked "déjà payé") AND any Payments-tab
+          // entries both count — payments no longer suppress the deposit toggle.
           const vendorPmts = payments.filter((p) => p.vendorId === vendor.id);
-          if (vendorPmts.length > 0) {
-            const paid = vendorPmts.reduce((sum, p) => sum + p.amount, 0);
-            depositsPaid += paid;
-            depositsTotal += paid;
-          } else if (vendor.depositAmount) {
+          const paymentsSum = vendorPmts.reduce((sum, p) => sum + p.amount, 0);
+          if (vendor.depositAmount) {
             depositsTotal += vendor.depositAmount;
             if (vendor.depositPaid) depositsPaid += vendor.depositAmount;
           }
+          depositsPaid += paymentsSum;
+          depositsTotal += paymentsSum;
 
           return { vendor, calculatedTotal, isBooked, countsTowardBudget };
         });

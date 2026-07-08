@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const mockGetSyncNamespace = vi.fn<[], string>(() => "dk");
+const mockGetSyncNamespace = vi.fn<() => string>(() => "dk");
 vi.mock("@fiance/sdk", () => ({
   getSyncNamespace: () => mockGetSyncNamespace(),
   DEFAULT_SYNC_NAMESPACE: "dk",

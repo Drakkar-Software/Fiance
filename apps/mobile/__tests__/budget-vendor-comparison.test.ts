@@ -22,11 +22,18 @@ const counts: GuestCounts = {
   maybe: 0,
   response_rate: 100,
   cocktail_count: 0,
+  dinner_count: 100,
   full_count: 100,
   both_days_count: 0,
+  inv_by_type: { FULL: 100 },
+  inv_by_type_all: { FULL: 100 },
   children_count: 0,
   vegetarian_count: 0,
-} as GuestCounts;
+  sleeping_count: 0,
+  no_table_count: 0,
+  no_accommodation_count: 0,
+  thank_you_pending_count: 0,
+};
 
 function makeVendor(overrides: Partial<Vendor> = {}): Vendor {
   return {
@@ -43,6 +50,9 @@ function makeVendor(overrides: Partial<Vendor> = {}): Vendor {
     basePrice: 1000,
     pricePerPerson: null,
     pppSource: null,
+    dynamicPricing: null,
+    fixedFee: null,
+    countAllGuests: null,
     depositAmount: null,
     depositPaid: null,
     depositDueDate: null,
@@ -87,5 +97,38 @@ describe("computeBudgetSummary — vendor comparison exclusion", () => {
     const catererCategory = summary.categories.find((c) => c.categoryName === "catering");
     expect(catererCategory?.vendors).toHaveLength(2);
     expect(catererCategory?.vendors.find((v) => v.vendor.id === "v2")?.countsTowardBudget).toBe(false);
+  });
+});
+
+describe("computeBudgetSummary — deposits already paid (additive)", () => {
+  const pmt = (vendorId: string, amount: number) => ({ vendorId, amount }) as any;
+
+  it("counts the legacy deposit as paid when 'déjà payé' is on", () => {
+    const vendors = [makeVendor({ depositAmount: 500, depositPaid: true })];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts, null, []);
+    expect(summary.depositsPaid).toBe(500);
+    expect(summary.depositsTotal).toBe(500);
+  });
+
+  it("does not count the deposit as paid when the toggle is off, but expects it", () => {
+    const vendors = [makeVendor({ depositAmount: 500, depositPaid: false })];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts, null, []);
+    expect(summary.depositsPaid).toBe(0);
+    expect(summary.depositsTotal).toBe(500);
+  });
+
+  it("adds Payments-tab entries ON TOP of the deposit toggle (no longer suppressed)", () => {
+    const vendors = [makeVendor({ id: "v1", depositAmount: 500, depositPaid: true })];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts, null, [pmt("v1", 300)]);
+    // Regression: was 300 (payment suppressed the toggle); now 500 + 300.
+    expect(summary.depositsPaid).toBe(800);
+    expect(summary.depositsTotal).toBe(800);
+  });
+
+  it("counts payments alone when there is no legacy deposit", () => {
+    const vendors = [makeVendor({ id: "v1", depositAmount: null, depositPaid: null })];
+    const summary = computeBudgetSummary(10_000, vendors, [], counts, null, [pmt("v1", 300)]);
+    expect(summary.depositsPaid).toBe(300);
+    expect(summary.depositsTotal).toBe(300);
   });
 });

@@ -83,6 +83,8 @@
   "addPricingLine": "Ajouter un type",
   "fixedFeeLabel": "Frais fixes",
   "fixedFeeHint": "Coûts indépendants du nombre d'invités",
+  "countAllGuestsLabel": "Compter tous les invités",
+  "countAllGuestsHint": "Activé : tous les invités du type. Désactivé : seulement ceux qui ont confirmé",
   "perGuestUnit": "€/inv.",
   "guestCountBadge_one": "{{count}} invité",
   "guestCountBadge_other": "{{count}} invités",

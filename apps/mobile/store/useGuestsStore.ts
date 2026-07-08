@@ -195,6 +195,7 @@ export function useGuestCount(key: keyof ReturnType<typeof computeCounts> | null
     if (useEstimate && key !== "total" && key !== "response_rate") {
       return counts.total;
     }
-    return counts[key] ?? 0;
+    const value = counts[key];
+    return typeof value === "number" ? value : 0;
   });
 }

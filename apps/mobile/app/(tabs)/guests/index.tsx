@@ -330,8 +330,9 @@ function GuestsView() {
 
   return (
     <View className="relative flex-1">
-      {/* Guest list */}
-      {filteredGuests.length === 0 ? (
+      {/* Guest list — big CTA only when there are truly no guests; a search/filter that
+          matches none keeps the search bar + filters visible with an inline message. */}
+      {guests.length === 0 ? (
         <EmptyState
           icon={Users}
           title={t("noGuests")}
@@ -350,6 +351,11 @@ function GuestsView() {
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={listHeader}
+          ListEmptyComponent={
+            <View className="items-center justify-center py-16 px-8">
+              <Text className="text-sm text-mute text-center">{t("noGuestsFound")}</Text>
+            </View>
+          }
           ListFooterComponent={<View className="h-24" />}
         />
       )}

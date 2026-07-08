@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { PageHeader } from "@/components/PageHeader";
 import { Briefcase } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
+import { calculateVendorTotal } from "@/lib/budget";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_LABELS, VENDOR_STATUS_COLORS } from "@/db/types";
 import type { VendorType } from "@/db/types";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -20,6 +22,23 @@ export default function VendorTypeListScreen() {
   const vendors = useVendorsStore((s) =>
     s.vendors.filter((v) => v.type === type)
   );
+  const quotePricings = useVendorsStore((s) => s.quotePricings);
+  const guests = useGuestsStore((s) => s.guests);
+
+  // Computed display total per vendor: dynamic vendors show their guest-based (+ fixed) total,
+  // others their base price. Matches the vendors list + budget screen.
+  const totalById = useMemo(() => {
+    const counts = computeCounts(guests);
+    const map: Record<string, number> = {};
+    for (const v of vendors) {
+      map[v.id] = calculateVendorTotal(
+        v,
+        counts,
+        quotePricings.filter((p) => p.vendorId === v.id)
+      );
+    }
+    return map;
+  }, [vendors, quotePricings, guests]);
 
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
@@ -85,9 +104,9 @@ export default function VendorTypeListScreen() {
                   )}
                 </View>
               </View>
-              {(vendor.basePrice != null && vendor.basePrice > 0) && (
+              {totalById[vendor.id] > 0 && (
                 <Display size={18} weight="500" style={{ marginTop: 8 }}>
-                  {formatMoney(vendor.basePrice)}
+                  {formatMoney(totalById[vendor.id])}
                 </Display>
               )}
             </Pressable>

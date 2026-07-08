@@ -110,6 +110,8 @@ function makeSnapshot(overrides: Partial<WeddingSnapshot> = {}): WeddingSnapshot
     ceremonyItems: [],
     speeches: [],
     playlistTracks: [],
+    permissionRoles: [],
+    permissionAssignments: [],
     ...overrides,
   };
 }

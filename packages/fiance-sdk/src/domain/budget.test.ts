@@ -17,6 +17,9 @@ import {
 import type { GuestCounts } from './guests.js';
 import type { Contributor } from './schema.js';
 
+// A custom (user-created) invitation type carries a UUID id — the exact BOTH_DAYS-class case.
+const TWO_DAYS = "uuid-2days";
+
 const baseCounts: GuestCounts = {
   total: 100,
   accepted: 80,
@@ -27,10 +30,9 @@ const baseCounts: GuestCounts = {
   dinner_count: 60,
   full_count: 60,
   both_days_count: 40,
-  inv_ceremony_count: 20,
-  inv_cocktail_count: 30,
-  inv_full_count: 25,
-  inv_both_days_count: 40,
+  // All-invited pool (matches the guest-screen filter counts) vs confirmed-only (ACCEPTED) pool.
+  inv_by_type_all: { CEREMONY: 25, COCKTAIL: 35, FULL: 30, BOTH_DAYS: 45, [TWO_DAYS]: 12 },
+  inv_by_type: { CEREMONY: 20, COCKTAIL: 30, FULL: 25, BOTH_DAYS: 40, [TWO_DAYS]: 8 },
   children_count: 5,
   vegetarian_count: 8,
   sleeping_count: 30,
@@ -155,17 +157,24 @@ describe("isVendorDynamicPricing", () => {
 });
 
 describe("calculateVendorTotal — dynamic per-invitation-type pricing", () => {
-  it("sums each line's price by that invitation type's exact guest count", () => {
+  it("sums each line's price by that invitation type's all-invited count (default)", () => {
     const vendor = { type: "VENUE", basePrice: null, dynamicPricing: true } as any;
     const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
-    // 30 * inv_cocktail_count(30) + 50 * inv_full_count(25) = 900 + 1250
+    // default countAll → all pool: 30 * 35 + 50 * 30 = 1050 + 1500
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2550);
+  });
+
+  it("uses the confirmed-only pool when countAllGuests === false", () => {
+    const vendor = { type: "VENUE", basePrice: null, dynamicPricing: true, countAllGuests: false } as any;
+    const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
+    // confirmed pool: 30 * 30 + 50 * 25 = 900 + 1250
     expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2150);
   });
 
   it("ignores basePrice entirely in dynamic mode", () => {
     const vendor = { type: "CATERER", basePrice: 9999, dynamicPricing: true } as any;
     const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
-    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2150);
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2550);
   });
 
   it("ignores per-invitation-type lines when the flag is explicitly false (fixed mode)", () => {
@@ -174,25 +183,34 @@ describe("calculateVendorTotal — dynamic per-invitation-type pricing", () => {
     expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(1000);
   });
 
-  it("resolves each invitation type to its exact (non-cumulative) guest count", () => {
+  it("resolves each invitation-type id to its all-invited count (default countAll)", () => {
     // price 1/guest → subtotal equals the resolved count
-    expect(calculateCatererTotal([line("CEREMONY", 1)], baseCounts)).toBe(20);  // inv_ceremony_count
-    expect(calculateCatererTotal([line("COCKTAIL", 1)], baseCounts)).toBe(30);  // inv_cocktail_count
-    expect(calculateCatererTotal([line("FULL", 1)], baseCounts)).toBe(25);      // inv_full_count
-    expect(calculateCatererTotal([line("BOTH_DAYS", 1)], baseCounts)).toBe(40); // inv_both_days_count
+    expect(calculateCatererTotal([line("CEREMONY", 1)], baseCounts)).toBe(25);
+    expect(calculateCatererTotal([line("COCKTAIL", 1)], baseCounts)).toBe(35);
+    expect(calculateCatererTotal([line("FULL", 1)], baseCounts)).toBe(30);
+    expect(calculateCatererTotal([line("BOTH_DAYS", 1)], baseCounts)).toBe(45);
   });
 
-  it("never leaks to the whole guest list for an invitation-type line (no total fallback)", () => {
-    // Even with 0 accepted, an invitation-type count of 0 stays 0 — the pre-RSVP estimate is
-    // baked into computeCounts, not re-applied here as a total leak.
-    const noAccepted = { ...baseCounts, accepted: 0, inv_cocktail_count: 0 };
-    expect(calculateCatererTotal([line("COCKTAIL", 10)], noAccepted)).toBe(0);
+  it("resolves a CUSTOM (UUID) invitation type — the BOTH_DAYS-class regression", () => {
+    // A user-created "2 days" type has a UUID id, not the literal "BOTH_DAYS". It must still
+    // resolve to that type's count (was silently 0 with the old hardcoded enum).
+    expect(calculateCatererTotal([line(TWO_DAYS, 1)], baseCounts)).toBe(12);           // all-invited
+    expect(calculateCatererTotal([line(TWO_DAYS, 1)], baseCounts, false)).toBe(8);     // confirmed only
+  });
+
+  it("confirmed-only mode uses the accepted pool per type", () => {
+    expect(calculateCatererTotal([line("FULL", 1)], baseCounts, false)).toBe(25);
+  });
+
+  it("returns 0 for an invitation-type id with no guests (no total leak)", () => {
+    const empty = { ...baseCounts, inv_by_type_all: {}, inv_by_type: {} };
+    expect(calculateCatererTotal([line("COCKTAIL", 10)], empty)).toBe(0);
   });
 
   it("adds a vendor-level fixed fee on top of the dynamic total", () => {
     const vendor = { type: "CATERER", basePrice: null, dynamicPricing: true, fixedFee: 500 } as any;
-    const pricings = [line("FULL", 50)]; // 50 * inv_full_count(25) = 1250
-    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(1750);
+    const pricings = [line("FULL", 50)]; // 50 * FULL all-invited(30) = 1500
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2000);
   });
 
   it("charges only the fixed fee when dynamic with no priced lines", () => {

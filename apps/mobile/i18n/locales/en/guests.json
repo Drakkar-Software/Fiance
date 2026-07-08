@@ -31,6 +31,7 @@
   "pending": "Pending",
   "maybe": "Maybe",
   "noGuests": "No guests",
+  "noGuestsFound": "No guest matches this search",
   "addFirstGuest": "Add your first guest to get started",
   "addGuest": "Add a guest",
   "child": "Child",

@@ -5,17 +5,22 @@ import * as Crypto from "expo-crypto";
 import { Plus, X } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
-import { INVITATION_TYPE_LABELS, INVITATION_TYPE_GUEST_SOURCE } from "@/db/types";
-import type { InvitationType } from "@/db/types";
+import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
+import { ToggleRow } from "@/components/FormSection";
 import type { QuotePricing } from "@/db/schema";
 import { formatMoney } from "@/components/MoneyDisplay";
 
-const INVITATION_TYPES = Object.keys(INVITATION_TYPE_LABELS) as InvitationType[];
-
-/** Exact accepted-guest count backing a given invitation type (estimate baked into computeCounts). */
-function resolveGuestCount(type: string, counts: ReturnType<typeof computeCounts>): number {
-  const value = (counts as Record<string, number>)[INVITATION_TYPE_GUEST_SOURCE[type as InvitationType]];
-  return typeof value === "number" ? value : 0;
+/**
+ * Guest count backing an invitation-type id, matching the guest screen. `countAll` (all invited,
+ * default) vs confirmed-only (ACCEPTED) selects the pool — same rule as the budget calc.
+ */
+function resolveGuestCount(
+  typeId: string,
+  counts: ReturnType<typeof computeCounts>,
+  countAll: boolean
+): number {
+  const byType = countAll ? counts.inv_by_type_all : counts.inv_by_type;
+  return byType[typeId] ?? 0;
 }
 
 export function GuestPricingSection({ vendorId }: { vendorId: string }) {
@@ -26,35 +31,38 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
   const removeQuotePricing = useVendorsStore((s) => s.removeQuotePricing);
   const vendor = useVendorsStore((s) => s.vendors.find((v) => v.id === vendorId));
   const updateVendor = useVendorsStore((s) => s.updateVendor);
+  const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
   const guests = useGuestsStore((s) => s.guests);
   const counts = useMemo(() => computeCounts(guests), [guests]);
 
   const [showPicker, setShowPicker] = useState(false);
   const fixedFee = vendor?.fixedFee ?? null;
+  // Default = count all invited guests; explicit false = confirmed (ACCEPTED) only.
+  const countAll = vendor?.countAllGuests !== false;
 
-  // Only per-invitation-type lines (ignore any legacy lowercase caterer keys on this vendor).
+  const typeIds = useMemo(() => new Set(invitationTypes.map((it) => it.id)), [invitationTypes]);
+  const labelOf = (id: string) => invitationTypes.find((it) => it.id === id)?.label ?? id;
+
+  // Only lines whose pricingKey is a live invitation-type id (ignore legacy lowercase caterer keys).
   const lines = useMemo(
-    () =>
-      allPricings.filter(
-        (p) => p.vendorId === vendorId && INVITATION_TYPES.includes(p.pricingKey as InvitationType)
-      ),
-    [allPricings, vendorId]
+    () => allPricings.filter((p) => p.vendorId === vendorId && typeIds.has(p.pricingKey)),
+    [allPricings, vendorId, typeIds]
   );
 
   const usedTypes = useMemo(() => new Set(lines.map((l) => l.pricingKey)), [lines]);
-  const remaining = INVITATION_TYPES.filter((ty) => !usedTypes.has(ty));
+  const remaining = invitationTypes.filter((it) => !usedTypes.has(it.id));
 
   const total =
     lines.reduce(
-      (sum, l) => sum + (l.pricePerPerson || 0) * resolveGuestCount(l.pricingKey, counts),
+      (sum, l) => sum + (l.pricePerPerson || 0) * resolveGuestCount(l.pricingKey, counts, countAll),
       0
     ) + (fixedFee || 0);
 
-  const addLine = (type: InvitationType) => {
+  const addLine = (typeId: string) => {
     addQuotePricing({
       id: Crypto.randomUUID(),
       vendorId,
-      pricingKey: type,
+      pricingKey: typeId,
       pricePerPerson: null,
       guestCountOverride: null,
       staffFee: null,
@@ -71,14 +79,22 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
           <Text className="text-base font-bold text-primary-500">{formatMoney(total)}</Text>
         )}
       </View>
-      <Text className="text-xs text-mute mb-3">{t("guestPricingHint")}</Text>
+      <Text className="text-xs text-mute mb-2">{t("guestPricingHint")}</Text>
+
+      {/* Count mode: all invited vs confirmed only */}
+      <ToggleRow
+        label={t("countAllGuestsLabel")}
+        value={countAll}
+        onToggle={() => updateVendor(vendorId, { countAllGuests: countAll ? false : true })}
+      />
+      <Text className="text-xs text-mute mt-1 mb-3">{t("countAllGuestsHint")}</Text>
 
       {lines.length === 0 && (
         <Text className="text-sm text-mute mb-3">{t("pricingEmpty")}</Text>
       )}
 
       {lines.map((line) => {
-        const count = resolveGuestCount(line.pricingKey, counts);
+        const count = resolveGuestCount(line.pricingKey, counts, countAll);
         const subtotal = (line.pricePerPerson || 0) * count;
         return (
           <View
@@ -86,9 +102,7 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
             className="flex-row items-center py-2 border-b border-hair"
           >
             <View className="flex-1">
-              <Text className="text-sm font-medium text-ink">
-                {t(INVITATION_TYPE_LABELS[line.pricingKey as InvitationType])}
-              </Text>
+              <Text className="text-sm font-medium text-ink">{labelOf(line.pricingKey)}</Text>
               <Text className="text-xs text-mute mt-0.5">
                 {t("guestCountBadge", { count })}
                 {subtotal > 0 ? ` · ${formatMoney(subtotal)}` : ""}
@@ -144,13 +158,13 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
       {remaining.length > 0 &&
         (showPicker ? (
           <View className="flex-row flex-wrap gap-2 mt-3">
-            {remaining.map((ty) => (
+            {remaining.map((it) => (
               <Pressable
-                key={ty}
-                onPress={() => addLine(ty)}
+                key={it.id}
+                onPress={() => addLine(it.id)}
                 className="px-3 py-2 bg-accent-paper border border-hair rounded-full active:opacity-80"
               >
-                <Text className="text-sm text-ink">{t(INVITATION_TYPE_LABELS[ty])}</Text>
+                <Text className="text-sm text-ink">{it.label}</Text>
               </Pressable>
             ))}
           </View>

@@ -11,13 +11,15 @@ export interface GuestCounts {
   dinner_count: number;
   full_count: number;
   both_days_count: number;
-  // Exact accepted count per invitation type (not cumulative), for per-invitation-type
-  // vendor pricing. When nobody has accepted yet, these fall back to non-declined guests
-  // of that type so pricing previews aren't all zero before RSVPs come in.
-  inv_ceremony_count: number;
-  inv_cocktail_count: number;
-  inv_full_count: number;
-  inv_both_days_count: number;
+  // Per-invitation-type counts keyed by the actual invitation-type id (the dynamic
+  // `useInvitationTypesStore` ids — including custom types — not a hardcoded enum), for
+  // per-invitation-type vendor pricing.
+  //  - inv_by_type: billable pool. Accepted guests of each type; before any RSVP (nobody
+  //    accepted) it falls back to non-declined guests so previews aren't all zero.
+  //  - inv_by_type_all: ALL guests of each type regardless of RSVP — matches the guest
+  //    screen's invitation-type filter counts exactly.
+  inv_by_type: Record<string, number>;
+  inv_by_type_all: Record<string, number>;
   children_count: number;
   vegetarian_count: number;
   sleeping_count: number;
@@ -36,7 +38,15 @@ export function computeCounts(guests: Guest[]): GuestCounts {
   // For per-invitation-type pricing: bill accepted guests of each exact type. Before any
   // RSVP (no accepted), estimate from non-declined guests so previews aren't all zero.
   const invPool = acceptedCount > 0 ? accepted : guests.filter((g) => g.rsvpStatus !== "DECLINED");
-  const invOf = (type: string) => invPool.filter((g) => g.invitationType === type).length;
+  const groupByType = (pool: Guest[]): Record<string, number> => {
+    const map: Record<string, number> = {};
+    for (const g of pool) {
+      const key = g.invitationType;
+      if (key == null) continue;
+      map[key] = (map[key] ?? 0) + 1;
+    }
+    return map;
+  };
 
   return {
     total,
@@ -52,10 +62,8 @@ export function computeCounts(guests: Guest[]): GuestCounts {
     ).length,
     full_count: accepted.filter((g) => g.invitationType === "FULL").length,
     both_days_count: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
-    inv_ceremony_count: invOf("CEREMONY"),
-    inv_cocktail_count: invOf("COCKTAIL"),
-    inv_full_count: invOf("FULL"),
-    inv_both_days_count: invOf("BOTH_DAYS"),
+    inv_by_type: groupByType(invPool),
+    inv_by_type_all: groupByType(guests),
     children_count: accepted.reduce((sum, g) => sum + (g.childrenCount ?? 0), 0),
     vegetarian_count: accepted.filter((g) =>
       ["VEGETARIAN", "VEGAN"].includes(g.diet || "")

@@ -31,6 +31,7 @@
   "pending": "En attente",
   "maybe": "Peut-être",
   "noGuests": "Aucun invité",
+  "noGuestsFound": "Aucun invité ne correspond à cette recherche",
   "addFirstGuest": "Ajoutez votre premier invité pour commencer",
   "addGuest": "Ajouter un invité",
   "child": "Enfant",

@@ -88,6 +88,7 @@ export interface Vendor {
   pppSource: string | null;
   dynamicPricing: boolean | null; // true = total computed from per-invitation-type guest lines
   fixedFee: number | null; // flat cost added to the dynamic total, independent of guest count
+  countAllGuests: boolean | null; // null/true = count all invited guests per type; false = confirmed (ACCEPTED) only
   depositAmount: number | null;
   depositPaid: boolean | null;
   depositDueDate: string | null;

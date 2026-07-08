@@ -5,26 +5,53 @@ import { computeCounts } from './guests.js';
 const g = (rsvpStatus: string, invitationType: string) =>
   ({ rsvpStatus, invitationType }) as any;
 
+// A custom (user-created) invitation type carries a UUID id, NOT a hardcoded enum string.
+const TWO_DAYS = "b1f2c3d4-2days";
+
 describe('computeCounts — per-invitation-type pricing counts', () => {
-  it('counts accepted guests exactly by invitation type (not cumulative)', () => {
+  it('groups accepted guests by exact invitation-type id (inv_by_type)', () => {
     const guests = [
       g('ACCEPTED', 'CEREMONY'),
       g('ACCEPTED', 'CEREMONY'),
       g('ACCEPTED', 'COCKTAIL'),
       g('ACCEPTED', 'FULL'),
-      g('ACCEPTED', 'FULL'),
-      g('ACCEPTED', 'BOTH_DAYS'),
-      g('DECLINED', 'FULL'), // ignored
-      g('PENDING', 'FULL'),  // ignored while some accepted
+      g('ACCEPTED', TWO_DAYS),
+      g('DECLINED', 'FULL'), // ignored (some accepted)
+      g('PENDING', 'FULL'),  // ignored (some accepted)
     ];
     const c = computeCounts(guests);
-    expect(c.inv_ceremony_count).toBe(2);
-    expect(c.inv_cocktail_count).toBe(1);
-    expect(c.inv_full_count).toBe(2); // exact FULL only, not FULL+BOTH_DAYS
-    expect(c.inv_both_days_count).toBe(1);
+    expect(c.inv_by_type).toEqual({ CEREMONY: 2, COCKTAIL: 1, FULL: 1, [TWO_DAYS]: 1 });
   });
 
-  it('estimates from non-declined guests when nobody has accepted yet', () => {
+  it('inv_by_type_all counts ALL guests regardless of RSVP (guest-screen parity)', () => {
+    const guests = [
+      g('ACCEPTED', 'FULL'),
+      g('PENDING', 'FULL'),
+      g('DECLINED', 'FULL'),
+      g('MAYBE', TWO_DAYS),
+      g('PENDING', TWO_DAYS),
+    ];
+    const c = computeCounts(guests);
+    // Mirrors the guest screen's typeCounts: group ALL guests by invitationType id, no RSVP filter.
+    const guestScreenCount = (id: string) => guests.filter((x) => x.invitationType === id).length;
+    expect(c.inv_by_type_all).toEqual({ FULL: 3, [TWO_DAYS]: 2 });
+    expect(c.inv_by_type_all.FULL).toBe(guestScreenCount('FULL'));
+    expect(c.inv_by_type_all[TWO_DAYS]).toBe(guestScreenCount(TWO_DAYS));
+  });
+
+  it('a custom UUID "2 days" type is counted (BOTH_DAYS regression guard)', () => {
+    const guests = [
+      g('PENDING', TWO_DAYS),
+      g('ACCEPTED', TWO_DAYS),
+      g('MAYBE', TWO_DAYS),
+    ];
+    const c = computeCounts(guests);
+    // Was 0 with the old hardcoded "BOTH_DAYS" enum key; now tracks the real id.
+    expect(c.inv_by_type_all[TWO_DAYS]).toBe(3);
+    expect(c.inv_by_type[TWO_DAYS]).toBe(1); // only the accepted one
+  });
+
+  it('inv_by_type estimates from non-declined guests when nobody has accepted yet', () => {
     const guests = [
       g('PENDING', 'FULL'),
       g('PENDING', 'FULL'),
@@ -33,16 +60,13 @@ describe('computeCounts — per-invitation-type pricing counts', () => {
     ];
     const c = computeCounts(guests);
     expect(c.accepted).toBe(0);
-    expect(c.inv_full_count).toBe(2);     // 2 pending FULL, declined excluded
-    expect(c.inv_cocktail_count).toBe(1); // 1 maybe COCKTAIL
-    expect(c.inv_ceremony_count).toBe(0);
+    expect(c.inv_by_type).toEqual({ FULL: 2, COCKTAIL: 1 }); // declined excluded
+    expect(c.inv_by_type_all).toEqual({ FULL: 3, COCKTAIL: 1 }); // declined included
   });
 
-  it('is all zero with no guests', () => {
+  it('is empty with no guests', () => {
     const c = computeCounts([]);
-    expect(c.inv_ceremony_count).toBe(0);
-    expect(c.inv_cocktail_count).toBe(0);
-    expect(c.inv_full_count).toBe(0);
-    expect(c.inv_both_days_count).toBe(0);
+    expect(c.inv_by_type).toEqual({});
+    expect(c.inv_by_type_all).toEqual({});
   });
 });

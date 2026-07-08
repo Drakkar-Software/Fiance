@@ -1,7 +1,7 @@
 import type { Vendor, QuotePricing } from "@fiance/sdk";
 import type { GuestCounts } from "@/store/useGuestsStore";
 import type { PppSource } from "@fiance/sdk";
-import { PRICING_KEY_GUEST_SOURCE, INVITATION_TYPE_GUEST_SOURCE } from "@fiance/sdk";
+import { PRICING_KEY_GUEST_SOURCE } from "@fiance/sdk";
 
 /**
  * Whether a vendor's total is computed dynamically from per-invitation-type guest lines.
@@ -52,7 +52,8 @@ export function calculateVendorTotal(
 ): number {
   const pricings = quotePricings ?? [];
   if (isVendorDynamicPricing(vendor, pricings)) {
-    return calculateCatererTotal(pricings, counts) + (vendor.fixedFee || 0);
+    const countAll = vendor.countAllGuests !== false; // default: count all invited guests
+    return calculateCatererTotal(pricings, counts, countAll) + (vendor.fixedFee || 0);
   }
 
   let total = vendor.basePrice || 0;
@@ -66,17 +67,22 @@ export function calculateVendorTotal(
   return total;
 }
 
-/** Calculate caterer total from quote_pricing rows */
+/**
+ * Calculate caterer total from quote_pricing rows.
+ * `countAll` (default true) picks the all-invited count pool; false = confirmed (ACCEPTED) only.
+ */
 export function calculateCatererTotal(
   pricings: QuotePricing[],
-  counts: GuestCounts
+  counts: GuestCounts,
+  countAll: boolean = true
 ): number {
   let total = 0;
   for (const p of pricings) {
     const guestCount = getGuestCountForPricingKey(
       p.pricingKey,
       p.guestCountOverride,
-      counts
+      counts,
+      countAll
     );
     total += (p.pricePerPerson || 0) * guestCount;
     total += p.staffFee || 0;
@@ -88,28 +94,26 @@ export function calculateCatererTotal(
 function getGuestCountForPricingKey(
   key: string,
   override: number | null,
-  counts: GuestCounts
+  counts: GuestCounts,
+  countAll: boolean
 ): number {
   if (override != null && override > 0) return override;
 
-  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) map to exact per-type counts that
-  // already bake in the pre-RSVP estimate — never fall through to the whole-guest-list total.
-  const invKey = INVITATION_TYPE_GUEST_SOURCE[key as keyof typeof INVITATION_TYPE_GUEST_SOURCE];
-  if (invKey) {
-    const v = counts[invKey as keyof GuestCounts];
-    return typeof v === "number" ? v : 0;
-  }
-
   // Legacy lowercase caterer pricing keys (dinner/cocktail/…) keep the whole-list estimate.
   const sourceKey = PRICING_KEY_GUEST_SOURCE[key as keyof typeof PRICING_KEY_GUEST_SOURCE];
-  if (!sourceKey || sourceKey === "manual") return 0;
-
-  const useEstimate = counts.accepted === 0 && counts.total > 0;
-  const value = counts[sourceKey as keyof GuestCounts];
-  if (typeof value === "number") {
-    return value || (useEstimate ? counts.total : 0);
+  if (sourceKey && sourceKey !== "manual") {
+    const useEstimate = counts.accepted === 0 && counts.total > 0;
+    const value = counts[sourceKey as keyof GuestCounts];
+    if (typeof value === "number") {
+      return value || (useEstimate ? counts.total : 0);
+    }
+    return 0;
   }
-  return 0;
+
+  // Otherwise the key is an invitation-type id (the dynamic useInvitationTypesStore id,
+  // including custom types). Resolve against the all-invited or confirmed-only count map.
+  const byType = countAll ? counts.inv_by_type_all : counts.inv_by_type;
+  return byType[key] ?? 0;
 }
 
 /** Calculate caterer score /100 */

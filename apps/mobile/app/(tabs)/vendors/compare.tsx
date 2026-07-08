@@ -31,7 +31,7 @@ export default function CompareScreen() {
 
     return allCaterers.map((c) => ({
       ...c,
-      total: calculateCatererTotal(c.pricings, counts),
+      total: calculateCatererTotal(c.pricings, counts, c.vendor.countAllGuests !== false),
       score: calculateCatererScore(c.vendor, c.pricings, counts, allCaterers),
     }));
   }, [vendors, quotePricings, counts]);

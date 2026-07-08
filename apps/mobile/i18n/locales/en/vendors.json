@@ -82,6 +82,8 @@
   "addPricingLine": "Add a type",
   "fixedFeeLabel": "Fixed fees",
   "fixedFeeHint": "Costs independent of guest count",
+  "countAllGuestsLabel": "Count all guests",
+  "countAllGuestsHint": "On: all guests of the type. Off: only those who confirmed",
   "perGuestUnit": "€/guest",
   "guestCountBadge_one": "{{count}} guest",
   "guestCountBadge_other": "{{count}} guests",

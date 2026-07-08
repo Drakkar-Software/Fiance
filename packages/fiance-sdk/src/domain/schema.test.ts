@@ -145,6 +145,7 @@ describe("Vendor entity", () => {
       pppSource: null,
       dynamicPricing: null,
       fixedFee: null,
+      countAllGuests: null,
       depositAmount: null,
       depositPaid: null,
       depositDueDate: null,
