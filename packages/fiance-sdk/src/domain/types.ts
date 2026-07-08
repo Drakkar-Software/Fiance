@@ -481,6 +481,14 @@ export const PRICING_KEY_GUEST_SOURCE: Record<PricingKey, string> = {
   service: "manual",
 };
 
+/** Maps a guest invitation type to the GuestCounts field used for per-guest dynamic pricing. */
+export const INVITATION_TYPE_GUEST_SOURCE: Record<InvitationType, string> = {
+  CEREMONY:  "accepted",       // everyone accepted attends the ceremony
+  COCKTAIL:  "cocktail_count", // COCKTAIL + FULL + BOTH_DAYS
+  FULL:      "dinner_count",   // FULL + BOTH_DAYS (full-day / dinner attendees)
+  BOTH_DAYS: "both_days_count",
+};
+
 export const PRICING_KEY_LABELS: Record<PricingKey, string> = {
   cocktail: "vendors:pricingKeys.cocktail",
   dinner: "vendors:pricingKeys.dinner",

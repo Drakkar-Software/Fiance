@@ -9,6 +9,7 @@ import {
   calculateVendorTotal,
   calculateCatererTotal,
   calculateCatererScore,
+  isVendorDynamicPricing,
   parseContributorAllocations,
   resolveAllocationAmount,
   calculateContributorTotal,
@@ -124,6 +125,85 @@ describe("calculateCatererTotal", () => {
 
   it("returns 0 for empty pricings", () => {
     expect(calculateCatererTotal([], baseCounts)).toBe(0);
+  });
+});
+
+// Helper: build a per-invitation-type pricing line.
+const line = (pricingKey: string, pricePerPerson: number, extra: Partial<any> = {}) =>
+  ({ pricingKey, pricePerPerson, guestCountOverride: null, staffFee: 0, travelFee: 0, ...extra }) as any;
+
+describe("isVendorDynamicPricing", () => {
+  it("is true when the flag is explicitly true (even with no lines)", () => {
+    expect(isVendorDynamicPricing({ dynamicPricing: true }, [])).toBe(true);
+  });
+
+  it("is false when the flag is explicitly false (even with lines)", () => {
+    expect(isVendorDynamicPricing({ dynamicPricing: false }, [line("FULL", 50)])).toBe(false);
+  });
+
+  it("defaults to dynamic when the flag is null but lines exist (legacy caterer rows)", () => {
+    expect(isVendorDynamicPricing({ dynamicPricing: null }, [line("dinner", 50)])).toBe(true);
+  });
+
+  it("defaults to fixed when the flag is null and there are no lines", () => {
+    expect(isVendorDynamicPricing({ dynamicPricing: null }, [])).toBe(false);
+  });
+});
+
+describe("calculateVendorTotal — dynamic per-invitation-type pricing", () => {
+  it("sums each line's price by that invitation type's guest count", () => {
+    const vendor = { type: "VENUE", basePrice: null, dynamicPricing: true } as any;
+    const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
+    // 30 * cocktail_count(70) + 50 * dinner_count(60) = 2100 + 3000
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(5100);
+  });
+
+  it("ignores basePrice entirely in dynamic mode", () => {
+    const vendor = { type: "CATERER", basePrice: 9999, dynamicPricing: true } as any;
+    const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(5100);
+  });
+
+  it("ignores per-invitation-type lines when the flag is explicitly false (fixed mode)", () => {
+    const vendor = { type: "CATERER", basePrice: 1000, dynamicPricing: false } as any;
+    const pricings = [line("FULL", 50)];
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(1000);
+  });
+
+  it("resolves each invitation type to the right guest count", () => {
+    // price 1/guest → subtotal equals the resolved count
+    expect(calculateCatererTotal([line("CEREMONY", 1)], baseCounts)).toBe(80);  // accepted
+    expect(calculateCatererTotal([line("COCKTAIL", 1)], baseCounts)).toBe(70);  // cocktail_count
+    expect(calculateCatererTotal([line("FULL", 1)], baseCounts)).toBe(60);      // dinner_count
+    expect(calculateCatererTotal([line("BOTH_DAYS", 1)], baseCounts)).toBe(40); // both_days_count
+  });
+
+  it("falls back to total headcount when accepted is 0 (estimate mode)", () => {
+    const noAccepted = { ...baseCounts, accepted: 0, cocktail_count: 0 };
+    // cocktail_count is 0 → estimate uses total (100)
+    expect(calculateCatererTotal([line("COCKTAIL", 10)], noAccepted)).toBe(1000);
+  });
+
+  it("honors guestCountOverride on an invitation-type line", () => {
+    const pricings = [line("FULL", 10, { guestCountOverride: 25 })];
+    expect(calculateCatererTotal(pricings, baseCounts)).toBe(250);
+  });
+
+  it("adds staff and travel fees on an invitation-type line", () => {
+    const pricings = [line("COCKTAIL", 0, { staffFee: 200, travelFee: 150 })];
+    expect(calculateCatererTotal(pricings, baseCounts)).toBe(350);
+  });
+
+  it("still resolves legacy lowercase caterer keys (backward compat)", () => {
+    // dinner → dinner_count(60)
+    expect(calculateCatererTotal([line("dinner", 10)], baseCounts)).toBe(600);
+  });
+
+  it("legacy caterer with lines and no flag stays dynamic", () => {
+    const vendor = { type: "CATERER", basePrice: 8000, dynamicPricing: null } as any;
+    const pricings = [line("dinner", 50)];
+    // dynamic → 50 * 60, basePrice ignored
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(3000);
   });
 });
 

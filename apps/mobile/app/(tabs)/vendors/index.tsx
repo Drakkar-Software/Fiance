@@ -12,7 +12,6 @@ import type { Vendor } from "@/db/schema";
 import { VENDOR_TYPE_ICONS } from "@/lib/vendor-icons";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { StatusBadge } from "@/components/StatusBadge";
-import { RatingStars } from "@/components/RatingStars";
 import { FAB } from "@/components/FAB";
 import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
@@ -112,11 +111,6 @@ export default function VendorsListScreen() {
                   )}
                 </View>
               </View>
-              {vendor.rating != null && vendor.rating > 0 && (
-                <View className="mt-2.5 ml-13">
-                  <RatingStars rating={vendor.rating} size={14} />
-                </View>
-              )}
             </Pressable>
           </View>
         )}

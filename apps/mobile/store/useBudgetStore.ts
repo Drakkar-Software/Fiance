@@ -4,7 +4,20 @@ import { useVendorsStore } from "./useVendorsStore";
 import { useGuestsStore, computeCounts, type GuestCounts } from "./useGuestsStore";
 import type { Vendor, QuotePricing, VendorPayment } from "@/db/schema";
 import type { VendorType, PppSource } from "@/db/types";
-import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE } from "@/db/types";
+import { BUDGET_CATEGORIES, PRICING_KEY_GUEST_SOURCE, INVITATION_TYPE_GUEST_SOURCE } from "@/db/types";
+
+/**
+ * Whether a vendor's total is computed dynamically from per-invitation-type guest lines.
+ * Explicit flag wins; otherwise legacy default: any quote-pricing rows imply dynamic.
+ */
+export function isVendorDynamicPricing(
+  vendor: Pick<Vendor, "dynamicPricing">,
+  pricings?: QuotePricing[]
+): boolean {
+  if (vendor.dynamicPricing === true) return true;
+  if (vendor.dynamicPricing === false) return false;
+  return (pricings?.length ?? 0) > 0;
+}
 
 // ─── Helper: get guest count by ppp_source ──────────────────────────────────
 
@@ -42,9 +55,10 @@ export function calculateVendorTotal(
   counts: GuestCounts,
   quotePricings?: QuotePricing[]
 ): number {
-  // Special caterer calculation
-  if (vendor.type === "CATERER" && quotePricings && quotePricings.length > 0) {
-    return calculateCatererTotal(quotePricings, counts);
+  // Dynamic per-invitation-type pricing (any vendor); legacy caterer rows fall in here too.
+  const pricings = quotePricings ?? [];
+  if (isVendorDynamicPricing(vendor, pricings)) {
+    return calculateCatererTotal(pricings, counts);
   }
 
   // Standard vendor: base_price + (price_per_person * guest_count)
@@ -68,9 +82,13 @@ function getGuestCountForPricingKey(
 ): number {
   if (override != null && override > 0) return override;
 
-  const sourceKey = PRICING_KEY_GUEST_SOURCE[
+  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) resolve first; fall back to the
+  // lowercase caterer pricing keys (dinner/cocktail/…). The two namespaces are disjoint.
+  const sourceKey = (INVITATION_TYPE_GUEST_SOURCE[
+    key as keyof typeof INVITATION_TYPE_GUEST_SOURCE
+  ] ?? PRICING_KEY_GUEST_SOURCE[
     key as keyof typeof PRICING_KEY_GUEST_SOURCE
-  ] as keyof GuestCounts | undefined;
+  ]) as keyof GuestCounts | undefined;
 
   if (!sourceKey || sourceKey === ("manual" as any)) return 0;
 

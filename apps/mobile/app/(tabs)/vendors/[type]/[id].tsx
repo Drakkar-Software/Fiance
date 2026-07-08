@@ -6,7 +6,11 @@ import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2, FileText, Upload }
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
 import { useDocumentsStore } from "@/store/useDocumentsStore";
+import { calculateVendorTotal, isVendorDynamicPricing } from "@/lib/budget";
+import { formatMoney } from "@/components/MoneyDisplay";
+import { GuestPricingSection } from "@/components/vendors/GuestPricingSection";
 import { pickAndStoreDocument, isDocumentAvailableOnDevice, deleteDocumentFile } from "@/lib/documents";
 import { selectVendorInGroup } from "@/lib/vendor-comparison";
 import {
@@ -59,7 +63,6 @@ export default function VendorDetailScreen() {
     (existingVendor?.status as VendorStatus) || "PROSPECT"
   );
   const [basePrice, setBasePrice] = useState(existingVendor?.basePrice?.toString() || "");
-  const [pricePerPerson, setPricePerPerson] = useState(existingVendor?.pricePerPerson?.toString() || "");
   const [depositAmount, setDepositAmount] = useState(existingVendor?.depositAmount?.toString() || "");
   const [depositPaid, setDepositPaid] = useState(existingVendor?.depositPaid || false);
 
@@ -82,6 +85,17 @@ export default function VendorDetailScreen() {
   );
 
   const canSave = name.trim().length > 0;
+
+  // Dynamic per-invitation-type pricing (Tarif tab).
+  const quotePricings = useVendorsStore((s) => s.quotePricings);
+  const guests = useGuestsStore((s) => s.guests);
+  const vendorPricings = useMemo(() => quotePricings.filter((p) => p.vendorId === id), [quotePricings, id]);
+  const counts = useMemo(() => computeCounts(guests), [guests]);
+  const isDynamic = existingVendor ? isVendorDynamicPricing(existingVendor, vendorPricings) : false;
+  const computedTotal = existingVendor ? calculateVendorTotal(existingVendor, counts, vendorPricings) : 0;
+  const setDynamicPricing = (val: boolean) => {
+    if (!isNew && id) updateVendor(id, { dynamicPricing: val, updatedAt: new Date().toISOString() });
+  };
 
   const typeName = t(VENDOR_TYPE_LABELS[type as VendorType]) || type;
 
@@ -113,7 +127,6 @@ export default function VendorDetailScreen() {
       website: website || null,
       status,
       basePrice: basePrice ? parseFloat(basePrice) : null,
-      pricePerPerson: pricePerPerson ? parseFloat(pricePerPerson) : null,
       depositAmount: depositAmount ? parseFloat(depositAmount) : null,
       depositPaid,
 
@@ -272,17 +285,34 @@ export default function VendorDetailScreen() {
           <>
             <SectionTitle>{t("pricing")}</SectionTitle>
             <FormCard>
-              <InputRow
-                label={typeConfig.basePriceLabel || t("totalPrice")}
-                value={basePrice}
-                onChangeText={setBasePrice}
-                keyboardType="numeric"
-              />
-              {typeConfig.showPricePerPerson === "visible" && (
+              {!isNew && (
+                <ToggleRow
+                  label={t("dynamicPricingToggle")}
+                  value={isDynamic}
+                  onToggle={() => setDynamicPricing(!isDynamic)}
+                />
+              )}
+              {isDynamic && !isNew ? (
+                <View className="flex-row items-center justify-between py-2">
+                  <Text className="text-sm text-ink-soft">
+                    {typeConfig.basePriceLabel || t("totalPrice")}
+                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <View className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950">
+                      <Text className="text-xs text-primary-500 font-medium">
+                        {t("computedTotalBadge")}
+                      </Text>
+                    </View>
+                    <Text className="text-base font-semibold text-ink">
+                      {formatMoney(computedTotal)}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
                 <InputRow
-                  label={typeConfig.pricePerPersonLabel || t("pricePerPerson")}
-                  value={pricePerPerson}
-                  onChangeText={setPricePerPerson}
+                  label={typeConfig.basePriceLabel || t("totalPrice")}
+                  value={basePrice}
+                  onChangeText={setBasePrice}
                   keyboardType="numeric"
                 />
               )}
@@ -298,6 +328,8 @@ export default function VendorDetailScreen() {
                 onToggle={() => setDepositPaid(!depositPaid)}
               />
             </FormCard>
+
+            {isDynamic && !isNew && <GuestPricingSection vendorId={id!} />}
 
             <Pressable
               onPress={() => setShowDates(!showDates)}

@@ -86,6 +86,7 @@ export interface Vendor {
   basePrice: number | null;
   pricePerPerson: number | null;
   pppSource: string | null;
+  dynamicPricing: boolean | null; // true = total computed from per-invitation-type guest lines
   depositAmount: number | null;
   depositPaid: boolean | null;
   depositDueDate: string | null;

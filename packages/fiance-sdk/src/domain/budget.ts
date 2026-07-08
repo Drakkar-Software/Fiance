@@ -2,7 +2,21 @@
 import type { Vendor, QuotePricing, Contributor, ContributorAllocation } from './schema.js';
 import type { GuestCounts } from './guests.js';
 import type { PppSource } from './types.js';
-import { PRICING_KEY_GUEST_SOURCE } from './types.js';
+import { PRICING_KEY_GUEST_SOURCE, INVITATION_TYPE_GUEST_SOURCE } from './types.js';
+
+/**
+ * Whether a vendor's total is computed dynamically from per-invitation-type guest lines.
+ * Explicit flag wins; otherwise legacy default: any quote-pricing rows imply dynamic
+ * (so pre-existing caterer rows keep summing as before).
+ */
+export function isVendorDynamicPricing(
+  vendor: Pick<Vendor, "dynamicPricing">,
+  pricings?: QuotePricing[]
+): boolean {
+  if (vendor.dynamicPricing === true) return true;
+  if (vendor.dynamicPricing === false) return false;
+  return (pricings?.length ?? 0) > 0;
+}
 
 /** Get guest count for a given ppp_source */
 export function getGuestCountForSource(
@@ -38,8 +52,9 @@ export function calculateVendorTotal(
   counts: GuestCounts,
   quotePricings?: QuotePricing[]
 ): number {
-  if (vendor.type === "CATERER" && quotePricings && quotePricings.length > 0) {
-    return calculateCatererTotal(quotePricings, counts);
+  const pricings = quotePricings ?? [];
+  if (isVendorDynamicPricing(vendor, pricings)) {
+    return calculateCatererTotal(pricings, counts);
   }
 
   let total = vendor.basePrice || 0;
@@ -79,9 +94,11 @@ function getGuestCountForPricingKey(
 ): number {
   if (override != null && override > 0) return override;
 
-  const sourceKey = PRICING_KEY_GUEST_SOURCE[
-    key as keyof typeof PRICING_KEY_GUEST_SOURCE
-  ];
+  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) resolve first; fall back to the
+  // lowercase caterer pricing keys (dinner/cocktail/…). The two namespaces are disjoint.
+  const sourceKey =
+    INVITATION_TYPE_GUEST_SOURCE[key as keyof typeof INVITATION_TYPE_GUEST_SOURCE] ??
+    PRICING_KEY_GUEST_SOURCE[key as keyof typeof PRICING_KEY_GUEST_SOURCE];
   if (!sourceKey || sourceKey === "manual") return 0;
 
   const useEstimate = counts.accepted === 0 && counts.total > 0;
