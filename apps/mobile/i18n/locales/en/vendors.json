@@ -80,6 +80,8 @@
   "guestPricingHint": "Add a per-guest price for each invitation type.",
   "pricingEmpty": "No pricing yet. Add an invitation type below.",
   "addPricingLine": "Add a type",
+  "fixedFeeLabel": "Fixed fees",
+  "fixedFeeHint": "Costs independent of guest count",
   "perGuestUnit": "€/guest",
   "guestCountBadge_one": "{{count}} guest",
   "guestCountBadge_other": "{{count}} guests",

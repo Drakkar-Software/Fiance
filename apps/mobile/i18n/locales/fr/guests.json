@@ -2,7 +2,8 @@
   "invitationTypes": {
     "CEREMONY": "Cérémonie uniquement",
     "COCKTAIL": "Cocktail uniquement",
-    "FULL": "Journée complète"
+    "FULL": "Journée complète",
+    "BOTH_DAYS": "Les deux jours"
   },
   "rsvp": {
     "PENDING": "En attente",

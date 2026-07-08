@@ -143,6 +143,8 @@ describe("Vendor entity", () => {
       basePrice: null,
       pricePerPerson: null,
       pppSource: null,
+      dynamicPricing: null,
+      fixedFee: null,
       depositAmount: null,
       depositPaid: null,
       depositDueDate: null,

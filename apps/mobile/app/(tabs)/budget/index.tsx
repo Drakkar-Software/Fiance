@@ -78,6 +78,14 @@ export default function BudgetScreen() {
     updateWedding({ currency: value || "EUR" });
   }, []);
 
+  // Computed total per vendor, sourced from the budget summary (dynamic + fixed fees included).
+  const vendorTotalById: Record<string, number> = {};
+  for (const cat of budget.categories) {
+    for (const { vendor, calculatedTotal } of cat.vendors) {
+      vendorTotalById[vendor.id] = calculatedTotal;
+    }
+  }
+
   // Upcoming payments
   const upcomingPayments = vendors
     .filter((v) => {
@@ -98,7 +106,10 @@ export default function BudgetScreen() {
         });
       }
       if (v.balanceDueDate) {
-        const balance = (v.basePrice || 0) - (v.depositAmount || 0);
+        // Use the computed total (dynamic guest-based + fixed fees when applicable), not the
+        // raw base price, so the balance due reflects what the vendor actually costs.
+        const vendorTotal = vendorTotalById[v.id] ?? v.basePrice ?? 0;
+        const balance = vendorTotal - (v.depositAmount || 0);
         if (balance > 0) {
           payments.push({
             vendorName: v.name,

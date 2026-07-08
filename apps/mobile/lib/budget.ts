@@ -52,7 +52,7 @@ export function calculateVendorTotal(
 ): number {
   const pricings = quotePricings ?? [];
   if (isVendorDynamicPricing(vendor, pricings)) {
-    return calculateCatererTotal(pricings, counts);
+    return calculateCatererTotal(pricings, counts) + (vendor.fixedFee || 0);
   }
 
   let total = vendor.basePrice || 0;
@@ -92,11 +92,16 @@ function getGuestCountForPricingKey(
 ): number {
   if (override != null && override > 0) return override;
 
-  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) resolve first; fall back to the
-  // lowercase caterer pricing keys (dinner/cocktail/…). The two namespaces are disjoint.
-  const sourceKey =
-    INVITATION_TYPE_GUEST_SOURCE[key as keyof typeof INVITATION_TYPE_GUEST_SOURCE] ??
-    PRICING_KEY_GUEST_SOURCE[key as keyof typeof PRICING_KEY_GUEST_SOURCE];
+  // Invitation-type keys (CEREMONY/COCKTAIL/FULL/BOTH_DAYS) map to exact per-type counts that
+  // already bake in the pre-RSVP estimate — never fall through to the whole-guest-list total.
+  const invKey = INVITATION_TYPE_GUEST_SOURCE[key as keyof typeof INVITATION_TYPE_GUEST_SOURCE];
+  if (invKey) {
+    const v = counts[invKey as keyof GuestCounts];
+    return typeof v === "number" ? v : 0;
+  }
+
+  // Legacy lowercase caterer pricing keys (dinner/cocktail/…) keep the whole-list estimate.
+  const sourceKey = PRICING_KEY_GUEST_SOURCE[key as keyof typeof PRICING_KEY_GUEST_SOURCE];
   if (!sourceKey || sourceKey === "manual") return 0;
 
   const useEstimate = counts.accepted === 0 && counts.total > 0;

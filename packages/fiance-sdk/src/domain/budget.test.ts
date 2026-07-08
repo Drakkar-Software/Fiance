@@ -27,6 +27,10 @@ const baseCounts: GuestCounts = {
   dinner_count: 60,
   full_count: 60,
   both_days_count: 40,
+  inv_ceremony_count: 20,
+  inv_cocktail_count: 30,
+  inv_full_count: 25,
+  inv_both_days_count: 40,
   children_count: 5,
   vegetarian_count: 8,
   sleeping_count: 30,
@@ -151,17 +155,17 @@ describe("isVendorDynamicPricing", () => {
 });
 
 describe("calculateVendorTotal — dynamic per-invitation-type pricing", () => {
-  it("sums each line's price by that invitation type's guest count", () => {
+  it("sums each line's price by that invitation type's exact guest count", () => {
     const vendor = { type: "VENUE", basePrice: null, dynamicPricing: true } as any;
     const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
-    // 30 * cocktail_count(70) + 50 * dinner_count(60) = 2100 + 3000
-    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(5100);
+    // 30 * inv_cocktail_count(30) + 50 * inv_full_count(25) = 900 + 1250
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2150);
   });
 
   it("ignores basePrice entirely in dynamic mode", () => {
     const vendor = { type: "CATERER", basePrice: 9999, dynamicPricing: true } as any;
     const pricings = [line("COCKTAIL", 30), line("FULL", 50)];
-    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(5100);
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(2150);
   });
 
   it("ignores per-invitation-type lines when the flag is explicitly false (fixed mode)", () => {
@@ -170,18 +174,35 @@ describe("calculateVendorTotal — dynamic per-invitation-type pricing", () => {
     expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(1000);
   });
 
-  it("resolves each invitation type to the right guest count", () => {
+  it("resolves each invitation type to its exact (non-cumulative) guest count", () => {
     // price 1/guest → subtotal equals the resolved count
-    expect(calculateCatererTotal([line("CEREMONY", 1)], baseCounts)).toBe(80);  // accepted
-    expect(calculateCatererTotal([line("COCKTAIL", 1)], baseCounts)).toBe(70);  // cocktail_count
-    expect(calculateCatererTotal([line("FULL", 1)], baseCounts)).toBe(60);      // dinner_count
-    expect(calculateCatererTotal([line("BOTH_DAYS", 1)], baseCounts)).toBe(40); // both_days_count
+    expect(calculateCatererTotal([line("CEREMONY", 1)], baseCounts)).toBe(20);  // inv_ceremony_count
+    expect(calculateCatererTotal([line("COCKTAIL", 1)], baseCounts)).toBe(30);  // inv_cocktail_count
+    expect(calculateCatererTotal([line("FULL", 1)], baseCounts)).toBe(25);      // inv_full_count
+    expect(calculateCatererTotal([line("BOTH_DAYS", 1)], baseCounts)).toBe(40); // inv_both_days_count
   });
 
-  it("falls back to total headcount when accepted is 0 (estimate mode)", () => {
-    const noAccepted = { ...baseCounts, accepted: 0, cocktail_count: 0 };
-    // cocktail_count is 0 → estimate uses total (100)
-    expect(calculateCatererTotal([line("COCKTAIL", 10)], noAccepted)).toBe(1000);
+  it("never leaks to the whole guest list for an invitation-type line (no total fallback)", () => {
+    // Even with 0 accepted, an invitation-type count of 0 stays 0 — the pre-RSVP estimate is
+    // baked into computeCounts, not re-applied here as a total leak.
+    const noAccepted = { ...baseCounts, accepted: 0, inv_cocktail_count: 0 };
+    expect(calculateCatererTotal([line("COCKTAIL", 10)], noAccepted)).toBe(0);
+  });
+
+  it("adds a vendor-level fixed fee on top of the dynamic total", () => {
+    const vendor = { type: "CATERER", basePrice: null, dynamicPricing: true, fixedFee: 500 } as any;
+    const pricings = [line("FULL", 50)]; // 50 * inv_full_count(25) = 1250
+    expect(calculateVendorTotal(vendor, baseCounts, pricings)).toBe(1750);
+  });
+
+  it("charges only the fixed fee when dynamic with no priced lines", () => {
+    const vendor = { type: "CATERER", basePrice: null, dynamicPricing: true, fixedFee: 500 } as any;
+    expect(calculateVendorTotal(vendor, baseCounts, [])).toBe(500);
+  });
+
+  it("ignores fixedFee in fixed (non-dynamic) mode", () => {
+    const vendor = { type: "VENUE", basePrice: 1000, dynamicPricing: false, fixedFee: 500 } as any;
+    expect(calculateVendorTotal(vendor, baseCounts, [line("FULL", 50)])).toBe(1000);
   });
 
   it("honors guestCountOverride on an invitation-type line", () => {

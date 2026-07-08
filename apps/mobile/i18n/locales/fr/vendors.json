@@ -81,6 +81,8 @@
   "guestPricingHint": "Ajoutez un prix par invité pour chaque type d'invitation.",
   "pricingEmpty": "Aucun tarif. Ajoutez un type d'invitation ci-dessous.",
   "addPricingLine": "Ajouter un type",
+  "fixedFeeLabel": "Frais fixes",
+  "fixedFeeHint": "Coûts indépendants du nombre d'invités",
   "perGuestUnit": "€/inv.",
   "guestCountBadge_one": "{{count}} invité",
   "guestCountBadge_other": "{{count}} invités",

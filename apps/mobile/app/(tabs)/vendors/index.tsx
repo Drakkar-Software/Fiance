@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { LegendList } from "@legendapp/list";
@@ -6,6 +6,8 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Briefcase, Ellipsis } from "lucide-react-native";
 import { useVendorsStore } from "@/store/useVendorsStore";
+import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
+import { calculateVendorTotal } from "@/lib/budget";
 import { VENDOR_TYPE_LABELS, VENDOR_STATUS_COLORS, VENDOR_STATUS_LABELS } from "@/db/types";
 import type { VendorType } from "@/db/types";
 import type { Vendor } from "@/db/schema";
@@ -28,8 +30,25 @@ export default function VendorsListScreen() {
   const isWide = useIsWideScreen();
   const canEdit = useCan("vendors");
   const vendors = useVendorsStore((s) => s.vendors);
+  const quotePricings = useVendorsStore((s) => s.quotePricings);
+  const guests = useGuestsStore((s) => s.guests);
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
+
+  // Per-vendor display total: dynamic vendors show their computed (guest-based + fixed) total,
+  // others their base price. Recomputes only when vendors / pricings / guest counts change.
+  const totalById = useMemo(() => {
+    const counts = computeCounts(guests);
+    const map: Record<string, number> = {};
+    for (const v of vendors) {
+      map[v.id] = calculateVendorTotal(
+        v,
+        counts,
+        quotePricings.filter((p) => p.vendorId === v.id)
+      );
+    }
+    return map;
+  }, [vendors, quotePricings, guests]);
 
   const bookedVendors = vendors.filter((v) => v.status === "BOOKED");
   const bookedPct = vendors.length > 0 ? Math.round((bookedVendors.length / vendors.length) * 100) : 0;
@@ -104,9 +123,9 @@ export default function VendorsListScreen() {
                     label={t(VENDOR_STATUS_LABELS[vendor.status as keyof typeof VENDOR_STATUS_LABELS] || vendor.status || "")}
                     color={VENDOR_STATUS_COLORS[vendor.status as keyof typeof VENDOR_STATUS_COLORS] || "#9CA3AF"}
                   />
-                  {(vendor.basePrice != null && vendor.basePrice > 0) && (
+                  {totalById[vendor.id] > 0 && (
                     <Text className="text-sm font-semibold text-ink mt-1.5">
-                      {formatMoney(vendor.basePrice)}
+                      {formatMoney(totalById[vendor.id])}
                     </Text>
                   )}
                 </View>
@@ -115,6 +134,7 @@ export default function VendorsListScreen() {
           </View>
         )}
         keyExtractor={(vendor: Vendor) => vendor.id}
+        extraData={totalById}
         estimatedItemSize={88}
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}

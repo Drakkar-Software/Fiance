@@ -11,6 +11,13 @@ export interface GuestCounts {
   dinner_count: number;
   full_count: number;
   both_days_count: number;
+  // Exact accepted count per invitation type (not cumulative), for per-invitation-type
+  // vendor pricing. When nobody has accepted yet, these fall back to non-declined guests
+  // of that type so pricing previews aren't all zero before RSVPs come in.
+  inv_ceremony_count: number;
+  inv_cocktail_count: number;
+  inv_full_count: number;
+  inv_both_days_count: number;
   children_count: number;
   vegetarian_count: number;
   sleeping_count: number;
@@ -26,6 +33,11 @@ export function computeCounts(guests: Guest[]): GuestCounts {
   const declinedCount = guests.filter((g) => g.rsvpStatus === "DECLINED").length;
   const acceptedCount = accepted.length;
 
+  // For per-invitation-type pricing: bill accepted guests of each exact type. Before any
+  // RSVP (no accepted), estimate from non-declined guests so previews aren't all zero.
+  const invPool = acceptedCount > 0 ? accepted : guests.filter((g) => g.rsvpStatus !== "DECLINED");
+  const invOf = (type: string) => invPool.filter((g) => g.invitationType === type).length;
+
   return {
     total,
     accepted: acceptedCount,
@@ -40,6 +52,10 @@ export function computeCounts(guests: Guest[]): GuestCounts {
     ).length,
     full_count: accepted.filter((g) => g.invitationType === "FULL").length,
     both_days_count: accepted.filter((g) => g.invitationType === "BOTH_DAYS").length,
+    inv_ceremony_count: invOf("CEREMONY"),
+    inv_cocktail_count: invOf("COCKTAIL"),
+    inv_full_count: invOf("FULL"),
+    inv_both_days_count: invOf("BOTH_DAYS"),
     children_count: accepted.reduce((sum, g) => sum + (g.childrenCount ?? 0), 0),
     vegetarian_count: accepted.filter((g) =>
       ["VEGETARIAN", "VEGAN"].includes(g.diet || "")

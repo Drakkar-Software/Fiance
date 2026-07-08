@@ -12,12 +12,10 @@ import { formatMoney } from "@/components/MoneyDisplay";
 
 const INVITATION_TYPES = Object.keys(INVITATION_TYPE_LABELS) as InvitationType[];
 
-/** Resolve the accepted-guest count backing a given invitation type (with estimate fallback). */
+/** Exact accepted-guest count backing a given invitation type (estimate baked into computeCounts). */
 function resolveGuestCount(type: string, counts: ReturnType<typeof computeCounts>): number {
-  const key = INVITATION_TYPE_GUEST_SOURCE[type as InvitationType];
-  const value = (counts as Record<string, number>)[key] ?? 0;
-  if (value) return value;
-  return counts.accepted === 0 && counts.total > 0 ? counts.total : 0;
+  const value = (counts as Record<string, number>)[INVITATION_TYPE_GUEST_SOURCE[type as InvitationType]];
+  return typeof value === "number" ? value : 0;
 }
 
 export function GuestPricingSection({ vendorId }: { vendorId: string }) {
@@ -26,10 +24,13 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
   const addQuotePricing = useVendorsStore((s) => s.addQuotePricing);
   const updateQuotePricing = useVendorsStore((s) => s.updateQuotePricing);
   const removeQuotePricing = useVendorsStore((s) => s.removeQuotePricing);
+  const vendor = useVendorsStore((s) => s.vendors.find((v) => v.id === vendorId));
+  const updateVendor = useVendorsStore((s) => s.updateVendor);
   const guests = useGuestsStore((s) => s.guests);
   const counts = useMemo(() => computeCounts(guests), [guests]);
 
   const [showPicker, setShowPicker] = useState(false);
+  const fixedFee = vendor?.fixedFee ?? null;
 
   // Only per-invitation-type lines (ignore any legacy lowercase caterer keys on this vendor).
   const lines = useMemo(
@@ -43,10 +44,11 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
   const usedTypes = useMemo(() => new Set(lines.map((l) => l.pricingKey)), [lines]);
   const remaining = INVITATION_TYPES.filter((ty) => !usedTypes.has(ty));
 
-  const total = lines.reduce(
-    (sum, l) => sum + (l.pricePerPerson || 0) * resolveGuestCount(l.pricingKey, counts),
-    0
-  );
+  const total =
+    lines.reduce(
+      (sum, l) => sum + (l.pricePerPerson || 0) * resolveGuestCount(l.pricingKey, counts),
+      0
+    ) + (fixedFee || 0);
 
   const addLine = (type: InvitationType) => {
     addQuotePricing({
@@ -115,6 +117,28 @@ export function GuestPricingSection({ vendorId }: { vendorId: string }) {
           </View>
         );
       })}
+
+      {/* Fixed fee — costs independent of guest count */}
+      <View className="flex-row items-center py-2 mt-1">
+        <View className="flex-1">
+          <Text className="text-sm font-medium text-ink">{t("fixedFeeLabel")}</Text>
+          <Text className="text-xs text-mute mt-0.5">{t("fixedFeeHint")}</Text>
+        </View>
+        <View className="w-24 bg-accent-paper rounded-lg px-2 py-1 flex-row items-center">
+          <TextInput
+            className="flex-1 text-sm text-ink"
+            textAlign="right"
+            value={fixedFee != null ? fixedFee.toString() : ""}
+            onChangeText={(v: string) =>
+              updateVendor(vendorId, { fixedFee: v ? parseFloat(v) : null })
+            }
+            placeholder="—"
+            placeholderTextColor="#C0C0C8"
+            keyboardType="numeric"
+          />
+          <Text className="text-xs text-mute ml-1">€</Text>
+        </View>
+      </View>
 
       {/* Type picker */}
       {remaining.length > 0 &&
