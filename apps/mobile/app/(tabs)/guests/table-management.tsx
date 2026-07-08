@@ -10,12 +10,14 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { useSeatingConstraintsStore } from "@/store/useSeatingConstraintsStore";
 import { DIET_LABELS } from "@/db/types";
 import { FAB } from "@/components/FAB";
+import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 
 export default function TableManagementScreen() {
   const { t } = useTranslation("guests");
   const router = useRouter();
+  const canEdit = useCan("guests", "edit");
   const tables = useGuestsStore((s) => s.tables);
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
@@ -172,6 +174,7 @@ export default function TableManagementScreen() {
                 <View className="flex-row items-center justify-between mb-2">
                   <Pressable
                     onPress={() => {
+                      if (!canEdit) return;
                       setEditingTableId(table.id);
                       setEditingName(table.name);
                     }}
@@ -228,12 +231,14 @@ export default function TableManagementScreen() {
                         {table.capacity ? `/${table.capacity}` : ""}
                       </Text>
                     </View>
-                    <Pressable
-                      onPress={() => setDeleteId(table.id)}
-                      className="w-8 h-8 items-center justify-center"
-                    >
-                      <Trash2 size={16} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable
+                        onPress={() => setDeleteId(table.id)}
+                        className="w-8 h-8 items-center justify-center"
+                      >
+                        <Trash2 size={16} color="#EF4444" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
 

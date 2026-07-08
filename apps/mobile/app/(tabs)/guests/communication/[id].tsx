@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react-native";
 import { useCommunicationsStore } from "@/store/useCommunicationsStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
+import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { DateRow } from "@/components/FormSection";
 import { Avatar } from "@/components/Avatar";
@@ -16,6 +17,7 @@ import type { Guest } from "@/db/schema";
 
 export default function CommunicationRosterScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCan("guests", "edit");
   const { id } = useLocalSearchParams<{ id: string }>();
   const comm = useCommunicationsStore((s) => s.communications.find((c) => c.id === id));
   const toggleRecipient = useCommunicationsStore((s) => s.toggleRecipient);
@@ -95,7 +97,7 @@ export default function CommunicationRosterScreen() {
               <View className="px-4">
                 <View className="bg-accent-card rounded-2xl mb-2 border border-hair overflow-hidden">
                   <Pressable
-                    onPress={() => toggleRecipient(comm.id, guest.id, today)}
+                    onPress={() => { if (canEdit) toggleRecipient(comm.id, guest.id, today); }}
                     className="flex-row items-center p-3 active:opacity-70"
                   >
                     <Avatar ini={initials} size={36} />
@@ -162,7 +164,7 @@ export default function CommunicationRosterScreen() {
                 })}
               </ScrollView>
 
-              {filteredGuests.length > 0 && (
+              {canEdit && filteredGuests.length > 0 && (
                 <View className="flex-row gap-2 px-4 mt-2">
                   <Pressable
                     onPress={() => bulkSetRecipients(comm.id, filteredGuests.map((g) => g.id), today)}

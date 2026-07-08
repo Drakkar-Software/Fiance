@@ -19,7 +19,18 @@ export async function resolveActiveMemberPermissions(): Promise<void> {
 
   const { roles, assignments } = usePermissionsStore.getState();
   const resolved = resolvePermissionForSubject(roles, assignments, active.inviteSubjectId);
-  if (!resolved) return; // assignment not synced yet — try again on the next update.
+
+  if (!resolved) {
+    // No assignment for this device. Two cases to distinguish:
+    //  - the permissions collection hasn't synced yet (roles empty) → leave the cache, retry.
+    //  - it HAS synced (roles present) AND this device previously had a resolved role
+    //    (roleId set) → the owner removed/revoked the assignment. Lock the member out with an
+    //    empty matrix (NOT undefined, which usePermissions treats as unrestricted).
+    if (roles.length > 0 && active.roleId !== undefined) {
+      await regStore.updateWedding(active.id, { roleId: undefined, permissions: {} });
+    }
+    return;
+  }
 
   // No-op if unchanged to avoid a redundant registry write / re-render.
   if (active.roleId === resolved.role.id) return;

@@ -23,10 +23,12 @@ import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
 import { Sprig } from "@/components/Sprig";
 import { ContributorsCard } from "@/components/budget/ContributorsCard";
+import { useCan } from "@/lib/permissions/usePermissions";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
   const router = useRouter();
+  const canEdit = useCan("budget", "edit");
   const insets = useSafeAreaInsets();
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const budget = useBudgetSummary();
@@ -146,22 +148,26 @@ export default function BudgetScreen() {
           )}
         </View>
 
-        <InputRow
-          label={t("targetBudget")}
-          value={budgetTarget}
-          onChangeText={setBudgetTarget}
-          placeholder="30000"
-          keyboardType="numeric"
-        />
-        <View className="mt-1 mb-3">
-          <Text className="text-xs text-mute mb-2 font-medium">{t("currency")}</Text>
-          <ChipSelect
-            options={["EUR", "USD"] as const}
-            value={currency as "EUR" | "USD"}
-            onChange={setCurrency}
-            labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
-          />
-        </View>
+        {canEdit && (
+          <>
+            <InputRow
+              label={t("targetBudget")}
+              value={budgetTarget}
+              onChangeText={setBudgetTarget}
+              placeholder="30000"
+              keyboardType="numeric"
+            />
+            <View className="mt-1 mb-3">
+              <Text className="text-xs text-mute mb-2 font-medium">{t("currency")}</Text>
+              <ChipSelect
+                options={["EUR", "USD"] as const}
+                value={currency as "EUR" | "USD"}
+                onChange={setCurrency}
+                labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
+              />
+            </View>
+          </>
+        )}
         <View className="flex-row justify-between mb-1.5">
           <Text className="text-sm text-mute">{t("totalCommitted")}</Text>
           <MoneyDisplay amount={budget.totalEngaged} size="sm" />
@@ -239,6 +245,8 @@ export default function BudgetScreen() {
       />
 
       {/* Category targets */}
+      {canEdit && (
+      <>
       <Pressable
         onPress={() => setShowTargets((v) => !v)}
         className="mx-4 mt-3 bg-accent-card rounded-2xl p-4 border border-hair flex-row items-center justify-between"
@@ -315,6 +323,8 @@ export default function BudgetScreen() {
             );
           })}
         </View>
+      )}
+      </>
       )}
 
       {/* Categories breakdown */}

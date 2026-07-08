@@ -43,6 +43,8 @@ export interface WeddingRegistryEntry {
   roleId?: string;
   permissions?: PermissionMatrix;
   inviteSubjectId?: string;
+  revocationGeneration?: number;
+  revokedEntries?: unknown[];
 }
 
 export interface WeddingRegistry {
@@ -118,7 +120,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "roleId" | "permissions" | "inviteSubjectId">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "roleId" | "permissions" | "inviteSubjectId" | "revocationGeneration" | "revokedEntries">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

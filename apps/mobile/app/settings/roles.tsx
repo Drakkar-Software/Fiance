@@ -12,6 +12,8 @@ import {
   type RoleDefinition,
 } from "@fiance/sdk";
 import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { revokeCollaborator } from "@/lib/permissions/revoke";
+import { toast } from "@/lib/toast/sonner";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Chip } from "@/components/Chip";
@@ -372,8 +374,20 @@ export default function RolesScreen() {
         confirmLabel={t("removeCollaborator")}
         destructive
         onConfirm={() => {
-          if (removeAssignmentId) removeAssignment(removeAssignmentId);
+          const id = removeAssignmentId;
           setRemoveAssignmentId(null);
+          if (!id) return;
+          const assignment = assignments.find((a) => a.id === id);
+          if (!assignment) {
+            removeAssignment(id);
+            return;
+          }
+          // Real eviction (keyring rotation + roster drop); falls back to a roster-only drop.
+          revokeCollaborator(assignment.subjectUserId, assignment.id).catch((err) => {
+            console.error("[roles] revokeCollaborator failed", err);
+            removeAssignment(id);
+            toast.error(t("collaboratorRemoveError"));
+          });
         }}
         onCancel={() => setRemoveAssignmentId(null)}
       />

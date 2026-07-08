@@ -57,6 +57,13 @@ export interface WeddingRegistryEntry {
    * syncing in (they may arrive after the join completes).
    */
   inviteSubjectId?: string;
+  /**
+   * Owner-side revocation bookkeeping for `revokeSpaceAccess`. `revocationGeneration`
+   * is a monotonic per-owner counter; `revokedEntries` is the cumulative RevocationList
+   * entry set (the server's acceptList REPLACES, so the full set must be re-sent each time).
+   */
+  revocationGeneration?: number;
+  revokedEntries?: unknown[];
 }
 
 export interface WeddingRegistry {
@@ -135,7 +142,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace" | "roleId" | "permissions" | "inviteSubjectId">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace" | "roleId" | "permissions" | "inviteSubjectId" | "revocationGeneration" | "revokedEntries">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

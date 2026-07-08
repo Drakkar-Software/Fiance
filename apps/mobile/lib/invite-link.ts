@@ -1,11 +1,16 @@
 import * as Linking from "expo-linking";
 import * as Crypto from "expo-crypto";
-import { createSpaceInviteLink, getSyncNamespace, roleCanWrite } from "@fiance/sdk";
+import { createSpaceInviteLink, getSyncNamespace, roleCanWrite, serializeSpaceInviteStore } from "@fiance/sdk";
 import { resolveSessionConfig } from "@/lib/server";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { pushSpaceSnapshot } from "@/lib/space-sync";
 import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { writeCollection } from "@/lib/kv-storage";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
+
+/** KV key holding the serialized space-invite store (edPub/kemPub/cap handles per invite),
+ *  persisted so `revokeSpaceAccess` can look up the entry after an app restart. */
+export const SPACE_INVITE_STORE_KEY = "spaceInviteStore";
 
 /**
  * Generate a space invite link for the given wedding entry, scoped to a role.
@@ -31,6 +36,12 @@ export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: str
   // Publish now so an invite never points a member at a contentless space.
   const origin = Linking.createURL("").replace(/\/$/, "");
   const { token, link, inviteUserId } = await createSpaceInviteLink(cfg.session, spaceId, entry.label, canWrite, origin);
+
+  // Persist the (in-memory) invite store so this link's revocation handle survives an app
+  // restart — revokeSpaceAccess needs getSpaceInviteEntry(spaceId, inviteUserId) to resolve.
+  try { writeCollection(SPACE_INVITE_STORE_KEY, serializeSpaceInviteStore()); } catch (err) {
+    console.warn("[invite] failed to persist space-invite store", err);
+  }
 
   if (role) {
     const subjectUserId = inviteUserId ?? (token.cap as { subUserId?: string }).subUserId;

@@ -288,6 +288,7 @@
   "removeCollaboratorTitle": "Retirer le collaborateur",
   "removeCollaboratorMsg": "Retirer ce collaborateur ? Régénérez le lien d'invitation pour couper complètement l'accès.",
   "removeCollaborator": "Retirer",
+  "collaboratorRemoveError": "Le retrait a échoué. Régénérez le lien d'invitation pour couper l'accès.",
   "rolePickerEyebrow": "Invitation",
   "rolePickerTitle": "Inviter avec un rôle",
   "rolePickerSubtitle": "Choisissez les droits de la personne invitée",

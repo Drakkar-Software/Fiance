@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable } from "react-native-css/components";
 import { Plus } from "lucide-react-native";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 interface HeaderAddButtonProps {
   onPress: () => void;
@@ -8,6 +9,8 @@ interface HeaderAddButtonProps {
 }
 
 export function HeaderAddButton({ onPress, accessibilityLabel }: HeaderAddButtonProps) {
+  const canEdit = useCanEditHere();
+  if (!canEdit) return null;
   return (
     <Pressable
       onPress={onPress}

@@ -6,14 +6,24 @@ import {
   InputRow,
   ToggleRow,
   ChipSelect,
-  FormActions,
+  FormActions as UiFormActions,
   DateRow as UiDateRow,
   TimeRow as UiTimeRow,
 } from "@fiance/ui/components";
 import { getDateLocale } from "@/i18n/dateFnsLocale";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { ComponentProps } from "react";
 
-export { SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect, FormActions };
+export { SectionTitle, FormCard, InputRow, ToggleRow, ChipSelect };
+
+type FormActionsProps = ComponentProps<typeof UiFormActions>;
+
+/** Save/cancel form actions, hidden for a view-only collaborator on the current surface. */
+export function FormActions(props: FormActionsProps) {
+  const canEdit = useCanEditHere();
+  if (!canEdit) return null;
+  return <UiFormActions {...props} />;
+}
 
 type DateRowProps = ComponentProps<typeof UiDateRow>;
 

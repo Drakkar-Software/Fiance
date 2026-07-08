@@ -288,6 +288,7 @@
   "removeCollaboratorTitle": "Remove collaborator",
   "removeCollaboratorMsg": "Remove this collaborator? Regenerate the invite link to fully cut off access.",
   "removeCollaborator": "Remove",
+  "collaboratorRemoveError": "Removal failed. Regenerate the invite link to cut off access.",
   "rolePickerEyebrow": "Invitation",
   "rolePickerTitle": "Invite with a role",
   "rolePickerSubtitle": "Choose what the invited person can do",
