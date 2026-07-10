@@ -31,6 +31,8 @@ import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
 import { createInviteLink } from "@/lib/invite-link";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { roleCanWrite } from "@fiance/sdk";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   requestPermissions,
@@ -47,8 +49,10 @@ import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
+import { Chip } from "@/components/Chip";
 import { PageHeader } from "@/components/PageHeader";
 import { useWeddingStore } from "@/store/useWeddingStore";
+import { theme } from "@/lib/theme";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -72,6 +76,16 @@ export default function SettingsScreen() {
   const activeEntry = registry?.weddings.find(
     (w) => w.id === registry.activeWeddingId
   );
+
+  // Collaborator (non-owner) role label + access badge — for the "can't invite" card below.
+  const permissionRoles = usePermissionsStore((s) => s.roles);
+  const memberRole = permissionRoles.find((r) => r.id === activeEntry?.roleId);
+  const memberRoleLabel = memberRole
+    ? memberRole.isSystem
+      ? t(memberRole.name)
+      : memberRole.name
+    : t("unknownRole");
+  const memberCanEdit = memberRole ? roleCanWrite(memberRole) : false;
 
   // Rename wedding
   const [renameWeddingId, setRenameWeddingId] = useState<string | null>(null);
@@ -402,6 +416,26 @@ export default function SettingsScreen() {
             subtitle={t("rolesDesc")}
             right={<ChevronRight size={18} color="#C0C0C8" />}
             onPress={() => router.push("/settings/roles")}
+          />
+        )}
+        {activeEntry?.role === "member" && (
+          <IconCard
+            icon={
+              <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900 items-center justify-center">
+                <Lock size={20} color="#b96a4a" />
+              </View>
+            }
+            title={t("collabInviteLockedTitle")}
+            subtitle={t("collabInviteLockedDesc", { role: memberRoleLabel })}
+            right={
+              memberRole ? (
+                <Chip color={memberCanEdit ? theme.clay : theme.olive}>
+                  <Label color={memberCanEdit ? theme.clay : theme.olive}>
+                    {memberCanEdit ? t("roleCanEditLabel") : t("roleCanView")}
+                  </Label>
+                </Chip>
+              ) : undefined
+            }
           />
         )}
         {needsNamespaceResync(activeEntry) && (

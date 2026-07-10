@@ -23,6 +23,8 @@
   "tapToEnable": "Appuyez pour activer la sauvegarde",
   "shareInviteLink": "Partager un lien d'invitation",
   "sendLinkToJoin": "Envoyer un lien pour rejoindre ce mariage",
+  "collabInviteLockedTitle": "Vous ne pouvez pas inviter",
+  "collabInviteLockedDesc": "Vous avez rejoint ce mariage en tant que {{role}}. Seul le propriétaire peut inviter des collaborateurs.",
   "scanFromOtherDevice": "Scannez ce code depuis l'autre appareil pour rejoindre le mariage",
   "shareLink": "Partager le lien",
   "enableSyncToShare": "Activez la sauvegarde pour partager",

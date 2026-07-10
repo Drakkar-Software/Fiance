@@ -23,6 +23,8 @@
   "tapToEnable": "Tap to enable backup",
   "shareInviteLink": "Share an invite link",
   "sendLinkToJoin": "Send a link to join this wedding",
+  "collabInviteLockedTitle": "You can't invite others",
+  "collabInviteLockedDesc": "You joined this wedding as {{role}}. Only the owner can invite collaborators.",
   "scanFromOtherDevice": "Scan this code from the other device to join the wedding",
   "shareLink": "Share link",
   "enableSyncToShare": "Enable backup to share",

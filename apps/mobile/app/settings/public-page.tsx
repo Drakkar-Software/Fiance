@@ -13,6 +13,7 @@ import { useGuestsStore } from "@/store/useGuestsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { useIsReadOnlyMember } from "@/lib/permissions/useIsReadOnlyMember";
 import { isSyncActive, onSyncStatusChange } from "@/lib/starfish";
 import { resolvePublicPageUrl } from "@/lib/public-page";
 import { toast } from "@/lib/toast/sonner";
@@ -40,6 +41,10 @@ export default function PublicPageScreen() {
   const activeEntry = registry?.weddings.find(
     (w) => w.id === registry.activeWeddingId
   );
+  // Minting a public-page share/preview link is an owner-cap operation — a
+  // read-only collaborator's session can't produce one, so hide rather than
+  // show a button that would just fail.
+  const isReadOnly = useIsReadOnlyMember();
 
   // Wedding fields
   const [partner1, _setPartner1] = useState(wedding?.partner1Name || "");
@@ -270,7 +275,7 @@ export default function PublicPageScreen() {
       </View>
 
       {/* Preview + Share */}
-      {activeEntry?.seedPhrase && (
+      {activeEntry?.seedPhrase && !isReadOnly && (
         <View className="px-4 mt-2 gap-2">
           <View style={{ position: "relative" }}>
             <Postit angle={-2} size="sm" style={{ position: "absolute", top: -20, right: 8, zIndex: 10 }}>
