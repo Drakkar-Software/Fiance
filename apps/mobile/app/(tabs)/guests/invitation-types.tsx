@@ -10,6 +10,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormActions } from "@/components/FormSection";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
 import type { InvitationTypeEntity } from "@/db/schema";
@@ -49,6 +50,7 @@ function NeedsSleepingToggle({
 
 export default function InvitationTypesScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const invitationTypes = useInvitationTypesStore((s) => s.invitationTypes);
   const addInvitationType = useInvitationTypesStore((s) => s.addInvitationType);
   const updateInvitationType = useInvitationTypesStore((s) => s.updateInvitationType);
@@ -133,6 +135,7 @@ export default function InvitationTypesScreen() {
                 value={newLabel}
                 onChangeText={setNewLabel}
                 autoFocus
+                editable={canEdit}
               />
               <NeedsSleepingToggle
                 value={newNeedsSleeping}
@@ -166,6 +169,7 @@ export default function InvitationTypesScreen() {
                     onChangeText={setEditingLabel}
                     autoFocus
                     selectTextOnFocus
+                    editable={canEdit}
                   />
                   <NeedsSleepingToggle
                     value={editingNeedsSleeping}
@@ -207,10 +211,12 @@ export default function InvitationTypesScreen() {
                         <Text className="text-xs font-semibold text-mute">{guestCount}</Text>
                       </View>
                     )}
-                    <Pressable onPress={() => handleEdit(type)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    {!type.isDefault && (
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(type)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {!type.isDefault && canEdit && (
                       <Pressable onPress={() => setDeleteId(type.id)} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>

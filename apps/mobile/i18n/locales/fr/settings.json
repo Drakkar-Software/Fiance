@@ -272,6 +272,7 @@
   "surfacePlanning": "Planning",
   "surfaceBudget": "Budget",
   "surfaceIdeas": "Idées",
+  "surfaceGifts": "Cadeaux",
   "roleNoAccess": "Aucun",
   "roleCanView": "Voir",
   "roleCanEditLabel": "Modifier",
@@ -293,8 +294,9 @@
   "rolePickerEyebrow": "Invitation",
   "rolePickerTitle": "Inviter avec un rôle",
   "rolePickerSubtitle": "Choisissez les droits de la personne invitée",
-  "inviteNameLabel": "Nom (facultatif)",
+  "inviteNameLabel": "Nom",
   "inviteNamePlaceholder": "ex. Maman, Julie, wedding planner",
+  "inviteNameRequired": "Indiquez un nom pour générer le lien",
   "roleFullAccess": "Accès complet",
   "roleNoAccessSummary": "Aucun accès"
 }

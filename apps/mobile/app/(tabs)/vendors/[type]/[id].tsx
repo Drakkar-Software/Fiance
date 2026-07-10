@@ -27,6 +27,7 @@ import { SectionTitle, FormCard, InputRow, DateRow, ToggleRow, ChipSelect } from
 import { DeleteButton } from "@/components/DeleteButton";
 import { Display } from "@/components/Display";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { StatusSelector } from "@/components/StatusSelector";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { PageHeader } from "@/components/PageHeader";
@@ -43,6 +44,7 @@ const STATUS_OPTIONS: VendorStatus[] = [
 
 export default function VendorDetailScreen() {
   const { t } = useTranslation("vendors");
+  const canEdit = useCanEditHere();
   const { type, id } = useLocalSearchParams<{ type: string; id: string }>();
   const router = useRouter();
   const vendors = useVendorsStore((s) => s.vendors);
@@ -272,6 +274,7 @@ export default function VendorDetailScreen() {
                 onChangeText={setNotes}
                 multiline
                 textAlignVertical="top"
+                editable={canEdit}
               />
             </FormCard>
 
@@ -383,6 +386,7 @@ type PaymentMethod = typeof PAYMENT_METHODS[number];
 function PaymentsTab({ vendorId }: { vendorId: string }) {
   const { t } = useTranslation("budget");
   const { t: tV } = useTranslation("vendors");
+  const canEdit = useCanEditHere();
   const addPayment = useVendorsStore((s) => s.addPayment);
   const removePayment = useVendorsStore((s) => s.removePayment);
   const allPayments = useVendorsStore((s) => s.vendorPayments);
@@ -451,12 +455,14 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
               <Text className="text-xs text-mute mt-0.5">{p.label}</Text>
             )}
           </View>
-          <Pressable
-            onPress={() => setDeleteId(p.id)}
-            className="w-8 h-8 items-center justify-center"
-          >
-            <Trash2 size={16} color="#EF4444" />
-          </Pressable>
+          {canEdit && (
+            <Pressable
+              onPress={() => setDeleteId(p.id)}
+              className="w-8 h-8 items-center justify-center"
+            >
+              <Trash2 size={16} color="#EF4444" />
+            </Pressable>
+          )}
         </View>
       ))}
 
@@ -465,7 +471,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
       )}
 
       {/* Add form */}
-      {showAdd ? (
+      {showAdd && canEdit ? (
         <FormCard>
           <InputRow
             label={t("paymentAmount")}
@@ -499,14 +505,14 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
             </Pressable>
           </View>
         </FormCard>
-      ) : (
+      ) : canEdit ? (
         <Pressable
           onPress={() => setShowAdd(true)}
           className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 items-center border border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
         >
           <Text className="text-sm font-semibold text-primary-500">+ {t("addPayment")}</Text>
         </Pressable>
-      )}
+      ) : null}
 
       <ConfirmSheet
         visible={!!deleteId}
@@ -526,6 +532,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
 
 function DocumentsTab({ vendorId }: { vendorId: string }) {
   const { t } = useTranslation("vendors");
+  const canEdit = useCanEditHere();
   const allDocuments = useDocumentsStore((s) => s.documents);
   const addDocument = useDocumentsStore((s) => s.addDocument);
   const removeDocument = useDocumentsStore((s) => s.removeDocument);
@@ -575,12 +582,14 @@ function DocumentsTab({ vendorId }: { vendorId: string }) {
                 <Text className="text-xs text-red-500 mt-0.5">{t("documentUnavailable")}</Text>
               )}
             </View>
-            <Pressable
-              onPress={() => setDeleteId(doc.id)}
-              className="w-8 h-8 items-center justify-center"
-            >
-              <Trash2 size={16} color="#EF4444" />
-            </Pressable>
+            {canEdit && (
+              <Pressable
+                onPress={() => setDeleteId(doc.id)}
+                className="w-8 h-8 items-center justify-center"
+              >
+                <Trash2 size={16} color="#EF4444" />
+              </Pressable>
+            )}
           </View>
         );
       })}
@@ -589,13 +598,15 @@ function DocumentsTab({ vendorId }: { vendorId: string }) {
         <Text className="text-sm text-mute mb-3">{t("noDocuments")}</Text>
       )}
 
-      <Pressable
-        onPress={handlePick}
-        className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 flex-row items-center justify-center gap-2 border border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
-      >
-        <Upload size={15} color="#b96a4a" />
-        <Text className="text-sm font-semibold text-primary-500">{t("addDocument")}</Text>
-      </Pressable>
+      {canEdit && (
+        <Pressable
+          onPress={handlePick}
+          className="bg-primary-50 dark:bg-primary-950 rounded-xl py-3 flex-row items-center justify-center gap-2 border border-primary-200 dark:border-primary-800 active:opacity-80 mt-1"
+        >
+          <Upload size={15} color="#b96a4a" />
+          <Text className="text-sm font-semibold text-primary-500">{t("addDocument")}</Text>
+        </Pressable>
+      )}
 
       <ConfirmSheet
         visible={!!deleteId}

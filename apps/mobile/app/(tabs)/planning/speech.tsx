@@ -14,10 +14,12 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { PageHeader } from "@/components/PageHeader";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { Speech } from "@/db/schema";
 
 export default function SpeechScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const speeches = useSpeechesMusicStore((s) => s.speeches);
@@ -161,6 +163,7 @@ export default function SpeechScreen() {
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 

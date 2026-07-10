@@ -321,6 +321,7 @@ export default function BudgetScreen() {
                     placeholder="—"
                     placeholderTextColor="#C0C0C8"
                     keyboardType="numeric"
+                    editable={canEdit}
                   />
                 </View>
                 {isOver && (

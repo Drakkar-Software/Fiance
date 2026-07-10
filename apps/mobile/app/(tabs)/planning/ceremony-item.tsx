@@ -16,12 +16,14 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { PageHeader } from "@/components/PageHeader";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { CeremonyItem } from "@/db/schema";
 
 const KINDS = Object.keys(CEREMONY_ITEM_KIND_LABELS) as CeremonyItemKind[];
 
 export default function CeremonyItemScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const items = useCeremonyStore((s) => s.ceremonyItems);
@@ -122,6 +124,7 @@ export default function CeremonyItemScreen() {
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 
@@ -181,6 +184,7 @@ export default function CeremonyItemScreen() {
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 

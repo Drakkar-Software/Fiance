@@ -12,12 +12,16 @@ import { parseSpreadsheet, mapRowsToGuests, type GuestImportResult } from "@/lib
 import { analytics } from "@/lib/analytics";
 import { SectionTitle, FormCard, FormActions } from "@/components/FormSection";
 import { SettingsRow, WebFilePickRow } from "@/components/SettingsRow";
+import { useCan } from "@/lib/permissions/usePermissions";
 
 export default function ImportFileScreen() {
   const { t } = useTranslation("settings");
   const router = useRouter();
   const { source } = useLocalSearchParams<{ source?: string }>();
   const isMariagesNet = source === "mariagesnet";
+  // This screen is routed under settings/, outside useCanEditHere's route-aware
+  // surface matching — gate explicitly since importing writes guest data.
+  const canImport = useCan("guests", "edit");
 
   const groups = useGuestsStore((s) => s.groups);
   const tables = useGuestsStore((s) => s.tables);
@@ -139,17 +143,19 @@ export default function ImportFileScreen() {
               </Text>
             )}
           </FormCard>
-          <View className="mt-4">
-            <FormActions
-              saveLabel={t("import")}
-              cancelLabel={t("common:cancel")}
-              onSave={doImport}
-              onCancel={() => {
-                setPreview(null);
-                setFileName(null);
-              }}
-            />
-          </View>
+          {canImport && (
+            <View className="mt-4">
+              <FormActions
+                saveLabel={t("import")}
+                cancelLabel={t("common:cancel")}
+                onSave={doImport}
+                onCancel={() => {
+                  setPreview(null);
+                  setFileName(null);
+                }}
+              />
+            </View>
+          )}
         </View>
       )}
 

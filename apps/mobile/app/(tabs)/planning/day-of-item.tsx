@@ -11,11 +11,13 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { DayOfItem } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 
 export default function DayOfItemScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const items = usePlanningStore((s) => s.dayOfItems);
@@ -120,6 +122,7 @@ export default function DayOfItemScreen() {
             onChangeText={setNotes}
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 

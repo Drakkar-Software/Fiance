@@ -9,9 +9,11 @@ import { PageHeader } from "@/components/PageHeader";
 import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 export default function CollectionsScreen() {
   const { t } = useTranslation("ideas");
+  const canEdit = useCanEditHere();
   const collections = useIdeasStore((s) => s.collections);
   const ideas = useIdeasStore((s) => s.ideas);
   const addCollection = useIdeasStore((s) => s.addCollection);
@@ -62,6 +64,7 @@ export default function CollectionsScreen() {
               value={newName}
               onChangeText={setNewName}
               autoFocus
+              editable={canEdit}
             />
             <TextInput
               className="text-base text-ink border-b border-hair pb-2 mb-3"
@@ -69,6 +72,7 @@ export default function CollectionsScreen() {
               placeholderTextColor="#9CA3AF"
               value={newDescription}
               onChangeText={setNewDescription}
+              editable={canEdit}
             />
             <View className="flex-row gap-2">
               <Pressable
@@ -108,9 +112,11 @@ export default function CollectionsScreen() {
                     {t("idea", { count })}
                   </Text>
                 </View>
-                <Pressable onPress={() => setDeleteId(col.id)}>
-                  <Trash2 size={18} color="#EF4444" />
-                </Pressable>
+                {canEdit && (
+                  <Pressable onPress={() => setDeleteId(col.id)}>
+                    <Trash2 size={18} color="#EF4444" />
+                  </Pressable>
+                )}
               </View>
             </View>
           );

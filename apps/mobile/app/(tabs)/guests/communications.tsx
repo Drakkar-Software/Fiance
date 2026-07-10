@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow, ChipSelect, FormActions } from "@/components/FormSection";
 import { StackMenu } from "@/components/StackMenu";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
 import { renderTemplate, COMMUNICATION_CHANNEL_LABELS, type CommunicationChannel } from "@fiance/sdk";
@@ -25,6 +26,7 @@ const CHANNELS: CommunicationChannel[] = ["EMAIL", "POSTAL", "SMS", "WHATSAPP", 
 
 export default function CommunicationsScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const router = useRouter();
   const communications = useCommunicationsStore((s) => s.communications);
   const addCommunication = useCommunicationsStore((s) => s.addCommunication);
@@ -149,6 +151,7 @@ export default function CommunicationsScreen() {
                 value={newForm.label}
                 onChangeText={(v) => setNewForm((f) => ({ ...f, label: v }))}
                 autoFocus
+                editable={canEdit}
               />
               {templates.length > 0 && (
                 <View className="mb-3">
@@ -221,6 +224,7 @@ export default function CommunicationsScreen() {
                     onChangeText={(v) => setEditForm((f) => ({ ...f, label: v }))}
                     autoFocus
                     selectTextOnFocus
+                    editable={canEdit}
                   />
                   {templates.length > 0 && (
                     <View className="mb-3">
@@ -312,12 +316,16 @@ export default function CommunicationsScreen() {
                         <Text className="text-xs font-semibold text-mute">{received}/{total}</Text>
                       </View>
                     )}
-                    <Pressable onPress={() => handleEdit(comm)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    <Pressable onPress={() => setDeleteId(comm.id)} className="w-8 h-8 items-center justify-center">
-                      <Trash2 size={15} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(comm)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {canEdit && (
+                      <Pressable onPress={() => setDeleteId(comm.id)} className="w-8 h-8 items-center justify-center">
+                        <Trash2 size={15} color="#EF4444" />
+                      </Pressable>
+                    )}
                     <ChevronRight size={15} color="#9CA3AF" />
                   </View>
                 </View>

@@ -9,9 +9,11 @@ import { DateRow, FormCard, InputRow, SectionTitle } from "@/components/FormSect
 import { formatMoney } from "@/components/MoneyDisplay";
 import { Display } from "@/components/Display";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 export default function PlanningHoneymoonScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const plan = useHoneymoonStore((s) => s.honeymoonPlans[0] ?? null);
   const setHoneymoonPlan = useHoneymoonStore((s) => s.setHoneymoonPlan);
   const updateHoneymoonPlan = useHoneymoonStore((s) => s.updateHoneymoonPlan);
@@ -58,8 +60,8 @@ export default function PlanningHoneymoonScreen() {
           icon={Palmtree}
           title={t("honeymoon.empty")}
           description={t("honeymoon.emptyDesc")}
-          actionLabel={t("honeymoon.newPlan")}
-          onAction={handleCreate}
+          actionLabel={canEdit ? t("honeymoon.newPlan") : undefined}
+          onAction={canEdit ? handleCreate : undefined}
         />
       </View>
     );
@@ -100,12 +102,15 @@ export default function PlanningHoneymoonScreen() {
           onChangeText={setNotes}
           multiline
           textAlignVertical="top"
+          editable={canEdit}
         />
       </FormCard>
 
-      <Pressable onPress={handleSave} className="bg-primary-500 py-3 rounded-xl items-center mt-2 mb-8 active:bg-primary-600">
-        <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
-      </Pressable>
+      {canEdit && (
+        <Pressable onPress={handleSave} className="bg-primary-500 py-3 rounded-xl items-center mt-2 mb-8 active:bg-primary-600">
+          <Text className="text-white font-semibold text-sm">{t("common:save")}</Text>
+        </Pressable>
+      )}
       <View className="h-24" />
     </ScrollView>
   );

@@ -13,6 +13,10 @@ describe("surfaceFromSegments", () => {
     expect(surfaceFromSegments(["ideas", "[id]"])).toBe("ideas");
   });
 
+  it("maps the gifts screen (under settings) to gifts", () => {
+    expect(surfaceFromSegments(["settings", "gifts"])).toBe("gifts");
+  });
+
   it("returns null outside any feature surface (never gated)", () => {
     expect(surfaceFromSegments(["settings", "roles"])).toBeNull();
     expect(surfaceFromSegments(["(tabs)", "home"])).toBeNull();

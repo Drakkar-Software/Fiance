@@ -11,6 +11,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle, FormCard, InputRow, ChipSelect, FormActions } from "@/components/FormSection";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 
 const CATEGORIES = ["maison", "voyage", "experience", "autre"] as const;
@@ -18,6 +19,7 @@ type Category = (typeof CATEGORIES)[number];
 
 export default function GiftsScreen() {
   const { t } = useTranslation("settings");
+  const canEdit = useCanEditHere();
   const gifts = useGiftsStore((s) => s.gifts);
   const addGift = useGiftsStore((s) => s.addGift);
   const updateGift = useGiftsStore((s) => s.updateGift);
@@ -131,8 +133,8 @@ export default function GiftsScreen() {
           icon={Gift}
           title={t("noGifts")}
           description={t("noGiftsDesc")}
-          actionLabel={t("addGift")}
-          onAction={openAdd}
+          actionLabel={canEdit ? t("addGift") : undefined}
+          onAction={canEdit ? openAdd : undefined}
         />
       ) : (
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
@@ -140,7 +142,7 @@ export default function GiftsScreen() {
             <>
               <SectionTitle>{`${t("giftUnclaimed")} (${unclaimed.length})`}</SectionTitle>
               {unclaimed.map((gift) => (
-                <GiftRow key={gift.id} gift={gift} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
+                <GiftRow key={gift.id} gift={gift} canEdit={canEdit} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
               ))}
             </>
           )}
@@ -148,7 +150,7 @@ export default function GiftsScreen() {
             <View className="mt-3">
               <SectionTitle>{`${t("giftClaimed")} (${claimed.length})`}</SectionTitle>
               {claimed.map((gift) => (
-                <GiftRow key={gift.id} gift={gift} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
+                <GiftRow key={gift.id} gift={gift} canEdit={canEdit} onPress={() => openEdit(gift)} onDelete={() => setDeleteId(gift.id)} />
               ))}
             </View>
           )}
@@ -172,16 +174,18 @@ export default function GiftsScreen() {
 }
 
 function GiftRow({
-  gift, onPress, onDelete,
+  gift, canEdit, onPress, onDelete,
 }: {
   gift: GiftType;
+  canEdit: boolean;
   onPress: () => void;
   onDelete: () => void;
 }) {
   const { t } = useTranslation("settings");
   return (
     <Pressable
-      onPress={onPress}
+      onPress={canEdit ? onPress : undefined}
+      disabled={!canEdit}
       className="bg-accent-card rounded-2xl p-4 mb-2 border border-hair active:opacity-80"
     >
       <View className="flex-row items-center">
@@ -218,9 +222,11 @@ function GiftRow({
           ) : (
             <Circle size={18} color="#D1D5DB" />
           )}
-          <Pressable onPress={onDelete} className="w-8 h-8 items-center justify-center">
-            <Trash2 size={15} color="#EF4444" />
-          </Pressable>
+          {canEdit && (
+            <Pressable onPress={onDelete} className="w-8 h-8 items-center justify-center">
+              <Trash2 size={15} color="#EF4444" />
+            </Pressable>
+          )}
         </View>
       </View>
     </Pressable>

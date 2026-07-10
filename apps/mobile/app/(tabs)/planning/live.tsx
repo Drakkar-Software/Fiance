@@ -10,6 +10,7 @@ import { useSpeechesMusicStore } from "@/store/useSpeechesMusicStore";
 import { FilterTabs } from "@/components/FilterTabs";
 import { ProgressBar } from "@/components/ProgressBar";
 import type { DayOfItem } from "@/db/schema";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 function nowAsHHmm(): string {
   const d = new Date();
@@ -23,6 +24,7 @@ function toMinutes(hhmm: string): number {
 
 export default function LiveDayOfScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const dayOfItems = usePlanningStore((s) => s.dayOfItems);
   const completeDayOfItem = usePlanningStore((s) => s.completeDayOfItem);
   const uncompleteDayOfItem = usePlanningStore((s) => s.uncompleteDayOfItem);
@@ -64,10 +66,11 @@ export default function LiveDayOfScreen() {
 
   const toggleComplete = useCallback(
     (item: DayOfItem) => {
+      if (!canEdit) return;
       if (item.completedAt) uncompleteDayOfItem(item.id);
       else completeDayOfItem(item.id);
     },
-    [completeDayOfItem, uncompleteDayOfItem]
+    [canEdit, completeDayOfItem, uncompleteDayOfItem]
   );
 
   const nextCountdown = next ? toMinutes(next.time) - toMinutes(nowHHmm) : null;
@@ -92,6 +95,7 @@ export default function LiveDayOfScreen() {
         {current ? (
           <Pressable
             onPress={() => toggleComplete(current)}
+            disabled={!canEdit}
             className="bg-primary-500 rounded-3xl p-5 mb-3 active:opacity-90"
           >
             <Text className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-1">{t("live.now")}</Text>
@@ -131,6 +135,7 @@ export default function LiveDayOfScreen() {
             <Pressable
               key={item.id}
               onPress={() => toggleComplete(item)}
+              disabled={!canEdit}
               className={`flex-row items-center rounded-2xl p-3.5 mb-2 border ${
                 isCurrent ? "border-primary-400 bg-primary-50 dark:bg-primary-900" : "border-hair bg-accent-card"
               }`}

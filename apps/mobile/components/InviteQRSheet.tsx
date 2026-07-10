@@ -51,8 +51,10 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
 
   // The last-picked role, so the error-state "retry" regenerates the same scope.
   const [roleId, setRoleId] = useState<string | undefined>(undefined);
+  const nameValid = name.trim().length > 0;
 
   const run = (selectedRoleId?: string) => {
+    if (!nameValid) return;
     setRoleId(selectedRoleId);
     setState("generating");
     setDetail("");
@@ -124,6 +126,11 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
                   color: theme.ink,
                 }}
               />
+              {!nameValid && (
+                <Text style={{ fontSize: 12, color: theme.mute, marginTop: 6 }}>
+                  {t("inviteNameRequired")}
+                </Text>
+              )}
             </View>
 
             <View style={{ gap: 10 }}>
@@ -134,6 +141,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
                   <Pressable
                     key={r.id}
                     onPress={() => run(r.id)}
+                    disabled={!nameValid}
                     style={({ pressed }) => ({
                       flexDirection: "row",
                       alignItems: "center",
@@ -144,7 +152,7 @@ export function InviteQRSheet({ visible, onClose, generate }: InviteQRSheetProps
                       borderColor: theme.hair,
                       paddingHorizontal: 14,
                       paddingVertical: 13,
-                      opacity: pressed ? 0.7 : 1,
+                      opacity: !nameValid ? 0.45 : pressed ? 0.7 : 1,
                     })}
                   >
                     <View

@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FAB } from "@/components/FAB";
 import { ChipSelect, FormActions } from "@/components/FormSection";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { COMMUNICATION_CHANNEL_LABELS, type CommunicationChannel } from "@fiance/sdk";
 import type { CommunicationTemplate } from "@/db/schema";
 
@@ -27,6 +28,7 @@ function emptyForm(): FormState {
 
 export default function CommunicationTemplatesScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const templates = useCommunicationTemplatesStore((s) => s.communicationTemplates);
   const addCommunicationTemplate = useCommunicationTemplatesStore((s) => s.addCommunicationTemplate);
   const updateCommunicationTemplate = useCommunicationTemplatesStore((s) => s.updateCommunicationTemplate);
@@ -95,6 +97,7 @@ export default function CommunicationTemplatesScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.name}
         onChangeText={(name) => setForm((f) => ({ ...f, name }))}
+        editable={canEdit}
       />
       <ChipSelect options={CHANNELS} value={form.channel} onChange={(channel) => setForm((f) => ({ ...f, channel }))} labels={channelLabels} />
       <TextInput
@@ -103,6 +106,7 @@ export default function CommunicationTemplatesScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.subject}
         onChangeText={(subject) => setForm((f) => ({ ...f, subject }))}
+        editable={canEdit}
       />
       <TextInput
         className="text-base text-ink pt-3 mt-3"
@@ -111,6 +115,7 @@ export default function CommunicationTemplatesScreen() {
         value={form.body}
         onChangeText={(body) => setForm((f) => ({ ...f, body }))}
         multiline
+        editable={canEdit}
       />
       <View className="mt-4">
         <FormActions
@@ -150,10 +155,12 @@ export default function CommunicationTemplatesScreen() {
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-1">
-                    <Pressable onPress={() => handleEdit(tpl)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    {!tpl.isSystem && (
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(tpl)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {!tpl.isSystem && canEdit && (
                       <Pressable onPress={() => setDeleteId(tpl.id)} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>

@@ -14,9 +14,11 @@ import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { analytics } from "@/lib/analytics";
 import type { AgendaEvent } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 export default function AgendaEventScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const events = usePlanningStore((s) => s.agendaEvents);
@@ -125,6 +127,7 @@ export default function AgendaEventScreen() {
             onChangeText={setNotes}
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 

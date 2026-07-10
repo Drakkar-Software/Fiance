@@ -19,6 +19,7 @@ import { ChipSelect, ToggleRow, FormActions } from "@/components/FormSection";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { printDjWitnessPack } from "@/lib/print-dj-pack";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { PlaylistTrack } from "@/db/schema";
 
 const MOMENTS = Object.keys(PLAYLIST_MOMENT_LABELS) as PlaylistMoment[];
@@ -38,6 +39,7 @@ function emptyTrackForm(): TrackForm {
 
 export default function SpeechesMusicScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const router = useRouter();
   const [tab, setTab] = useState<"speeches" | "music">("speeches");
 
@@ -143,6 +145,7 @@ export default function SpeechesMusicScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.title}
         onChangeText={(title) => setForm((f) => ({ ...f, title }))}
+        editable={canEdit}
       />
       <TextInput
         className="text-base text-ink border-b border-hair pb-2 mb-3"
@@ -150,6 +153,7 @@ export default function SpeechesMusicScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.artist}
         onChangeText={(artist) => setForm((f) => ({ ...f, artist }))}
+        editable={canEdit}
       />
       <ChipSelect options={MOMENTS} value={form.moment} onChange={(moment) => setForm((f) => ({ ...f, moment }))} labels={momentLabelsMap} />
       {dayOfItems.length > 0 && (
@@ -174,6 +178,7 @@ export default function SpeechesMusicScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.notes}
         onChangeText={(notes) => setForm((f) => ({ ...f, notes }))}
+        editable={canEdit}
       />
       <View className="mt-4">
         <FormActions
@@ -198,12 +203,16 @@ export default function SpeechesMusicScreen() {
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Pressable onPress={() => handleEditTrack(track)} className="w-8 h-8 items-center justify-center">
-              <Pencil size={15} color="#9CA3AF" />
-            </Pressable>
-            <Pressable onPress={() => setDeleteId(track.id)} className="w-8 h-8 items-center justify-center">
-              <Trash2 size={15} color="#EF4444" />
-            </Pressable>
+            {canEdit && (
+              <Pressable onPress={() => handleEditTrack(track)} className="w-8 h-8 items-center justify-center">
+                <Pencil size={15} color="#9CA3AF" />
+              </Pressable>
+            )}
+            {canEdit && (
+              <Pressable onPress={() => setDeleteId(track.id)} className="w-8 h-8 items-center justify-center">
+                <Trash2 size={15} color="#EF4444" />
+              </Pressable>
+            )}
           </View>
         </View>
         {track.artist ? <Text className="text-xs text-mute mt-0.5">{track.artist}</Text> : null}

@@ -12,6 +12,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormCard, DateRow, InputRow, FormActions } from "@/components/FormSection";
 import { Display } from "@/components/Display";
 import { PageHeader } from "@/components/PageHeader";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 import { Sprig } from "@/components/Sprig";
 import type { Accommodation } from "@/db/schema";
@@ -40,6 +41,7 @@ const EMPTY_FORM: FormState = {
 
 export default function AccommodationsScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const accommodations = useAccommodationsStore((s) => s.accommodations);
   const addAccommodation = useAccommodationsStore((s) => s.addAccommodation);
   const updateAccommodation = useAccommodationsStore((s) => s.updateAccommodation);
@@ -240,12 +242,16 @@ export default function AccommodationsScreen() {
                         {acc.bedCount != null ? `${guestCount}/${acc.bedCount}` : guestCount}
                       </Text>
                     </View>
-                    <Pressable onPress={() => handleEdit(acc)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    <Pressable onPress={() => setDeleteId(acc.id)} className="w-8 h-8 items-center justify-center">
-                      <Trash2 size={15} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(acc)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {canEdit && (
+                      <Pressable onPress={() => setDeleteId(acc.id)} className="w-8 h-8 items-center justify-center">
+                        <Trash2 size={15} color="#EF4444" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
 

@@ -100,8 +100,8 @@ export default function TableManagementScreen() {
           icon={LayoutGrid}
           title={t("noTables")}
           description={t("createTablesDesc")}
-          actionLabel={t("createTable2")}
-          onAction={() => setShowAdd(true)}
+          actionLabel={canEdit ? t("createTable2") : undefined}
+          onAction={canEdit ? () => setShowAdd(true) : undefined}
         />
       ) : (
         <ScrollView
@@ -132,6 +132,7 @@ export default function TableManagementScreen() {
                 value={newTableName}
                 onChangeText={setNewTableName}
                 autoFocus
+                editable={canEdit}
               />
               <TextInput
                 className="text-base text-ink border-b border-hair pb-2 mb-3"
@@ -140,6 +141,7 @@ export default function TableManagementScreen() {
                 value={newTableCapacity}
                 onChangeText={setNewTableCapacity}
                 keyboardType="numeric"
+                editable={canEdit}
               />
               <View className="flex-row gap-2">
                 <Pressable
@@ -202,6 +204,7 @@ export default function TableManagementScreen() {
                         }}
                         autoFocus
                         selectTextOnFocus
+                        editable={canEdit}
                       />
                     ) : (
                       <Text className="text-base font-semibold text-ink">

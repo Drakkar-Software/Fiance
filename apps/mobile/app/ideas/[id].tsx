@@ -34,6 +34,7 @@ import { parseLinks, serializeLinks, isValidUrl } from "@/lib/links";
 import type { Idea } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 import { Postit } from "@/components/Postit";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 const CATEGORIES = Object.keys(IDEA_CATEGORY_LABELS) as IdeaCategory[];
 
@@ -63,6 +64,7 @@ const CATEGORY_COLORS: Record<IdeaCategory, string> = {
 
 export default function IdeaDetailScreen() {
   const { t } = useTranslation("ideas");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const ideas = useIdeasStore((s) => s.ideas);
@@ -182,6 +184,7 @@ export default function IdeaDetailScreen() {
               placeholderTextColor="#D0D0D8"
               multiline
               textAlignVertical="top"
+              editable={canEdit}
             />
           </FormCard>
         </View>
@@ -195,6 +198,7 @@ export default function IdeaDetailScreen() {
             onChangeText={setTagsInput}
             placeholder={t("tagsPlaceholder")}
             placeholderTextColor="#D0D0D8"
+            editable={canEdit}
           />
         </FormCard>
 
@@ -217,6 +221,7 @@ export default function IdeaDetailScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="url"
+                editable={canEdit}
               />
               {link.value.trim() ? (
                 <View className="flex-row items-center gap-2">

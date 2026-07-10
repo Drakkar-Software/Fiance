@@ -68,6 +68,7 @@ import {
 } from "@/components/FormSection";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SaveHeaderButton } from "@/components/SaveHeaderButton";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { theme as GP } from "@/lib/theme";
 import { HorizontalChipSelect } from "@/components/HorizontalChipSelect";
 import { StatusSelector } from "@/components/StatusSelector";
@@ -89,6 +90,7 @@ type SheetKey = "role" | "contact" | "rsvp" | "placement" | "meal" | "transport"
 
 export default function GuestDetailScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const guests = useGuestsStore((s) => s.guests);
@@ -778,6 +780,7 @@ export default function GuestDetailScreen() {
             value={dietNotes}
             onChangeText={setDietNotes}
             multiline
+            editable={canEdit}
           />
         )}
 
@@ -905,6 +908,7 @@ export default function GuestDetailScreen() {
           onChangeText={setNotes}
           multiline
           textAlignVertical="top"
+          editable={canEdit}
         />
       </GuestSheet>
     </View>

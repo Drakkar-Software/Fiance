@@ -11,10 +11,12 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FAB } from "@/components/FAB";
 import { FormActions } from "@/components/FormSection";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 
 export default function WeddingPartyScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const weddingRoles = useWeddingPartyStore((s) => s.weddingRoles);
   const addWeddingRole = useWeddingPartyStore((s) => s.addWeddingRole);
   const updateWeddingRole = useWeddingPartyStore((s) => s.updateWeddingRole);
@@ -77,6 +79,7 @@ export default function WeddingPartyScreen() {
         value={name}
         onChangeText={setName}
         autoFocus
+        editable={canEdit}
       />
       <View className="mt-4">
         <FormActions
@@ -119,12 +122,16 @@ export default function WeddingPartyScreen() {
                       <Text className="text-xs font-semibold text-mute">{guestCount}</Text>
                     </View>
                   )}
-                  <Pressable onPress={() => handleEdit(role)} className="w-8 h-8 items-center justify-center">
-                    <Pencil size={15} color="#9CA3AF" />
-                  </Pressable>
-                  <Pressable onPress={() => setDeleteId(role.id)} className="w-8 h-8 items-center justify-center">
-                    <Trash2 size={15} color="#EF4444" />
-                  </Pressable>
+                  {canEdit && (
+                    <Pressable onPress={() => handleEdit(role)} className="w-8 h-8 items-center justify-center">
+                      <Pencil size={15} color="#9CA3AF" />
+                    </Pressable>
+                  )}
+                  {canEdit && (
+                    <Pressable onPress={() => setDeleteId(role.id)} className="w-8 h-8 items-center justify-center">
+                      <Trash2 size={15} color="#EF4444" />
+                    </Pressable>
+                  )}
                 </View>
               </View>
             );

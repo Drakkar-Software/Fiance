@@ -13,10 +13,12 @@ import { FormActions } from "@/components/FormSection";
 import { PlanView } from "@/components/SeatingPlanView";
 import { PageHeader } from "@/components/PageHeader";
 import { Script } from "@/components/Script";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 
 export default function TablesScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const tables = useGuestsStore((s) => s.tables);
   const guests = useGuestsStore((s) => s.guests);
   const addTable = useGuestsStore((s) => s.addTable);
@@ -62,6 +64,7 @@ export default function TablesScreen() {
             value={newTableName}
             onChangeText={setNewTableName}
             autoFocus
+            editable={canEdit}
           />
           <TextInput
             className="text-base text-ink border-b border-hair pb-2 mb-3"
@@ -70,6 +73,7 @@ export default function TablesScreen() {
             value={newTableCapacity}
             onChangeText={setNewTableCapacity}
             keyboardType="numeric"
+            editable={canEdit}
           />
           <FormActions
             saveLabel={t("createTable")}

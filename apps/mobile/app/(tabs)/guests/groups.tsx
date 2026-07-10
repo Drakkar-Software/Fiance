@@ -9,9 +9,11 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormActions } from "@/components/FormSection";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 
 export default function GroupsScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const groups = useGuestsStore((s) => s.groups);
   const guests = useGuestsStore((s) => s.guests);
   const addGroup = useGuestsStore((s) => s.addGroup);
@@ -79,6 +81,7 @@ export default function GroupsScreen() {
                 value={newGroupName}
                 onChangeText={setNewGroupName}
                 autoFocus
+                editable={canEdit}
               />
               <FormActions
                 saveLabel={t("createGroup")}
@@ -101,10 +104,15 @@ export default function GroupsScreen() {
                 {/* Group header */}
                 <View className="flex-row items-center justify-between mb-2">
                   <Pressable
-                    onPress={() => {
-                      setEditingGroupId(group.id);
-                      setEditingName(group.name);
-                    }}
+                    onPress={
+                      canEdit
+                        ? () => {
+                            setEditingGroupId(group.id);
+                            setEditingName(group.name);
+                          }
+                        : undefined
+                    }
+                    disabled={!canEdit}
                     className="flex-row items-center flex-1"
                   >
                     <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center mr-2">
@@ -129,6 +137,7 @@ export default function GroupsScreen() {
                         }}
                         autoFocus
                         selectTextOnFocus
+                        editable={canEdit}
                       />
                     ) : (
                       <Text className="text-base font-semibold text-ink">
@@ -142,12 +151,14 @@ export default function GroupsScreen() {
                         {groupGuests.length}
                       </Text>
                     </View>
-                    <Pressable
-                      onPress={() => setDeleteId(group.id)}
-                      className="w-8 h-8 items-center justify-center"
-                    >
-                      <Trash2 size={16} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable
+                        onPress={() => setDeleteId(group.id)}
+                        className="w-8 h-8 items-center justify-center"
+                      >
+                        <Trash2 size={16} color="#EF4444" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
 

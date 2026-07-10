@@ -12,7 +12,7 @@
  */
 
 /** The feature surfaces a role can grant access to (map onto the app's tabs). */
-export type FeatureSurface = 'guests' | 'vendors' | 'planning' | 'budget' | 'ideas';
+export type FeatureSurface = 'guests' | 'vendors' | 'planning' | 'budget' | 'ideas' | 'gifts';
 
 export type PermissionAction = 'view' | 'edit';
 
@@ -32,6 +32,7 @@ export const FEATURE_SURFACES: FeatureSurface[] = [
   'planning',
   'budget',
   'ideas',
+  'gifts',
 ];
 
 export interface RoleDefinition {
@@ -67,14 +68,28 @@ export const DEFAULT_PERMISSION_ROLES: Omit<RoleDefinition, 'createdAt' | 'updat
     name: 'roleEditorName',
     isSystem: true,
     tier: 'app-cosmetic',
-    matrix: { guests: 'edit', vendors: 'edit', planning: 'edit', budget: 'edit', ideas: 'edit' },
+    matrix: {
+      guests: 'edit',
+      vendors: 'edit',
+      planning: 'edit',
+      budget: 'edit',
+      ideas: 'edit',
+      gifts: 'edit',
+    },
   },
   {
     id: 'role-viewer',
     name: 'roleViewerName',
     isSystem: true,
     tier: 'app-readonly',
-    matrix: { guests: 'view', vendors: 'view', planning: 'view', budget: 'view', ideas: 'view' },
+    matrix: {
+      guests: 'view',
+      vendors: 'view',
+      planning: 'view',
+      budget: 'view',
+      ideas: 'view',
+      gifts: 'view',
+    },
   },
   {
     id: 'role-planner',

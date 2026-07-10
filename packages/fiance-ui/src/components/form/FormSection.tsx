@@ -40,6 +40,7 @@ export function InputRow({
   keyboardType = "default",
   multiline = false,
   onBlur,
+  editable = true,
 }: {
   label: string;
   value: string;
@@ -48,9 +49,11 @@ export function InputRow({
   keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
   multiline?: boolean;
   onBlur?: () => void;
+  /** Set to false to render the field read-only (view-only collaborator). */
+  editable?: boolean;
 }) {
   return (
-    <View className="border-b border-outline-50 py-3">
+    <View className={`border-b border-outline-50 py-3 ${editable ? "" : "opacity-60"}`}>
       <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
       <Input
         value={value}
@@ -60,6 +63,7 @@ export function InputRow({
         placeholderTextColor="rgb(212, 212, 212)"
         keyboardType={keyboardType}
         multiline={multiline}
+        editable={editable}
       />
     </View>
   );
@@ -75,6 +79,7 @@ export function DateRow({
   selectDateLabel = "Select date",
   todayLabel,
   clearLabel,
+  disabled = false,
 }: {
   label: string;
   value: string;
@@ -85,6 +90,8 @@ export function DateRow({
   selectDateLabel?: string;
   todayLabel?: string;
   clearLabel?: string;
+  /** Set to true to make the picker inert (view-only collaborator). */
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -96,8 +103,9 @@ export function DateRow({
 
   const row = (
     <Pressable
-      onPress={() => setOpen(!open)}
-      className="flex-row items-center justify-between border-b border-outline-50 py-3"
+      onPress={() => !disabled && setOpen(!open)}
+      disabled={disabled}
+      className={`flex-row items-center justify-between border-b border-outline-50 py-3 ${disabled ? "opacity-60" : ""}`}
     >
       <View className="flex-1">
         <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
@@ -187,6 +195,7 @@ export function TimeRow({
   clearLabel,
   hoursLabel,
   minutesLabel,
+  disabled = false,
 }: {
   label: string;
   value: string;
@@ -197,6 +206,8 @@ export function TimeRow({
   clearLabel?: string;
   hoursLabel?: string;
   minutesLabel?: string;
+  /** Set to true to make the picker inert (view-only collaborator). */
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   // Local buffer for the iOS inline wheel — mirrors TimePickerModal's pattern:
@@ -207,10 +218,12 @@ export function TimeRow({
   const row = (
     <Pressable
       onPress={() => {
+        if (disabled) return;
         setPickedTime(value || "12:00");
         setOpen(!open);
       }}
-      className="flex-row items-center justify-between border-b border-outline-50 py-3"
+      disabled={disabled}
+      className={`flex-row items-center justify-between border-b border-outline-50 py-3 ${disabled ? "opacity-60" : ""}`}
     >
       <View className="flex-1">
         <Text className="text-xs text-typography-400 mb-1 font-medium">{label}</Text>
@@ -299,18 +312,22 @@ export function ToggleRow({
   label,
   value,
   onToggle,
+  disabled = false,
 }: {
   label: string;
   value: boolean;
   onToggle: () => void;
+  /** Set to true to make the toggle inert (view-only collaborator). */
+  disabled?: boolean;
 }) {
   return (
     <Pressable
-      onPress={onToggle}
+      onPress={() => !disabled && onToggle()}
+      disabled={disabled}
       className="flex-row items-center justify-between py-3 border-b border-outline-50"
     >
       <Text className="text-base text-typography-700">{label}</Text>
-      <Checkbox value={value} onValueChange={() => onToggle()} />
+      <Checkbox value={value} onValueChange={() => onToggle()} disabled={disabled} />
     </Pressable>
   );
 }
@@ -321,11 +338,14 @@ export function ChipSelect<T extends string>({
   value,
   onChange,
   labels,
+  disabled = false,
 }: {
   options: T[];
   value: T;
   onChange: (v: T) => void;
   labels: Record<T, string>;
+  /** Set to true to make the chips inert (view-only collaborator). */
+  disabled?: boolean;
 }) {
   return (
     <View className="flex-row flex-wrap gap-2">
@@ -334,7 +354,8 @@ export function ChipSelect<T extends string>({
         return (
           <Pressable
             key={opt}
-            onPress={() => onChange(opt)}
+            onPress={() => !disabled && onChange(opt)}
+            disabled={disabled}
             className={`px-3.5 py-2 rounded-full border ${
               isActive
                 ? "bg-primary-500 border-primary-500"

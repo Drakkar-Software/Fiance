@@ -23,6 +23,7 @@ import { StatusSelector } from "@/components/StatusSelector";
 import { PageHeader } from "@/components/PageHeader";
 import { Seal } from "@/components/Seal";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "DONE"];
@@ -30,6 +31,7 @@ const PRIORITIES: Priority[] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 
 export default function TaskDetailScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const tasks = usePlanningStore((s) => s.tasks);
@@ -171,6 +173,7 @@ export default function TaskDetailScreen() {
               onChangeText={setTitle}
               placeholder={t("taskTitlePlaceholder")}
               placeholderTextColor="#D0D0D8"
+              editable={canEdit}
             />
           </View>
           <Text className="text-xs text-mute mb-1 font-medium">{t("description")}</Text>
@@ -182,6 +185,7 @@ export default function TaskDetailScreen() {
             placeholderTextColor="#D0D0D8"
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 
@@ -240,6 +244,7 @@ export default function TaskDetailScreen() {
               keyboardType="numeric"
               placeholder="—"
               placeholderTextColor="#D0D0D8"
+              editable={canEdit}
             />
             <Text className="text-base text-mute ml-2">
               {t("monthsBeforeWedding")}
@@ -287,6 +292,7 @@ export default function TaskDetailScreen() {
             onChangeText={setNotes}
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
         </FormCard>
 

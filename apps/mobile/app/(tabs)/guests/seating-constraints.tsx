@@ -16,6 +16,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FAB } from "@/components/FAB";
 import { ChipSelect, ToggleRow, FormActions } from "@/components/FormSection";
 import { GuestSelectList } from "@/components/GuestSelectList";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 import type { SeatingConstraint } from "@/db/schema";
 
@@ -34,6 +35,7 @@ function emptyForm(): FormState {
 
 export default function SeatingConstraintsScreen() {
   const { t } = useTranslation("guests");
+  const canEdit = useCanEditHere();
   const constraints = useSeatingConstraintsStore((s) => s.seatingConstraints);
   const addSeatingConstraint = useSeatingConstraintsStore((s) => s.addSeatingConstraint);
   const updateSeatingConstraint = useSeatingConstraintsStore((s) => s.updateSeatingConstraint);
@@ -113,6 +115,7 @@ export default function SeatingConstraintsScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.label}
         onChangeText={(label) => setForm((f) => ({ ...f, label }))}
+        editable={canEdit}
       />
 
       <View className="mt-3">
@@ -184,12 +187,16 @@ export default function SeatingConstraintsScreen() {
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-1">
-                    <Pressable onPress={() => handleEdit(c)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    <Pressable onPress={() => setDeleteId(c.id)} className="w-8 h-8 items-center justify-center">
-                      <Trash2 size={15} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(c)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {canEdit && (
+                      <Pressable onPress={() => setDeleteId(c.id)} className="w-8 h-8 items-center justify-center">
+                        <Trash2 size={15} color="#EF4444" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               </View>

@@ -11,6 +11,7 @@ import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FAB } from "@/components/FAB";
 import { ChipSelect, ToggleRow, DateRow, TimeRow, FormActions } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
+import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import type { WeddingEvent } from "@/db/schema";
 
 const TYPES = Object.keys(WEDDING_EVENT_TYPE_LABELS) as WeddingEventType[];
@@ -32,6 +33,7 @@ function emptyForm(): FormState {
 
 export default function PlanningEventsScreen() {
   const { t } = useTranslation("planning");
+  const canEdit = useCanEditHere();
   const events = useWeddingEventsStore((s) => s.weddingEvents);
   const addWeddingEvent = useWeddingEventsStore((s) => s.addWeddingEvent);
   const updateWeddingEvent = useWeddingEventsStore((s) => s.updateWeddingEvent);
@@ -124,6 +126,7 @@ export default function PlanningEventsScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.title}
         onChangeText={(title) => setForm((f) => ({ ...f, title }))}
+        editable={canEdit}
       />
 
       <ChipSelect options={TYPES} value={form.type} onChange={(type) => setForm((f) => ({ ...f, type }))} labels={typeLabels} />
@@ -139,6 +142,7 @@ export default function PlanningEventsScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.venueName}
         onChangeText={(venueName) => setForm((f) => ({ ...f, venueName }))}
+        editable={canEdit}
       />
       <TextInput
         className="text-base text-ink border-b border-hair pb-2 mt-3"
@@ -146,6 +150,7 @@ export default function PlanningEventsScreen() {
         placeholderTextColor="#D0D0D8"
         value={form.address}
         onChangeText={(address) => setForm((f) => ({ ...f, address }))}
+        editable={canEdit}
       />
 
       <View className="mt-3">
@@ -197,12 +202,16 @@ export default function PlanningEventsScreen() {
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-1">
-                    <Pressable onPress={() => handleEdit(e)} className="w-8 h-8 items-center justify-center">
-                      <Pencil size={15} color="#9CA3AF" />
-                    </Pressable>
-                    <Pressable onPress={() => setDeleteId(e.id)} className="w-8 h-8 items-center justify-center">
-                      <Trash2 size={15} color="#EF4444" />
-                    </Pressable>
+                    {canEdit && (
+                      <Pressable onPress={() => handleEdit(e)} className="w-8 h-8 items-center justify-center">
+                        <Pencil size={15} color="#9CA3AF" />
+                      </Pressable>
+                    )}
+                    {canEdit && (
+                      <Pressable onPress={() => setDeleteId(e.id)} className="w-8 h-8 items-center justify-center">
+                        <Trash2 size={15} color="#EF4444" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               </View>
