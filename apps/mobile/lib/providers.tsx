@@ -95,8 +95,20 @@ export function activateSync(
     // settings sync-toggle path, which previously never restored member credentials.
     let weddingNodeId = wedding.weddingNodeId ?? wedding.id;
     if (wedding.role === "member") {
+      // TEMPORARY diagnostic: capture whether the server's `_spaces` doc represented this
+      // space as a link (`pubAccess`) or a member cap (`caps`) — recoverSpaceAccess below
+      // writes a `kind:"link"` entry only when the space is in `pubAccess`; if it's (also)
+      // present in `caps`, hydrateSpaceAccessStore's `caps` loop runs AFTER the `pubAccess`
+      // loop is applied on a fresh cache, so ordering matters — see space-access-store.ts.
+      // Remove once the editor-write-403 investigation concludes.
+      let diagCapsHasSpace = false;
+      let diagPubAccessHasSpace = false;
       await readSpaces(session.spacesRegistryClient, session)
-        .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
+        .then(({ caps, pubAccess }) => {
+          diagCapsHasSpace = spaceId in caps;
+          diagPubAccessHasSpace = spaceId in pubAccess;
+          return recoverSpaceAccess(session, { caps, pubAccess });
+        })
         .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
 
       // Proactive read-only detection: a member's saved link-access entry carries the
@@ -110,6 +122,13 @@ export function activateSync(
       useSyncAccessStore.getState().setWriteDenied(
         spaceAccessEntry?.kind === "link" && spaceAccessEntry.write === false,
       );
+
+      console.log("[diag:boot] post-recover access entry", {
+        spaceId,
+        entryKind: (spaceAccessEntry as { kind?: string } | null)?.kind ?? null,
+        diagCapsHasSpace,
+        diagPubAccessHasSpace,
+      });
 
       if (!wedding.weddingNodeId) {
         const adopted = await discoverOwnerWeddingRoot(session, spaceId, wedding.id)

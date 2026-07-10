@@ -32,7 +32,6 @@ import { createInviteLink } from "@/lib/invite-link";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { usePermissionsStore } from "@/store/usePermissionsStore";
-import { roleCanWrite } from "@fiance/sdk";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   requestPermissions,
@@ -77,7 +76,7 @@ export default function SettingsScreen() {
     (w) => w.id === registry.activeWeddingId
   );
 
-  // Collaborator (non-owner) role label + access badge — for the "can't invite" card below.
+  // Collaborator (non-owner) role label — for the "can't invite" card below.
   const permissionRoles = usePermissionsStore((s) => s.roles);
   const memberRole = permissionRoles.find((r) => r.id === activeEntry?.roleId);
   const memberRoleLabel = memberRole
@@ -85,7 +84,6 @@ export default function SettingsScreen() {
       ? t(memberRole.name)
       : memberRole.name
     : t("unknownRole");
-  const memberCanEdit = memberRole ? roleCanWrite(memberRole) : false;
 
   // Rename wedding
   const [renameWeddingId, setRenameWeddingId] = useState<string | null>(null);
@@ -427,15 +425,6 @@ export default function SettingsScreen() {
             }
             title={t("collabInviteLockedTitle")}
             subtitle={t("collabInviteLockedDesc", { role: memberRoleLabel })}
-            right={
-              memberRole ? (
-                <Chip color={memberCanEdit ? theme.clay : theme.olive}>
-                  <Label color={memberCanEdit ? theme.clay : theme.olive}>
-                    {memberCanEdit ? t("roleCanEditLabel") : t("roleCanView")}
-                  </Label>
-                </Chip>
-              ) : undefined
-            }
           />
         )}
         {needsNamespaceResync(activeEntry) && (

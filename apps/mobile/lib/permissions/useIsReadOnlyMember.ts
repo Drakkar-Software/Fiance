@@ -1,5 +1,6 @@
 import { useSyncAccessStore } from "@/store/useSyncAccessStore";
 import { usePermissions } from "@/lib/permissions/usePermissions";
+import { matrixAllows } from "@fiance/sdk";
 
 /**
  * True when this device can't edit anything — either the space cap has been
@@ -16,7 +17,9 @@ import { usePermissions } from "@/lib/permissions/usePermissions";
  */
 export function useIsReadOnlyMember(): boolean {
   const writeDenied = useSyncAccessStore((s) => s.writeDenied);
-  const { isOwner, unrestricted, visibleSurfaces } = usePermissions();
-  const isReadOnlyCollaborator = !isOwner && !unrestricted && visibleSurfaces.length > 0;
+  const { isOwner, unrestricted, visibleSurfaces, matrix } = usePermissions();
+  const canEditSomething = visibleSurfaces.some((s) => matrixAllows(matrix, s, "edit"));
+  const isReadOnlyCollaborator =
+    !isOwner && !unrestricted && visibleSurfaces.length > 0 && !canEditSomething;
   return writeDenied || isReadOnlyCollaborator;
 }
