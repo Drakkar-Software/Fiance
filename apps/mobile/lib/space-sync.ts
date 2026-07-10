@@ -61,7 +61,10 @@ import {
   type ObjectNode,
   type NodeDescriptor,
 } from '@fiance/sdk';
+import { StarfishHttpError } from '@drakkar.software/starfish-client';
 import { useWeddingStore } from '@/store/useWeddingStore';
+import { useWeddingRegistryStore } from '@/store/useWeddingRegistryStore';
+import { useSyncAccessStore } from '@/store/useSyncAccessStore';
 import { useGuestsStore } from '@/store/useGuestsStore';
 import { useVendorsStore } from '@/store/useVendorsStore';
 import { usePlanningStore } from '@/store/usePlanningStore';
@@ -132,6 +135,18 @@ let _lastHydrateSawLegacy = false;
 /** True when the last hydrate saw legacy per-entity nodes needing migration (owner-only). */
 export function hydrateSawLegacyNodes(): boolean {
   return _lastHydrateSawLegacy;
+}
+
+/** Whether the current device joined this wedding as a member (vs. the owner who created it).
+ *  `role` lives on the active `WeddingRegistryEntry` (local device/registry metadata) —
+ *  NOT on `useWeddingStore`'s `wedding`, which is the synced domain object (partner names,
+ *  date, venue, ...) and has no `role` field. Reading `useWeddingStore().wedding?.role` here
+ *  is always `undefined`, silently defeating any owner-only gate — this is what made a prior
+ *  fix attempt (gating `pullAndApplyRsvpNodes` below) a no-op in production. */
+function isActiveDeviceMember(): boolean {
+  const registry = useWeddingRegistryStore.getState().registry;
+  const active = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
+  return active?.role === 'member';
 }
 
 /** Domain node types managed wholesale by pushSpaceSnapshot — excludes the guest-surface
@@ -360,8 +375,16 @@ async function pushNodeContent(
     // Deep-merge so a field this device never touched is reconciled from the peer's
     // version instead of being clobbered by a stale whole-tree push.
     await handle.push(objDocPull(spaceId, node.id), objDocPush(spaceId, node.id), (cur) => deepMerge(cur, content));
+    useSyncAccessStore.getState().setWriteDenied(false);
     return true;
   } catch (err) {
+    // A 403 here is the authoritative "this device's cap has no write access" signal —
+    // ground truth from the server, unlike the proactive write-flag check in providers.tsx
+    // (which can't see older link tokens where `write` was never recorded). See
+    // useSyncAccessStore.ts for how this flag is consumed (ReadOnlyBanner + usePermissions).
+    if (err instanceof StarfishHttpError && err.status === 403) {
+      useSyncAccessStore.getState().setWriteDenied(true);
+    }
     console.warn(`[space-sync] pushNodeContent ${node.id}:`, err);
     return false;
   }
@@ -383,8 +406,13 @@ async function pushCollectionDoc(
       objDocPush(spaceId, node.id),
       (cur) => mergeCollectionDoc(cur, doc, { now }) as unknown as Record<string, unknown>,
     );
+    useSyncAccessStore.getState().setWriteDenied(false);
     return true;
   } catch (err) {
+    // See the matching comment in pushNodeContent above — same authoritative 403 signal.
+    if (err instanceof StarfishHttpError && err.status === 403) {
+      useSyncAccessStore.getState().setWriteDenied(true);
+    }
     console.warn(`[space-sync] pushCollectionDoc ${node.id}:`, err);
     return false;
   }
@@ -773,7 +801,7 @@ export async function hydrateFromSpace(
     // submissions into its guest store — it receives RSVP state through normal guest-collection
     // sync from the owner. Applying it here too raced a member's guest store against concurrent
     // hydrates/pushes and could drop or tombstone a member's own newly created/edited guest.
-    if (useWeddingStore.getState().wedding?.role !== 'member') {
+    if (!isActiveDeviceMember()) {
       await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
     }
 

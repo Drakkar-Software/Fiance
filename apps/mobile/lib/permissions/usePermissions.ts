@@ -6,12 +6,18 @@
  * registry entry (see lib/permissions/resolve.ts + join-space.ts); this hook reads it
  * reactively so tabs/controls update as soon as the matrix hydrates from sync.
  *
- * NOTE: for a member invited with edit rights this gating is cosmetic — that member
- * holds the space keyring + a write cap. Read-only ("app-readonly") roles are the only
- * ones with a server-side boundary (Phase 2, via the invite `write=false` cap).
+ * NOTE: for a member invited with edit rights this gating was cosmetic in the sense that
+ * the local role matrix and the server-enforced cap can disagree — a member can have an
+ * "edit" matrix while actually holding a read-only cap (stale invite, cap re-minted
+ * read-only, etc). That mismatch previously caused edits to 403 silently and then get
+ * reverted by the next hydrate with zero feedback. `useSyncAccessStore`'s `writeDenied`
+ * flag closes that gap: it's set from the real cap (providers.tsx) and from an actual
+ * 403 (space-sync.ts), and forces edit/create/delete off here regardless of what the
+ * matrix says — 'view' stays untouched so the member still sees data, just can't edit it.
  */
 
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
+import { useSyncAccessStore } from "@/store/useSyncAccessStore";
 import {
   matrixAllows,
   FEATURE_SURFACES,
@@ -31,13 +37,16 @@ export interface Permissions {
 
 export function usePermissions(): Permissions {
   const registry = useWeddingRegistryStore((s) => s.registry);
+  const writeDenied = useSyncAccessStore((s) => s.writeDenied);
   const active = registry?.weddings.find((w) => w.id === registry.activeWeddingId) ?? null;
   const isOwner = !active || active.role !== "member";
   const matrix: PermissionMatrix = active?.permissions ?? {};
   const unrestricted = isOwner || !active?.permissions;
 
-  const can = (surface: FeatureSurface, action: PermissionAction = "edit"): boolean =>
-    unrestricted ? true : matrixAllows(matrix, surface, action);
+  const can = (surface: FeatureSurface, action: PermissionAction = "edit"): boolean => {
+    if (writeDenied && action !== "view") return false;
+    return unrestricted ? true : matrixAllows(matrix, surface, action);
+  };
 
   const visibleSurfaces = unrestricted
     ? FEATURE_SURFACES

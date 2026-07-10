@@ -1,22 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/components";
 import { Platform, useWindowDimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import {
-  Column,
-  Row,
-  Text as UIText,
-  TextInput as UITextInput,
-  Button as UIButton,
-  List,
-  ListItem,
-  useNativeState,
-} from "@expo/ui";
 import { useGuestsStore } from "@/store/useGuestsStore";
-import { Sheet, ForgeHost } from "@fiance/ui/components";
-import { theme } from "@/lib/theme";
+import { Sheet } from "@fiance/ui/components";
 
 interface CompanionPickerModalProps {
   visible: boolean;
@@ -39,13 +27,11 @@ export function CompanionPickerModal({
   const guests = useGuestsStore((s) => s.guests);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(currentCompanionId);
-  const searchState = useNativeState("");
 
   useEffect(() => {
     if (visible) {
       setSelected(currentCompanionId);
       setSearch("");
-      searchState.value = "";
     }
   }, [visible, currentCompanionId]);
 
@@ -64,74 +50,20 @@ export function CompanionPickerModal({
 
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * 0.6;
-  const insets = useSafeAreaInsets();
-  // iOS Column (SwiftUI VStack) needs an explicit numeric height — `flex: 1` is a no-op
-  // in @expo/ui's iOS style transform, so with no frame the VStack collapses to ~0 height
-  // (children overlap, the List renders blank). Size it to the sheet's actual inner height
-  // (92% detent minus bottom safe area minus the drag-indicator/top padding).
-  const sheetInnerHeight = windowHeight * 0.92 - insets.bottom - 24;
 
   const handleConfirm = () => {
     if (selected) onSelect(selected);
     else onClear();
   };
 
-  // iOS: @expo/ui BottomSheet hosts RN content via an RNHostView bridge whose touch
-  // handler desyncs on resize. This is a row-of-choices menu sheet, so its content is
-  // rebuilt entirely from @expo/ui-native components (List/ListItem) instead of RN
-  // Pressables. Avatar initials + selected checkmark stay RN — ListItem's leading/
-  // trailing slots are the one bridge point @expo/ui itself wraps safely.
-  if (Platform.OS === "ios") {
-    return (
-      <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card} snapPoints={["92%"]}>
-        <ForgeHost style={{ flex: 1 }}>
-          <Column style={{ padding: 20, height: sheetInnerHeight }} spacing={12}>
-            <UIText textStyle={{ fontSize: 18, fontWeight: "700" }}>
-              {t("companionLabel")}
-            </UIText>
-            <UITextInput
-              value={searchState}
-              onChangeText={(text) => {
-                searchState.value = text;
-                setSearch(text);
-              }}
-              placeholder={t("searchCompanion")}
-              autoCapitalize="none"
-            />
-            <List>
-              {filteredGuests.map((g) => (
-                <ListItem
-                  key={g.id}
-                  onPress={() => setSelected(selected === g.id ? null : g.id)}
-                  leading={
-                    <View className="w-8 h-8 rounded-lg bg-accent-blush dark:bg-primary-900 items-center justify-center">
-                      <Text className="text-primary-500 font-bold text-xs">
-                        {g.firstName[0]}
-                        {g.lastName[0]}
-                      </Text>
-                    </View>
-                  }
-                  trailing={selected === g.id ? <Check size={18} color="#EC4899" /> : undefined}
-                >
-                  {`${g.firstName} ${g.lastName}`}
-                </ListItem>
-              ))}
-            </List>
-            {filteredGuests.length === 0 && (
-              <UIText textStyle={{ textAlign: "center" }}>{t("noGuests")}</UIText>
-            )}
-            <Row spacing={12}>
-              <UIButton variant="filled" label={t("common:confirm")} onPress={handleConfirm} />
-              <UIButton variant="outlined" label={t("common:cancel")} onPress={onClose} />
-            </Row>
-          </Column>
-        </ForgeHost>
-      </Sheet>
-    );
-  }
-
+  // Plain RN content (Pressable/TextInput/ScrollView) — same proven pattern as every other
+  // sheet in the app (GuestSheet, ConfirmSheet, RenameSheet, ContributorsCard, InviteQRSheet).
+  // The primitive already forces enableDynamicSizing={false} on iOS, which is what fixes the
+  // RNHostView touch desync — no need to rebuild this content from @expo/ui-native components.
+  // See CLAUDE.md's "@expo/ui BottomSheet" section for why an all-native rebuild is the wrong
+  // tool for a scrollable/searchable list specifically.
   return (
-    <Sheet visible={visible} onDismiss={onClose}>
+    <Sheet visible={visible} onDismiss={onClose} snapPoints={Platform.OS === "ios" ? ["55%", "85%"] : undefined}>
       <View className="bg-accent-card rounded-t-3xl px-5 pt-5 pb-8">
         <Text className="text-lg font-bold text-ink mb-3">
           {t("companionLabel")}

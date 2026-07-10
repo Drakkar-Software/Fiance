@@ -54,6 +54,7 @@ import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer, WidgetInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
 import { ObserveRoot, useObserve } from "expo-observe";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -134,6 +135,7 @@ function AppContent() {
           <Stack.Screen name="wedding/[id]" />
         </Stack>
         {activeWedding && <OfflineBanner />}
+        {activeWedding && <ReadOnlyBanner />}
       </>
     </DatabaseProvider>
   );

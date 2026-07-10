@@ -175,6 +175,17 @@ const emptyStore = { getState: () => ({
 vi.mock("@/store/useWeddingStore", () => ({
   useWeddingStore: { getState: () => ({ ...emptyStore.getState(), wedding: mockWeddingData }) },
 }));
+// `role` lives on the WeddingRegistryEntry (local device/registry metadata), NOT on the
+// domain `wedding` above — mocked separately so tests exercise the real gating path
+// (see the "hydrateFromSpace — RSVP inbox apply is owner-only" regression tests below).
+let mockRegistryRole: "owner" | "member" | undefined;
+vi.mock("@/store/useWeddingRegistryStore", () => ({
+  useWeddingRegistryStore: {
+    getState: () => ({
+      registry: { activeWeddingId: "w1", weddings: [{ id: "w1", role: mockRegistryRole }] },
+    }),
+  },
+}));
 vi.mock("@/store/useGuestsStore", () => ({
   useGuestsStore: { getState: () => ({ ...emptyStore.getState(), guests: mockGuestsData }) },
 }));
@@ -439,6 +450,83 @@ describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () =>
   });
 });
 
+// ─── Regression: a 403 push sets writeDenied; a successful push clears it ────
+//
+// Root cause of the guest/vendor/budget data-loss bug on member devices: a stale
+// read-only cap makes every write 403 server-side. The error was previously only
+// console.warn'd, so the edit vanished on the next hydrate with zero feedback.
+// pushNodeContent/pushCollectionDoc must set useSyncAccessStore's writeDenied on
+// a StarfishHttpError(403) and clear it again once a push actually succeeds.
+
+describe("push 403 handling sets/clears useSyncAccessStore.writeDenied", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    const { useSyncAccessStore } = await import("@/store/useSyncAccessStore");
+    useSyncAccessStore.getState().setWriteDenied(false);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("sets writeDenied when handle.push rejects with a 403 StarfishHttpError", async () => {
+    const { StarfishHttpError } = await import("@drakkar.software/starfish-client");
+    mockHandlePush = vi.fn(async () => { throw new StarfishHttpError(403, "forbidden"); });
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    const { useSyncAccessStore } = await import("@/store/useSyncAccessStore");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(useSyncAccessStore.getState().writeDenied).toBe(true);
+  });
+
+  it("clears writeDenied once a push actually succeeds", async () => {
+    const { useSyncAccessStore } = await import("@/store/useSyncAccessStore");
+    useSyncAccessStore.getState().setWriteDenied(true);
+    mockClientPull = vi.fn(async () => ({ data: { existing: true }, hash: "H1" }));
+    mockClientPush = vi.fn(async () => ({ hash: "H2" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(useSyncAccessStore.getState().writeDenied).toBe(false);
+  });
+
+  it("does NOT set writeDenied for a non-403 error (e.g. transient network failure)", async () => {
+    mockHandlePush = vi.fn(async () => { throw new Error("network timeout"); });
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+    const { useSyncAccessStore } = await import("@/store/useSyncAccessStore");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(useSyncAccessStore.getState().writeDenied).toBe(false);
+  });
+});
+
 // ─── discoverOwnerWeddingRoot ─────────────────────────────────────────────────
 //
 // Finds the pre-existing wedding root in a shared space so a joiner can adopt the
@@ -639,7 +727,11 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
 describe("hydrateFromSpace — RSVP inbox apply is owner-only", () => {
   afterEach(() => {
     mockReadObjectTreeImpl = async () => [];
-    mockWeddingData = null;
+    // Production-shaped domain wedding — it never carries a `role` field. Role-gating must
+    // come from the registry mock below, not from injecting `role` onto this object (that
+    // was the bug: the real code read `wedding?.role`, which is always undefined in prod).
+    mockWeddingData = { id: 1, partner1Name: "A", partner2Name: "B" };
+    mockRegistryRole = undefined;
     mockGetNodeAccessImpl = async () => ({
       encryptor: null,
       client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null, hash: null })) },
@@ -664,7 +756,9 @@ describe("hydrateFromSpace — RSVP inbox apply is owner-only", () => {
   }
 
   it("does NOT apply RSVP submissions into the guest store on a member device", async () => {
-    mockWeddingData = { role: "member" };
+    // Production-shaped: domain wedding has no `role`; the registry entry does.
+    mockWeddingData = { id: 1, partner1Name: "A", partner2Name: "B" };
+    mockRegistryRole = "member";
     seedRsvpNode();
 
     const { applyRsvpSubmissionsByGuestId } = await import("@/lib/rsvp-sync");
@@ -677,7 +771,8 @@ describe("hydrateFromSpace — RSVP inbox apply is owner-only", () => {
   });
 
   it("DOES apply RSVP submissions into the guest store on the owner device", async () => {
-    mockWeddingData = { role: "owner" };
+    mockWeddingData = { id: 1, partner1Name: "A", partner2Name: "B" };
+    mockRegistryRole = "owner";
     seedRsvpNode();
 
     const { applyRsvpSubmissionsByGuestId } = await import("@/lib/rsvp-sync");

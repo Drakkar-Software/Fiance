@@ -18,6 +18,7 @@
   "syncStatusSyncing": "Sauvegarde en cours…",
   "syncStatusPending": "Modifications en attente",
   "syncStatusOffline": "Hors ligne — sauvegarde à la reconnexion",
+  "syncStatusReadOnly": "Accès en lecture seule — vos modifications ne seront pas sauvegardées",
   "syncStatusError": "Erreur de sauvegarde",
   "tapToEnable": "Appuyez pour activer la sauvegarde",
   "shareInviteLink": "Partager un lien d'invitation",

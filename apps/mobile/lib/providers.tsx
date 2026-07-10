@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 
-import { configureFiance, recoverSpaceAccess, readSpaces } from "@fiance/sdk";
+import { configureFiance, recoverSpaceAccess, readSpaces, getSpaceAccessEntry } from "@fiance/sdk";
 import { configureStarfishPlatform, kvGet, kvSet, kvRemove } from "@drakkar.software/dk-spaces-platform-sdk";
 import {
   initSync,
@@ -30,6 +30,7 @@ import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { usePermissionsStore } from "@/store/usePermissionsStore";
+import { useSyncAccessStore } from "@/store/useSyncAccessStore";
 import { resolveActiveMemberPermissions } from "@/lib/permissions/resolve";
 import { updateWidget } from "@/lib/widget";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
@@ -97,6 +98,18 @@ export function activateSync(
       await readSpaces(session.spacesRegistryClient, session)
         .then(({ caps, pubAccess }) => recoverSpaceAccess(session, { caps, pubAccess }))
         .catch((err) => console.warn("[providers] recoverSpaceAccess failed:", err));
+
+      // Proactive read-only detection: a member's saved link-access entry carries the
+      // `write` flag from the invite that minted it. `write === false` is a reliable
+      // positive (a Viewer/Planner-role invite, or a stale cap re-provisioned as
+      // read-only) — flag it before the user can even attempt an edit that would
+      // otherwise 403 silently and revert on the next hydrate. `write === undefined`
+      // (older links) is ambiguous and left to the authoritative 403 check in
+      // space-sync.ts's push functions instead of guessed here.
+      const spaceAccessEntry = getSpaceAccessEntry(spaceId);
+      useSyncAccessStore.getState().setWriteDenied(
+        spaceAccessEntry?.kind === "link" && spaceAccessEntry.write === false,
+      );
 
       if (!wedding.weddingNodeId) {
         const adopted = await discoverOwnerWeddingRoot(session, spaceId, wedding.id)
