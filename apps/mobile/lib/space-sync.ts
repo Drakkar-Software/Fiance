@@ -177,7 +177,10 @@ export function scheduleSyncPush(): void {
       // wrapped by those two functions. Same diagnostic, so we can tell _index
       // 403s apart from objdoc (col:vendor/col:guest) 403s.
       if (err instanceof StarfishHttpError && err.status === 403) {
-        await logWriteAccessDiag('pushSpaceSnapshot(_index)', spaceId, session);
+        // No write-specific client available here (updateObjectIndex is internal to the
+        // SDK) — falls back to session.accountClient, which is itself informative if
+        // its roster pull also 403s (see logWriteAccessDiag's usedFallbackClientForRosterPull).
+        await logWriteAccessDiag('pushSpaceSnapshot(_index)', spaceId, session, err);
       }
       console.warn('[space-sync] push failed:', err);
     } finally {
@@ -371,17 +374,30 @@ function buildCollectionDocs(weddingNodeId: string, now: number): { nodes: Objec
 // ---------------------------------------------------------------------------
 
 /**
- * TEMPORARY diagnostic — logs the exact access-entry kind/signing-subject and live
- * roster membership at the moment a write 403s, so we can tell apart:
- *  (a) the link's ephemeral subject was never added to the space's _access roster
- *      (owner-side registration gap), from
- *  (b) a link-joined space got locally represented as a `kind:"member"` entry that
- *      signs with this device's OWN identity — which the roster never knew about
- *      (recoverSpaceAccess flipping link → member; see providers.tsx's `kind==="link"`
- *      guard, which only makes sense if `kind:"member"` is also reachable here).
+ * TEMPORARY diagnostic — logs the exact access-entry kind/signing-subject, the live
+ * roster membership, and the server's raw denial reason at the moment a write 403s.
+ * Round 1 (entry kind + naive roster read) ruled out a link→member credential flip —
+ * the entry is correctly `kind:"link"`, signing with the roster-known ephemeral key.
+ * Round 2 fixes two gaps found in round 1:
+ *  - the roster pull now goes through `writeClient` — the SAME signing client the
+ *    write itself used (passed by the caller, e.g. `handle.client` from
+ *    `getNodeAccess`) — not `session.accountClient`, which signs as this device's own
+ *    root identity (never added to the roster) and would 403 on its own, masquerading
+ *    as a distinct failure. Falls back to `session.accountClient` only when no
+ *    write-specific client is available (the `_index` call site), which is itself
+ *    informative if that pull now 403s too.
+ *  - `err.status`/`err.body` (StarfishHttpError's raw server response) are now logged
+ *    explicitly — `console.warn(..., err)` doesn't reliably surface a subclass's extra
+ *    fields, and `body` is the server's actual denial reason.
  * Best-effort, read-only, never throws into the caller. Remove once the 403 is fixed.
  */
-async function logWriteAccessDiag(tag: string, spaceId: string, session: Session): Promise<void> {
+async function logWriteAccessDiag(
+  tag: string,
+  spaceId: string,
+  session: Session,
+  err: unknown,
+  writeClient?: Session["accountClient"],
+): Promise<void> {
   try {
     const entry = getSpaceAccessEntry(spaceId) as
       | { kind: "link"; cap?: { sub?: string; subUserId?: string }; write?: boolean }
@@ -398,9 +414,16 @@ async function logWriteAccessDiag(tag: string, spaceId: string, session: Session
       entrySummary = { kind: "member", signingSubUserId, iss: cap.iss };
     }
 
-    const access = await session.accountClient
+    const client = writeClient ?? session.accountClient;
+    const usedFallbackClient = !writeClient;
+    let rosterPullFailed = false;
+    const access = await client
       .pull(session.layout.spaceAccessPull(spaceId))
-      .catch(() => null);
+      .catch((rosterErr) => {
+        rosterPullFailed = true;
+        console.warn(`[diag:write] ${tag} — roster pull itself failed:`, rosterErr);
+        return null;
+      });
     const owner: string | undefined = (access?.data as any)?.owner;
     const members: string[] = Array.isArray((access?.data as any)?.members)
       ? (access!.data as any).members
@@ -410,13 +433,17 @@ async function logWriteAccessDiag(tag: string, spaceId: string, session: Session
       spaceId,
       sessionUserId: session.userId,
       entry: entrySummary,
+      errStatus: err instanceof StarfishHttpError ? err.status : null,
+      errBody: err instanceof StarfishHttpError ? err.body : null,
+      usedFallbackClientForRosterPull: usedFallbackClient,
+      rosterPullFailed,
       rosterOwner: owner,
       rosterMembers: members,
       signingSubjectInRoster: signingSubUserId ? members.includes(signingSubUserId) : null,
       sessionUserInRoster: members.includes(session.userId),
     });
-  } catch (err) {
-    console.warn("[diag:write] failed:", err);
+  } catch (diagErr) {
+    console.warn("[diag:write] failed:", diagErr);
   }
 }
 
@@ -426,8 +453,9 @@ async function pushNodeContent(
   node: ObjectNode,
   content: Record<string, unknown>,
 ): Promise<boolean> {
+  let handle: Awaited<ReturnType<typeof getNodeAccess>> | undefined;
   try {
-    const handle = await getNodeAccess(spaceId, node.id, node, session, null);
+    handle = await getNodeAccess(spaceId, node.id, node, session, null);
     // Conflict-retry mutator: `cur` is the remote doc the SDK's CAS retry pulled and
     // decrypted (space-access.ts) when this push lost a race against a peer's push.
     // Deep-merge so a field this device never touched is reconciled from the peer's
@@ -442,7 +470,7 @@ async function pushNodeContent(
     // useSyncAccessStore.ts for how this flag is consumed (ReadOnlyBanner + usePermissions).
     if (err instanceof StarfishHttpError && err.status === 403) {
       useSyncAccessStore.getState().setWriteDenied(true);
-      await logWriteAccessDiag(`pushNodeContent ${node.id}`, spaceId, session);
+      await logWriteAccessDiag(`pushNodeContent ${node.id}`, spaceId, session, err, handle?.client);
     }
     console.warn(`[space-sync] pushNodeContent ${node.id}:`, err);
     return false;
@@ -458,8 +486,9 @@ async function pushCollectionDoc(
   doc: CollectionDoc,
   now: number,
 ): Promise<boolean> {
+  let handle: Awaited<ReturnType<typeof getNodeAccess>> | undefined;
   try {
-    const handle = await getNodeAccess(spaceId, node.id, node, session, null);
+    handle = await getNodeAccess(spaceId, node.id, node, session, null);
     await handle.push(
       objDocPull(spaceId, node.id),
       objDocPush(spaceId, node.id),
@@ -471,7 +500,7 @@ async function pushCollectionDoc(
     // See the matching comment in pushNodeContent above — same authoritative 403 signal.
     if (err instanceof StarfishHttpError && err.status === 403) {
       useSyncAccessStore.getState().setWriteDenied(true);
-      await logWriteAccessDiag(`pushCollectionDoc ${node.id}`, spaceId, session);
+      await logWriteAccessDiag(`pushCollectionDoc ${node.id}`, spaceId, session, err, handle?.client);
     }
     console.warn(`[space-sync] pushCollectionDoc ${node.id}:`, err);
     return false;
