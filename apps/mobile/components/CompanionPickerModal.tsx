@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, Pressable, TextInput, ScrollView } from "react-native-css/components";
 import { Platform, useWindowDimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Search, Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -63,6 +64,12 @@ export function CompanionPickerModal({
 
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * 0.6;
+  const insets = useSafeAreaInsets();
+  // iOS Column (SwiftUI VStack) needs an explicit numeric height — `flex: 1` is a no-op
+  // in @expo/ui's iOS style transform, so with no frame the VStack collapses to ~0 height
+  // (children overlap, the List renders blank). Size it to the sheet's actual inner height
+  // (92% detent minus bottom safe area minus the drag-indicator/top padding).
+  const sheetInnerHeight = windowHeight * 0.92 - insets.bottom - 24;
 
   const handleConfirm = () => {
     if (selected) onSelect(selected);
@@ -78,7 +85,7 @@ export function CompanionPickerModal({
     return (
       <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card} snapPoints={["92%"]}>
         <ForgeHost style={{ flex: 1 }}>
-          <Column style={{ padding: 20 }} spacing={12}>
+          <Column style={{ padding: 20, height: sheetInnerHeight }} spacing={12}>
             <UIText textStyle={{ fontSize: 18, fontWeight: "700" }}>
               {t("companionLabel")}
             </UIText>

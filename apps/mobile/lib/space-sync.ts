@@ -769,7 +769,13 @@ export async function hydrateFromSpace(
     if (permissionAssignmentDocs.length) usePermissionsStore.getState().setAssignments(permissionAssignmentDocs.map(permissionAssignmentFromDoc) as Parameters<ReturnType<typeof usePermissionsStore.getState>['setAssignments']>[0]);
 
     // Pull RSVP submissions — rsvp nodes live in objinv (plaintext, owner has space:member access).
-    await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
+    // Owner-only: a member device has no business independently applying public-page RSVP
+    // submissions into its guest store — it receives RSVP state through normal guest-collection
+    // sync from the owner. Applying it here too raced a member's guest store against concurrent
+    // hydrates/pushes and could drop or tombstone a member's own newly created/edited guest.
+    if (useWeddingStore.getState().wedding?.role !== 'member') {
+      await pullAndApplyRsvpNodes(session, spaceId, byType.get(FIANCE_TYPES.rsvp) ?? []);
+    }
 
     // Seed the wedding-node dirty baseline from what we just hydrated, so the next debounced
     // push only sends it if genuinely edited locally after this point.

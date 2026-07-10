@@ -628,6 +628,70 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
   });
 });
 
+// ─── Regression: RSVP inbox apply must be owner-only (guest data-loss on member devices) ──
+//
+// refreshRsvpInbox/pullAndApplyRsvpNodes write the guest store (via applyRsvpSubmissionsByGuestId)
+// and, outside the hydrateFromSpace interlock, that write schedules a real push. A member device
+// has no business independently applying public-page RSVP submissions — it receives RSVP state
+// through normal guest-collection sync from the owner. Letting a member run this raced its guest
+// store against foreground hydrates and dropped/tombstoned its own newly created/edited guests.
+
+describe("hydrateFromSpace — RSVP inbox apply is owner-only", () => {
+  afterEach(() => {
+    mockReadObjectTreeImpl = async () => [];
+    mockWeddingData = null;
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null, hash: null })) },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+  });
+
+  function seedRsvpNode() {
+    mockReadObjectTreeImpl = async () => [
+      { id: "rsvp-1", type: "rsvp", parentId: null, updatedAt: 1000, contentKind: "merge", access: "invite", enc: false },
+    ];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({ data: { guestId: "g1", rsvpStatus: "confirmed", submittedAt: 1000 }, hash: "h" })),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+  }
+
+  it("does NOT apply RSVP submissions into the guest store on a member device", async () => {
+    mockWeddingData = { role: "member" };
+    seedRsvpNode();
+
+    const { applyRsvpSubmissionsByGuestId } = await import("@/lib/rsvp-sync");
+    vi.mocked(applyRsvpSubmissionsByGuestId).mockClear();
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(applyRsvpSubmissionsByGuestId).not.toHaveBeenCalled();
+  });
+
+  it("DOES apply RSVP submissions into the guest store on the owner device", async () => {
+    mockWeddingData = { role: "owner" };
+    seedRsvpNode();
+
+    const { applyRsvpSubmissionsByGuestId } = await import("@/lib/rsvp-sync");
+    vi.mocked(applyRsvpSubmissionsByGuestId).mockClear();
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(applyRsvpSubmissionsByGuestId).toHaveBeenCalledWith([
+      expect.objectContaining({ guestId: "g1" }),
+    ]);
+  });
+});
+
 // ─── Regression: encrypted nodes must not be silently dropped (Bug B) ─────────
 //
 // When a doc does not exist the server returns { data: {}, hash: "" }. The fixed

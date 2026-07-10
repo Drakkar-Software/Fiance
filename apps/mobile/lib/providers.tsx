@@ -225,14 +225,27 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
           if (features.length > 0) useEntitlementsStore.getState().setFeatures(features);
         })
         .catch(() => {});
-      const fgSession = getActiveSession();
-      const fgSpaceId = getActiveSpaceId();
-      if (fgSession && fgSpaceId) {
-        refreshRsvpInbox(fgSession, fgSpaceId).catch(() => {});
-      }
       // Pull peers' content changes on foreground (tab refocus / app resume) — content
       // sync otherwise only re-hydrates on cold boot/wedding switch (see space-sync.ts).
-      refreshFromSpaceIfIdle().catch(() => {});
+      // Awaited before the RSVP inbox refresh below (rather than racing it) so a member's
+      // just-added/edited guest is picked up as "current" before anything else touches the
+      // guest store — see space-sync.ts's refreshFromSpaceIfIdle guard.
+      refreshFromSpaceIfIdle()
+        .catch(() => {})
+        .then(() => {
+          // Owner-only: refreshRsvpInbox applies RSVP submissions into the guest store and
+          // (via notifySync) schedules a real push, outside the hydrate interlock. Members
+          // have no business independently pulling/re-pushing RSVP state — they receive it
+          // through normal guest-collection sync from the owner. Letting a member run this
+          // raced the guest store against foreground hydrates and dropped/tombstoned newly
+          // created or edited guests on member devices.
+          if (wedding.role === "member") return;
+          const fgSession = getActiveSession();
+          const fgSpaceId = getActiveSpaceId();
+          if (fgSession && fgSpaceId) {
+            refreshRsvpInbox(fgSession, fgSpaceId).catch(() => {});
+          }
+        });
     });
 
     return () => {
