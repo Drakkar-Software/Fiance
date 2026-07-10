@@ -14,7 +14,7 @@ interface HomeBannerProps {
   /** Icon circle background. Defaults to the clay-soft tint. */
   iconBg?: string;
   title: string;
-  description: string;
+  description?: string;
   /** Makes the whole card pressable. */
   onPress?: () => void;
   /** Shows a trailing dismiss "X" wired to this callback. */
@@ -42,7 +42,7 @@ export function HomeBanner({
       </View>
       <View className="flex-1">
         <Text className="text-sm font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-mute mt-0.5">{description}</Text>
+        {description ? <Text className="text-xs text-mute mt-0.5">{description}</Text> : null}
       </View>
       {onDismiss ? (
         <Pressable onPress={onDismiss} className="p-1">

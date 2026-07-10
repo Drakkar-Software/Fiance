@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, StatusBar as RNStatusBar } from "react-native";
 import { useRouter } from "expo-router";
-import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, LayoutGrid, Clock, Circle } from "lucide-react-native";
+import { Settings, MapPin, AlertTriangle, Briefcase, Sparkles, ChevronRight, Download, LayoutGrid, Clock, Circle, Eye } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { differenceInDays, format } from "date-fns";
@@ -11,6 +11,7 @@ import { useWeddingStore } from "@/store/useWeddingStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { isAgendaEventUpcoming } from "@/lib/agenda-upcoming";
 import { needsNamespaceResync } from "@/lib/space-resync";
+import { useIsReadOnlyMember } from "@/lib/permissions/useIsReadOnlyMember";
 import { useWeddingEventsStore } from "@/store/useWeddingEventsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -46,6 +47,10 @@ function DashboardScreen() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
   const showResyncBanner = needsNamespaceResync(activeEntry);
+  // Desktop web shows this as a persistent top bar instead (ReadOnlyBanner,
+  // mounted in app/_layout.tsx) — a fixed overlay is awkward on a small screen.
+  const isReadOnlyMember = useIsReadOnlyMember();
+  const showReadOnlyBanner = !isWide && isReadOnlyMember;
   const weddingEvents = useWeddingEventsStore((s) => s.weddingEvents);
   const primaryEvent = React.useMemo(() => getPrimaryEvent(weddingEvents), [weddingEvents]);
   const vendors = useVendorsStore((s) => s.vendors);
@@ -280,6 +285,15 @@ function DashboardScreen() {
               </View>
             ))}
           </View>
+        )}
+
+        {/* Read-only status — narrow web/native only; desktop web uses the top ReadOnlyBanner instead */}
+        {showReadOnlyBanner && (
+          <HomeBanner
+            icon={<Eye size={20} color={GP.clay} />}
+            iconBg={`${GP.clay}1f`}
+            title={t("settings:syncStatusReadOnly")}
+          />
         )}
 
         {/* PWA install banner — Chromium browsers */}

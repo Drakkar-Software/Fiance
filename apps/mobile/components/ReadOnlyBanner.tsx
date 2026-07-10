@@ -1,68 +1,42 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useSyncAccessStore } from "@/store/useSyncAccessStore";
-import { usePermissions } from "@/lib/permissions/usePermissions";
-
-const BANNER_HEIGHT = 36;
+import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { useIsReadOnlyMember } from "@/lib/permissions/useIsReadOnlyMember";
 
 /**
- * Persistent banner for a member device that can't edit — either the space cap has
- * been proven read-only (`useSyncAccessStore`'s `writeDenied`, the authoritative
- * server-truth signal — see that file), or the locally-cached role matrix
- * (`usePermissions`) grants this device only "view" on every visible surface. The
- * two mostly agree (both system roles, Viewer/Planner, are "app-readonly" tier and
- * always get a write-denied cap), but a custom mixed-edit role can be locally
- * view-only on some surfaces while still holding a writable cap overall — the
- * matrix check catches that case the cap-based signal alone would miss. Same
- * message either way: usePermissions.ts is what actually prevents the edit, this
- * just makes the (previously silent) constraint visible.
+ * Desktop-web-only top banner for a device that can't edit (see
+ * useIsReadOnlyMember). Mounted before <Stack> in app/_layout.tsx so it sits
+ * in normal document flow above the DesktopShell sidebar/content instead of
+ * floating over it as an absolute overlay (that overlapped/clipped the
+ * sidebar on wide web layouts).
+ *
+ * On native and narrow/mobile web this renders nothing — a persistent fixed
+ * top bar is awkward on a small screen, so /home shows a warning banner
+ * instead (see app/(tabs)/home/index.tsx), driven by the same hook.
  */
 export function ReadOnlyBanner() {
   const { t } = useTranslation("settings");
-  const insets = useSafeAreaInsets();
-  const writeDenied = useSyncAccessStore((s) => s.writeDenied);
-  const { isOwner, unrestricted, visibleSurfaces } = usePermissions();
-  const isReadOnlyCollaborator = !isOwner && !unrestricted && visibleSurfaces.length > 0;
-  const show = writeDenied || isReadOnlyCollaborator;
-  const translateY = useSharedValue(-(BANNER_HEIGHT + insets.top + 4));
+  const isWide = useIsWideScreen();
+  const show = useIsReadOnlyMember();
 
-  useEffect(() => {
-    const hiddenY = -(BANNER_HEIGHT + insets.top + 4);
-    translateY.value = withTiming(show ? 0 : hiddenY, { duration: 280 });
-  }, [show, insets.top]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
+  if (!isWide || !show) return null;
 
   return (
-    <Animated.View
-      style={[
-        styles.banner,
-        { paddingTop: insets.top + 6, height: BANNER_HEIGHT + insets.top },
-        animatedStyle,
-      ]}
-      pointerEvents="none"
-    >
+    <View style={styles.banner}>
       <Text style={styles.text}>{t("syncStatusReadOnly")}</Text>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   banner: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
+    width: "100%",
     zIndex: 999,
     backgroundColor: "#b96a4a", // clay — matches OfflineBanner's mustard "warning" convention
     alignItems: "center",
-    justifyContent: "flex-end",
-    paddingBottom: 6,
+    justifyContent: "center",
+    paddingVertical: 8,
   },
   text: {
     color: "#fdfaf1", // card-cream on clay

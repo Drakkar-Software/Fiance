@@ -126,17 +126,19 @@ function AppContent() {
       {activeWedding && <NotificationInitializer />}
       {activeWedding && <IAPInitializer wedding={activeWedding} />}
       {activeWedding && <WidgetInitializer />}
-      <>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="settings" />
-          <Stack.Screen name="ideas" />
-          <Stack.Screen name="wedding/[id]" />
-        </Stack>
-        {activeWedding && <OfflineBanner />}
+      <View style={{ flex: 1 }}>
         {activeWedding && <ReadOnlyBanner />}
-      </>
+        <View style={{ flex: 1 }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="settings" />
+            <Stack.Screen name="ideas" />
+            <Stack.Screen name="wedding/[id]" />
+          </Stack>
+        </View>
+        {activeWedding && <OfflineBanner />}
+      </View>
     </DatabaseProvider>
   );
 }
