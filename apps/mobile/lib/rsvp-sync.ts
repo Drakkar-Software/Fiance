@@ -255,6 +255,13 @@ export async function getGuestInviteLink(
 /**
  * Apply a list of v3 RSVP submissions (keyed by guestId) to the guests store.
  * Returns the count of applied updates.
+ *
+ * Idempotent w.r.t. local edits: a submission is only applied when it is strictly newer
+ * than the guest's current `rsvpDate`. Without this guard, this function re-runs on every
+ * hydrate and every app foreground (see space-sync.ts's pullAndApplyRsvpNodes / providers.tsx's
+ * refreshRsvpInbox) and would unconditionally overwrite a manual edit made on another device
+ * with the (now stale) public-page submission — then re-push the reverted value via
+ * updateGuest's notifySync(), clobbering the edit on the server too.
  */
 export function applyRsvpSubmissionsByGuestId(submissions: RsvpSubmission[]): number {
   const { guests } = useGuestsStore.getState();
@@ -266,6 +273,10 @@ export function applyRsvpSubmissionsByGuestId(submissions: RsvpSubmission[]): nu
 
     const guest = guests.find((g) => g.id === sub.guestId);
     if (!guest) continue;
+
+    // Skip a submission that isn't newer than what's already stored — protects a manual
+    // edit (which stamps a fresh rsvpDate) from being reverted by a stale re-apply.
+    if (guest.rsvpDate && sub.submittedAt <= guest.rsvpDate) continue;
 
     const updates: Record<string, unknown> = {
       rsvpStatus: sub.rsvpStatus,
@@ -280,12 +291,15 @@ export function applyRsvpSubmissionsByGuestId(submissions: RsvpSubmission[]): nu
     // Apply companion RSVP (companion ID may come from submission or from the guest's companionId).
     const companionId = sub.plusOneGuestId ?? guest.companionId ?? null;
     if (sub.plusOneRsvpStatus && companionId) {
-      const companionUpdates: Record<string, unknown> = {
-        rsvpStatus: sub.plusOneRsvpStatus,
-        rsvpDate: sub.submittedAt,
-      };
-      if (sub.plusOneDiet) companionUpdates.diet = sub.plusOneDiet;
-      updateGuest(companionId, companionUpdates);
+      const companion = guests.find((g) => g.id === companionId);
+      if (companion && (!companion.rsvpDate || sub.submittedAt > companion.rsvpDate)) {
+        const companionUpdates: Record<string, unknown> = {
+          rsvpStatus: sub.plusOneRsvpStatus,
+          rsvpDate: sub.submittedAt,
+        };
+        if (sub.plusOneDiet) companionUpdates.diet = sub.plusOneDiet;
+        updateGuest(companionId, companionUpdates);
+      }
     }
   }
 

@@ -91,6 +91,13 @@ import { withIndexLock } from '@/lib/index-lock';
 
 let _pushTimer: ReturnType<typeof setTimeout> | null = null;
 let _isHydrating = false;
+/** True for the duration of an in-flight pushSpaceSnapshot network call (from just after
+ *  _pushTimer is cleared until the push settles). Without this, refreshFromSpaceIfIdle's
+ *  "no push pending" check goes false the instant the debounce timer fires — while the
+ *  push is still awaiting the network — letting a concurrent hydrate reseed _collectionState
+ *  from the pre-push server doc and drop an entity the in-flight push is about to persist,
+ *  which then reads as a delete and gets durably tombstoned on the next push. */
+let _pushing = false;
 
 /**
  * Dirty-push tracking for the wedding singleton node: node id → stableStringify() of the
@@ -145,9 +152,14 @@ export function scheduleSyncPush(): void {
     const spaceId = getActiveSpaceId();
     const weddingNodeId = getActiveWeddingNodeId();
     if (!session || !spaceId || !weddingNodeId) return;
-    await pushSpaceSnapshot(session, spaceId, weddingNodeId).catch((err) => {
+    _pushing = true;
+    try {
+      await pushSpaceSnapshot(session, spaceId, weddingNodeId);
+    } catch (err) {
       console.warn('[space-sync] push failed:', err);
-    });
+    } finally {
+      _pushing = false;
+    }
   }, 2000);
 }
 
@@ -793,7 +805,7 @@ export async function hydrateFromSpace(
  * clobbers an edit this device hasn't flushed yet.
  */
 export async function refreshFromSpaceIfIdle(): Promise<void> {
-  if (_isHydrating || _pushTimer) return;
+  if (_isHydrating || _pushTimer || _pushing) return;
   const session = getActiveSession();
   const spaceId = getActiveSpaceId();
   const weddingNodeId = getActiveWeddingNodeId();

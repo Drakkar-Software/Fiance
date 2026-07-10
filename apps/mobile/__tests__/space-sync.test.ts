@@ -263,6 +263,126 @@ describe("scheduleSyncPush / _isHydrating timer guard", () => {
   });
 });
 
+// ─── Bug B regression: created-guest deletion race ────────────────────────────
+//
+// Repro (member device, joined via invite link):
+//  1. Member creates guest G. notifySync() → scheduleSyncPush() debounces 2s.
+//  2. Timer fires: _pushTimer is cleared to null BEFORE pushSpaceSnapshot's network
+//     call resolves (space-sync.ts's scheduleSyncPush callback).
+//  3. Before the fix, refreshFromSpaceIfIdle()'s guard (`_isHydrating || _pushTimer`)
+//     was already open during this window, so a foreground refresh (guests get an
+//     extra foreground trigger via refreshRsvpInbox + refreshFromSpaceIfIdle in
+//     providers.tsx) could run hydrateFromSpace concurrently. That reseeds
+//     _collectionState from the pre-G server doc and setGuests() replaces the store
+//     WITHOUT G, while the in-flight push's success handler then commits
+//     _collectionState WITH G — so the next buildCollectionDoc() sees an id in
+//     `prev.rev` that's absent from the (reseeded) store and tombstones it: G is
+//     durably deleted on every device.
+//  4. Fix: a `_pushing` flag is held for the full duration of the awaited
+//     pushSpaceSnapshot call (not just the debounce), and refreshFromSpaceIfIdle's
+//     guard now also checks it — closing the window entirely.
+
+describe("_pushing guard — no concurrent hydrate while a push awaits the network (Bug B)", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = null;
+    mockGuestsData = [];
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+    mockGuestsData = [];
+    mockReadObjectTreeImpl = async () => [];
+  });
+
+  it("refreshFromSpaceIfIdle does not hydrate during the post-timer-clear, pre-network-settle window, and resumes once the push settles", async () => {
+    // Establish a baseline: guest g1 already durably pushed (so the next push only
+    // carries g2 as new — mirrors a member device that already synced once).
+    mockClientPull = vi.fn(async () => ({ data: null, hash: null }));
+    mockClientPush = vi.fn(async () => ({ hash: "H1" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    const { pushSpaceSnapshot, scheduleSyncPush, refreshFromSpaceIfIdle } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }];
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    // Member creates guest g2 — this is the mutation whose notifySync() schedules the push.
+    mockGuestsData = [{ id: "g1" }, { id: "g2" }];
+
+    // Make the network push hang so the post-timer-clear, pre-settle window is observable.
+    let resolvePush!: (v: { hash: string }) => void;
+    mockClientPush = vi.fn(() => new Promise<{ hash: string }>((res) => { resolvePush = res; }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+
+    scheduleSyncPush();
+    // Fire the 2s debounce timer: _pushTimer is cleared to null here, then
+    // pushSpaceSnapshot starts and blocks awaiting mockClientPush.
+    await vi.advanceTimersByTimeAsync(2000);
+
+    let readTreeCalls = 0;
+    mockReadObjectTreeImpl = async () => { readTreeCalls++; return []; };
+
+    // Old bug: _pushTimer is null at this point, so this call would proceed straight
+    // into hydrateFromSpace and reseed the store from the stale (pre-g2) server doc.
+    await refreshFromSpaceIfIdle();
+    expect(readTreeCalls).toBe(0); // guarded by _pushing — must not hydrate mid-push
+
+    // Let the in-flight push settle.
+    resolvePush({ hash: "H2" });
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Guard releases once the push is durably committed — sync isn't permanently stuck.
+    await refreshFromSpaceIfIdle();
+    expect(readTreeCalls).toBe(1);
+  });
+
+  it("a second concurrent scheduleSyncPush push still resolves _pushing to false even if the network push fails", async () => {
+    mockClientPull = vi.fn(async () => ({ data: null, hash: null }));
+    let rejectPush!: (err: Error) => void;
+    mockClientPush = vi.fn(() => new Promise<{ hash: string }>((_res, rej) => { rejectPush = rej; }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+    const { scheduleSyncPush, refreshFromSpaceIfIdle } = await import("@/lib/space-sync");
+    mockGuestsData = [{ id: "g1" }];
+
+    scheduleSyncPush();
+    await vi.advanceTimersByTimeAsync(2000);
+
+    let readTreeCalls = 0;
+    mockReadObjectTreeImpl = async () => { readTreeCalls++; return []; };
+
+    await refreshFromSpaceIfIdle();
+    expect(readTreeCalls).toBe(0); // guarded while the (failing) push is still in flight
+
+    rejectPush(new Error("network down"));
+    await vi.advanceTimersByTimeAsync(0);
+
+    // _pushing must be released even on failure — otherwise sync would wedge permanently.
+    await refreshFromSpaceIfIdle();
+    expect(readTreeCalls).toBe(1);
+  });
+});
+
 // ─── Regression: pushNodeContent must not send null baseHash ─────────────────
 //
 // pushNodeContent delegates to handle.push() which owns pull-for-hash → CAS.
