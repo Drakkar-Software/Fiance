@@ -359,6 +359,7 @@ function GuestsView() {
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           estimatedItemSize={84}
+          maintainVisibleContentPosition={false}
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={listHeader}

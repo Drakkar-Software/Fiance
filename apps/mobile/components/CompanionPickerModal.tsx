@@ -76,8 +76,8 @@ export function CompanionPickerModal({
   // trailing slots are the one bridge point @expo/ui itself wraps safely.
   if (Platform.OS === "ios") {
     return (
-      <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card}>
-        <ForgeHost style={{ flex: 1 }} useViewportSizeMeasurement>
+      <Sheet visible={visible} onDismiss={onClose} backgroundColor={theme.card} snapPoints={["92%"]}>
+        <ForgeHost style={{ flex: 1 }}>
           <Column style={{ padding: 20 }} spacing={12}>
             <UIText textStyle={{ fontSize: 18, fontWeight: "700" }}>
               {t("companionLabel")}
