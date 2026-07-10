@@ -1,9 +1,11 @@
 import React from "react";
-import { Image } from "react-native";
-import { View, Text } from "react-native-css/components";
+import { Image, Linking } from "react-native";
+import { View, Text, Pressable } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { MarketingLink } from "@/components/marketing/MarketingLink";
 import { localizedPath, type MarketingLang } from "@/lib/seo-urls";
+
+const LINKTREE_URL = "https://linktr.ee/linktr.aa8x7";
 
 export function MarketingFooter() {
   const { t, i18n } = useTranslation("marketing");
@@ -95,10 +97,10 @@ export function MarketingFooter() {
             </View>
           </View>
 
-          {/* Le Carnet / Journal */}
+          {/* Media / resources: Le Carnet + Linktree */}
           <View style={{ minWidth: 140 }}>
             <Text className="text-xs font-semibold text-typography-400 uppercase tracking-widest mb-3">
-              {t("footer.blog")}
+              {t("footer.media")}
             </Text>
             <View className="gap-2">
               <MarketingLink
@@ -108,6 +110,14 @@ export function MarketingFooter() {
               >
                 <Text className="text-sm text-typography-300">{t("nav.blog")}</Text>
               </MarketingLink>
+              <Pressable
+                onPress={() => Linking.openURL(LINKTREE_URL)}
+                accessibilityRole="link"
+                accessibilityLabel={t("nav.linktree")}
+                className="active:opacity-60"
+              >
+                <Text className="text-sm text-typography-300">{t("nav.linktree")}</Text>
+              </Pressable>
             </View>
           </View>
 
