@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { computeCounts } from './guests.js';
+import { computeCounts, countDuplicateGuests } from './guests.js';
 
 // Minimal guest factory — computeCounts only reads rsvpStatus + invitationType here.
 const g = (rsvpStatus: string, invitationType: string) =>
   ({ rsvpStatus, invitationType }) as any;
+
+// Minimal guest factory for name-based duplicate detection.
+const named = (firstName: string, lastName: string) => ({ firstName, lastName }) as any;
 
 // A custom (user-created) invitation type carries a UUID id, NOT a hardcoded enum string.
 const TWO_DAYS = "b1f2c3d4-2days";
@@ -68,5 +71,48 @@ describe('computeCounts — per-invitation-type pricing counts', () => {
     const c = computeCounts([]);
     expect(c.inv_by_type).toEqual({});
     expect(c.inv_by_type_all).toEqual({});
+  });
+});
+
+describe('countDuplicateGuests', () => {
+  it('returns 0 when no names repeat', () => {
+    const guests = [named('Jean', 'Dupont'), named('Marie', 'Curie')];
+    expect(countDuplicateGuests(guests)).toBe(0);
+  });
+
+  it('counts every guest sharing a duplicated first+last name', () => {
+    const guests = [
+      named('Jean', 'Dupont'),
+      named('Jean', 'Dupont'),
+      named('Marie', 'Curie'),
+    ];
+    expect(countDuplicateGuests(guests)).toBe(2);
+  });
+
+  it('matches names case-insensitively and ignores surrounding whitespace', () => {
+    const guests = [named('jean', ' Dupont '), named('JEAN', 'dupont')];
+    expect(countDuplicateGuests(guests)).toBe(2);
+  });
+
+  it('sums multiple distinct duplicate groups', () => {
+    const guests = [
+      named('Jean', 'Dupont'),
+      named('Jean', 'Dupont'),
+      named('Marie', 'Curie'),
+      named('Marie', 'Curie'),
+      named('Marie', 'Curie'),
+      named('Paul', 'Martin'),
+    ];
+    // Dupont pair (2) + Curie trio (3) = 5; Martin is unique and excluded.
+    expect(countDuplicateGuests(guests)).toBe(5);
+  });
+
+  it('a shared first name alone (different last name) is not a duplicate', () => {
+    const guests = [named('Jean', 'Dupont'), named('Jean', 'Martin')];
+    expect(countDuplicateGuests(guests)).toBe(0);
+  });
+
+  it('is 0 with no guests', () => {
+    expect(countDuplicateGuests([])).toBe(0);
   });
 });

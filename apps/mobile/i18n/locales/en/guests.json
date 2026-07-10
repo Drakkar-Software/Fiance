@@ -142,6 +142,8 @@
   "selectCompanion": "Select a companion...",
   "searchCompanion": "Search a guest...",
   "withCompanion": "with {{name}}",
+  "duplicateWarningTitle": "Possible duplicates",
+  "duplicateWarningDesc": "{{count}} guests share the same name. Check for duplicates.",
   "companionConflictTitle": "Replace companion?",
   "companionConflictMessage": "{{name}} is currently linked to {{currentCompanion}}. This will replace their existing link.",
   "accommodationSection": "Accommodation",

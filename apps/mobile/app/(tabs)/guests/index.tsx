@@ -3,8 +3,11 @@ import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { LegendList } from "@legendapp/list";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Users, ChevronDown, ChevronUp } from "lucide-react-native";
+import { Users, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react-native";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
+import { countDuplicateGuests } from "@fiance/sdk";
+import { HomeBanner } from "@/components/HomeBanner";
+import { theme as GP } from "@/lib/theme";
 import { useInvitationTypesStore } from "@/store/useInvitationTypesStore";
 import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
 import {
@@ -130,6 +133,8 @@ function GuestsView() {
     [guests, sleepingTypeIds]
   );
 
+  const duplicateCount = useMemo(() => countDuplicateGuests(guests), [guests]);
+
   const filteredGuests = useMemo(() => {
     return guests
       .filter((g) => {
@@ -241,10 +246,8 @@ function GuestsView() {
     { key: "DECLINED", label: t("declined"), count: counts.declined },
     { key: "MAYBE", label: t("maybe"), count: counts.maybe },
     { key: "NO_TABLE", label: t("noTable"), count: counts.no_table_count },
-    ...(noAccomCount > 0 || rsvpFilter === "NO_ACCOM"
-      ? [{ key: "NO_ACCOM", label: t("noAccommodation"), count: noAccomCount }]
-      : []),
-  ];
+    { key: "NO_ACCOM", label: t("noAccommodation"), count: noAccomCount },
+  ].filter((tab) => tab.count > 0 || tab.key === rsvpFilter);
 
   const typeCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -254,14 +257,22 @@ function GuestsView() {
     return map;
   }, [guests]);
 
-  const typeTabs = invitationTypes.map((it) => ({
-    key: it.id,
-    label: it.label,
-    count: typeCounts.get(it.id) ?? 0,
-  }));
+  const typeTabs = invitationTypes
+    .map((it) => ({ key: it.id, label: it.label, count: typeCounts.get(it.id) ?? 0 }))
+    .filter((tab) => tab.count > 0 || tab.key === typeFilter);
 
   const listHeader = (
     <>
+      {duplicateCount > 0 && (
+        <View className="px-4 pt-5">
+          <HomeBanner
+            icon={<AlertTriangle size={20} color={GP.mustard} />}
+            iconBg={GP.mustardSoft}
+            title={t("duplicateWarningTitle")}
+            description={t("duplicateWarningDesc", { count: duplicateCount })}
+          />
+        </View>
+      )}
       <SearchBar
         value={search}
         onChangeText={setSearch}

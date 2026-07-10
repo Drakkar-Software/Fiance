@@ -170,3 +170,16 @@ export function getGuestsByTable(guests: Guest[], tableId: string): Guest[] {
 export function getUnassignedGuests(guests: Guest[]): Guest[] {
   return guests.filter(g => g.rsvpStatus === 'ACCEPTED' && !g.tableId);
 }
+
+// Count guests that share the same (trimmed, case-insensitive) first + last name with at
+// least one other guest — surfaces likely duplicate entries (e.g. from re-import).
+export function countDuplicateGuests(guests: Guest[]): number {
+  const seen = new Map<string, number>();
+  for (const g of guests) {
+    const key = `${g.firstName.trim().toLowerCase()}|${g.lastName.trim().toLowerCase()}`;
+    seen.set(key, (seen.get(key) ?? 0) + 1);
+  }
+  let dup = 0;
+  for (const n of seen.values()) if (n > 1) dup += n;
+  return dup;
+}

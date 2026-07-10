@@ -142,6 +142,8 @@
   "selectCompanion": "Choisir un accompagnant...",
   "searchCompanion": "Rechercher un invité...",
   "withCompanion": "avec {{name}}",
+  "duplicateWarningTitle": "Doublons possibles",
+  "duplicateWarningDesc": "{{count}} invités portent le même nom. Vérifiez les doublons.",
   "companionConflictTitle": "Remplacer l'accompagnant ?",
   "companionConflictMessage": "{{name}} est actuellement lié(e) à {{currentCompanion}}. Cela remplacera le lien existant.",
   "accommodationSection": "Hébergement",
