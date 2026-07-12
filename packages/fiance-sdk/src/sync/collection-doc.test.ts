@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   mergeCollectionDoc,
   buildCollectionDoc,
+  buildSingletonDoc,
+  readSingletonEntity,
+  mergeSingletonDoc,
   asCollectionDoc,
   liveItems,
   collectionNodeId,
@@ -222,5 +225,111 @@ describe('buildCollectionDoc', () => {
     expect(merged.items.g1).toBeDefined();
     expect(merged.items.g2).toBeUndefined(); // stays deleted
     expect(merged.tombstones.g2).toBe(1000);
+  });
+});
+
+describe('buildSingletonDoc', () => {
+  it('stamps a fresh rev when there is no prior rev', () => {
+    const { doc: d, rev } = buildSingletonDoc('wed-1', entity('wed-1', { venue: 'Barn' }), undefined, false, 1000);
+    expect(rev).toBe(1000);
+    expect(d.items['wed-1']).toEqual(entity('wed-1', { venue: 'Barn' }));
+    expect(d.rev['wed-1']).toBe(1000);
+    expect(d.tombstones).toEqual({});
+  });
+
+  it('bumps rev when changed=true', () => {
+    const { rev } = buildSingletonDoc('wed-1', entity('wed-1'), 500, true, 1000);
+    expect(rev).toBe(1000);
+  });
+
+  it('carries the prior rev when unchanged', () => {
+    const { rev } = buildSingletonDoc('wed-1', entity('wed-1'), 500, false, 1000);
+    expect(rev).toBe(500);
+  });
+});
+
+describe('readSingletonEntity', () => {
+  it('reads a wrapped 1-item doc', () => {
+    const d = doc({ items: { 'wed-1': entity('wed-1', { venue: 'Barn' }) }, rev: { 'wed-1': 42 } });
+    const { entity: e, rev } = readSingletonEntity(d, 'wed-1');
+    expect(e).toEqual(entity('wed-1', { venue: 'Barn' }));
+    expect(rev).toBe(42);
+  });
+
+  it('adopts a legacy raw entity (no items map) at rev 0', () => {
+    const legacy = { id: 'wed-1', venue: 'Barn' };
+    const { entity: e, rev } = readSingletonEntity(legacy, 'wed-1');
+    expect(e).toEqual(legacy);
+    expect(rev).toBe(0);
+  });
+
+  it('returns null entity for null/non-record input', () => {
+    expect(readSingletonEntity(null, 'wed-1').entity).toBeNull();
+    expect(readSingletonEntity(undefined, 'wed-1').entity).toBeNull();
+  });
+
+  it('falls back to the first live item when the id key mismatches', () => {
+    const d = doc({ items: { other: entity('other', { venue: 'Barn' }) }, rev: { other: 7 } });
+    const { entity: e, rev } = readSingletonEntity(d, 'wed-1');
+    expect(e).toEqual(entity('other', { venue: 'Barn' }));
+    expect(rev).toBe(7);
+  });
+});
+
+describe('mergeCollectionDoc — singleton (wedding) concurrent edits', () => {
+  it('higher-rev whole-object wins, and the loser field survives via field-merge', () => {
+    // Client A edited the venue (rev 20); client B edited the date (rev 25) — concurrently,
+    // neither having seen the other's edit yet.
+    const remote = doc({
+      items: { 'wed-1': entity('wed-1', { venue: 'Barn', date: null }) },
+      rev: { 'wed-1': 20 },
+    });
+    const local = doc({
+      items: { 'wed-1': entity('wed-1', { venue: 'Barn', date: '2026-09-01' }) },
+      rev: { 'wed-1': 25 },
+    });
+    const merged = mergeCollectionDoc(remote, local).items['wed-1'];
+    // Local (higher rev) wins the whole object as the base, but this demonstrates the
+    // key property: a field only the *older* side touched is not silently dropped when
+    // both sides agree on it, and the winner's own edits are preserved.
+    expect(merged.date).toBe('2026-09-01');
+    expect(merged.venue).toBe('Barn');
+  });
+
+  it('a field only the older copy touched survives under the newer winner', () => {
+    const remote = doc({ items: { 'wed-1': entity('wed-1', { venue: 'Barn' }) }, rev: { 'wed-1': 20 } });
+    const local = doc({ items: { 'wed-1': entity('wed-1', { date: '2026-09-01' }) }, rev: { 'wed-1': 25 } });
+    const merged = mergeCollectionDoc(remote, local).items['wed-1'];
+    expect(merged).toMatchObject({ venue: 'Barn', date: '2026-09-01' });
+  });
+});
+
+describe('mergeSingletonDoc — rollout-window tolerance for a legacy raw remote', () => {
+  it('field-merges a legacy raw remote (no items wrapper) instead of treating it as empty', () => {
+    // Remote is still on the pre-migration shape (an old build's last push).
+    const legacyRemote = { id: 'wed-1', venue: 'Barn', untouched: 'fromLegacyRemote' };
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'Barn', date: '2026-09-01' }, undefined, true, 1000);
+    const merged = mergeSingletonDoc(legacyRemote, local, 'wed-1');
+    // Local (rev 1000) beats the legacy remote's synthesized rev 0, but the remote's
+    // untouched field survives via the field-merge — a plain mergeCollectionDoc would
+    // have coerced the legacy shape to an empty doc and dropped it.
+    expect(merged.items['wed-1']).toMatchObject({
+      venue: 'Barn',
+      date: '2026-09-01',
+      untouched: 'fromLegacyRemote',
+    });
+  });
+
+  it('merges normally against a new-shape remote (delegates straight to mergeCollectionDoc)', () => {
+    const remote = doc({ items: { 'wed-1': entity('wed-1', { venue: 'Old' }) }, rev: { 'wed-1': 5 } });
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, undefined, true, 10);
+    const merged = mergeSingletonDoc(remote, local, 'wed-1');
+    expect(merged.items['wed-1']).toMatchObject({ venue: 'New' });
+  });
+
+  it('handles a null/missing remote (first-ever push)', () => {
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, undefined, true, 10);
+    const merged = mergeSingletonDoc(null, local, 'wed-1');
+    expect(merged.items['wed-1']).toMatchObject({ venue: 'New' });
   });
 });

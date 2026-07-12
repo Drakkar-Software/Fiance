@@ -5,7 +5,7 @@
  *     that was queued before hydration started does not fire mid-hydrate.
  * C2: suppressSyncPush() cancels any pending timer and blocks new scheduling;
  *     restoreSyncPush() re-enables it.
- * H1/H2: pushNodeContent delegates to handle.push(), which owns CAS + hash
+ * H1/H2: pushCollectionDoc(wedding) delegates to handle.push(), which owns CAS + hash
  *     tracking — client.push never receives a null baseHash after the first write.
  * H3 (Bug B regression): handle.push with an encrypted node and a missing doc
  *     (pull returns { data: {}, hash: "" }) must call client.push successfully
@@ -16,7 +16,7 @@ import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vite
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 // Mutable: allows individual tests to inject a wedding entity so buildAllNodes
-// produces at least one node (enabling pushNodeContent to be exercised).
+// produces at least one node (enabling pushCollectionDoc(wedding) to be exercised).
 let mockWeddingData: Record<string, unknown> | null = null;
 
 // Mutable: lets index-merge tests give buildAllNodes a second, independently
@@ -138,6 +138,12 @@ const mockGetActiveSession = vi.fn(() => ({ userId: "u1" }));
 const mockGetActiveSpaceId = vi.fn(() => "space-1");
 const mockGetActiveWeddingNodeId = vi.fn(() => "wedding-node-1");
 
+// emptyStore.getState() mints a fresh vi.fn() for every setter on every call, so a
+// setWedding spy declared inside it can't be observed across the getState() call
+// production code makes. Pulled out to a stable reference the useWeddingStore mock
+// below always installs, so tests can assert what hydrateFromSpace fed setWedding.
+let mockSetWedding: Mock = vi.fn();
+
 vi.mock("@/lib/starfish", () => ({
   getActiveSession: () => mockGetActiveSession(),
   getActiveSpaceId: () => mockGetActiveSpaceId(),
@@ -173,7 +179,9 @@ const emptyStore = { getState: () => ({
 }) };
 
 vi.mock("@/store/useWeddingStore", () => ({
-  useWeddingStore: { getState: () => ({ ...emptyStore.getState(), wedding: mockWeddingData }) },
+  useWeddingStore: {
+    getState: () => ({ ...emptyStore.getState(), wedding: mockWeddingData, setWedding: mockSetWedding }),
+  },
 }));
 // `role` lives on the WeddingRegistryEntry (local device/registry metadata), NOT on the
 // domain `wedding` above — mocked separately so tests exercise the real gating path
@@ -394,13 +402,13 @@ describe("_pushing guard — no concurrent hydrate while a push awaits the netwo
   });
 });
 
-// ─── Regression: pushNodeContent must not send null baseHash ─────────────────
+// ─── Regression: pushCollectionDoc(wedding) must not send null baseHash ───────
 //
-// pushNodeContent delegates to handle.push() which owns pull-for-hash → CAS.
+// pushCollectionDoc delegates to handle.push() which owns pull-for-hash → CAS.
 // Verified by checking that handle.push is called with the correct paths, and
 // that its internal client.push receives the server hash (not null) as baseHash.
 
-describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () => {
+describe("pushCollectionDoc(wedding) delegates to handle.push() for CAS-safe writes", () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
@@ -455,8 +463,8 @@ describe("pushNodeContent delegates to handle.push() for CAS-safe writes", () =>
 // Root cause of the guest/vendor/budget data-loss bug on member devices: a stale
 // read-only cap makes every write 403 server-side. The error was previously only
 // console.warn'd, so the edit vanished on the next hydrate with zero feedback.
-// pushNodeContent/pushCollectionDoc must set useSyncAccessStore's writeDenied on
-// a StarfishHttpError(403) and clear it again once a push actually succeeds.
+// pushCollectionDoc must set useSyncAccessStore's writeDenied on a StarfishHttpError(403)
+// and clear it again once a push actually succeeds.
 
 describe("push 403 handling sets/clears useSyncAccessStore.writeDenied", () => {
   beforeEach(async () => {
@@ -716,6 +724,107 @@ describe("hydrateFromSpace — wedding doc selected by weddingNodeId, not index 
   });
 });
 
+// ─── hydrateFromSpace: wedding singleton unwrap (rev-LWW) ─────────────────────
+//
+// The wedding root now pushes as a 1-item CollectionDoc (readSingletonEntity/
+// buildSingletonDoc/mergeSingletonDoc in @fiance/sdk — see the "Close the
+// wedding-singleton lost-update hole" plan) instead of a raw object. hydrateFromSpace
+// must unwrap that shape before feeding the store, AND still tolerate an old build's
+// legacy raw doc during a rollout window (see mergeSingletonDoc's doc comment).
+
+describe("hydrateFromSpace — wedding singleton unwrap", () => {
+  beforeEach(() => {
+    mockSetWedding.mockClear();
+  });
+
+  afterEach(() => {
+    mockReadObjectTreeImpl = async () => [];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { push: vi.fn(), pull: vi.fn(async () => ({ data: null, hash: null })) },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+  });
+
+  it("unwraps a new-shape (1-item CollectionDoc) wedding pull before calling setWedding", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "node-A", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({
+          data: {
+            fmt: 2,
+            items: { "node-A": { id: "node-A", name: "Wrapped Wedding" } },
+            rev: { "node-A": 777 },
+            tombstones: {},
+          },
+          hash: "h",
+        })),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(mockSetWedding).toHaveBeenCalledTimes(1);
+    const [passed] = mockSetWedding.mock.calls[0] as [Record<string, unknown>];
+    expect(passed).toMatchObject({ id: "node-A", name: "Wrapped Wedding" });
+    // Not the wrapper — a bug here would leak the {fmt,items,rev,tombstones} envelope
+    // into the wedding store instead of the actual entity.
+    expect(passed.items).toBeUndefined();
+    expect(passed.fmt).toBeUndefined();
+  });
+
+  it("still adopts a legacy raw (pre-migration, un-wrapped) wedding pull", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "node-A", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({ data: { id: "node-A", name: "Legacy Wedding" }, hash: "h" })),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(mockSetWedding).toHaveBeenCalledTimes(1);
+    expect(mockSetWedding.mock.calls[0]?.[0]).toMatchObject({ id: "node-A", name: "Legacy Wedding" });
+  });
+
+  it("does not call setWedding when no wedding doc is pulled", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "guest-1", type: "guest", parentId: "node-A", updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({ data: null, hash: null })),
+        push: vi.fn(),
+        batchPullMany: vi.fn(async (_c: string, paramsList: { objectId: string }[]) =>
+          paramsList.map(() => ({ data: null }))),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(mockSetWedding).not.toHaveBeenCalled();
+  });
+});
+
 // ─── Regression: RSVP inbox apply must be owner-only (guest data-loss on member devices) ──
 //
 // refreshRsvpInbox/pullAndApplyRsvpNodes write the guest store (via applyRsvpSubmissionsByGuestId)
@@ -793,7 +902,7 @@ describe("hydrateFromSpace — RSVP inbox apply is owner-only", () => {
 // handle.push gates decrypt on a non-empty hash, so cur = null and the mutator
 // still runs. The node is created with baseHash = null (not swallowed with a throw).
 
-describe("pushNodeContent succeeds for a missing encrypted node (Bug B regression)", () => {
+describe("pushCollectionDoc(wedding) succeeds for a missing encrypted node (Bug B regression)", () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
@@ -895,21 +1004,29 @@ describe("pushSpaceSnapshot — dirty-tracking skips unchanged nodes", () => {
 });
 
 
-// ─── Regression: conflict-retry mutator deep-merges instead of clobbering ─────
+// ─── Regression: conflict-retry mutator merges instead of clobbering ──────────
 //
-// Before the fix, pushNodeContent's mutator was `() => content` — it ignored `cur`,
-// the remote doc the SDK's CAS retry pulls and decrypts on a 409 conflict, and just
-// re-pushed the local snapshot. A field a peer wrote and this device never touched
-// was silently overwritten. The fix's mutator is `(cur) => deepMerge(cur, content)`.
+// Before the H1/H2 fix, pushNodeContent's mutator was `() => content` — it ignored
+// `cur`, the remote doc the SDK's CAS retry pulls and decrypts on a 409 conflict, and
+// just re-pushed the local snapshot. A field a peer wrote and this device never touched
+// was silently overwritten.
+//
+// The wedding singleton now pushes through pushCollectionDoc + mergeSingletonDoc (the
+// same per-entity rev-LWW machinery a real collection uses — see the "Close the
+// wedding-singleton lost-update hole" plan), so the pushed payload is the wrapped
+// { items: { [weddingNodeId]: <merged entity> } } shape, not a flat object. This also
+// covers mergeSingletonDoc's legacy tolerance: `cur` here is an un-wrapped raw object
+// (no `items` map), exactly the pre-migration remote shape.
 
-describe("pushNodeContent conflict mutator — deep-merges remote content instead of clobbering", () => {
+describe("pushCollectionDoc(wedding) conflict mutator — merges remote content instead of clobbering", () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     mockUpdateObjectIndex.mockReset();
     mockWeddingData = { id: "w1", name: "Local Name" };
     const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
     resetDirtyPushBaseline();
-    // Simulates a conflict-retry pull: the server has a field this device never touched.
+    // Simulates a conflict-retry pull: the server has a field this device never touched,
+    // in the legacy (pre-migration) un-wrapped shape.
     mockClientPull = vi.fn(async () => ({ data: { existing: true, untouchedField: "fromRemote" }, hash: "H1" }));
     mockClientPush = vi.fn(async () => ({ hash: "H2" }));
     mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
@@ -933,8 +1050,60 @@ describe("pushNodeContent conflict mutator — deep-merges remote content instea
 
     expect(mockClientPush).toHaveBeenCalledWith(
       expect.stringContaining("w1"),
-      expect.objectContaining({ untouchedField: "fromRemote", name: "Local Name" }),
+      expect.objectContaining({
+        items: expect.objectContaining({
+          w1: expect.objectContaining({ untouchedField: "fromRemote", name: "Local Name" }),
+        }),
+      }),
       "H1",
+    );
+  });
+});
+
+// ─── Regression: wedding push wire shape — 1-item CollectionDoc, not a raw object ──
+//
+// Locks down the wire format itself (independent of the merge-conflict tests above):
+// a clean, no-conflict wedding push must produce {fmt, items:{[weddingNodeId]: entity},
+// rev:{[weddingNodeId]: number}, tombstones:{}} — the same shape mergeCollectionDoc/
+// mergeSingletonDoc expect on the read side.
+
+describe("pushSpaceSnapshot — wedding push wire shape", () => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    mockUpdateObjectIndex.mockReset();
+    mockWeddingData = { id: "w1", name: "Test Wedding" };
+    const { resetDirtyPushBaseline } = await import("@/lib/space-sync");
+    resetDirtyPushBaseline();
+    mockClientPull = vi.fn(async () => ({ data: null, hash: null })); // first-ever push, no remote yet
+    mockClientPush = vi.fn(async () => ({ hash: "H_new" }));
+    mockHandlePush = makeHandlePush(mockClientPull, mockClientPush);
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: { pull: mockClientPull, push: mockClientPush },
+      isOwnerOpen: false,
+      push: mockHandlePush,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    mockWeddingData = null;
+  });
+
+  it("pushes the wedding wrapped as a 1-item CollectionDoc keyed by weddingNodeId", async () => {
+    const { pushSpaceSnapshot } = await import("@/lib/space-sync");
+
+    await pushSpaceSnapshot({ userId: "u1" } as never, "space-1", "w1");
+
+    expect(mockClientPush).toHaveBeenCalledWith(
+      expect.stringContaining("w1"),
+      {
+        fmt: 2,
+        items: { w1: { id: "w1", name: "Test Wedding" } },
+        rev: { w1: expect.any(Number) },
+        tombstones: {},
+      },
+      "",
     );
   });
 });

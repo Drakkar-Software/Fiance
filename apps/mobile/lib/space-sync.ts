@@ -15,11 +15,13 @@ import {
   objDocPush,
   objDocPull,
   objInvPull,
-  deepMerge,
   stableStringify,
   collectionNodeId,
   isCollectionNodeId,
   buildCollectionDoc,
+  buildSingletonDoc,
+  readSingletonEntity,
+  mergeSingletonDoc,
   mergeCollectionDoc,
   asCollectionDoc,
   type CollectionDoc,
@@ -117,6 +119,12 @@ let _rsvpRefreshing = false;
  */
 const _lastPushedJson = new Map<string, string>();
 
+/** rev carried between pushes/hydrates for the wedding singleton — same role as
+ *  `_collectionState`'s per-entity rev, but for the one-item wedding doc (see
+ *  buildSingletonDoc/readSingletonEntity in @fiance/sdk). Lets the wedding root be pushed
+ *  through mergeCollectionDoc's per-entity LWW instead of a whole-object clobber. */
+let _weddingRev: number | undefined;
+
 // ── Per-collection ("one doc per collection") sync state ──
 // Content is one objdoc per collection (see @fiance/sdk collection-doc): an id-keyed map
 // of entities with per-entity rev (LWW) and durable tombstones. Deletes ride inside the
@@ -206,6 +214,7 @@ export function restoreSyncPush(): void {
  *  consecutive pushSpaceSnapshot calls from each other's state. */
 export function resetDirtyPushBaseline(): void {
   _lastPushedJson.clear();
+  _weddingRev = undefined;
   _lastPushedCollectionJson.clear();
   _collectionState.clear();
   _collectionEntityJson.clear();
@@ -235,8 +244,14 @@ function descriptorToNode(desc: NodeDescriptor, order: number, now: number): Obj
 }
 
 /** The `wedding` root stays its own per-node doc (not collapsed) — `discoverOwnerWeddingRoot`
- *  relies on a `wedding`/`parentId:null` node existing. Stamps `syncSchemaVersion` on its meta. */
-function buildWeddingNode(weddingNodeId: string, now: number): { node: ObjectNode; content: Record<string, unknown> } | null {
+ *  relies on a `wedding`/`parentId:null` node existing. Stamps `syncSchemaVersion` on its meta.
+ *  Also builds its 1-item CollectionDoc (see buildSingletonDoc) so it can be pushed through
+ *  mergeCollectionDoc's per-entity rev LWW instead of a whole-object clobber — see the
+ *  "Close the wedding-singleton lost-update hole" plan. */
+function buildWeddingNode(
+  weddingNodeId: string,
+  now: number,
+): { node: ObjectNode; content: Record<string, unknown>; doc: CollectionDoc; rev: number } | null {
   const { wedding } = useWeddingStore.getState();
   if (!wedding) return null;
   const desc = weddingToNode(wedding, weddingNodeId);
@@ -245,7 +260,10 @@ function buildWeddingNode(weddingNodeId: string, now: number): { node: ObjectNod
     0,
     now,
   );
-  return { node, content: wedding as unknown as Record<string, unknown> };
+  const content = wedding as unknown as Record<string, unknown>;
+  const changed = stableStringify(content) !== _lastPushedJson.get(weddingNodeId);
+  const { doc, rev } = buildSingletonDoc(weddingNodeId, content, _weddingRev, changed, now);
+  return { node, content, doc, rev };
 }
 
 
@@ -370,19 +388,26 @@ function buildCollectionDocs(weddingNodeId: string, now: number): { nodes: Objec
 // Push snapshot to server
 // ---------------------------------------------------------------------------
 
-async function pushNodeContent(
+/** Push a single collection doc — CAS-merging via `merge` (default: mergeCollectionDoc, so a
+ *  peer's concurrent edit/add/delete to a different entity in the same collection is
+ *  reconciled, not clobbered). The wedding singleton passes mergeSingletonDoc instead, which
+ *  additionally tolerates a legacy (pre-migration, un-wrapped) remote doc — see its doc comment. */
+async function pushCollectionDoc(
   session: Session,
   spaceId: string,
   node: ObjectNode,
-  content: Record<string, unknown>,
+  doc: CollectionDoc,
+  now: number,
+  merge: (cur: unknown, doc: CollectionDoc, now: number) => CollectionDoc = (cur, doc, now) =>
+    mergeCollectionDoc(cur, doc, { now }),
 ): Promise<boolean> {
   try {
     const handle = await getNodeAccess(spaceId, node.id, node, session, null);
-    // Conflict-retry mutator: `cur` is the remote doc the SDK's CAS retry pulled and
-    // decrypted (space-access.ts) when this push lost a race against a peer's push.
-    // Deep-merge so a field this device never touched is reconciled from the peer's
-    // version instead of being clobbered by a stale whole-tree push.
-    await handle.push(objDocPull(spaceId, node.id), objDocPush(spaceId, node.id), (cur) => deepMerge(cur, content));
+    await handle.push(
+      objDocPull(spaceId, node.id),
+      objDocPush(spaceId, node.id),
+      (cur) => merge(cur, doc, now) as unknown as Record<string, unknown>,
+    );
     useSyncAccessStore.getState().setWriteDenied(false);
     return true;
   } catch (err) {
@@ -390,34 +415,6 @@ async function pushNodeContent(
     // ground truth from the server, unlike the proactive write-flag check in providers.tsx
     // (which can't see older link tokens where `write` was never recorded). See
     // useSyncAccessStore.ts for how this flag is consumed (ReadOnlyBanner + usePermissions).
-    if (err instanceof StarfishHttpError && err.status === 403) {
-      useSyncAccessStore.getState().setWriteDenied(true);
-    }
-    console.warn(`[space-sync] pushNodeContent ${node.id}:`, err);
-    return false;
-  }
-}
-
-/** Push a single collection doc, CAS-merging via mergeCollectionDoc so a peer's concurrent
- *  edit/add/delete to a different entity in the same collection is reconciled, not clobbered. */
-async function pushCollectionDoc(
-  session: Session,
-  spaceId: string,
-  node: ObjectNode,
-  doc: CollectionDoc,
-  now: number,
-): Promise<boolean> {
-  try {
-    const handle = await getNodeAccess(spaceId, node.id, node, session, null);
-    await handle.push(
-      objDocPull(spaceId, node.id),
-      objDocPush(spaceId, node.id),
-      (cur) => mergeCollectionDoc(cur, doc, { now }) as unknown as Record<string, unknown>,
-    );
-    useSyncAccessStore.getState().setWriteDenied(false);
-    return true;
-  } catch (err) {
-    // See the matching comment in pushNodeContent above — same authoritative 403 signal.
     if (err instanceof StarfishHttpError && err.status === 403) {
       useSyncAccessStore.getState().setWriteDenied(true);
     }
@@ -448,7 +445,9 @@ export async function pushSpaceSnapshot(
   // pruned-but-contentless: the legacy-node prune below only fires for collections whose doc is
   // confirmed durable, so a partial failure keeps the legacy nodes reachable until the retry.
 
-  // Push the wedding singleton (deep-merge on conflict) if its content changed.
+  // Push the wedding singleton (per-entity rev LWW via mergeSingletonDoc, same as a
+  // 1-item collection — see the "Close the wedding-singleton lost-update hole" plan)
+  // if its content changed.
   const weddingDirty =
     weddingBuilt && stableStringify(weddingBuilt.content) !== _lastPushedJson.get(weddingBuilt.node.id);
 
@@ -460,8 +459,13 @@ export async function pushSpaceSnapshot(
 
   await Promise.allSettled([
     ...(weddingDirty && weddingBuilt
-      ? [pushNodeContent(session, spaceId, weddingBuilt.node, weddingBuilt.content).then((ok) => {
-          if (ok) _lastPushedJson.set(weddingBuilt.node.id, stableStringify(weddingBuilt.content));
+      ? [pushCollectionDoc(
+          session, spaceId, weddingBuilt.node, weddingBuilt.doc, now,
+          (cur, doc, now) => mergeSingletonDoc(cur, doc, weddingNodeId, { now }),
+        ).then((ok) => {
+          if (!ok) return;
+          _lastPushedJson.set(weddingBuilt.node.id, stableStringify(weddingBuilt.content));
+          _weddingRev = weddingBuilt.rev;
         })]
       : []),
     ...dirtyCollections.map((b) =>
@@ -772,7 +776,12 @@ export async function hydrateFromSpace(
     }
 
     // Feed into stores — setters do NOT call notifySync, so no circular dispatch.
-    if (weddingDoc) useWeddingStore.getState().setWedding(weddingFromDoc(weddingDoc) as Parameters<ReturnType<typeof useWeddingStore.getState>['setWedding']>[0]);
+    // readSingletonEntity unwraps the 1-item CollectionDoc (or tolerates a legacy raw
+    // remote from an old build during a rollout window) and reports its rev so the next
+    // push's LWW baseline starts from what was actually hydrated, not a fresh clock.
+    const { entity: weddingEntity, rev: weddingRev } = readSingletonEntity(weddingDoc, weddingNodeId);
+    if (weddingEntity) useWeddingStore.getState().setWedding(weddingFromDoc(weddingEntity) as Parameters<ReturnType<typeof useWeddingStore.getState>['setWedding']>[0]);
+    _weddingRev = weddingEntity ? weddingRev : undefined;
     if (guestGroupDocs.length) useGuestsStore.getState().setGroups(guestGroupDocs.map(guestGroupFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGroups']>[0]);
     if (tableDocs.length) useGuestsStore.getState().setTables(tableDocs.map(tableFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setTables']>[0]);
     if (guestDocs.length) useGuestsStore.getState().setGuests(guestDocs.map(guestFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGuests']>[0]);

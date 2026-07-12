@@ -193,3 +193,84 @@ export function buildCollectionDoc(
     state: { rev, tombstones },
   };
 }
+
+/**
+ * Build a 1-item CollectionDoc for a singleton node (Fiancé's `wedding` root), so it can
+ * be pushed through the same `mergeCollectionDoc` CAS mutator as an actual collection —
+ * giving it per-entity rev LWW instead of a whole-object clobber. Never tombstones: a
+ * singleton going missing means "not built this round", not "deleted".
+ *
+ * Keyed explicitly by the passed `id` (the node id), NOT `entity.id` — unlike a real
+ * collection entity, the wedding domain object's own `id` is a local row number unrelated
+ * to sync, so `entity` here is a plain record, not a `CollectionEntity`.
+ *
+ * @param prevRev  rev carried from the last hydrate/push of this node (undefined if never tracked)
+ * @param changed  whether the entity's serialized content differs from the last push/hydrate baseline
+ */
+export function buildSingletonDoc(
+  id: string,
+  entity: Record<string, unknown>,
+  prevRev: number | undefined,
+  changed: boolean,
+  now: number,
+): { doc: CollectionDoc; rev: number } {
+  const rev = prevRev === undefined || changed ? now : prevRev;
+  return {
+    doc: {
+      fmt: COLLECTION_DOC_FMT,
+      items: { [id]: entity as CollectionEntity },
+      rev: { [id]: rev },
+      tombstones: {},
+    },
+    rev,
+  };
+}
+
+/**
+ * Read a singleton entity back out of a pulled doc. Tolerates a legacy raw entity (the
+ * pre-migration server doc, before the wedding root was wrapped as a 1-item CollectionDoc)
+ * as well as the new wrapped shape, so old-server-state devices adopt cleanly (rev 0, so
+ * the first local edit bumps it past any peer's real rev). Looks up by whichever key the
+ * item is actually stored under (falls back to the doc's one entry) rather than by
+ * `entity.id`, matching `buildSingletonDoc`'s keying.
+ */
+export function readSingletonEntity(
+  cur: unknown,
+  id: string,
+): { entity: Record<string, unknown> | null; rev: number } {
+  if (!isRecord(cur)) return { entity: null, rev: 0 };
+  if (!isRecord(cur.items)) {
+    // Legacy raw entity (no `items` map) — adopt as-is.
+    return { entity: cur, rev: 0 };
+  }
+  const doc = asCollectionDoc(cur);
+  const entry = has(doc.items, id)
+    ? ([id, doc.items[id]] as const)
+    : Object.entries(doc.items)[0];
+  if (!entry) return { entity: null, rev: 0 };
+  const [key, entity] = entry;
+  return { entity, rev: doc.rev[key] ?? 0 };
+}
+
+/**
+ * CAS-retry mutator for a singleton node (the wedding root): merges the local singleton
+ * doc into whatever the pull returned, tolerating BOTH a legacy raw entity (pre-migration
+ * remote, no `items` wrapper) and the new wrapped 1-item doc — via `readSingletonEntity`,
+ * mirroring its read-side tolerance. Without this, a rollout-window push (this device on
+ * the new build, the remote's last writer still on the old one) would see the legacy raw
+ * `cur` coerced to an *empty* doc by `asCollectionDoc` (no `items` key) and silently drop
+ * the remote's untouched fields instead of field-merging them — a regression against the
+ * plain `deepMerge` this replaces, which merged two raw objects fine.
+ */
+export function mergeSingletonDoc(
+  cur: unknown,
+  local: CollectionDoc,
+  id: string,
+  opts?: { now?: number; ttlMs?: number },
+): CollectionDoc {
+  const { entity, rev } = readSingletonEntity(cur, id);
+  const curDoc: CollectionDoc = entity
+    ? { fmt: COLLECTION_DOC_FMT, items: { [id]: entity as CollectionEntity }, rev: { [id]: rev }, tombstones: {} }
+    : { fmt: COLLECTION_DOC_FMT, items: {}, rev: {}, tombstones: {} };
+  return mergeCollectionDoc(curDoc, local, opts);
+}
