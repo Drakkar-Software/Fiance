@@ -101,6 +101,14 @@ let _isHydrating = false;
  *  from the pre-push server doc and drop an entity the in-flight push is about to persist,
  *  which then reads as a delete and gets durably tombstoned on the next push. */
 let _pushing = false;
+/** True for the duration of an in-flight refreshRsvpInbox pull. refreshFromSpaceIfIdle
+ *  must not start a concurrent hydrate while this is set — both write into the guest
+ *  store, and now that both the SSE stream (providers.tsx) and the foreground handler
+ *  can trigger a hydrate independently (not just the foreground handler's own
+ *  await-then-refreshRsvpInbox sequencing), an interleaved hydrate can reseed the guest
+ *  store from a pre-submission server doc and drop/tombstone a guest an in-flight RSVP
+ *  apply is about to write — mirrors the _pushing guard's rationale above. */
+let _rsvpRefreshing = false;
 
 /**
  * Dirty-push tracking for the wedding singleton node: node id → stableStringify() of the
@@ -842,7 +850,7 @@ export async function hydrateFromSpace(
  * (which a hydrate already pulls) can skip that redundant pull when this returns true.
  */
 export async function refreshFromSpaceIfIdle(): Promise<boolean> {
-  if (_isHydrating || _pushTimer || _pushing) return false;
+  if (_isHydrating || _pushTimer || _pushing || _rsvpRefreshing) return false;
   const session = getActiveSession();
   const spaceId = getActiveSpaceId();
   const weddingNodeId = getActiveWeddingNodeId();
@@ -891,11 +899,17 @@ async function pullAndApplyRsvpNodes(
  * Called on foreground to pick up new RSVP responses without a full re-hydrate.
  */
 export async function refreshRsvpInbox(session: Session, spaceId: string): Promise<void> {
+  // Mirror refreshFromSpaceIfIdle's guard: don't start applying RSVP submissions into the
+  // guest store while a hydrate/push is already touching it (see _rsvpRefreshing above).
+  if (_isHydrating || _pushTimer || _pushing) return;
+  _rsvpRefreshing = true;
   try {
     const nodes = await readObjectTree(session, spaceId);
     const rsvpNodes = nodes.filter((n) => n.type === FIANCE_TYPES.rsvp);
     await pullAndApplyRsvpNodes(session, spaceId, rsvpNodes);
   } catch (err) {
     console.warn('[space-sync] refreshRsvpInbox failed:', err);
+  } finally {
+    _rsvpRefreshing = false;
   }
 }

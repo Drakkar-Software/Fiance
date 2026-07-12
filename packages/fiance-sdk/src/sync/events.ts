@@ -13,7 +13,7 @@
  */
 import { subscribeChanges } from '@drakkar.software/dk-spaces-sdk';
 import { getSyncBase } from '@drakkar.software/dk-spaces-sdk';
-import { signRequest, stableStringify } from '@drakkar.software/starfish-protocol';
+import { signRequest, stableStringify, getBase64 } from '@drakkar.software/starfish-protocol';
 import type { SignableMethod } from '@drakkar.software/starfish-protocol';
 
 export interface SpaceChange {
@@ -54,8 +54,16 @@ export function parseSpaceChange(data: string): SpaceChange | null {
 /**
  * Build cap-cert auth headers for a raw `fetch` outside the StarfishClient (e.g. `GET /events`).
  * Signing host is derived from `getSyncBase()` so the server-side verifier agrees — same pin as
- * the client's own REST requests. starfish-spaces' own `buildAuthHeaders` hardcodes `host: ""`,
- * which fails `verifyRequestSignature` on deployed servers that bind host; this signs the real host.
+ * the client's own REST requests.
+ *
+ * Not a call to starfish-spaces' own `buildAuthHeaders` (it takes the same `host` param — its
+ * default of `""` is not a hardcoded bug, just an unsupplied argument): that function base64s the
+ * cap via a bare `btoa(capJson)` with no fallback, while this app's own platform config
+ * (`configureStarfishPlatform()` → `configurePlatform({ base64: getBase64() })`, called at boot)
+ * establishes `getBase64()` from starfish-protocol as the one RN-safe base64 provider everywhere
+ * else in this codebase (see e.g. starfish-client's doc-signing path) — `btoa` isn't guaranteed
+ * global on every RN/Hermes configuration this app targets. This mirrors that same call, rather
+ * than introduce a second, unguarded base64 path for the one thing SSE auth needs.
  */
 export async function buildAuthHeaders(
   cap: unknown,
@@ -76,10 +84,7 @@ export async function buildAuthHeaders(
   );
 
   const capJson = stableStringify(cap as Record<string, unknown>);
-  const capB64 =
-    typeof btoa === 'function'
-      ? btoa(capJson)
-      : Buffer.from(capJson, 'utf-8').toString('base64');
+  const capB64 = getBase64().encode(new TextEncoder().encode(capJson));
 
   return {
     Authorization: `Cap ${capB64}`,

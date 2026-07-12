@@ -18,7 +18,6 @@ import {
   getActiveSession,
   getActiveSpaceId,
   getActiveWeddingNodeId,
-  markSseConnected,
 } from "@/lib/starfish";
 import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes, resetDirtyPushBaseline } from "@/lib/space-sync";
@@ -168,6 +167,35 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       const weddingNodeId = getActiveWeddingNodeId();
       if (!session || !spaceId || !weddingNodeId) return;
 
+      // Real-time push: subscribe to server-sent events for this space so a peer's
+      // change triggers a pull without waiting for foreground/backgrounding. Opened
+      // before the hydrate/push awaits below (it needs only session/spaceId, already
+      // resolved) so a peer edit landing during a slow first boot is still caught
+      // immediately rather than missed until the next AppState foreground event.
+      // Purely additive — the AppState foreground pull further down stays as the
+      // fallback, so a stream that never connects (offline, or streaming fetch
+      // unsupported on this platform) just means "same as before this feature".
+      // Guarded by `cancelled` (checked synchronously, no await in between) so a
+      // wedding switch mid-startup — whose cleanup already ran with unsubSse still
+      // null — can't have this effect open a stream nothing will ever unsubscribe.
+      if (!cancelled) {
+        unsubSse = subscribeSpaceChanges(
+          (e) => {
+            // subscribeChanges only sends `spaces` as a server-side request param —
+            // it does not itself re-check that a frame belongs to a requested space,
+            // and parseSpaceChange doesn't filter by collection. Drop anything not
+            // for our own space here rather than trust the stream is already scoped.
+            if (e.spaceId !== spaceId) return;
+            void refreshFromSpaceIfIdle();
+          },
+          {
+            spaces: [spaceId],
+            authHeaders: (method, pathAndQuery) =>
+              buildAuthHeaders(session.contentCap, session.keys.edPriv, method, pathAndQuery),
+          },
+        );
+      }
+
       // B3: hydrate stores from ObjectNode server data (boot pull).
       // recoverSpaceAccess + discoverOwnerWeddingRoot run inside activateSync (above),
       // so the adopted weddingNodeId is already in effect via getActiveWeddingNodeId().
@@ -198,33 +226,6 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 
       // B3: wire dispatchDocChange('*') → debounced server push.
       unregisterPush = registerPull("*", () => { scheduleSyncPush(); });
-
-      // Real-time push: subscribe to server-sent events for this space so a
-      // peer's change triggers a pull without waiting for foreground/backgrounding.
-      // Purely additive — the AppState foreground pull below stays as the
-      // fallback, so a stream that never connects (offline, or streaming fetch
-      // unsupported on this platform) just means "same as before this feature".
-      // Guarded by `cancelled` (checked synchronously, no await in between) so a
-      // wedding switch mid-startup — whose cleanup already ran with unsubSse still
-      // null — can't have this effect open a stream nothing will ever unsubscribe.
-      if (!cancelled) {
-        unsubSse = subscribeSpaceChanges(
-          (e) => {
-            // subscribeChanges only sends `spaces` as a server-side request param —
-            // it does not itself re-check that a frame belongs to a requested space,
-            // and parseSpaceChange doesn't filter by collection. Drop anything not
-            // for our own space here rather than trust the stream is already scoped.
-            if (e.spaceId !== spaceId) return;
-            void refreshFromSpaceIfIdle();
-          },
-          {
-            spaces: [spaceId],
-            authHeaders: (method, pathAndQuery) =>
-              buildAuthHeaders(session.contentCap, session.keys.edPriv, method, pathAndQuery),
-            onStatus: (connected) => { if (connected) markSseConnected(); },
-          },
-        );
-      }
 
       // B5: ensure the publicPage node exists in the space.
       // Retried with backoff: pull errors and transient 409s are common on first
