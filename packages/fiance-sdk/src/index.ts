@@ -34,6 +34,15 @@ export * from './sync/deep-merge.js';
 export * from './sync/collection-doc.js';
 export * from './analytics.js';
 
+// Named (not `export *`): starfish-spaces also exports a `buildAuthHeaders` (the
+// host:"" version this one replaces — see events.ts's doc comment). A named
+// export here wins over the ambiguous `export *` collision with the
+// `@drakkar.software/starfish-spaces` re-export below.
+export {
+  parseSpaceChange, buildAuthHeaders, subscribeSpaceChanges,
+} from './sync/events.js';
+export type { SpaceChange, SubscribeSpaceChangesOptions } from './sync/events.js';
+
 // ─── Fiancé config ────────────────────────────────────────────────────────────
 export { configureFiance, DEFAULT_SYNC_NAMESPACE } from './core/config.js';
 export type { FianceConfig, KvAdapter } from './core/config.js';

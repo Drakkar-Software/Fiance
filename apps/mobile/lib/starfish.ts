@@ -169,11 +169,26 @@ export async function initSync(cfg: SyncInitConfig): Promise<void> {
   _active = true;
   _lastUp = true;
 
-  // Signal connected so onSyncStatusChange listeners fire.
+  // Optimistic "connected" — push-sync (notifySync + foreground pull) works
+  // immediately regardless of whether the SSE stream ever connects, so status
+  // must not wait on it: platforms where streaming fetch doesn't return a
+  // readable body (a real risk on native — see markSseConnected below) would
+  // otherwise show "pending" forever even though sync is fully functional.
   emitSseStatus(true);
 
   // Dispatch so any early registerPull() listeners hydrate immediately.
   dispatchDocChange("*");
+}
+
+/**
+ * Called by the SSE subscription (providers.tsx) when the event stream actually
+ * connects. Status is already optimistically "synced" from initSync — this only
+ * re-pulses emitSseStatus as a real-connection diagnostic signal. Deliberately
+ * does NOT touch _lastSyncTs ("last successful push timestamp", not "last SSE
+ * connect time") on a mere (re)connect with no actual content synced.
+ */
+export function markSseConnected(): void {
+  emitSseStatus(true);
 }
 
 /** Legacy alias kept for call-sites that import initStarfish. */
