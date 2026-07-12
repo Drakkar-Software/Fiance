@@ -194,35 +194,37 @@ export function buildCollectionDoc(
   };
 }
 
+/** Property names {@link readSingletonEntity} recognizes as belonging to the CollectionDoc
+ *  wrapper (as opposed to the wrapped entity's own fields). */
+const SINGLETON_DOC_WRAPPER_KEYS = new Set(['fmt', 'items', 'rev', 'tombstones']);
+
 /**
  * Build a 1-item CollectionDoc for a singleton node (Fiancé's `wedding` root), so it can
  * be pushed through the same `mergeCollectionDoc` CAS mutator as an actual collection —
  * giving it per-entity rev LWW instead of a whole-object clobber. Never tombstones: a
- * singleton going missing means "not built this round", not "deleted".
+ * singleton going missing means "not built this round", not "deleted". Always stamps a
+ * fresh `rev` — unlike a real multi-item collection, a singleton is only ever built when
+ * it is about to be pushed (the caller's own dirty-check already gated on "did this
+ * change"), so there is no "carry the prior rev, this entity happens to be unchanged"
+ * case to support here.
  *
  * Keyed explicitly by the passed `id` (the node id), NOT `entity.id` — unlike a real
  * collection entity, the wedding domain object's own `id` is a local row number unrelated
  * to sync, so `entity` here is a plain record, not a `CollectionEntity`.
- *
- * @param prevRev  rev carried from the last hydrate/push of this node (undefined if never tracked)
- * @param changed  whether the entity's serialized content differs from the last push/hydrate baseline
  */
 export function buildSingletonDoc(
   id: string,
   entity: Record<string, unknown>,
-  prevRev: number | undefined,
-  changed: boolean,
   now: number,
 ): { doc: CollectionDoc; rev: number } {
-  const rev = prevRev === undefined || changed ? now : prevRev;
   return {
     doc: {
       fmt: COLLECTION_DOC_FMT,
       items: { [id]: entity as CollectionEntity },
-      rev: { [id]: rev },
+      rev: { [id]: now },
       tombstones: {},
     },
-    rev,
+    rev: now,
   };
 }
 
@@ -233,16 +235,34 @@ export function buildSingletonDoc(
  * the first local edit bumps it past any peer's real rev). Looks up by whichever key the
  * item is actually stored under (falls back to the doc's one entry) rather than by
  * `entity.id`, matching `buildSingletonDoc`'s keying.
+ *
+ * Also tolerates a HYBRID doc: an already-wrapped remote that an old-build device (still
+ * running the pre-migration `deepMerge(cur, content)` push, which this SDK change doesn't
+ * touch — that code lives in the app binary, not here) has since deepMerge'd its own raw
+ * content onto, during a staggered rollout. `deepMerge` overlays every one of the raw
+ * pusher's own top-level keys (id, name, venue, ...) onto the wrapped doc while leaving
+ * `items`/`rev`/`tombstones` untouched — so those wrapper keys go stale the instant this
+ * happens, even though `items` is still present and would otherwise look "properly
+ * wrapped". Any top-level key besides the four wrapper keys is that signal: prefer it
+ * over `items`, since it's the most recent full snapshot to reach the server (whichever
+ * device wrote it last did so with its complete current entity, the same way a legacy raw
+ * push always did).
  */
 export function readSingletonEntity(
   cur: unknown,
   id: string,
 ): { entity: Record<string, unknown> | null; rev: number } {
   if (!isRecord(cur)) return { entity: null, rev: 0 };
-  if (!isRecord(cur.items)) {
-    // Legacy raw entity (no `items` map) — adopt as-is.
-    return { entity: cur, rev: 0 };
+  const extraKeys = Object.keys(cur).filter((k) => !SINGLETON_DOC_WRAPPER_KEYS.has(k));
+  if (extraKeys.length > 0) {
+    // Legacy raw entity, or a hybrid produced by an old-build peer's raw push landing on
+    // top of an already-wrapped doc — either way, adopt the raw/extra fields (not `items`,
+    // which is either absent or stale) at rev 0 so the next local edit bumps past any peer.
+    const rest: Record<string, unknown> = {};
+    for (const k of extraKeys) rest[k] = (cur as Record<string, unknown>)[k];
+    return { entity: rest, rev: 0 };
   }
+  if (!isRecord(cur.items)) return { entity: null, rev: 0 };
   const doc = asCollectionDoc(cur);
   const entry = has(doc.items, id)
     ? ([id, doc.items[id]] as const)

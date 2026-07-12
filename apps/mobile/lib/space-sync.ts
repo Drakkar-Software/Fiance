@@ -119,12 +119,6 @@ let _rsvpRefreshing = false;
  */
 const _lastPushedJson = new Map<string, string>();
 
-/** rev carried between pushes/hydrates for the wedding singleton — same role as
- *  `_collectionState`'s per-entity rev, but for the one-item wedding doc (see
- *  buildSingletonDoc/readSingletonEntity in @fiance/sdk). Lets the wedding root be pushed
- *  through mergeCollectionDoc's per-entity LWW instead of a whole-object clobber. */
-let _weddingRev: number | undefined;
-
 // ── Per-collection ("one doc per collection") sync state ──
 // Content is one objdoc per collection (see @fiance/sdk collection-doc): an id-keyed map
 // of entities with per-entity rev (LWW) and durable tombstones. Deletes ride inside the
@@ -214,7 +208,6 @@ export function restoreSyncPush(): void {
  *  consecutive pushSpaceSnapshot calls from each other's state. */
 export function resetDirtyPushBaseline(): void {
   _lastPushedJson.clear();
-  _weddingRev = undefined;
   _lastPushedCollectionJson.clear();
   _collectionState.clear();
   _collectionEntityJson.clear();
@@ -251,7 +244,7 @@ function descriptorToNode(desc: NodeDescriptor, order: number, now: number): Obj
 function buildWeddingNode(
   weddingNodeId: string,
   now: number,
-): { node: ObjectNode; content: Record<string, unknown>; doc: CollectionDoc; rev: number } | null {
+): { node: ObjectNode; content: Record<string, unknown>; doc: CollectionDoc } | null {
   const { wedding } = useWeddingStore.getState();
   if (!wedding) return null;
   const desc = weddingToNode(wedding, weddingNodeId);
@@ -261,9 +254,8 @@ function buildWeddingNode(
     now,
   );
   const content = wedding as unknown as Record<string, unknown>;
-  const changed = stableStringify(content) !== _lastPushedJson.get(weddingNodeId);
-  const { doc, rev } = buildSingletonDoc(weddingNodeId, content, _weddingRev, changed, now);
-  return { node, content, doc, rev };
+  const { doc } = buildSingletonDoc(weddingNodeId, content, now);
+  return { node, content, doc };
 }
 
 
@@ -463,9 +455,7 @@ export async function pushSpaceSnapshot(
           session, spaceId, weddingBuilt.node, weddingBuilt.doc, now,
           (cur, doc, now) => mergeSingletonDoc(cur, doc, weddingNodeId, { now }),
         ).then((ok) => {
-          if (!ok) return;
-          _lastPushedJson.set(weddingBuilt.node.id, stableStringify(weddingBuilt.content));
-          _weddingRev = weddingBuilt.rev;
+          if (ok) _lastPushedJson.set(weddingBuilt.node.id, stableStringify(weddingBuilt.content));
         })]
       : []),
     ...dirtyCollections.map((b) =>
@@ -776,12 +766,10 @@ export async function hydrateFromSpace(
     }
 
     // Feed into stores — setters do NOT call notifySync, so no circular dispatch.
-    // readSingletonEntity unwraps the 1-item CollectionDoc (or tolerates a legacy raw
-    // remote from an old build during a rollout window) and reports its rev so the next
-    // push's LWW baseline starts from what was actually hydrated, not a fresh clock.
-    const { entity: weddingEntity, rev: weddingRev } = readSingletonEntity(weddingDoc, weddingNodeId);
+    // readSingletonEntity unwraps the 1-item CollectionDoc (or tolerates a legacy raw, or
+    // rollout-window hybrid, remote — see its doc comment) before it reaches the store.
+    const { entity: weddingEntity } = readSingletonEntity(weddingDoc, weddingNodeId);
     if (weddingEntity) useWeddingStore.getState().setWedding(weddingFromDoc(weddingEntity) as Parameters<ReturnType<typeof useWeddingStore.getState>['setWedding']>[0]);
-    _weddingRev = weddingEntity ? weddingRev : undefined;
     if (guestGroupDocs.length) useGuestsStore.getState().setGroups(guestGroupDocs.map(guestGroupFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGroups']>[0]);
     if (tableDocs.length) useGuestsStore.getState().setTables(tableDocs.map(tableFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setTables']>[0]);
     if (guestDocs.length) useGuestsStore.getState().setGuests(guestDocs.map(guestFromDoc) as Parameters<ReturnType<typeof useGuestsStore.getState>['setGuests']>[0]);

@@ -823,6 +823,42 @@ describe("hydrateFromSpace — wedding singleton unwrap", () => {
 
     expect(mockSetWedding).not.toHaveBeenCalled();
   });
+
+  // Regression: an old-build peer still runs the pre-migration deepMerge(cur, content)
+  // push, which splices its own raw fields onto an already-wrapped remote while leaving
+  // items/rev/tombstones untouched-but-stale. Without readSingletonEntity's hybrid
+  // detection, this device would keep reading the stale `items` entry and silently drop
+  // the old-build peer's edit on every hydrate.
+  it("prefers a hybrid doc's fresh raw fields over its stale `items` map", async () => {
+    mockReadObjectTreeImpl = async () => [
+      { id: "node-A", type: "wedding", parentId: null, updatedAt: 1000, contentKind: "merge", access: "space", enc: false },
+    ];
+    mockGetNodeAccessImpl = async () => ({
+      encryptor: null,
+      client: {
+        pull: vi.fn(async () => ({
+          data: {
+            fmt: 2,
+            items: { "node-A": { id: "node-A", name: "StaleFromItems" } },
+            rev: { "node-A": 999 },
+            tombstones: {},
+            id: "node-A",
+            name: "FreshFromOldBuildPush",
+          },
+          hash: "h",
+        })),
+        push: vi.fn(),
+      },
+      isOwnerOpen: false,
+      push: vi.fn(),
+    });
+
+    const { hydrateFromSpace } = await import("@/lib/space-sync");
+    await hydrateFromSpace({ userId: "u1" } as never, "sp-1", "node-A");
+
+    expect(mockSetWedding).toHaveBeenCalledTimes(1);
+    expect(mockSetWedding.mock.calls[0]?.[0]).toMatchObject({ name: "FreshFromOldBuildPush" });
+  });
 });
 
 // ─── Regression: RSVP inbox apply must be owner-only (guest data-loss on member devices) ──

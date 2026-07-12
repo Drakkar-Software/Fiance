@@ -229,22 +229,20 @@ describe('buildCollectionDoc', () => {
 });
 
 describe('buildSingletonDoc', () => {
-  it('stamps a fresh rev when there is no prior rev', () => {
-    const { doc: d, rev } = buildSingletonDoc('wed-1', entity('wed-1', { venue: 'Barn' }), undefined, false, 1000);
+  it('wraps the entity as a 1-item doc keyed by id, stamped with the given rev', () => {
+    const { doc: d, rev } = buildSingletonDoc('wed-1', entity('wed-1', { venue: 'Barn' }), 1000);
     expect(rev).toBe(1000);
     expect(d.items['wed-1']).toEqual(entity('wed-1', { venue: 'Barn' }));
     expect(d.rev['wed-1']).toBe(1000);
     expect(d.tombstones).toEqual({});
   });
 
-  it('bumps rev when changed=true', () => {
-    const { rev } = buildSingletonDoc('wed-1', entity('wed-1'), 500, true, 1000);
+  it('always stamps the given `now`, regardless of any prior state', () => {
+    // A singleton is only ever built when about to be pushed (the caller's own dirty
+    // check already gated on "did this change"), so there's no carried-rev case to
+    // support the way buildCollectionDoc carries an unchanged entity's rev.
+    const { rev } = buildSingletonDoc('wed-1', entity('wed-1'), 1000);
     expect(rev).toBe(1000);
-  });
-
-  it('carries the prior rev when unchanged', () => {
-    const { rev } = buildSingletonDoc('wed-1', entity('wed-1'), 500, false, 1000);
-    expect(rev).toBe(500);
   });
 });
 
@@ -273,6 +271,28 @@ describe('readSingletonEntity', () => {
     const { entity: e, rev } = readSingletonEntity(d, 'wed-1');
     expect(e).toEqual(entity('other', { venue: 'Barn' }));
     expect(rev).toBe(7);
+  });
+
+  it('prefers raw top-level fields over a stale `items` map on a hybrid doc', () => {
+    // An old-build peer, still running the pre-migration deepMerge(cur, content) push,
+    // splices its own raw fields onto an already-wrapped remote while leaving
+    // items/rev/tombstones untouched — so `items` looks well-formed but is stale.
+    const hybrid = {
+      fmt: 2,
+      items: { 'wed-1': entity('wed-1', { venue: 'StaleFromItems' }) },
+      rev: { 'wed-1': 999 },
+      tombstones: {},
+      id: 'wed-1',
+      venue: 'FreshFromOldBuildPush',
+      date: '2026-09-01',
+    };
+    const { entity: e, rev } = readSingletonEntity(hybrid, 'wed-1');
+    expect(e).toEqual({ id: 'wed-1', venue: 'FreshFromOldBuildPush', date: '2026-09-01' });
+    expect(rev).toBe(0);
+  });
+
+  it('returns null for a doc with only wrapper keys but a malformed items value', () => {
+    expect(readSingletonEntity({ fmt: 2, items: 'not-a-record' }, 'wed-1').entity).toBeNull();
   });
 });
 
@@ -308,7 +328,7 @@ describe('mergeSingletonDoc — rollout-window tolerance for a legacy raw remote
   it('field-merges a legacy raw remote (no items wrapper) instead of treating it as empty', () => {
     // Remote is still on the pre-migration shape (an old build's last push).
     const legacyRemote = { id: 'wed-1', venue: 'Barn', untouched: 'fromLegacyRemote' };
-    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'Barn', date: '2026-09-01' }, undefined, true, 1000);
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'Barn', date: '2026-09-01' }, 1000);
     const merged = mergeSingletonDoc(legacyRemote, local, 'wed-1');
     // Local (rev 1000) beats the legacy remote's synthesized rev 0, but the remote's
     // untouched field survives via the field-merge — a plain mergeCollectionDoc would
@@ -322,14 +342,32 @@ describe('mergeSingletonDoc — rollout-window tolerance for a legacy raw remote
 
   it('merges normally against a new-shape remote (delegates straight to mergeCollectionDoc)', () => {
     const remote = doc({ items: { 'wed-1': entity('wed-1', { venue: 'Old' }) }, rev: { 'wed-1': 5 } });
-    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, undefined, true, 10);
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, 10);
     const merged = mergeSingletonDoc(remote, local, 'wed-1');
     expect(merged.items['wed-1']).toMatchObject({ venue: 'New' });
   });
 
   it('handles a null/missing remote (first-ever push)', () => {
-    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, undefined, true, 10);
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'New' }, 10);
     const merged = mergeSingletonDoc(null, local, 'wed-1');
     expect(merged.items['wed-1']).toMatchObject({ venue: 'New' });
+  });
+
+  it('prefers a hybrid remote\'s fresh raw fields over its stale `items` map', () => {
+    // Mid-rollout: an old-build peer already deepMerge'd its own edit onto an
+    // already-wrapped doc, leaving `items` stale but present (see readSingletonEntity's
+    // hybrid-detection doc comment). Without that detection this device would keep the
+    // stale items entity and silently drop the old-build peer's edit.
+    const hybridRemote = {
+      fmt: 2,
+      items: { 'wed-1': { id: 'wed-1', venue: 'StaleFromItems' } },
+      rev: { 'wed-1': 999 },
+      tombstones: {},
+      id: 'wed-1',
+      venue: 'FreshFromOldBuildPush',
+    };
+    const { doc: local } = buildSingletonDoc('wed-1', { id: 'wed-1', venue: 'FreshFromOldBuildPush' }, 10);
+    const merged = mergeSingletonDoc(hybridRemote, local, 'wed-1');
+    expect(merged.items['wed-1'].venue).toBe('FreshFromOldBuildPush');
   });
 });
