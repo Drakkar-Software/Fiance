@@ -837,16 +837,22 @@ export async function hydrateFromSpace(
  * app/tab foreground so this device picks up peers' changes without a full reload.
  * No-ops while hydrating or while a debounced local push is queued, so it never
  * clobbers an edit this device hasn't flushed yet.
+ *
+ * Returns whether a hydrate actually ran, so callers that also refresh RSVP nodes
+ * (which a hydrate already pulls) can skip that redundant pull when this returns true.
  */
-export async function refreshFromSpaceIfIdle(): Promise<void> {
-  if (_isHydrating || _pushTimer || _pushing) return;
+export async function refreshFromSpaceIfIdle(): Promise<boolean> {
+  if (_isHydrating || _pushTimer || _pushing) return false;
   const session = getActiveSession();
   const spaceId = getActiveSpaceId();
   const weddingNodeId = getActiveWeddingNodeId();
-  if (!session || !spaceId || !weddingNodeId) return;
-  await hydrateFromSpace(session, spaceId, weddingNodeId).catch((err) => {
-    console.warn('[space-sync] refreshFromSpaceIfIdle failed:', err);
-  });
+  if (!session || !spaceId || !weddingNodeId) return false;
+  return hydrateFromSpace(session, spaceId, weddingNodeId)
+    .then(() => true)
+    .catch((err) => {
+      console.warn('[space-sync] refreshFromSpaceIfIdle failed:', err);
+      return false;
+    });
 }
 
 // ---------------------------------------------------------------------------

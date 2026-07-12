@@ -244,8 +244,8 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       // just-added/edited guest is picked up as "current" before anything else touches the
       // guest store — see space-sync.ts's refreshFromSpaceIfIdle guard.
       refreshFromSpaceIfIdle()
-        .catch(() => {})
-        .then(() => {
+        .catch(() => false)
+        .then((hydrated) => {
           // Owner-only: refreshRsvpInbox applies RSVP submissions into the guest store and
           // (via notifySync) schedules a real push, outside the hydrate interlock. Members
           // have no business independently pulling/re-pushing RSVP state — they receive it
@@ -253,6 +253,11 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
           // raced the guest store against foreground hydrates and dropped/tombstoned newly
           // created or edited guests on member devices.
           if (wedding.role === "member") return;
+          // A hydrate already pulls RSVP node content for the owner (see hydrateFromSpace's
+          // isActiveDeviceMember() gate), so only fall back to refreshRsvpInbox when the
+          // hydrate was skipped (local push pending) — avoids double-fetching each RSVP
+          // node's /content on every foreground.
+          if (hydrated) return;
           const fgSession = getActiveSession();
           const fgSpaceId = getActiveSpaceId();
           if (fgSession && fgSpaceId) {
