@@ -79,6 +79,7 @@
   "endTimeLabel": "End time",
   "locationLabel": "Location",
   "responsible": "Responsible",
+  "linkedRole": "Linked role",
   "until": "until {{time}}",
   "deleteMoment": "Delete this moment",
   "deleteMomentConfirm": "Delete this moment?",
