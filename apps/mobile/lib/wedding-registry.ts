@@ -64,6 +64,15 @@ export interface WeddingRegistryEntry {
    */
   revocationGeneration?: number;
   revokedEntries?: unknown[];
+  /**
+   * The wedding owner's userId (session.userId of the device with role "owner"),
+   * resolved from the space's `_access.owner` field via `readSpaceAccess` and cached
+   * here so a member device only needs the network round-trip once. Undefined for
+   * owner entries — the owner's own `session.userId` already IS this value. Used to
+   * key RevenueCat's appUserID so every collaborator on a wedding reads the same
+   * (owner's) premium entitlement — see `resolveOwnerUserId` in lib/server.ts.
+   */
+  ownerId?: string;
 }
 
 export interface WeddingRegistry {
@@ -142,7 +151,7 @@ export async function setActiveWeddingEntry(id: string): Promise<void> {
 
 export async function updateWeddingEntry(
   id: string,
-  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace" | "roleId" | "permissions" | "inviteSubjectId" | "revocationGeneration" | "revokedEntries">>
+  updates: Partial<Pick<WeddingRegistryEntry, "label" | "seedPhrase" | "serverUrl" | "syncDisabled" | "spaceId" | "role" | "weddingNodeId" | "syncNamespace" | "roleId" | "permissions" | "inviteSubjectId" | "revocationGeneration" | "revokedEntries" | "ownerId">>
 ): Promise<void> {
   const registry = await loadRegistry();
   const entry = registry.weddings.find((w) => w.id === id);

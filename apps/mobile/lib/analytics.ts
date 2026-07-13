@@ -64,7 +64,7 @@ export type FianceEvents = {
   gift_deleted:                undefined;
   // Monetization
   premium_checkout_started:    { platform: "ios" | "android" | "web" };
-  premium_purchased:           { platform: "ios" | "android" };
+  premium_purchased:           { platform: "ios" | "android" | "web" };
   premium_restored:            undefined;
 };
 

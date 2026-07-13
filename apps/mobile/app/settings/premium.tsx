@@ -9,10 +9,9 @@ import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seal } from "@/components/Seal";
 import { PageHeader } from "@/components/PageHeader";
-import { useIsPremiumReal, purchasePremium, restorePurchases, fetchPremiumProduct, refreshEntitlements } from "@/lib/iap";
-import { redirectToCheckout } from "@/lib/stripe";
-import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
-import { resolveServerConfig } from "@/lib/server";
+import { purchasePremium, restorePremium, getPremiumPrice } from "@/lib/revenuecat";
+import { useIsPremium } from "@/lib/premium";
+import { usePermissions } from "@/lib/permissions/usePermissions";
 import { analytics } from "@/lib/analytics";
 
 type PurchaseState = "idle" | "loading" | "unlocking" | "success" | "error";
@@ -25,69 +24,50 @@ const BENEFITS = [
 
 export default function PremiumScreen() {
   const { t } = useTranslation("settings");
-  const premium = useIsPremiumReal();
+  const premium = useIsPremium();
+  const { isOwner } = usePermissions();
   const [state, setState] = useState<PurchaseState>("idle");
   const [price, setPrice] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string>("");
-
-  const registry = useWeddingRegistryStore((s) => s.registry);
-  const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
 
   useEffect(() => {
-    if (!activeEntry?.seedPhrase) return;
-    resolveServerConfig(activeEntry).then((c) => { if (c) setUserId(c.userId); }).catch(() => {});
-  }, [activeEntry?.id, activeEntry?.seedPhrase]);
+    if (isOwner) {
+      getPremiumPrice().then((p) => { if (p) setPrice(p); }).catch(() => {});
+    }
+  }, [isOwner]);
 
-  useEffect(() => {
-    if (Platform.OS !== "web") {
-      fetchPremiumProduct().then((p) => { if (p?.localizedPrice) setPrice(p.localizedPrice); }).catch(() => {});
+  const handlePurchase = useCallback(async () => {
+    analytics.capture("premium_checkout_started", { platform: Platform.OS as "ios" | "android" | "web" });
+    setState("loading");
+    const outcome = await purchasePremium();
+    if (outcome.kind === "purchased") {
+      analytics.capture("premium_purchased", { platform: Platform.OS as "ios" | "android" | "web" });
+      setState("success");
+      setTimeout(() => setState("idle"), 2000);
+    } else if (outcome.kind === "cancelled") {
+      setState("idle");
+    } else {
+      setState("error");
+      setTimeout(() => setState("idle"), 3000);
     }
   }, []);
 
-  const handlePurchase = useCallback(async () => {
-    if (Platform.OS === "web") {
-      analytics.capture("premium_checkout_started", { platform: "web" });
-      try {
-        redirectToCheckout(userId, activeEntry?.id);
-      } catch {
-        setState("error");
-        setTimeout(() => setState("idle"), 3000);
-      }
-      return;
-    }
-    analytics.capture("premium_checkout_started", { platform: Platform.OS as "ios" | "android" });
-    setState("loading");
-    try {
-      await purchasePremium(userId);
-      analytics.capture("premium_purchased", { platform: Platform.OS as "ios" | "android" });
-      setState("unlocking");
-      await refreshEntitlements(userId);
-      setState("success");
-      setTimeout(() => setState("idle"), 2000);
-    } catch {
-      setState("error");
-      setTimeout(() => setState("idle"), 3000);
-    }
-  }, [userId]);
-
   const handleRestore = useCallback(async () => {
     setState("unlocking");
-    try {
-      await restorePurchases(userId);
+    const restored = await restorePremium();
+    if (restored) {
       analytics.capture("premium_restored");
       setState("success");
       setTimeout(() => setState("idle"), 2000);
-    } catch {
+    } else {
       setState("error");
       setTimeout(() => setState("idle"), 3000);
     }
-  }, [userId]);
+  }, []);
 
   const ctaLabel = (() => {
     if (state === "loading" || state === "unlocking") return t("premiumUnlocking");
     if (state === "success") return t("premiumPurchaseSuccess");
     if (state === "error") return t("premiumPurchaseError");
-    if (Platform.OS === "web") return t("premiumCtaWeb");
     return t("premiumCta", { price: price ?? "…" });
   })();
 
@@ -134,11 +114,17 @@ export default function PremiumScreen() {
           ))}
         </View>
 
-        {/* CTA or active badge */}
+        {/* CTA, active badge, or (for non-owners) a read-only note */}
         {premium ? (
           <View className="bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl px-5 py-4 items-center">
             <Text className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
               {t("premiumUnlocked")} ✓
+            </Text>
+          </View>
+        ) : !isOwner ? (
+          <View className="bg-accent-card rounded-2xl px-5 py-4 items-center border border-hair">
+            <Text className="text-sm text-mute text-center leading-5">
+              {t("premiumOwnerOnly")}
             </Text>
           </View>
         ) : (

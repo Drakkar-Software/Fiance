@@ -22,13 +22,12 @@ import {
 import { registerPull } from "@fiance/sdk";
 import { hydrateFromSpace, scheduleSyncPush, pushSpaceSnapshot, refreshRsvpInbox, refreshFromSpaceIfIdle, discoverOwnerWeddingRoot, hydrateSawLegacyNodes, resetDirtyPushBaseline } from "@/lib/space-sync";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
-import { resolveServerUrl, resolveSessionConfig, normalizeSyncBase } from "@/lib/server";
+import { resolveServerUrl, resolveSessionConfig, resolveOwnerUserId, normalizeSyncBase } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent, publicPageNodeId } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { isPremium } from "@/lib/premium";
+import { useIsPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
-import { setupPurchaseListeners } from "@/lib/iap";
-import { handleReturnFromCheckout } from "@/lib/stripe";
+import { configureRevenueCat } from "@/lib/revenuecat";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -141,6 +140,13 @@ export function activateSync(
 
 /** Initializes starfish-spaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  // Reactive (not the isPremium() snapshot): RevenueCat resolves the entitlement
+  // asynchronously (network round-trip via RevenueCatInitializer), so on cold boot
+  // this starts out false. Depending on the live value below re-runs this effect
+  // the moment premium flips true instead of permanently bailing out on the first,
+  // synchronous read.
+  const premium = useIsPremium();
+
   useEffect(() => {
     if (isSyncActive()) {
       teardownSync();
@@ -150,7 +156,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       resetDirtyPushBaseline();
     }
 
-    if (!wedding.seedPhrase || wedding.syncDisabled || !isPremium()) return;
+    if (!wedding.seedPhrase || wedding.syncDisabled || !premium) return;
 
     let cancelled = false;
     let resolvedUserId: string | null = null;
@@ -309,7 +315,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       unregisterPush?.();
       unsubSse?.();
     };
-  }, [wedding.id]);
+  }, [wedding.id, premium]);
 
   // Re-push public page when day-of items or wedding info change (B5).
   // Debounced: collapses rapid per-keystroke changes into one network push.
@@ -359,29 +365,49 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
 }
 
 // ---------------------------------------------------------------------------
-// IAPInitializer — IAP + Stripe (unchanged from v2, Doubloon not migrated yet)
+// RevenueCatInitializer — configures RevenueCat keyed to the wedding OWNER
 // ---------------------------------------------------------------------------
 
-/** Sets up IAP purchase listeners (mobile) or handles Stripe return (web). */
-export function IAPInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
-  const [starfishUserId, setStarfishUserId] = React.useState<string | null>(null);
+/**
+ * Configures RevenueCat (native or Web Billing, per lib/revenuecat.ts split) using
+ * the wedding OWNER's userId as the appUserID — never the current device's own
+ * userId. This means every collaborator on a wedding (owner and every invited
+ * member) reads the exact same premium entitlement, since RevenueCat is always
+ * logged in as the owner. Only the owner is offered the purchase/restore CTAs
+ * (see usePermissions().isOwner in PaywallSheet/settings/premium.tsx) — a member
+ * device configuring RevenueCat here is read-only in practice.
+ */
+export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  const [ownerUserId, setOwnerUserId] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (!wedding.seedPhrase) return;
+    let cancelled = false;
     resolveSessionConfig(wedding)
-      .then((cfg) => { if (cfg) setStarfishUserId(cfg.userId); })
+      .then(async (cfg) => {
+        if (!cfg || cancelled) return;
+        const resolvedOwnerId = await resolveOwnerUserId(wedding, cfg);
+        // null means "not confidently resolved yet" (no spaceId, or the lookup
+        // failed) — never cache it and never configure RevenueCat under this
+        // device's own id in its place (see resolveOwnerUserId). Leave state as
+        // is; this effect's spaceId/ownerId deps naturally retry on the next
+        // relevant change, and a fresh app launch retries unconditionally.
+        if (cancelled || !resolvedOwnerId) return;
+        // Cache the owner lookup on the registry entry so a member device skips
+        // the readSpaceAccess round-trip on later boots (see resolveOwnerUserId).
+        if (wedding.role === "member" && wedding.ownerId !== resolvedOwnerId) {
+          useWeddingRegistryStore.getState().updateWedding(wedding.id, { ownerId: resolvedOwnerId }).catch(() => {});
+        }
+        setOwnerUserId(resolvedOwnerId);
+      })
       .catch(() => {});
-  }, [wedding.id, wedding.seedPhrase]);
+    return () => { cancelled = true; };
+  }, [wedding.id, wedding.seedPhrase, wedding.role, wedding.spaceId, wedding.ownerId]);
 
   useEffect(() => {
-    if (!starfishUserId) return;
-    if (Platform.OS === "web") {
-      handleReturnFromCheckout(starfishUserId).catch(() => {});
-      return;
-    }
-    const teardown = setupPurchaseListeners(starfishUserId);
-    return () => { teardown?.(); };
-  }, [starfishUserId]);
+    if (!ownerUserId) return;
+    configureRevenueCat(ownerUserId);
+  }, [ownerUserId]);
 
   return null;
 }

@@ -1,14 +1,15 @@
-import { getStarfishStore } from "@/lib/starfish";
-import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { useOptimisticPurchaseStore } from "@/store/useOptimisticPurchaseStore";
+import { useRevenueCatStore } from "@/store/useRevenueCatStore";
 
-const PREMIUM_FEATURE = "paid-premium";
-
+/**
+ * Non-reactive snapshot — use outside of components (e.g. guards, lib code).
+ * Reflects the wedding OWNER's RevenueCat entitlement (see RevenueCatInitializer
+ * in lib/providers.tsx), shared across every collaborator on the wedding.
+ */
 export function isPremium(): boolean {
-  return true; // TODO: remove once Doubloon + entitlement migration are live
+  return useRevenueCatStore.getState().isPremium;
 }
 
 /** Reactive hook — use in components that need to re-render when entitlements change. */
 export function useIsPremium(): boolean {
-  return true; // TODO: remove once Doubloon + entitlement migration are live
+  return useRevenueCatStore((s) => s.isPremium);
 }

@@ -27,7 +27,7 @@ import {
 import { activateSync } from "@/lib/providers";
 import { needsNamespaceResync, resyncWeddingToCurrentNamespace } from "@/lib/space-resync";
 import { generatePassphrase } from "@/lib/identity";
-import { resolveServerConfig, resolveServerUrl } from "@/lib/server";
+import { resolveServerUrl } from "@/lib/server";
 import { createInviteLink } from "@/lib/invite-link";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
@@ -130,11 +130,6 @@ export default function SettingsScreen() {
 
   const premium = useIsPremium();
   const [showPaywall, setShowPaywall] = useState(false);
-  const [starfishUserId, setStarfishUserId] = useState<string>("");
-  useEffect(() => {
-    if (!activeEntry?.seedPhrase) return;
-    resolveServerConfig(activeEntry).then((c) => { if (c) setStarfishUserId(c.userId); }).catch(() => {});
-  }, [activeEntry?.id, activeEntry?.seedPhrase]);
 
   const handleToggleSync = useCallback(async () => {
     console.log("[sync] handleToggleSync called", { id: activeEntry?.id, syncEnabled, premium, hasSeed: !!activeEntry?.seedPhrase, serverUrl: activeEntry?.serverUrl });
@@ -310,8 +305,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Premium (hidden for now) */}
-      {false && (
+      {/* Premium */}
       <View className="px-4 pt-2">
         <IconCard
           icon={
@@ -325,7 +319,6 @@ export default function SettingsScreen() {
           onPress={() => router.push("/settings/premium")}
         />
       </View>
-      )}
 
       {/* Wedding info */}
       <View className="px-4 pt-2">
@@ -750,8 +743,6 @@ export default function SettingsScreen() {
     <PaywallSheet
       visible={showPaywall}
       onClose={() => setShowPaywall(false)}
-      userId={starfishUserId}
-      weddingId={activeEntry?.id}
     />
 
     {showJoinScanner && (

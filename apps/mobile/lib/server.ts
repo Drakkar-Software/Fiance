@@ -7,7 +7,7 @@
  * `resolveSessionConfig` in new code.
  */
 
-import { deriveSession, getSyncNamespace, DEFAULT_SYNC_NAMESPACE, type Session } from "@fiance/sdk";
+import { deriveSession, getSyncNamespace, DEFAULT_SYNC_NAMESPACE, readSpaceAccess, type Session } from "@fiance/sdk";
 import { normalizePhrase } from "@/lib/identity";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
@@ -109,6 +109,40 @@ export async function resolveSessionConfig(
     { sharedNamespace: syncNamespace(), autoProfile: false },
   );
   return { serverUrl, session, userId: session.userId };
+}
+
+/**
+ * Resolve the wedding OWNER's userId — every collaborator on a wedding derives
+ * their own independent userId from their own seed phrase (see join-space.ts), so
+ * a member's `session.userId` is NOT the owner's. Things that must be shared
+ * across the whole wedding regardless of who's looking (e.g. the premium
+ * entitlement) key on this instead of the caller's own userId.
+ *
+ * Owner entries (role !== "member") already ARE the owner — no network call.
+ * Member entries resolve it once via the space's `_access.owner` field (written
+ * at space creation, see space-provision.ts) and the result is cached by the
+ * caller onto `WeddingRegistryEntry.ownerId` to skip the round-trip on later boots.
+ *
+ * Returns null — NOT the caller's own userId — when the owner id can't yet be
+ * confidently resolved (no spaceId yet, or the readSpaceAccess call failed).
+ * Callers must not cache a null result or configure anything under the caller's
+ * own id in its place: that would misattribute a member's own (non-premium)
+ * RevenueCat customer as "the owner" and, if cached, lock it in permanently.
+ * Leave it unresolved and retry on the next attempt instead.
+ */
+export async function resolveOwnerUserId(
+  wedding: WeddingRegistryEntry,
+  cfg: SessionConfig,
+): Promise<string | null> {
+  if (wedding.role !== "member") return cfg.userId;
+  if (wedding.ownerId) return wedding.ownerId;
+  if (!wedding.spaceId) return null;
+  try {
+    const access = await readSpaceAccess(cfg.session.spacesRegistryClient, wedding.spaceId, cfg.session);
+    return access.owner ?? null;
+  } catch {
+    return null;
+  }
 }
 
 // ─── Legacy compat ────────────────────────────────────────────────────────────

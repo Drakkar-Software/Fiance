@@ -51,7 +51,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { Toaster } from "@/lib/toast/sonner";
 import { TelemetryProvider, useTelemetryScreenTracking } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics, initAnalytics } from "@/lib/analytics";
-import { configureOnBoot, SyncInitializer, NotificationInitializer, IAPInitializer, WidgetInitializer } from "@/lib/providers";
+import { configureOnBoot, SyncInitializer, NotificationInitializer, RevenueCatInitializer, WidgetInitializer } from "@/lib/providers";
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
@@ -124,7 +124,7 @@ function AppContent() {
     <DatabaseProvider dbFileName={activeWedding?.dbFileName}>
       {activeWedding && <SyncInitializer wedding={activeWedding} />}
       {activeWedding && <NotificationInitializer />}
-      {activeWedding && <IAPInitializer wedding={activeWedding} />}
+      {activeWedding && <RevenueCatInitializer wedding={activeWedding} />}
       {activeWedding && <WidgetInitializer />}
       <View style={{ flex: 1 }}>
         {activeWedding && <ReadOnlyBanner />}
