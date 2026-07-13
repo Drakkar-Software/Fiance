@@ -27,7 +27,8 @@ import { ensurePublicPageNode, pushPublicPageContent, publicPageNodeId } from "@
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
 import { useIsPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
-import { configureRevenueCat } from "@/lib/revenuecat";
+import { configureRevenueCat, subscribeCustomerInfo } from "@/lib/revenuecat";
+import { useRevenueCatStore } from "@/store/useRevenueCatStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingStore } from "@/store/useWeddingStore";
@@ -381,6 +382,14 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
   const [ownerUserId, setOwnerUserId] = React.useState<string | null>(null);
 
   useEffect(() => {
+    // Reset immediately (not just "leave stale") whenever this wedding's identity
+    // changes — e.g. switching the active wedding. Without this, useIsPremium()
+    // keeps reporting the PREVIOUS wedding's entitlement for as long as the async
+    // resolution below takes (or indefinitely, if it never resolves), which is
+    // exactly the gate this whole integration exists to enforce correctly.
+    setOwnerUserId(null);
+    useRevenueCatStore.getState().setPremium(false);
+
     if (!wedding.seedPhrase) return;
     let cancelled = false;
     resolveSessionConfig(wedding)
@@ -390,11 +399,14 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
         // null means "not confidently resolved yet" (no spaceId, or the lookup
         // failed) — never cache it and never configure RevenueCat under this
         // device's own id in its place (see resolveOwnerUserId). Leave state as
-        // is; this effect's spaceId/ownerId deps naturally retry on the next
-        // relevant change, and a fresh app launch retries unconditionally.
+        // is; this effect's spaceId dep naturally retries on the next relevant
+        // change, and a fresh app launch retries unconditionally.
         if (cancelled || !resolvedOwnerId) return;
         // Cache the owner lookup on the registry entry so a member device skips
         // the readSpaceAccess round-trip on later boots (see resolveOwnerUserId).
+        // Deliberately NOT in this effect's deps — depending on the very field it
+        // writes would force a guaranteed, purely-redundant second run (same
+        // resolvedOwnerId) on every member wedding's first cache-miss.
         if (wedding.role === "member" && wedding.ownerId !== resolvedOwnerId) {
           useWeddingRegistryStore.getState().updateWedding(wedding.id, { ownerId: resolvedOwnerId }).catch(() => {});
         }
@@ -402,11 +414,12 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [wedding.id, wedding.seedPhrase, wedding.role, wedding.spaceId, wedding.ownerId]);
+  }, [wedding.id, wedding.seedPhrase, wedding.role, wedding.spaceId]);
 
   useEffect(() => {
     if (!ownerUserId) return;
     configureRevenueCat(ownerUserId);
+    return subscribeCustomerInfo();
   }, [ownerUserId]);
 
   return null;

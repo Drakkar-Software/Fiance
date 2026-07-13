@@ -48,7 +48,10 @@ function applyCustomerInfo(info: CustomerInfo): void {
  * No-ops (with a dev warning) when the required EXPO_PUBLIC_REVENUECAT_* key is
  * missing, instead of calling Purchases.configure with a blank apiKey — which the
  * native SDK accepts silently and then fails every subsequent call with an opaque
- * auth error.
+ * auth error. `configured` is only flipped once Purchases.configure() actually
+ * succeeds — a synchronous throw (bad key, native double-configure guard) is
+ * caught so it can't crash the caller's effect nor permanently mis-mark the
+ * module as configured when it never was.
  */
 export function configureRevenueCat(ownerUserId: string): void {
   if (!configured) {
@@ -57,16 +60,31 @@ export function configureRevenueCat(ownerUserId: string): void {
       if (__DEV__) console.warn("[revenuecat] no EXPO_PUBLIC_REVENUECAT_* key set for this platform/build — skipping configure()");
       return;
     }
-    configured = true;
-    Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.INFO);
-    Purchases.configure({ apiKey, appUserID: ownerUserId });
-    Purchases.addCustomerInfoUpdateListener(applyCustomerInfo);
+    try {
+      Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.INFO);
+      Purchases.configure({ apiKey, appUserID: ownerUserId });
+      configured = true;
+    } catch (e) {
+      if (__DEV__) console.warn("[revenuecat] Purchases.configure() threw:", e);
+      return;
+    }
     Purchases.getCustomerInfo().then(applyCustomerInfo).catch(() => {});
     return;
   }
   Purchases.logIn(ownerUserId)
     .then(({ customerInfo }) => applyCustomerInfo(customerInfo))
     .catch(() => {});
+}
+
+/**
+ * Subscribe to entitlement changes (purchase, restore, login, renewal). Owned by
+ * the caller's effect lifecycle — call once per mount and invoke the returned
+ * function on cleanup, so a remount (e.g. RevenueCatInitializer re-running on a
+ * wedding switch) never accumulates duplicate listeners.
+ */
+export function subscribeCustomerInfo(): () => void {
+  Purchases.addCustomerInfoUpdateListener(applyCustomerInfo);
+  return () => Purchases.removeCustomerInfoUpdateListener(applyCustomerInfo);
 }
 
 export async function purchasePremium(): Promise<PurchaseOutcome> {

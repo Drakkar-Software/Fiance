@@ -42,12 +42,27 @@ export function configureRevenueCat(ownerUserId: string): void {
       if (__DEV__) console.warn("[revenuecat] EXPO_PUBLIC_REVENUECAT_WEB_KEY is not set — skipping configure()");
       return;
     }
-    Purchases.setLogLevel(__DEV__ ? LogLevel.Debug : LogLevel.Info);
-    purchases = Purchases.configure(apiKey, ownerUserId);
+    try {
+      Purchases.setLogLevel(__DEV__ ? LogLevel.Debug : LogLevel.Info);
+      purchases = Purchases.configure(apiKey, ownerUserId);
+    } catch (e) {
+      if (__DEV__) console.warn("[revenuecat] Purchases.configure() threw:", e);
+      return;
+    }
     purchases.getCustomerInfo().then(applyCustomerInfo).catch(() => {});
     return;
   }
   purchases.changeUser(ownerUserId).then(applyCustomerInfo).catch(() => {});
+}
+
+/**
+ * Web Billing has no persistent customer-info listener API (unlike the native
+ * SDK) — CustomerInfo is refreshed explicitly after configure/purchase/restore.
+ * No-op, matching the shared lib/revenuecat.ts surface so callers don't need a
+ * platform branch.
+ */
+export function subscribeCustomerInfo(): () => void {
+  return () => {};
 }
 
 export async function purchasePremium(): Promise<PurchaseOutcome> {
