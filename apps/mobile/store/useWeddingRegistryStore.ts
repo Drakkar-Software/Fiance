@@ -8,6 +8,7 @@ import {
   setActiveWeddingEntry,
   updateWeddingEntry,
 } from "@/lib/wedding-registry";
+import { useRevenueCatStore } from "@/store/useRevenueCatStore";
 
 interface WeddingRegistryState {
   registry: WeddingRegistry | null;
@@ -32,6 +33,12 @@ export const useWeddingRegistryStore = create<WeddingRegistryState>((set, get) =
   createWedding: async (label, seedPhrase, serverUrl, spaceId, role) => {
     const entry = await createWeddingEntry(label, seedPhrase, serverUrl, spaceId, role);
     const registry = await loadRegistry();
+    // Reset BEFORE the registry update below triggers React's re-render, so
+    // RevenueCatInitializer/SyncInitializer never observe the previous active
+    // wedding's stale premium flag on the very first render of the new one —
+    // relying on RevenueCatInitializer's own effect to reset it is too late,
+    // since effects run after render and can race a sibling's render-time read.
+    useRevenueCatStore.getState().setPremium(false);
     set({ registry });
     return entry;
   },
@@ -39,12 +46,14 @@ export const useWeddingRegistryStore = create<WeddingRegistryState>((set, get) =
   switchWedding: async (id) => {
     await setActiveWeddingEntry(id);
     const registry = await loadRegistry();
+    useRevenueCatStore.getState().setPremium(false); // see createWedding
     set({ registry });
   },
 
   deleteWedding: async (id) => {
     await deleteWeddingEntry(id);
     const registry = await loadRegistry();
+    useRevenueCatStore.getState().setPremium(false); // see createWedding
     set({ registry });
   },
 

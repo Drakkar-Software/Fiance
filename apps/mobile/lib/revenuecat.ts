@@ -22,6 +22,16 @@ async function findPremiumPackage() {
 
 let configured = false;
 
+/**
+ * The wedding owner userId configureRevenueCat() was last called with. Guards
+ * applyCustomerInfo against stale data: an in-flight getCustomerInfo()/logIn()
+ * promise (or a native listener event) for a PREVIOUS owner can resolve/fire
+ * after a fast wedding switch has already moved on to a new owner — comparing
+ * against CustomerInfo.originalAppUserId drops it instead of overwriting the
+ * current wedding's entitlement with the wrong one's.
+ */
+let currentOwnerId: string | null = null;
+
 /** Null when the required env var is missing/blank — never returns an empty string. */
 function resolveApiKey(): string | null {
   if (__DEV__) {
@@ -36,6 +46,7 @@ function resolveApiKey(): string | null {
 }
 
 function applyCustomerInfo(info: CustomerInfo): void {
+  if (info.originalAppUserId !== currentOwnerId) return;
   useRevenueCatStore.getState().setPremium(info.entitlements.active[RC_ENTITLEMENT_ID] !== undefined);
 }
 
@@ -54,6 +65,7 @@ function applyCustomerInfo(info: CustomerInfo): void {
  * module as configured when it never was.
  */
 export function configureRevenueCat(ownerUserId: string): void {
+  currentOwnerId = ownerUserId;
   if (!configured) {
     const apiKey = resolveApiKey();
     if (!apiKey) {

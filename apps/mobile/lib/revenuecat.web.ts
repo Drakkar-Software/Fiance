@@ -10,6 +10,15 @@ export { RC_ENTITLEMENT_ID, PREMIUM_SKU, type PurchaseOutcome } from "./revenuec
 let purchases: Purchases | null = null;
 
 /**
+ * The wedding owner userId configureRevenueCat() was last called with. Guards
+ * applyCustomerInfo against stale data: an in-flight getCustomerInfo()/changeUser()
+ * promise for a PREVIOUS owner can resolve after a fast wedding switch has already
+ * moved on to a new owner — comparing against CustomerInfo.originalAppUserId drops
+ * it instead of overwriting the current wedding's entitlement with the wrong one's.
+ */
+let currentOwnerId: string | null = null;
+
+/**
  * Find the lifetime-premium package by product id rather than assuming it's
  * whichever package the dashboard's current offering happens to list first —
  * that would silently target the wrong product if the offering ever gains a
@@ -23,6 +32,7 @@ async function findPremiumPackage() {
 }
 
 function applyCustomerInfo(info: CustomerInfo): void {
+  if (info.originalAppUserId !== currentOwnerId) return;
   useRevenueCatStore.getState().setPremium(info.entitlements.active[RC_ENTITLEMENT_ID] !== undefined);
 }
 
@@ -36,6 +46,7 @@ function applyCustomerInfo(info: CustomerInfo): void {
  * instead of calling Purchases.configure with a blank apiKey.
  */
 export function configureRevenueCat(ownerUserId: string): void {
+  currentOwnerId = ownerUserId;
   if (!purchases) {
     const apiKey = process.env.EXPO_PUBLIC_REVENUECAT_WEB_KEY;
     if (!apiKey) {

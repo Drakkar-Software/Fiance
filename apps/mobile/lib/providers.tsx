@@ -399,8 +399,7 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
         // null means "not confidently resolved yet" (no spaceId, or the lookup
         // failed) — never cache it and never configure RevenueCat under this
         // device's own id in its place (see resolveOwnerUserId). Leave state as
-        // is; this effect's spaceId dep naturally retries on the next relevant
-        // change, and a fresh app launch retries unconditionally.
+        // is; a fresh app launch retries unconditionally.
         if (cancelled || !resolvedOwnerId) return;
         // Cache the owner lookup on the registry entry so a member device skips
         // the readSpaceAccess round-trip on later boots (see resolveOwnerUserId).
@@ -414,7 +413,14 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [wedding.id, wedding.seedPhrase, wedding.role, wedding.spaceId]);
+    // wedding.spaceId is deliberately NOT a dep: it's only used for MEMBER
+    // resolution (owners return early above and never read it), and a member
+    // always has spaceId set at join time (see space-provision.ts). Depending
+    // on it meant an OWNER's first-time space provisioning — which sets
+    // spaceId AFTER the fact, on the wedding that's already correctly active —
+    // spuriously re-ran this whole effect and reset a premium flag that was
+    // already correct, tearing down the sync it had just activated.
+  }, [wedding.id, wedding.seedPhrase, wedding.role]);
 
   useEffect(() => {
     if (!ownerUserId) return;
