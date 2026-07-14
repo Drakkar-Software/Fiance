@@ -4,10 +4,18 @@
 // Metro's own platform-extension resolution and circularly resolves to itself.
 
 /** Entitlement identifier configured in the RevenueCat dashboard for lifetime premium. */
-export const RC_ENTITLEMENT_ID = "premium";
+export const RC_ENTITLEMENT_ID = "Fiancé Unlimited";
 
-/** Store product id — one-time lifetime purchase, same id on both stores (app.json). */
-export const PREMIUM_SKU = "software.drakkar.fiance.app.premium.lifetime";
+/**
+ * Store product ids for the one-time lifetime purchase. The RevenueCat Test
+ * Store reports the dashboard product id ("lifetime"); the real App Store /
+ * Play Store products (app.json) report the fully-qualified SKU. Match against
+ * both so findPremiumPackage() works in dev and prod.
+ */
+export const PREMIUM_PRODUCT_IDS = [
+  "lifetime",
+  "software.drakkar.fiance.app.premium.lifetime",
+];
 
 export type PurchaseOutcome =
   | { kind: "purchased" }

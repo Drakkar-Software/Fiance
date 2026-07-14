@@ -3,9 +3,9 @@
 // Never import @revenuecat/purchases-js outside this file.
 import { Purchases, LogLevel, ErrorCode, type CustomerInfo } from "@revenuecat/purchases-js";
 import { useRevenueCatStore } from "@/store/useRevenueCatStore";
-import { RC_ENTITLEMENT_ID, PREMIUM_SKU, type PurchaseOutcome } from "./revenuecat-constants";
+import { RC_ENTITLEMENT_ID, PREMIUM_PRODUCT_IDS, type PurchaseOutcome } from "./revenuecat-constants";
 
-export { RC_ENTITLEMENT_ID, PREMIUM_SKU, type PurchaseOutcome } from "./revenuecat-constants";
+export { RC_ENTITLEMENT_ID, PREMIUM_PRODUCT_IDS, type PurchaseOutcome } from "./revenuecat-constants";
 
 let purchases: Purchases | null = null;
 
@@ -22,13 +22,18 @@ let currentOwnerId: string | null = null;
  * Find the lifetime-premium package by product id rather than assuming it's
  * whichever package the dashboard's current offering happens to list first —
  * that would silently target the wrong product if the offering ever gains a
- * second package (e.g. a future subscription tier or a paywall A/B test).
+ * second package (e.g. a future subscription tier or a paywall A/B test). Falls
+ * back to the sole package when there's exactly one, since the Test Store and
+ * the real stores report different product id forms for the same product.
  */
 async function findPremiumPackage() {
   if (!purchases) return null;
   const offerings = await purchases.getOfferings();
   const packages = offerings.current?.availablePackages ?? [];
-  return packages.find((pkg) => pkg.rcBillingProduct.identifier === PREMIUM_SKU) ?? null;
+  return (
+    packages.find((pkg) => PREMIUM_PRODUCT_IDS.includes(pkg.rcBillingProduct.identifier)) ??
+    (packages.length === 1 ? packages[0] : null)
+  );
 }
 
 function applyCustomerInfo(info: CustomerInfo): void {
@@ -80,7 +85,7 @@ export async function purchasePremium(): Promise<PurchaseOutcome> {
   if (!purchases) return { kind: "failed", error: new Error("RevenueCat not configured") };
   try {
     const pkg = await findPremiumPackage();
-    if (!pkg) return { kind: "failed", error: new Error(`No offering package for product "${PREMIUM_SKU}"`) };
+    if (!pkg) return { kind: "failed", error: new Error(`No offering package for product "${PREMIUM_PRODUCT_IDS.join("/")}"`) };
     const { customerInfo } = await purchases.purchase({ rcPackage: pkg });
     applyCustomerInfo(customerInfo);
     return { kind: "purchased" };
