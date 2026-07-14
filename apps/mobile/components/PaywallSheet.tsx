@@ -61,7 +61,7 @@ export function PaywallSheet({ visible, onClose }: PaywallSheetProps) {
     if (state === "loading" || state === "unlocking") return t("premiumUnlocking");
     if (state === "success") return t("premiumPurchaseSuccess");
     if (state === "error") return t("premiumPurchaseError");
-    return t("premiumCta", { price: price ?? "…" });
+    return price ? t("premiumCta", { price }) : t("premiumCtaNoPrice");
   })();
 
   return (

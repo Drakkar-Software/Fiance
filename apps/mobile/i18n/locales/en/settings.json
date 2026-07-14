@@ -47,6 +47,7 @@
   "premiumOneTime": "lifetime access",
   "premiumPitch": "Partner sharing, full public page. One-time lifetime purchase.",
   "premiumCta": "Unlock Premium — {{price}}",
+  "premiumCtaNoPrice": "Unlock Premium",
   "premiumRestore": "Restore purchases",
   "premiumUnlocking": "Verifying…",
   "premiumPurchaseError": "Purchase failed. Please try again.",

@@ -47,6 +47,7 @@
   "premiumOneTime": "accès à vie",
   "premiumPitch": "Partage avec votre partenaire, page publique complète. Un achat unique, à vie.",
   "premiumCta": "Débloquer Premium — {{price}}",
+  "premiumCtaNoPrice": "Débloquer Premium",
   "premiumRestore": "Restaurer mes achats",
   "premiumUnlocking": "Vérification en cours…",
   "premiumPurchaseError": "Achat impossible. Veuillez réessayer.",
