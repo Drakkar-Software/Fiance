@@ -52,6 +52,8 @@ export interface PublicWeddingPage {
   gifts?: PublicGift[];
   /** v2: public sub-events (multi-day/venue). Absent on v1 documents. */
   events?: PublicWeddingEvent[];
+  /** Whether the owner's wedding is premium — gates gifts (and future premium sections) client-side too. */
+  premium?: boolean;
 }
 
 export interface FaqItem {
@@ -64,7 +66,8 @@ export function buildPublicPage(
   wedding: Wedding | null,
   dayOfItems: DayOfItem[],
   gifts: Gift[],
-  weddingEvents: WeddingEvent[] = []
+  weddingEvents: WeddingEvent[] = [],
+  premium = false
 ): PublicWeddingPage {
   const weddingDate = wedding?.weddingDate || "";
 
@@ -132,7 +135,8 @@ export function buildPublicPage(
     },
     timeline,
     faq,
-    gifts: publicGifts.length > 0 ? publicGifts : undefined,
+    gifts: premium && publicGifts.length > 0 ? publicGifts : undefined,
     events: events.length > 0 ? events : undefined,
+    premium,
   };
 }

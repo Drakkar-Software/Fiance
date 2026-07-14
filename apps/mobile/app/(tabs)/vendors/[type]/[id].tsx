@@ -32,6 +32,10 @@ import { StatusSelector } from "@/components/StatusSelector";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { PageHeader } from "@/components/PageHeader";
 import { Seal } from "@/components/Seal";
+import { PremiumGate } from "@/components/PremiumGate";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useHasFeature, useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { toast } from "@/lib/toast/sonner";
 import type { Vendor, VendorPayment } from "@/db/schema";
 
 const STATUS_OPTIONS: VendorStatus[] = [
@@ -103,6 +107,12 @@ export default function VendorDetailScreen() {
 
   const sameTypeVendors = existingVendor ? vendors.filter((v) => v.type === existingVendor.type) : [];
   const isComparable = !isNew && sameTypeVendors.length >= 2;
+  const hasQuoteComparison = useHasFeature("quoteComparison");
+  // Defense-in-depth: the vendors list's FAB/header already gate this on the
+  // happy path, but this screen is directly reachable by URL on web (deep
+  // link, stale bookmark) — re-check at the actual write boundary too.
+  const canAddVendor = useCanAddMore("vendors", vendors.length);
+  const [showPaywall, setShowPaywall] = useState(false);
   const isRetained = existingVendor?.isSelected === true;
 
   const updateCustomField = (key: string, value: any) => {
@@ -112,6 +122,11 @@ export default function VendorDetailScreen() {
   const handleSave = () => {
     if (!name.trim()) {
       Alert.alert(t("common:error"), t("nameRequired"));
+      return;
+    }
+    if (isNew && !canAddVendor) {
+      toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
+      setShowPaywall(true);
       return;
     }
 
@@ -216,26 +231,28 @@ export default function VendorDetailScreen() {
             {isComparable && (
               <>
                 <SectionTitle>{t("comparison.title")}</SectionTitle>
-                <View className="mb-5">
-                  <ToggleRow
-                    label={t("comparison.retained")}
-                    value={isRetained}
-                    onToggle={() => {
-                      if (isRetained) {
-                        updateVendor(existingVendor!.id, { isSelected: false });
-                      } else {
-                        selectVendorInGroup(vendors, updateVendor, existingVendor!.id);
-                        analytics.capture("vendor_selected_for_budget");
-                      }
-                    }}
-                  />
-                  <Pressable
-                    onPress={() => router.push({ pathname: "/(tabs)/vendors/compare", params: { type } })}
-                    className="mt-2"
-                  >
-                    <Text className="text-sm text-primary-500 font-medium">{t("comparison.viewAll")}</Text>
-                  </Pressable>
-                </View>
+                <PremiumGate locked={!hasQuoteComparison}>
+                  <View className="mb-5">
+                    <ToggleRow
+                      label={t("comparison.retained")}
+                      value={isRetained}
+                      onToggle={() => {
+                        if (isRetained) {
+                          updateVendor(existingVendor!.id, { isSelected: false });
+                        } else {
+                          selectVendorInGroup(vendors, updateVendor, existingVendor!.id);
+                          analytics.capture("vendor_selected_for_budget");
+                        }
+                      }}
+                    />
+                    <Pressable
+                      onPress={() => router.push({ pathname: "/(tabs)/vendors/compare", params: { type } })}
+                      className="mt-2"
+                    >
+                      <Text className="text-sm text-primary-500 font-medium">{t("comparison.viewAll")}</Text>
+                    </Pressable>
+                  </View>
+                </PremiumGate>
               </>
             )}
 
@@ -376,6 +393,7 @@ export default function VendorDetailScreen() {
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
       />
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

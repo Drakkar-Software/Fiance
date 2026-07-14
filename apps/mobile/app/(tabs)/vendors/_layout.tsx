@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useColorScheme } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useVendorsStore } from "@/store/useVendorsStore";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { toast } from "@/lib/toast/sonner";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 
@@ -13,7 +17,11 @@ export default function VendorsLayout() {
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
   const isWide = useIsWideScreen();
+  const vendorCount = useVendorsStore((s) => s.vendors.length);
+  const canAddVendor = useCanAddMore("vendors", vendorCount);
+  const [showPaywall, setShowPaywall] = useState(false);
   return (
+    <>
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" },
@@ -31,7 +39,14 @@ export default function VendorsLayout() {
           headerRight: () => (
             <HeaderAddButton
               accessibilityLabel={t("newVendor")}
-              onPress={() => router.push("/(tabs)/vendors/new")}
+              onPress={() => {
+                if (!canAddVendor) {
+                  toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
+                  setShowPaywall(true);
+                  return;
+                }
+                router.push("/(tabs)/vendors/new");
+              }}
             />
           ),
         }}
@@ -41,5 +56,7 @@ export default function VendorsLayout() {
       <Stack.Screen name="[type]/[id]" options={{ title: "" }} />
       <Stack.Screen name="compare" options={{ title: t("compareCaterers") }} />
     </Stack>
+    <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+    </>
   );
 }

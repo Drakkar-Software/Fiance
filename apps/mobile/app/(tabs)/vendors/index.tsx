@@ -21,6 +21,9 @@ import { FilterTabs } from "@/components/FilterTabs";
 import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { PageHeader } from "@/components/PageHeader";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { toast } from "@/lib/toast/sonner";
 
 const VENDOR_TYPES = Object.keys(VENDOR_TYPE_LABELS) as VendorType[];
 
@@ -34,6 +37,8 @@ export default function VendorsListScreen() {
   const guests = useGuestsStore((s) => s.guests);
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
+  const canAddVendor = useCanAddMore("vendors", vendors.length);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   // Per-vendor display total: dynamic vendors show their computed (guest-based + fixed) total,
   // others their base price. Recomputes only when vendors / pricings / guest counts change.
@@ -75,6 +80,11 @@ export default function VendorsListScreen() {
   ];
 
   const handleAdd = () => {
+    if (!canAddVendor) {
+      toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
+      setShowPaywall(true);
+      return;
+    }
     router.push("/(tabs)/vendors/new");
   };
 
@@ -164,6 +174,7 @@ export default function VendorsListScreen() {
       />
 
       {isWide && canEdit && <FAB onPress={handleAdd} />}
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

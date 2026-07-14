@@ -46,6 +46,7 @@ import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
 import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
+import { useCanAddMore } from "@/lib/limits";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Chip } from "@/components/Chip";
@@ -130,9 +131,11 @@ export default function SettingsScreen() {
 
   const premium = useIsPremium();
   const [showPaywall, setShowPaywall] = useState(false);
+  const memberCount = usePermissionsStore((s) => s.assignments.length);
+  const canInviteMember = useCanAddMore("members", memberCount);
 
   const handleToggleSync = useCallback(async () => {
-    console.log("[sync] handleToggleSync called", { id: activeEntry?.id, syncEnabled, premium, hasSeed: !!activeEntry?.seedPhrase, serverUrl: activeEntry?.serverUrl });
+    console.log("[sync] handleToggleSync called", { id: activeEntry?.id, syncEnabled, hasSeed: !!activeEntry?.seedPhrase, serverUrl: activeEntry?.serverUrl });
     if (!activeEntry?.id) return;
 
     if (syncEnabled) {
@@ -143,8 +146,8 @@ export default function SettingsScreen() {
       return;
     }
 
-    if (!premium) { setShowPaywall(true); return; }
-
+    // Sync (the couple's own device pair) is free — only inviting beyond the
+    // free member count is premium-gated, see handleInvite below.
     const serverUrl = resolveServerUrl(activeEntry);
     if (!activeEntry?.seedPhrase || !serverUrl) {
       Alert.alert(t("syncImpossible"), t("noServerOrPassword"));
@@ -182,16 +185,20 @@ export default function SettingsScreen() {
         ],
       );
     }
-  }, [syncEnabled, activeEntry, premium, wedding, router, t]);
+  }, [syncEnabled, activeEntry, wedding, router, t]);
 
   const [showInviteQR, setShowInviteQR] = useState(false);
 
   const handleInvite = useCallback(() => {
-    if (!premium) { setShowPaywall(true); return; }
+    if (!canInviteMember) {
+      toast.error(t("common:premiumLimits.members"));
+      setShowPaywall(true);
+      return;
+    }
     if (!activeEntry?.seedPhrase) { toast.error(t("noPassword")); return; }
     if (!syncEnabled) { toast.error(t("enableSyncToShare")); return; }
     setShowInviteQR(true);
-  }, [activeEntry, syncEnabled, premium, t]);
+  }, [activeEntry, syncEnabled, canInviteMember, t]);
 
   const generateInvite = useCallback(
     (roleId?: string, name?: string) => createInviteLink(activeEntry!, roleId, name),
@@ -351,7 +358,7 @@ export default function SettingsScreen() {
       <View className="px-4">
         <SectionTitle>{t("backupAndSharing")}</SectionTitle>
         <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
-          {!premium ? t("premiumSyncMsg") : syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
+          {syncEnabled ? t("syncOnDesc") : t("syncOffDesc")}
         </Text>
         <ToggleCard
           icon={
@@ -366,21 +373,19 @@ export default function SettingsScreen() {
               )}
             </View>
           }
-          title={!premium ? t("premiumFeature") : syncEnabled ? t("syncEnabled") : t("syncDisabled")}
+          title={syncEnabled ? t("syncEnabled") : t("syncDisabled")}
           subtitle={
-            !premium
-              ? t("premiumSyncMsg")
-              : syncEnabled
-                ? syncStatusLabel
-                  ? lastSync
-                    ? `${syncStatusLabel} · ${t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })}`
-                    : syncStatusLabel
-                  : lastSync
-                    ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
-                    : t("syncAutomatic")
-                : t("tapToEnable")
+            syncEnabled
+              ? syncStatusLabel
+                ? lastSync
+                  ? `${syncStatusLabel} · ${t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })}`
+                  : syncStatusLabel
+                : lastSync
+                  ? t("lastSync", { date: format(new Date(lastSync), "dd/MM/yyyy HH:mm") })
+                  : t("syncAutomatic")
+              : t("tapToEnable")
           }
-          enabled={syncEnabled && premium}
+          enabled={syncEnabled}
           onToggle={handleToggleSync}
         />
         {activeEntry?.seedPhrase && activeEntry.role !== "member" && (
@@ -391,8 +396,12 @@ export default function SettingsScreen() {
               </View>
             }
             title={t("shareInviteLink")}
-            subtitle={t("sendLinkToJoin")}
-            right={<ChevronRight size={18} color="#C0C0C8" />}
+            subtitle={canInviteMember ? t("sendLinkToJoin") : t("common:premiumLimits.members")}
+            right={
+              canInviteMember
+                ? <ChevronRight size={18} color="#C0C0C8" />
+                : <Lock size={16} color="#b96a4a" />
+            }
             onPress={handleInvite}
           />
         )}

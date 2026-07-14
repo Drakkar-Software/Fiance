@@ -8,6 +8,7 @@ import {
   getSpaceAccessEntry,
   subscribeSpaceChanges,
   buildAuthHeaders,
+  shouldFlagWeddingPremium,
 } from "@fiance/sdk";
 import { configureStarfishPlatform, kvGet, kvSet, kvRemove } from "@drakkar.software/dk-spaces-platform-sdk";
 import {
@@ -25,7 +26,6 @@ import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig, resolveOwnerUserId, normalizeSyncBase } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent, publicPageNodeId } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { useIsPremium } from "@/lib/premium";
 import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
 import { configureRevenueCat, subscribeCustomerInfo } from "@/lib/revenuecat";
 import { useRevenueCatStore } from "@/store/useRevenueCatStore";
@@ -141,13 +141,6 @@ export function activateSync(
 
 /** Initializes starfish-spaces sync inside DatabaseProvider. */
 export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
-  // Reactive (not the isPremium() snapshot): RevenueCat resolves the entitlement
-  // asynchronously (network round-trip via RevenueCatInitializer), so on cold boot
-  // this starts out false. Depending on the live value below re-runs this effect
-  // the moment premium flips true instead of permanently bailing out on the first,
-  // synchronous read.
-  const premium = useIsPremium();
-
   useEffect(() => {
     if (isSyncActive()) {
       teardownSync();
@@ -157,7 +150,10 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       resetDirtyPushBaseline();
     }
 
-    if (!wedding.seedPhrase || wedding.syncDisabled || !premium) return;
+    // Sync (the couple's own device pair) is free for everyone — it's no longer
+    // premium-gated. Premium gates scale (guest/vendor/event/task caps, extra
+    // collaborators) and advanced features (see lib/limits.ts), not sync itself.
+    if (!wedding.seedPhrase || wedding.syncDisabled) return;
 
     let cancelled = false;
     let resolvedUserId: string | null = null;
@@ -316,7 +312,7 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
       unregisterPush?.();
       unsubSse?.();
     };
-  }, [wedding.id, premium]);
+  }, [wedding.id]);
 
   // Re-push public page when day-of items or wedding info change (B5).
   // Debounced: collapses rapid per-keystroke changes into one network push.
@@ -427,6 +423,37 @@ export function RevenueCatInitializer({ wedding }: { wedding: WeddingRegistryEnt
     configureRevenueCat(ownerUserId);
     return subscribeCustomerInfo();
   }, [ownerUserId]);
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// WeddingPremiumInitializer — persists the owner's premium unlock onto the
+// wedding entity, so it survives cold boot/offline and syncs to members
+// without any of them depending on RevenueCat.
+// ---------------------------------------------------------------------------
+
+/**
+ * Owner-only, one-way write: once the owner's live RevenueCat entitlement
+ * resolves true, stamp `wedding.premium = true` (persists + notifySync()) if
+ * not already set. This is what lets a MEMBER read premium purely from the
+ * synced wedding doc (see lib/premium.ts) instead of resolving RevenueCat
+ * themselves — see the "member deadlock" note on SyncInitializer's gate above.
+ *
+ * Deliberately reads the raw RevenueCat store, not useIsPremium() (which
+ * already ORs in this same flag) — keying off the OR'd value would be
+ * self-referential and could never observe the "not yet flagged" transition.
+ */
+export function WeddingPremiumInitializer({ wedding }: { wedding: WeddingRegistryEntry }) {
+  const ownerIsPremium = useRevenueCatStore((s) => s.isPremium);
+
+  useEffect(() => {
+    const isOwner = wedding.role !== "member";
+    const current = useWeddingStore.getState().wedding;
+    if (shouldFlagWeddingPremium({ isOwner, ownerIsPremium, wedding: current })) {
+      useWeddingStore.getState().updateWedding({ premium: true });
+    }
+  }, [wedding.id, wedding.role, ownerIsPremium]);
 
   return null;
 }

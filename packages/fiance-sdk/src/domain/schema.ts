@@ -16,6 +16,8 @@ export interface Wedding {
   currency: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+  /** true once the wedding owner's paid plan unlocked this wedding (one-way, owner-authored). */
+  premium?: boolean;
 }
 
 export interface GuestGroup {

@@ -152,3 +152,33 @@ describe('v14 → v15 round trip — ceremonyItems, speeches, playlistTracks, Da
     expect(restored.playlistTracks).toEqual([]);
   });
 });
+
+describe('wedding.premium round trip', () => {
+  it('passes the premium flag through opaquely (additive field, no migration)', () => {
+    const snapshot = emptySnapshot({
+      wedding: {
+        id: 1, partner1Name: 'Alice', partner2Name: 'Bob', weddingDate: null,
+        venueName: null, description: null, faq: null, eventPhotos: null,
+        budgetTarget: null, categoryBudgets: null, currency: 'EUR',
+        createdAt: null, updatedAt: null, premium: true,
+      },
+    });
+    const backup = createBackupDocument(snapshot);
+    const restored = restoreFromBackup(backup);
+    expect(restored.wedding?.premium).toBe(true);
+  });
+
+  it('restores undefined for a pre-existing backup that never had the field', () => {
+    const snapshot = emptySnapshot({
+      wedding: {
+        id: 1, partner1Name: 'Alice', partner2Name: 'Bob', weddingDate: null,
+        venueName: null, description: null, faq: null, eventPhotos: null,
+        budgetTarget: null, categoryBudgets: null, currency: 'EUR',
+        createdAt: null, updatedAt: null,
+      },
+    });
+    const backup = createBackupDocument(snapshot);
+    const restored = restoreFromBackup(backup);
+    expect(restored.wedding?.premium).toBeUndefined();
+  });
+});

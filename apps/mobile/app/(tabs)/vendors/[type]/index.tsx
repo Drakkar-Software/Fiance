@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { PageHeader } from "@/components/PageHeader";
-import { Briefcase } from "lucide-react-native";
+import { Briefcase, Lock } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useGuestsStore, computeCounts } from "@/store/useGuestsStore";
@@ -14,6 +14,9 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { Display } from "@/components/Display";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useCanAddMore, useHasFeature, FREE_LIMITS } from "@/lib/limits";
+import { toast } from "@/lib/toast/sonner";
 
 export default function VendorTypeListScreen() {
   const { t } = useTranslation("vendors");
@@ -22,8 +25,26 @@ export default function VendorTypeListScreen() {
   const vendors = useVendorsStore((s) =>
     s.vendors.filter((v) => v.type === type)
   );
+  const totalVendorCount = useVendorsStore((s) => s.vendors.length);
   const quotePricings = useVendorsStore((s) => s.quotePricings);
   const guests = useGuestsStore((s) => s.guests);
+  const canAddVendor = useCanAddMore("vendors", totalVendorCount);
+  const hasQuoteComparison = useHasFeature("quoteComparison");
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  const handleAdd = () => {
+    if (!canAddVendor) {
+      toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
+      setShowPaywall(true);
+      return;
+    }
+    router.push({ pathname: "/(tabs)/vendors/[type]/[id]", params: { type: type!, id: "new" } });
+  };
+
+  const handleViewComparison = () => {
+    if (!hasQuoteComparison) { setShowPaywall(true); return; }
+    router.push({ pathname: "/(tabs)/vendors/compare", params: { type: type! } });
+  };
 
   // Computed display total per vendor: dynamic vendors show their guest-based (+ fixed) total,
   // others their base price. Matches the vendors list + budget screen.
@@ -50,12 +71,7 @@ export default function VendorTypeListScreen() {
           title={`Aucun ${typeName.toLowerCase()}`}
           description={`Ajoutez votre premier ${typeName.toLowerCase()}`}
           actionLabel="Ajouter"
-          onAction={() =>
-            router.push({
-              pathname: "/(tabs)/vendors/[type]/[id]",
-              params: { type: type!, id: "new" },
-            })
-          }
+          onAction={handleAdd}
         />
       ) : (
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
@@ -66,10 +82,11 @@ export default function VendorTypeListScreen() {
           />
           {vendors.length >= 2 && (
             <Pressable
-              onPress={() => router.push({ pathname: "/(tabs)/vendors/compare", params: { type: type! } })}
-              className="mb-3"
+              onPress={handleViewComparison}
+              className="mb-3 flex-row items-center gap-1.5"
             >
               <Text className="text-sm text-primary-500 font-medium">{t("comparison.viewAll")}</Text>
+              {!hasQuoteComparison && <Lock size={13} color="#b96a4a" />}
             </Pressable>
           )}
           {vendors.map((vendor) => (
@@ -115,14 +132,8 @@ export default function VendorTypeListScreen() {
         </ScrollView>
       )}
 
-      <FAB
-        onPress={() =>
-          router.push({
-            pathname: "/(tabs)/vendors/[type]/[id]",
-            params: { type: type!, id: "new" },
-          })
-        }
-      />
+      <FAB onPress={handleAdd} />
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

@@ -13,6 +13,9 @@ import { analytics } from "@/lib/analytics";
 import { SectionTitle, FormCard, FormActions } from "@/components/FormSection";
 import { SettingsRow, WebFilePickRow } from "@/components/SettingsRow";
 import { useCan } from "@/lib/permissions/usePermissions";
+import { useIsPremium } from "@/lib/premium";
+import { FREE_LIMITS } from "@/lib/limits";
+import { PaywallSheet } from "@/components/PaywallSheet";
 
 export default function ImportFileScreen() {
   const { t } = useTranslation("settings");
@@ -25,10 +28,13 @@ export default function ImportFileScreen() {
 
   const groups = useGuestsStore((s) => s.groups);
   const tables = useGuestsStore((s) => s.tables);
+  const existingGuestCount = useGuestsStore((s) => s.guests.length);
   const importGuestData = useGuestsStore((s) => s.importGuestData);
+  const premium = useIsPremium();
 
   const [preview, setPreview] = useState<GuestImportResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const handleFile = useCallback(
     (bytes: Uint8Array, name: string) => {
@@ -58,6 +64,11 @@ export default function ImportFileScreen() {
 
   const doImport = useCallback(() => {
     if (!preview) return;
+    if (!premium && existingGuestCount + preview.guests.length > FREE_LIMITS.guests) {
+      toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
+      setShowPaywall(true);
+      return;
+    }
     importGuestData(preview);
     analytics.capture("import_data", {
       source: isMariagesNet ? "mariagesnet" : "spreadsheet",
@@ -65,7 +76,7 @@ export default function ImportFileScreen() {
     });
     toast.success(t("importGuestsSuccess", { count: preview.guests.length }));
     router.back();
-  }, [preview, importGuestData, isMariagesNet, t, router]);
+  }, [preview, importGuestData, isMariagesNet, t, router, premium, existingGuestCount]);
 
   return (
     <ScrollView className="flex-1 bg-accent-paper" showsVerticalScrollIndicator={false}>
@@ -160,6 +171,7 @@ export default function ImportFileScreen() {
       )}
 
       <View className="h-8" />
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </ScrollView>
   );
 }

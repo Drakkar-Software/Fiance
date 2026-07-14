@@ -89,5 +89,12 @@
   "homeEyebrow": "Mariage",
   "homeTagline": "jours",
   "syncSizeWarning": "Sauvegarde volumineuse ({{kb}} Ko / {{max}} Ko max)",
-  "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — sauvegarde bloquée"
+  "syncSizeExceeded": "Sauvegarde trop volumineuse ({{kb}} Ko) — sauvegarde bloquée",
+  "premiumLimits": {
+    "members": "Offre gratuite : 1 membre invité. Passez à Premium pour en inviter plus.",
+    "guests": "Offre gratuite : jusqu'à {{limit}} invités. Passez à Premium pour un nombre illimité.",
+    "vendors": "Offre gratuite : jusqu'à {{limit}} prestataires. Passez à Premium pour un nombre illimité.",
+    "events": "Offre gratuite : 1 événement. Passez à Premium pour en ajouter d'autres.",
+    "tasks": "Offre gratuite : jusqu'à {{limit}} tâches personnalisées. Passez à Premium pour un nombre illimité."
+  }
 }

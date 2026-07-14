@@ -113,6 +113,8 @@ Destination, dates, budget vs. spent, and a day-by-day itinerary.
 
 **Also:** Export to PDF/CSV · Data backup & restore · Multi-wedding support · PWA installable · iOS home-screen widget · App Lock (PIN + biometrics) · Cloud backup (AES-256-GCM, zero-knowledge) · Full French & English localization
 
+**Free vs. Premium:** the free tier covers a full micro-wedding solo — up to 30 guests, 3 vendors, 1 event, 25 custom tasks, and syncing with your partner across devices. A one-time lifetime purchase (no subscription) unlocks unlimited guests/vendors/events/tasks, extra collaborators (family, planner, vendors), advanced budget tools (categories, contributors, quote comparison), and the full public page's gift registry.
+
 ---
 
 ## Tech Stack

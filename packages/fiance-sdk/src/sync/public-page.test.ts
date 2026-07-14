@@ -3,7 +3,7 @@
  * filtering of public items, date-based sorting, FAQ parsing.
  */
 import { describe, it, expect } from "vitest";
-import type { Wedding, DayOfItem, WeddingEvent } from '../domain/schema.js';
+import type { Wedding, DayOfItem, WeddingEvent, Gift } from '../domain/schema.js';
 import { buildPublicPage, type PublicWeddingPage } from './public-page.js';
 
 const mockWedding: Wedding = {
@@ -126,5 +126,36 @@ describe("buildPublicPage — events (v2)", () => {
     expect(event.notes).toBeUndefined();
     expect(event.isPrimary).toBeUndefined();
     expect(event.isPublic).toBeUndefined();
+  });
+});
+
+const mockGifts: Gift[] = [
+  { id: "g1", title: "Blender", description: null, price: 50, url: null, imageUrl: null, category: null, claimed: false, claimedByName: null, claimedAt: null, sortOrder: 1, createdAt: null, updatedAt: null },
+];
+
+describe("buildPublicPage — premium gating (gifts)", () => {
+  it("omits gifts and stamps premium:false when the wedding is not premium", () => {
+    const doc = buildPublicPage(mockWedding, mockDayOfItems, mockGifts, [], false);
+    expect(doc.gifts).toBeUndefined();
+    expect(doc.premium).toBe(false);
+  });
+
+  it("defaults to non-premium (gifts omitted) when the premium arg is not passed", () => {
+    const doc = buildPublicPage(mockWedding, mockDayOfItems, mockGifts);
+    expect(doc.gifts).toBeUndefined();
+    expect(doc.premium).toBe(false);
+  });
+
+  it("includes gifts and stamps premium:true when the wedding is premium", () => {
+    const doc = buildPublicPage(mockWedding, mockDayOfItems, mockGifts, [], true);
+    expect(doc.gifts).toHaveLength(1);
+    expect(doc.gifts?.[0].title).toBe("Blender");
+    expect(doc.premium).toBe(true);
+  });
+
+  it("omits gifts when premium is true but there are none", () => {
+    const doc = buildPublicPage(mockWedding, mockDayOfItems, [], [], true);
+    expect(doc.gifts).toBeUndefined();
+    expect(doc.premium).toBe(true);
   });
 });

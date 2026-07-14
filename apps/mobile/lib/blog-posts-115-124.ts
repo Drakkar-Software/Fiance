@@ -1051,7 +1051,7 @@ const pairs = [
         type: "text",
         paragraphs: [
           "The Knot et Zola sont des plateformes de planification mariage nées aux Etats-Unis, où elles occupent une place centrale : liste de cadeaux, annuaire de prestataires, site de mariage, et outils de gestion associés. Beaucoup de couples français les découvrent en cherchant de l'inspiration en ligne.",
-          "Fiancé est une app respectueuse de la vie privée : sans pub, sans abonnement. Budget, invités, RSVP, plan de table, prestataires, planning, tâches, timeline jour J, suivi des invitations et hébergement invités sont gratuits. Un achat unique à vie débloque la sync chiffrée multi-appareils (iOS, Android, web), le partage couple et la page publique complète.",
+          "Fiancé est une app respectueuse de la vie privée : sans pub, sans abonnement. La version gratuite couvre déjà un mariage intimiste : jusqu'à 30 invités, 3 prestataires, 1 événement et 25 tâches personnalisées, avec sync chiffrée multi-appareils et partage avec votre partenaire. Un achat unique à vie débloque invités, prestataires, événements et tâches illimités, le partage avec famille et prestataires, le budget avancé et la page publique complète.",
           "Ce ne sont pas des concurrentes directes sur le marché français : leur écosystème de prestataires, leurs listes de cadeaux et leur logique administrative restent pensés pour les Etats-Unis.",
         ],
       },
@@ -1071,13 +1071,14 @@ const pairs = [
         title: "Fonctions Fiancé incluses gratuitement",
         items: [
           "Budget : dépenses, acomptes, échéances, export PDF/CSV",
-          "Invités et RSVP en ligne (page publique, sans compte invité)",
+          "Jusqu'à 30 invités et RSVP en ligne (page publique, sans compte invité)",
           "Plan de table drag-and-drop, sync RSVP, export PDF traiteur",
-          "Prestataires : devis, statuts prospect → réservé, comparateur traiteur",
-          "Planning : checklist, tâches, rétroplanning calé sur la date",
+          "Jusqu'à 3 prestataires : devis, statuts prospect → réservé",
+          "Planning : checklist complète illimitée, jusqu'à 25 tâches personnalisées, rétroplanning calé sur la date",
           "Timeline jour J minute par minute, mode lecture le grand jour",
           "Suivi invitations : save-the-date, faire-part, communications par invité",
           "Hébergement invités : hôtels, gîtes, qui loge où",
+          "Sync chiffrée multi-appareils avec votre partenaire (iOS, Android, web)",
         ],
       },
       {
@@ -1085,9 +1086,10 @@ const pairs = [
         title: "Premium : achat unique à vie (pas d'abonnement)",
         items: [
           "Achat unique à vie, jamais d'abonnement mensuel",
-          "Sync chiffrée multi-appareils : iOS, Android et web",
-          "Partage du mariage avec votre conjoint",
-          "Page publique complète pour vos invités (RSVP, FAQ, programme)",
+          "Invités, prestataires, événements et tâches illimités",
+          "Invitez plus que votre partenaire : famille, wedding planner, prestataires",
+          "Budget avancé : catégories, contributeurs, comparateur de devis prestataires",
+          "Page publique complète : liste de cadeaux pour vos invités",
         ],
       },
       {
@@ -1127,7 +1129,7 @@ const pairs = [
         type: "text",
         paragraphs: [
           "The Knot and Zola are wedding planning platforms born in the US, where they hold a central place: gift registry, vendor directory, wedding website, and connected planning tools. Many French couples discover them while browsing for inspiration online.",
-          "Fiancé is a privacy-respecting app: no ads, no subscription. Budget, guests, RSVP, seating chart, vendors, planning, tasks, day-of timeline, invitation tracking, and guest lodging are free. A one-time lifetime purchase unlocks encrypted multi-device sync (iOS, Android, web), partner sharing, and the full public page.",
+          "Fiancé is a privacy-respecting app: no ads, no subscription. The free tier already covers an intimate wedding: up to 30 guests, 3 vendors, 1 event, and 25 custom tasks, with encrypted multi-device sync and partner sharing included. A one-time lifetime purchase unlocks unlimited guests, vendors, events, and tasks, sharing with family and vendors, advanced budget tools, and the full public page.",
           "They are not direct competitors on the French market: their vendor ecosystem, gift registries, and administrative logic remain built around the US.",
         ],
       },
@@ -1147,13 +1149,14 @@ const pairs = [
         title: "Fiancé features included free",
         items: [
           "Budget: expenses, deposits, due dates, PDF/CSV export",
-          "Guests and online RSVP (public page, no guest account)",
+          "Up to 30 guests and online RSVP (public page, no guest account)",
           "Drag-and-drop seating chart, RSVP sync, caterer PDF export",
-          "Vendors: quotes, prospect to booked status, caterer comparator",
-          "Planning: checklist, tasks, timeline tied to wedding date",
+          "Up to 3 vendors: quotes, prospect to booked status",
+          "Planning: full unlimited checklist, up to 25 custom tasks, timeline tied to wedding date",
           "Day-of timeline minute by minute, read mode on the big day",
           "Invitation tracking: save-the-date, invites, per-guest comms",
           "Guest lodging: hotels, rentals, who stays where",
+          "Encrypted multi-device sync with your partner (iOS, Android, web)",
         ],
       },
       {
@@ -1161,9 +1164,10 @@ const pairs = [
         title: "Premium: one-time lifetime purchase (no subscription)",
         items: [
           "One-time lifetime purchase, never a monthly subscription",
-          "Encrypted multi-device sync: iOS, Android, and web",
-          "Share the wedding with your partner",
-          "Full public page for guests (RSVP, FAQ, schedule)",
+          "Unlimited guests, vendors, events, and tasks",
+          "Invite more than your partner: family, wedding planner, vendors",
+          "Advanced budget: categories, contributors, vendor quote comparison",
+          "Full public page: gift registry for your guests",
         ],
       },
       {

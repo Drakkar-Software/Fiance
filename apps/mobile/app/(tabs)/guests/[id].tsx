@@ -57,6 +57,8 @@ import {
 import { Sheet } from "@fiance/ui/components";
 import { toast } from "@/lib/toast/sonner";
 import { analytics } from "@/lib/analytics";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { PaywallSheet } from "@/components/PaywallSheet";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { CompanionPickerModal } from "@/components/CompanionPickerModal";
 import {
@@ -125,6 +127,11 @@ export default function GuestDetailScreen() {
 
   const isNew = id === "new";
   const existing = guests.find((g) => g.id === id);
+  // Defense-in-depth: the guests list's FAB/header already gate this on the
+  // happy path, but this screen is directly reachable by URL on web (deep
+  // link, stale bookmark) — re-check at the actual write boundary too.
+  const canAddGuest = useCanAddMore("guests", guests.length);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const [firstName, setFirstName] = useState(existing?.firstName || "");
   const [lastName, setLastName] = useState(existing?.lastName || "");
@@ -169,6 +176,11 @@ export default function GuestDetailScreen() {
   const handleSave = () => {
     if (!firstName.trim() || !lastName.trim()) {
       Alert.alert(t("common:error"), t("firstLastRequired"));
+      return;
+    }
+    if (isNew && !canAddGuest) {
+      toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
+      setShowPaywall(true);
       return;
     }
 
@@ -911,6 +923,8 @@ export default function GuestDetailScreen() {
           editable={canEdit}
         />
       </GuestSheet>
+
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

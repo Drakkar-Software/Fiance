@@ -241,12 +241,13 @@ export const BLOG_PUBLISH_DATES: Record<string, string> = buildPublishDates();
 
 /** Last content-edit date per slug. Add an entry only when title, excerpt, or sections change. */
 export const BLOG_CONTENT_UPDATED: Record<string, string> = {
-  "fiance-vs-mariages-net": "2026-07-10",
-  "fiance-vs-zankyou": "2026-07-10",
-  "fiance-vs-mywed": "2026-07-10",
-  "top-5-applications-mariage-2026": "2026-07-10",
-  "meilleures-applications-mariage-gratuit-france": "2026-07-10",
-  "top-5-apps-mariage-vie-privee-offline": "2026-07-10",
+  "fiance-vs-mariages-net": "2026-07-14",
+  "fiance-vs-zankyou": "2026-07-14",
+  "fiance-vs-mywed": "2026-07-14",
+  "top-5-applications-mariage-2026": "2026-07-14",
+  "meilleures-applications-mariage-gratuit-france": "2026-07-14",
+  "top-5-apps-mariage-vie-privee-offline": "2026-07-14",
+  "fiance-vs-the-knot-zola": "2026-07-14",
 };
 
 export function getBlogPublishDate(slug: string): string {

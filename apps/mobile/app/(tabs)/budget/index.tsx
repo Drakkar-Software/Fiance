@@ -24,11 +24,20 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sprig } from "@/components/Sprig";
 import { ContributorsCard } from "@/components/budget/ContributorsCard";
 import { useCan } from "@/lib/permissions/usePermissions";
+import { PremiumGate } from "@/components/PremiumGate";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useHasFeature } from "@/lib/limits";
 
 export default function BudgetScreen() {
   const { t } = useTranslation("budget");
   const router = useRouter();
   const canEdit = useCan("budget", "edit");
+  const hasMultiCurrency = useHasFeature("budgetMultiCurrency");
+  const hasBudgetCategories = useHasFeature("budgetCategories");
+  const hasContributors = useHasFeature("budgetContributors");
+  // Shared across all 3 PremiumGates below so this screen mounts one paywall
+  // sheet instead of one per gate.
+  const [showPaywall, setShowPaywall] = useState(false);
   const insets = useSafeAreaInsets();
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const budget = useBudgetSummary();
@@ -170,12 +179,14 @@ export default function BudgetScreen() {
             />
             <View className="mt-1 mb-3">
               <Text className="text-xs text-mute mb-2 font-medium">{t("currency")}</Text>
-              <ChipSelect
-                options={["EUR", "USD"] as const}
-                value={currency as "EUR" | "USD"}
-                onChange={setCurrency}
-                labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
-              />
+              <PremiumGate locked={!hasMultiCurrency} onUnlock={() => setShowPaywall(true)}>
+                <ChipSelect
+                  options={["EUR", "USD"] as const}
+                  value={currency as "EUR" | "USD"}
+                  onChange={setCurrency}
+                  labels={{ EUR: "€ Euro", USD: "$ Dollar" }}
+                />
+              </PremiumGate>
             </View>
           </>
         )}
@@ -248,12 +259,14 @@ export default function BudgetScreen() {
       </View>
 
       {/* Contributors */}
-      <ContributorsCard
-        target={budget.budgetTarget}
-        totalEngaged={budget.totalEngaged}
-        categories={budget.categories}
-        categoryBudgets={categoryBudgets}
-      />
+      <PremiumGate locked={!hasContributors} onUnlock={() => setShowPaywall(true)}>
+        <ContributorsCard
+          target={budget.budgetTarget}
+          totalEngaged={budget.totalEngaged}
+          categories={budget.categories}
+          categoryBudgets={categoryBudgets}
+        />
+      </PremiumGate>
 
       {/* Category targets */}
       {canEdit && (
@@ -272,7 +285,9 @@ export default function BudgetScreen() {
       </Pressable>
 
       {showTargets && !!wedding && (
-        <View className="mx-4 mt-1 bg-accent-card rounded-2xl p-4 border border-hair">
+        <View className="mx-4 mt-1">
+        <PremiumGate locked={!hasBudgetCategories} onUnlock={() => setShowPaywall(true)}>
+        <View className="bg-accent-card rounded-2xl p-4 border border-hair">
           {/* Template picker */}
           <View className="mb-4">
             <Text className="text-xs text-mute font-medium mb-2 uppercase tracking-wider">
@@ -334,6 +349,8 @@ export default function BudgetScreen() {
               </View>
             );
           })}
+        </View>
+        </PremiumGate>
         </View>
       )}
       </>
@@ -523,6 +540,7 @@ export default function BudgetScreen() {
       )}
 
       <View className="h-24" />
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </ScrollView>
   );
 }

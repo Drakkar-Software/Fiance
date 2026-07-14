@@ -181,11 +181,11 @@ describe("blog JSON-LD dates for all posts", () => {
     const post = getBlogPosts("fr").find(
       (p) => p.slug === "fiance-vs-mariages-net"
     )!;
-    expect(post.updated).toBe("2026-07-10");
+    expect(post.updated).toBe("2026-07-14");
     expect(post.date).toBe(getBlogPublishDate("fiance-vs-mariages-net"));
     const node = buildBlogPostingNode(post, "fr") as Record<string, string>;
     expect(node.datePublished).toBe(`${post.date}T08:00:00Z`);
-    expect(node.dateModified).toBe("2026-07-10T08:00:00Z");
+    expect(node.dateModified).toBe("2026-07-14T08:00:00Z");
   });
 });
 

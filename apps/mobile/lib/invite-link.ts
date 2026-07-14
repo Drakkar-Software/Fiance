@@ -1,11 +1,12 @@
 import * as Linking from "expo-linking";
 import * as Crypto from "expo-crypto";
-import { createSpaceInviteLink, getSyncNamespace, roleCanWrite, serializeSpaceInviteStore } from "@fiance/sdk";
+import { createSpaceInviteLink, getSyncNamespace, roleCanWrite, serializeSpaceInviteStore, isWithinFreeLimit } from "@fiance/sdk";
 import { resolveSessionConfig } from "@/lib/server";
 import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { pushSpaceSnapshot } from "@/lib/space-sync";
 import { usePermissionsStore } from "@/store/usePermissionsStore";
 import { writeCollection } from "@/lib/kv-storage";
+import { isPremium } from "@/lib/premium";
 import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 
 /** KV key holding the serialized space-invite store (edPub/kemPub/cap handles per invite),
@@ -21,6 +22,12 @@ export const SPACE_INVITE_STORE_KEY = "spaceInviteStore";
  * per-feature permissions (Phase 1). Throws a human-readable message on failure.
  */
 export async function createInviteLink(entry: WeddingRegistryEntry, roleId?: string, name?: string): Promise<string> {
+  // Defensive backstop — the primary gate is the paywall prompt in settings/index.tsx's
+  // handleInvite. Free tier allows 1 invited member (the partner); the 2nd+ requires premium.
+  if (!isWithinFreeLimit("members", usePermissionsStore.getState().assignments.length, isPremium())) {
+    throw new Error("FREE_MEMBER_LIMIT");
+  }
+
   const cfg = await resolveSessionConfig(entry);
   if (!cfg) throw new Error("INVITE_NO_SESSION");
   const spaceId = await ensureSpaceProvisioned(cfg.session, entry);

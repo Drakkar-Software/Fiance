@@ -24,6 +24,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { Seal } from "@/components/Seal";
 import { analytics } from "@/lib/analytics";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { toast } from "@/lib/toast/sonner";
 import type { Task } from "@/db/schema";
 
 const STATUSES: TaskStatus[] = ["TODO", "DONE"];
@@ -60,12 +63,23 @@ export default function TaskDetailScreen() {
   const [assignee, setAssignee] = useState(existing?.assignee || "");
   const [notes, setNotes] = useState(existing?.notes || "");
   const [showDelete, setShowDelete] = useState(false);
+  // Defense-in-depth: the planning list's FAB/header already gate this on the
+  // happy path, but this screen is directly reachable by URL on web (deep
+  // link, stale bookmark) — re-check at the actual write boundary too. Only
+  // user-added tasks (isSystem: false) count toward the cap.
+  const canAddTask = useCanAddMore("tasks", tasks.filter((task) => !task.isSystem).length);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const canSave = title.trim().length > 0;
 
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert(t("common:error"), t("titleRequired"));
+      return;
+    }
+    if (isNew && !canAddTask) {
+      toast.error(t("common:premiumLimits.tasks", { limit: FREE_LIMITS.tasks }));
+      setShowPaywall(true);
       return;
     }
 
@@ -312,6 +326,7 @@ export default function TaskDetailScreen() {
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
       />
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

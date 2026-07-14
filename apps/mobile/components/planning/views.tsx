@@ -39,6 +39,9 @@ import { buildWeddingPageUrl } from "@/lib/identity";
 import { deriveUserId } from "@/lib/server";
 import { analytics } from "@/lib/analytics";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { toast } from "@/lib/toast/sonner";
 
 type ViewMode = "timeline" | "kanban";
 type FilterKey = "ALL" | "TODO" | "DONE" | "OVERDUE";
@@ -65,6 +68,21 @@ export function PreparationView() {
   const [filter, setFilter] = useState<FilterKey>("ALL");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const now = new Date();
+
+  // The free-tier cap only counts user-added custom tasks (isSystem: false) —
+  // the full onboarding checklist (isSystem: true, ~65 tasks) stays free
+  // regardless of size, matching "the guided checklist is a free retention hook".
+  const customTaskCount = useMemo(() => tasks.filter((task) => !task.isSystem).length, [tasks]);
+  const canAddTask = useCanAddMore("tasks", customTaskCount);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const handleAddTask = useCallback(() => {
+    if (!canAddTask) {
+      toast.error(t("common:premiumLimits.tasks", { limit: FREE_LIMITS.tasks }));
+      setShowPaywall(true);
+      return;
+    }
+    router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } });
+  }, [canAddTask, router, t]);
 
   const handleGenerateTemplate = useCallback(() => {
     if (!effectiveDate) {
@@ -225,9 +243,7 @@ export function PreparationView() {
           </Text>
           <View className="flex-row gap-3 mt-5">
             <Pressable
-              onPress={() =>
-                router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } })
-              }
+              onPress={handleAddTask}
               className="bg-primary-500 rounded-xl px-5 py-3 active:opacity-80"
             >
               <Text className="text-white font-semibold text-sm">{t("addTask")}</Text>
@@ -296,13 +312,8 @@ export function PreparationView() {
         </ScrollView>
       )}
 
-      {isWide && (
-        <FAB
-          onPress={() =>
-            router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } })
-          }
-        />
-      )}
+      {isWide && <FAB onPress={handleAddTask} />}
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </View>
   );
 }

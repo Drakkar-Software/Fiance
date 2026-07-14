@@ -15,45 +15,49 @@ const fiancePlanningEn = (paragraphs: string[]): BlogSection => ({
 });
 
 const FIANCE_MODEL_FR =
-  "Fiancé est une app respectueuse de la vie privée : sans pub, sans abonnement. Budget, invités, RSVP, plan de table, prestataires, planning, tâches, timeline jour J, suivi des invitations et hébergement invités sont gratuits. Un achat unique à vie débloque la sync chiffrée multi-appareils (iOS, Android, web), le partage couple et la page publique complète.";
+  "Fiancé est une app respectueuse de la vie privée : sans pub, sans abonnement. La version gratuite couvre déjà un mariage intimiste : jusqu'à 30 invités, 3 prestataires, 1 événement et 25 tâches personnalisées, avec sync chiffrée multi-appareils et partage avec votre partenaire. Un achat unique à vie débloque invités, prestataires, événements et tâches illimités, le partage avec famille et prestataires, le budget avancé et la page publique complète.";
 
 const FIANCE_MODEL_EN =
-  "Fiancé is a privacy-respecting app: no ads, no subscription. Budget, guests, RSVP, seating chart, vendors, planning, tasks, day-of timeline, invitation tracking, and guest lodging are free. A one-time lifetime purchase unlocks encrypted multi-device sync (iOS, Android, web), partner sharing, and the full public page.";
+  "Fiancé is a privacy-respecting app: no ads, no subscription. The free tier already covers an intimate wedding: up to 30 guests, 3 vendors, 1 event, and 25 custom tasks, with encrypted multi-device sync and partner sharing included. A one-time lifetime purchase unlocks unlimited guests, vendors, events, and tasks, sharing with family and vendors, advanced budget tools, and the full public page.";
 
 const FIANCE_FREE_FEATURES_FR = [
   "Budget : dépenses, acomptes, échéances, export PDF/CSV",
-  "Invités et RSVP en ligne (page publique, sans compte invité)",
+  "Jusqu'à 30 invités et RSVP en ligne (page publique, sans compte invité)",
   "Plan de table drag-and-drop, sync RSVP, export PDF traiteur",
-  "Prestataires : devis, statuts prospect → réservé, comparateur traiteur",
-  "Planning : checklist, tâches, rétroplanning calé sur la date",
+  "Jusqu'à 3 prestataires : devis, statuts prospect → réservé",
+  "Planning : checklist complète illimitée, jusqu'à 25 tâches personnalisées, rétroplanning calé sur la date",
   "Timeline jour J minute par minute, mode lecture le grand jour",
   "Suivi invitations : save-the-date, faire-part, communications par invité",
   "Hébergement invités : hôtels, gîtes, qui loge où",
+  "Sync chiffrée multi-appareils avec votre partenaire (iOS, Android, web)",
 ];
 
 const FIANCE_FREE_FEATURES_EN = [
   "Budget: expenses, deposits, due dates, PDF/CSV export",
-  "Guests and online RSVP (public page, no guest account)",
+  "Up to 30 guests and online RSVP (public page, no guest account)",
   "Drag-and-drop seating chart, RSVP sync, caterer PDF export",
-  "Vendors: quotes, prospect → booked status, caterer comparator",
-  "Planning: checklist, tasks, timeline tied to wedding date",
+  "Up to 3 vendors: quotes, prospect → booked status",
+  "Planning: full unlimited checklist, up to 25 custom tasks, timeline tied to wedding date",
   "Day-of timeline minute by minute, read mode on the big day",
   "Invitation tracking: save-the-date, invites, per-guest comms",
   "Guest lodging: hotels, rentals, who stays where",
+  "Encrypted multi-device sync with your partner (iOS, Android, web)",
 ];
 
 const FIANCE_PREMIUM_FR = [
   "Achat unique à vie, jamais d'abonnement mensuel",
-  "Sync chiffrée multi-appareils : iOS, Android et web",
-  "Partage du mariage avec votre conjoint",
-  "Page publique complète pour vos invités (RSVP, FAQ, programme)",
+  "Invités, prestataires, événements et tâches illimités",
+  "Invitez plus que votre partenaire : famille, wedding planner, prestataires",
+  "Budget avancé : catégories, contributeurs, comparateur de devis prestataires",
+  "Page publique complète : liste de cadeaux pour vos invités",
 ];
 
 const FIANCE_PREMIUM_EN = [
   "One-time lifetime purchase, never a monthly subscription",
-  "Encrypted multi-device sync: iOS, Android, and web",
-  "Share the wedding with your partner",
-  "Full public page for guests (RSVP, FAQ, schedule)",
+  "Unlimited guests, vendors, events, and tasks",
+  "Invite more than your partner: family, wedding planner, vendors",
+  "Advanced budget: categories, contributors, vendor quote comparison",
+  "Full public page: gift registry for your guests",
 ];
 
 const fianceFreeListFr = (): BlogSection => ({
@@ -129,7 +133,7 @@ const pairs = [
           "| Abonnement | Non (achat unique optionnel) | Non (marketplace) |",
           "| Page publique invités | Oui (RSVP sans compte) | Oui (via site couple) |",
           "| Plan de table avancé | Oui, PDF export | Oui, basique à intermédiaire |",
-          "| Prix couple | Gratuit + premium à vie optionnel | Gratuit (monétisé marketplace) |",
+          "| Prix couple | Gratuit jusqu'à 30 invités + premium à vie optionnel | Gratuit (monétisé marketplace) |",
         ],
       },
       {
@@ -176,7 +180,7 @@ const pairs = [
           "| Subscription | No (optional lifetime purchase) | No (marketplace) |",
           "| Guest public page | Yes (RSVP without account) | Yes (via couple site) |",
           "| Advanced seating | Yes, PDF export | Yes, basic to intermediate |",
-          "| Couple pricing | Free + optional lifetime premium | Free (marketplace monetized) |",
+          "| Couple pricing | Free up to 30 guests + optional lifetime premium | Free (marketplace monetized) |",
         ],
       },
       {
@@ -325,7 +329,7 @@ const pairs = [
           "Le bon critère n'est pas « qui a le plus de modules », mais « où vivent vos données invités et qui peut les voir ».",
       },
       fiancePlanningFr([
-        "Comparez sur un vrai cas : importez 80 invités, posez un budget à 18 000 €, construisez un [plan de table](/tools/seating-chart) et exportez la [timeline](/tools/timeline). Fiancé est gratuit sur ces briques essentielles.",
+        "Comparez sur un vrai cas : posez un budget à 18 000 €, construisez un [plan de table](/tools/seating-chart) et exportez la [timeline](/tools/timeline) pour un mariage jusqu'à 30 invités, gratuitement. Au-delà, l'achat unique à vie débloque les invités illimités.",
       ]),
     ],
     sectionsEn: [
@@ -355,7 +359,7 @@ const pairs = [
         items: [
           "Fiancé: free with no subscription, premium = one-time lifetime purchase",
           "Fiancé: public RSVP without guest account, couple public page",
-          "Fiancé: encrypted multi-device sync (iOS, Android, web) with premium",
+          "Fiancé: encrypted multi-device sync (iOS, Android, web) included free with your partner",
           "Fiancé: zero ads, local data by default",
           "MyWed: central cloud account, classic SaaS model",
           "MyWed: international ecosystem, task push notifications",
@@ -367,7 +371,7 @@ const pairs = [
           "The right criterion is not \"who has the most modules\" but \"where guest data lives and who can see it\".",
       },
       fiancePlanningEn([
-        "Compare on a real scenario: import 80 guests, set an €18,000 budget, build a [seating chart](/tools/seating-chart), and export the [timeline](/tools/timeline). Fiancé is free on these core bricks.",
+        "Compare on a real scenario: set an €18,000 budget, build a [seating chart](/tools/seating-chart), and export the [timeline](/tools/timeline) for a wedding up to 30 guests, for free. Beyond that, the one-time lifetime purchase unlocks unlimited guests.",
       ]),
     ],
   }),
@@ -400,8 +404,8 @@ const pairs = [
         title: "1. Fiancé : gestion complète, privée, sans abonnement",
         items: [
           ...FIANCE_FREE_FEATURES_FR.slice(0, 4),
-          "Zéro pub, zéro abonnement, données locales par défaut",
-          "Premium unique à vie : sync multi-appareils, partage couple, page publique complète",
+          "Zéro pub, zéro abonnement, données locales par défaut, sync couple incluse",
+          "Premium unique à vie : invités/prestataires/tâches illimités, plus de collaborateurs, page publique complète",
         ],
       },
       {
@@ -457,8 +461,8 @@ const pairs = [
         title: "1. Fiancé: full private management, no subscription",
         items: [
           ...FIANCE_FREE_FEATURES_EN.slice(0, 4),
-          "Zero ads, zero subscription, local data by default",
-          "One-time premium: multi-device sync, partner sharing, full public page",
+          "Zero ads, zero subscription, local data by default, couple sync included",
+          "One-time premium: unlimited guests/vendors/tasks, more collaborators, full public page",
         ],
       },
       {

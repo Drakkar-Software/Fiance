@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useColorScheme } from "react-native";
 import { View } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { BedDouble, Tag, Mail, FolderOpen, LayoutGrid, Users, UsersRound } from "lucide-react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useGuestsStore } from "@/store/useGuestsStore";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { toast } from "@/lib/toast/sonner";
 import { StackMenu } from "@/components/StackMenu";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
@@ -16,8 +20,12 @@ export default function InvitesLayout() {
   const systemScheme = useColorScheme();
   const isDark = appColorScheme === "dark" || (appColorScheme === "system" && systemScheme === "dark");
   const isWide = useIsWideScreen();
+  const guestCount = useGuestsStore((s) => s.guests.length);
+  const canAddGuest = useCanAddMore("guests", guestCount);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   return (
+    <>
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" },
@@ -36,9 +44,14 @@ export default function InvitesLayout() {
             <View className="flex-row items-center">
               <HeaderAddButton
                 accessibilityLabel={t("addGuest")}
-                onPress={() =>
-                  router.push({ pathname: "/(tabs)/guests/[id]", params: { id: "new" } })
-                }
+                onPress={() => {
+                  if (!canAddGuest) {
+                    toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
+                    setShowPaywall(true);
+                    return;
+                  }
+                  router.push({ pathname: "/(tabs)/guests/[id]", params: { id: "new" } });
+                }}
               />
               <StackMenu
                 items={[
@@ -101,5 +114,7 @@ export default function InvitesLayout() {
       <Stack.Screen name="wedding-party" options={{ title: t("weddingParty.title") }} />
       <Stack.Screen name="seating-constraints" options={{ title: t("seatingConstraints.title") }} />
     </Stack>
+    <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+    </>
   );
 }

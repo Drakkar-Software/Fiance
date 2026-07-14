@@ -23,6 +23,9 @@ import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
+import { PaywallSheet } from "@/components/PaywallSheet";
+import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { toast } from "@/lib/toast/sonner";
 import type { Guest } from "@/db/schema";
 import type { GuestGroup } from "@fiance/sdk";
 
@@ -111,6 +114,16 @@ function GuestsView() {
   const [search, setSearch] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
+  const canAddGuest = useCanAddMore("guests", guests.length);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const handleAddGuest = useCallback(() => {
+    if (!canAddGuest) {
+      toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
+      setShowPaywall(true);
+      return;
+    }
+    router.push({ pathname: "/(tabs)/guests/[id]", params: { id: "new" } });
+  }, [canAddGuest, router, t]);
 
   // Map invitationType id → label for display
   const typeLabels = useMemo(() => {
@@ -372,16 +385,8 @@ function GuestsView() {
         />
       )}
 
-      {isWide && canEditGuests && (
-        <FAB
-          onPress={() =>
-            router.push({
-              pathname: "/(tabs)/guests/[id]",
-              params: { id: "new" },
-            })
-          }
-        />
-      )}
+      {isWide && canEditGuests && <FAB onPress={handleAddGuest} />}
+      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
 
     </View>
   );

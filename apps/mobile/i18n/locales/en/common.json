@@ -89,5 +89,12 @@
   "homeEyebrow": "Wedding",
   "homeTagline": "days",
   "syncSizeWarning": "Backup is getting large ({{kb}} KB / {{max}} KB max)",
-  "syncSizeExceeded": "Backup too large ({{kb}} KB) — backup blocked"
+  "syncSizeExceeded": "Backup too large ({{kb}} KB) — backup blocked",
+  "premiumLimits": {
+    "members": "Free plan: 1 invited member. Upgrade to invite more.",
+    "guests": "Free plan: up to {{limit}} guests. Upgrade for unlimited guests.",
+    "vendors": "Free plan: up to {{limit}} vendors. Upgrade for unlimited vendors.",
+    "events": "Free plan: 1 event. Upgrade to add more events.",
+    "tasks": "Free plan: up to {{limit}} custom tasks. Upgrade for unlimited tasks."
+  }
 }

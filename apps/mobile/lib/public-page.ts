@@ -27,6 +27,7 @@ import {
 } from "@fiance/sdk";
 import { withIndexLock } from "@/lib/index-lock";
 import { BASE_URL } from "@/lib/seo-urls";
+import { isPremium } from "@/lib/premium";
 
 function getAppOrigin(): string {
   if (Platform.OS === "web" && typeof window !== "undefined") {
@@ -80,6 +81,8 @@ export interface PublicWeddingPage {
   gifts?: PublicGift[];
   /** v2: public sub-events (multi-day/venue). Absent on v1 documents. */
   events?: PublicWeddingEvent[];
+  /** Whether the owner's wedding is premium — gates gifts (and future premium sections) client-side too. */
+  premium?: boolean;
 }
 
 export interface FaqItem {
@@ -270,6 +273,7 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       id, title, date, time, endTime, location, sortOrder,
     }));
 
+  const premium = isPremium();
   const gifts = useGiftsStore.getState().gifts;
   const publicGifts: PublicGift[] = gifts.map(
     ({ id, title, description, price, url, imageUrl, category, claimed }) => ({
@@ -299,7 +303,8 @@ export function buildPublicPageDocument(): PublicWeddingPage {
     faq: wedding?.faq
       ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })()
       : [],
-    gifts: publicGifts.length > 0 ? publicGifts : undefined,
+    gifts: premium && publicGifts.length > 0 ? publicGifts : undefined,
     events: publicEvents.length > 0 ? publicEvents : undefined,
+    premium,
   };
 }

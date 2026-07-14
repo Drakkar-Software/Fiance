@@ -4,7 +4,8 @@ import { Linking, Platform } from "react-native";
 import { shareLink } from "@/lib/share";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Globe, Clock, MapPin, Gift, ChevronRight, Eye, HelpCircle, Calendar, Camera } from "lucide-react-native";
+import { Globe, Clock, MapPin, Gift, ChevronRight, Eye, HelpCircle, Calendar, Camera, Lock } from "lucide-react-native";
+import { useHasFeature } from "@/lib/limits";
 import { safeFormat, getDateLocale } from "@/i18n/dateFnsLocale";
 import { TimelineItem } from "@/components/TimelineItem";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -37,6 +38,7 @@ export default function PublicPageScreen() {
   const { t } = useTranslation("settings");
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
+  const hasPublicGifts = useHasFeature("publicGifts");
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find(
     (w) => w.id === registry.activeWeddingId
@@ -268,8 +270,12 @@ export default function PublicPageScreen() {
             </View>
           }
           title={t("giftRegistry")}
-          subtitle={t("giftRegistryDesc")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
+          subtitle={hasPublicGifts ? t("giftRegistryDesc") : t("giftRegistryLockedDesc")}
+          right={
+            hasPublicGifts
+              ? <ChevronRight size={18} color="#C0C0C8" />
+              : <Lock size={16} color="#b96a4a" />
+          }
           onPress={() => router.push("/settings/gifts")}
         />
       </View>

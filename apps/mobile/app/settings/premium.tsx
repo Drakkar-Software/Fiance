@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Users, Globe, BadgeCheck } from "lucide-react-native";
+import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck } from "lucide-react-native";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
@@ -17,8 +17,10 @@ import { analytics } from "@/lib/analytics";
 type PurchaseState = "idle" | "loading" | "unlocking" | "success" | "error";
 
 const BENEFITS = [
-  { key: "premiumBenefit2", icon: Users },
+  { key: "premiumBenefit1", icon: InfinityIcon },
+  { key: "premiumBenefit2", icon: UserPlus },
   { key: "premiumBenefit3", icon: Globe },
+  { key: "premiumBenefit5", icon: Wallet },
   { key: "premiumBenefit4", icon: BadgeCheck },
 ] as const;
 
@@ -30,10 +32,10 @@ export default function PremiumScreen() {
   const [price, setPrice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOwner) {
-      getPremiumPrice().then((p) => { if (p) setPrice(p); }).catch(() => {});
-    }
-  }, [isOwner]);
+    // Fetched regardless of owner status — the hero shows the real price to
+    // everyone, even though only the owner sees the purchase CTA below.
+    getPremiumPrice().then((p) => { if (p) setPrice(p); }).catch(() => {});
+  }, []);
 
   const handlePurchase = useCallback(async () => {
     analytics.capture("premium_checkout_started", { platform: Platform.OS as "ios" | "android" | "web" });
@@ -87,7 +89,7 @@ export default function PremiumScreen() {
           )}
           <PageHeader
             eyebrow={t("premiumFeature", { defaultValue: "Premium" })}
-            title="49 €"
+            title={price ?? "—"}
             tagline={t("premiumOneTime", { defaultValue: "one-time" })}
             titleSize={52}
             style={{ paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }}
@@ -137,10 +139,6 @@ export default function PremiumScreen() {
             >
               <Text className="text-white font-semibold text-base">{ctaLabel}</Text>
             </Pressable>
-
-            <Text className="text-xs text-mute text-center mt-1 mb-1 leading-5 px-2">
-              {t("premiumBetaNote")}
-            </Text>
 
             {Platform.OS !== "web" && (
               <Pressable
