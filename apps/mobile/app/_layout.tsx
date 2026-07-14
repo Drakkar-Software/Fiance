@@ -55,6 +55,8 @@ import { configureOnBoot, SyncInitializer, NotificationInitializer, RevenueCatIn
 import { DatabaseProvider } from "@/db/provider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
+import { FeatureWelcomeHost } from "@/lib/feature-welcomes";
+import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
 import { ObserveRoot, useObserve } from "expo-observe";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -139,6 +141,7 @@ function AppContent() {
           </Stack>
         </View>
         {activeWedding && <OfflineBanner />}
+        {activeWedding && <FeatureWelcomeHost />}
       </View>
     </DatabaseProvider>
   );
@@ -196,6 +199,7 @@ function RootLayout() {
   const loadLanguage = useSettingsStore((s) => s.loadLanguage);
   const loadNotifications = useSettingsStore((s) => s.loadNotifications);
   const loadColorScheme = useSettingsStore((s) => s.loadColorScheme);
+  const loadFeatureTrials = useFeatureTrialsStore((s) => s.load);
   const colorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
   const [locked, setLocked] = useState<boolean | null>(Platform.OS === "web" ? false : null);
@@ -203,6 +207,7 @@ function RootLayout() {
   useEffect(() => {
     loadRegistry();
     initAnalytics().catch(console.error);
+    loadFeatureTrials();
     Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled()]).then(
       ([, , , enabled]) => {
         setLocked(enabled);

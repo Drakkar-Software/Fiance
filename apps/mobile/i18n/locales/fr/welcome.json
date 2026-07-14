@@ -1,0 +1,60 @@
+{
+  "home": {
+    "eyebrow": "Bienvenue",
+    "title": "Votre mariage, réuni ici",
+    "tagline": "Tout au même endroit, rien qui ne vous échappe",
+    "bullet1": "Un tableau de bord qui suit votre compte à rebours et vos priorités",
+    "bullet2": "Invités, budget et planning synchronisés en un coup d'œil",
+    "bullet3": "Vos données restent privées, sur votre appareil",
+    "primaryCta": "Commencer les préparatifs"
+  },
+  "vendors": {
+    "eyebrow": "Prestataires",
+    "title": "Votre carnet de prestataires",
+    "tagline": "Devis, contrats et acomptes, sans y perdre le fil",
+    "bullet1": "Rassemblez lieux, traiteurs, photographes et plus encore",
+    "bullet2": "Suivez chaque statut : contacté, en attente, réservé",
+    "bullet3": "Gardez acomptes et échéances de paiement sous contrôle",
+    "primaryCta": "Ajouter un prestataire",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "guests": {
+    "eyebrow": "Invités",
+    "title": "Votre liste d'invités",
+    "tagline": "Des réponses aux tables, tout est limpide",
+    "bullet1": "Ajoutez vos proches et suivez leurs réponses (RSVP)",
+    "bullet2": "Notez régimes alimentaires, hébergements et accompagnants",
+    "bullet3": "Organisez groupes, tables et plan de salle en toute sérénité",
+    "primaryCta": "Ajouter un invité",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "planning": {
+    "eyebrow": "Planning",
+    "title": "Votre rétroplanning",
+    "tagline": "Chaque étape à sa place, du grand jour aux détails",
+    "bullet1": "Listez vos tâches avec échéances et priorités",
+    "bullet2": "Ne manquez plus jamais une date importante",
+    "bullet3": "Préparez l'agenda du jour J minute par minute",
+    "primaryCta": "Ajouter une tâche",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "budget": {
+    "eyebrow": "Budget",
+    "title": "Votre budget maîtrisé",
+    "tagline": "Ce que vous prévoyez, ce que vous dépensez, en clair",
+    "bullet1": "Fixez un budget global et répartissez-le par poste",
+    "bullet2": "Suivez dépenses réelles et acomptes de vos prestataires",
+    "bullet3": "Visualisez d'un regard où vous en êtes",
+    "primaryCta": "Définir mon budget"
+  },
+  "ideas": {
+    "eyebrow": "Idées",
+    "title": "Votre tableau d'inspiration",
+    "tagline": "Vos coups de cœur, rassemblés pour s'en souvenir",
+    "bullet1": "Collectionnez couleurs, tenues, décors et lieux qui vous parlent",
+    "bullet2": "Classez vos idées en collections thématiques",
+    "bullet3": "Retrouvez l'inspiration au moment de décider",
+    "primaryCta": "Ajouter une idée",
+    "secondaryCta": "Explorer d'abord"
+  }
+}
