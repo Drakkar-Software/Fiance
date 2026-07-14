@@ -211,8 +211,8 @@ claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope 
 
 | Target | Command | CI |
 |--------|---------|-----|
-| Web (Cloudflare Pages) | `pnpm --filter fiance build:web` | Push to `main` |
-| Android APK (EAS) | `npx eas-cli build --platform android --profile preview` | Push to `main` |
+| Web (Cloudflare Pages) | `pnpm --filter fiance build:web` | Push to `master` |
+| Android APK (EAS) | `npx eas-cli build --platform android --profile preview` | Push to `master` |
 | Sync server | Managed by `Drakkar-Software/Infra` (drakkar_sync) | Infra repo deploy |
 
 ---
