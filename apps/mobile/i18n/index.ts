@@ -13,6 +13,7 @@ import enSettings from "./locales/en/settings.json";
 import enWeddingPage from "./locales/en/wedding-page.json";
 import enSeo from "./locales/en/seo.json";
 import enMarketing from "./locales/en/marketing.json";
+import enWelcome from "./locales/en/welcome.json";
 
 import frCommon from "./locales/fr/common.json";
 import frDashboard from "./locales/fr/dashboard.json";
@@ -25,6 +26,7 @@ import frSettings from "./locales/fr/settings.json";
 import frWeddingPage from "./locales/fr/wedding-page.json";
 import frSeo from "./locales/fr/seo.json";
 import frMarketing from "./locales/fr/marketing.json";
+import frWelcome from "./locales/fr/welcome.json";
 
 const deviceLang = getLocales()[0]?.languageCode ?? "fr";
 
@@ -44,6 +46,7 @@ i18n.use(initReactI18next).init({
     "wedding-page",
     "seo",
     "marketing",
+    "welcome",
   ],
   defaultNS: "common",
   resources: {
@@ -59,6 +62,7 @@ i18n.use(initReactI18next).init({
       "wedding-page": enWeddingPage,
       seo: enSeo,
       marketing: enMarketing,
+      welcome: enWelcome,
     },
     fr: {
       common: frCommon,
@@ -72,6 +76,7 @@ i18n.use(initReactI18next).init({
       "wedding-page": frWeddingPage,
       seo: frSeo,
       marketing: frMarketing,
+      welcome: frWelcome,
     },
   },
   interpolation: {

@@ -1,0 +1,60 @@
+{
+  "home": {
+    "eyebrow": "Welcome",
+    "title": "Your wedding, all in one place",
+    "tagline": "Everything together, nothing slips through",
+    "bullet1": "A dashboard tracking your countdown and priorities",
+    "bullet2": "Guests, budget and planning at a glance",
+    "bullet3": "Your data stays private, on your device",
+    "primaryCta": "Start planning"
+  },
+  "vendors": {
+    "eyebrow": "Vendors",
+    "title": "Your vendor book",
+    "tagline": "Quotes, contracts and deposits, all under control",
+    "bullet1": "Gather venues, caterers, photographers and more",
+    "bullet2": "Track every status: contacted, pending, booked",
+    "bullet3": "Keep deposits and payment deadlines in check",
+    "primaryCta": "Add a vendor",
+    "secondaryCta": "Explore first"
+  },
+  "guests": {
+    "eyebrow": "Guests",
+    "title": "Your guest list",
+    "tagline": "From RSVPs to seating, all crystal clear",
+    "bullet1": "Add loved ones and track their RSVPs",
+    "bullet2": "Note diets, accommodation and plus-ones",
+    "bullet3": "Organise groups, tables and seating with ease",
+    "primaryCta": "Add a guest",
+    "secondaryCta": "Explore first"
+  },
+  "planning": {
+    "eyebrow": "Planning",
+    "title": "Your timeline",
+    "tagline": "Every step in its place, from the big day to the details",
+    "bullet1": "List your tasks with due dates and priorities",
+    "bullet2": "Never miss an important date again",
+    "bullet3": "Build the day-of agenda minute by minute",
+    "primaryCta": "Add a task",
+    "secondaryCta": "Explore first"
+  },
+  "budget": {
+    "eyebrow": "Budget",
+    "title": "Your budget, mastered",
+    "tagline": "What you plan and what you spend, made clear",
+    "bullet1": "Set an overall budget and split it by category",
+    "bullet2": "Track real spending and vendor deposits",
+    "bullet3": "See at a glance where you stand",
+    "primaryCta": "Set my budget"
+  },
+  "ideas": {
+    "eyebrow": "Ideas",
+    "title": "Your inspiration board",
+    "tagline": "Your favourites, gathered to remember",
+    "bullet1": "Collect colours, outfits, décor and venues you love",
+    "bullet2": "Sort your ideas into themed collections",
+    "bullet3": "Find inspiration when it's time to decide",
+    "primaryCta": "Add an idea",
+    "secondaryCta": "Explore first"
+  }
+}

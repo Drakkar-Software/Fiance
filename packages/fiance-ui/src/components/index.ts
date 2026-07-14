@@ -49,3 +49,5 @@ export { SearchBar } from "./SearchBar";
 export { ProgressBar } from "./ProgressBar";
 export { FilterTabs } from "./FilterTabs";
 export { MoneyDisplay, formatMoney } from "./MoneyDisplay";
+export { FeatureWelcome } from "./FeatureWelcome";
+export type { FeatureWelcomeBullet } from "./FeatureWelcome";
