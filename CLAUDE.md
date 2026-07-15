@@ -234,3 +234,103 @@ NativeWind v5 / Tailwind v4. Tokens in `apps/mobile/global.css` (`@theme inline`
 
 - **Web**: Deploy via Cloudflare Workers (`apps/mobile/wrangler.toml`, static assets in `apps/mobile/dist/`). Build with `pnpm --filter fiance build:web`; optional `BUILD_DATE=YYYY-MM-DD` env controls which blog posts are included in the export/sitemap.
 - **Android APK**: EAS Build from `apps/mobile/` on version tags (see project EAS config).
+
+## App Store Optimization (ASO)
+
+Source of truth for the Apple App Store listing copy. The app ships FR-primary (France storefront) with English as the second market. Live listing today: **"Fiancé – Organiser son mariage"** (id `6786687256`). This section captures the ASO rules and the optimized metadata to ship — keep it in sync whenever features or store copy change. Marketing wording lives in `apps/mobile/i18n/locales/{fr,en}/marketing.json`; `app.json` `description` is the web/PWA description, **not** the App Store one (the App Store fields are managed in App Store Connect, per-localization).
+
+### How Apple indexes metadata (the rules that constrain everything below)
+
+| Field | Limit | Indexed for search? | Weight |
+|-------|-------|---------------------|--------|
+| App Name / Title | **30** | ✅ yes | highest |
+| Subtitle | **30** | ✅ yes | 2nd |
+| Keywords field (hidden) | **100** | ✅ yes | 3rd |
+| Promotional Text | **170** | ❌ no | — (editable without app review) |
+| Description | **4000** | ❌ **no** | — (conversion only) |
+
+Load-bearing facts (2025–2026, sourced from Apple Developer/Apple Ads + AppTweak/SplitMetrics/MobileAction):
+
+- **The Description is NOT indexed by Apple** (unlike Google Play). Do not keyword-stuff it — it exists purely for conversion. Only the first ~3 lines (~170 chars) show before "more"; that hook is the highest-leverage copy.
+- **Ranking weight is Title > Subtitle > Keywords.** Put the single most valuable keyword in the Title, second tier in the Subtitle, long tail in the Keywords field.
+- **Apple combines individual words across Title + Subtitle + Keywords _within one localization_** to form searchable phrases (e.g. "plan" in subtitle + "table" in subtitle → ranks for "plan de table"). So spread component words; don't write whole phrases redundantly.
+- **Never duplicate a keyword** across Name/Subtitle/Keywords — Apple indexes each word once; repeats just waste your 160 indexable chars.
+- **Keywords field syntax:** comma-separated, **no spaces after commas** (saves chars), **singular only** (Apple stems plurals; both = duplicates). **Never** put in the keyword field: the brand/app name, the category name, or `app`/`free`/`gratuit`/stop-words ("the/to/for/son/de/la") — all indexed for free or ignored.
+- **Words combine only WITHIN a locale, never across locales.** Each localization must carry complete, self-sufficient phrases.
+- **Cross-localization stacking (free extra reach):** each storefront indexes a primary locale + secondary "backend" locales. **The France storefront's secondary indexed locale is English (U.K.)** → its fields are a *second keyword bank* that ranks in France. The US storefront indexes 9 secondaries (incl. Spanish (Mexico), French, Portuguese (Brazil), Korean, Russian…) → you can place *additional English* terms in those locales' keyword fields to rank in the US. Never duplicate across the primary and its secondaries.
+- **Accents (FR):** accented ≠ unaccented at indexing (`rétroplanning` and `retroplanning` are different tokens), and mobile users often type the unaccented form. Tactic: **accented forms in the visible Title/Subtitle** (credibility), **unaccented high-volume variants in the hidden Keywords field** (`retroplanning`, `invites`, `fete`, `prestataires`) — without duplicating a word already in the title/subtitle.
+
+### Positioning (what to own vs. what to avoid)
+
+Fiancé's differentiators map almost perfectly onto this category's whitespace:
+
+- **Own the whitespace incumbents structurally can't claim:** privacy-first / **sans compte** / no sign-up / **hors-ligne** / no ads / no vendor spam / "your data stays on your device." Every major competitor (Zola, The Knot, WeddingWire, Bridebook, Joy, Mariages.net, Zankyou, Mariages.io) is account-gated and monetized via registry, vendor lead-gen, or a cash-fund wallet — the opposite of this app. These terms are low-*search-volume* (put them in the Description + keyword field, not the precious Subtitle) but high-*conversion* — they're the reason to choose us.
+- **Own the under-contested high-intent keywords:** **seating chart / plan de table** (mostly owned by single-purpose niche apps, buried in incumbents' all-in-one listings) and, in FR, **rétroplanning** (well-searched, under-used by US-localized competitors who say "checklist" / "liste de tâches").
+- **Don't fight on prestataires / annuaire / vendor marketplace / registry / wedding website:** Mariages.net (67k+ vendors) and Zola/Knot own these with capital and inventory we don't match. Mention vendors as *your own vendor notebook*, not a directory.
+- Table-stakes quartet everyone lists (have them, but they don't differentiate alone): **checklist, budget, guest list, countdown**.
+
+### Optimized metadata to ship
+
+**🇫🇷 French (fr-FR — primary storefront locale)**
+- **App Name (29/30):** `Fiancé : Organisation Mariage`
+- **Subtitle (30/30):** `Budget, invités, plan de table`
+- **Keywords (97/100):** `retroplanning,checklist,prestataire,rsvp,faire-part,invitation,planning,tache,ceremonie,placement`
+- **Description — hook (first 3 lines, pre-"plus"):**
+  > Organisez tout votre mariage au même endroit — invités, RSVP, plan de table, budget, prestataires et rétroplanning. 100 % privé, fonctionne hors ligne. Sans compte, sans publicité, sans démarchage.
+- **Description — body:**
+  > Fiancé est l'application d'organisation de mariage pensée pour les couples qui veulent tout gérer sereinement, sans céder leurs données.
+  >
+  > ✓ Liste d'invités & RSVP — suivez les confirmations, les accompagnants et les régimes alimentaires
+  > ✓ Plan de table — glisser-déposer, tables rondes ou rectangulaires, export PDF
+  > ✓ Budget mariage — suivez chaque dépense et acompte en temps réel
+  > ✓ Prestataires — comparez, contactez et suivez traiteur, photographe, DJ, fleuriste…
+  > ✓ Rétroplanning & checklist — ne rien oublier jusqu'au grand jour
+  > ✓ Compte à rebours & widget — gardez le jour J en tête
+  > ✓ Partage de photos — un album privé pour vos invités via QR code, sans compte
+  > ✓ Site de mariage — partagez les infos avec vos invités
+  >
+  > 🔒 100 % privé — vos données restent sur votre téléphone. Aucune publicité, aucun tracking, aucune revente.
+  > 📶 Hors ligne — tout fonctionne sans connexion. Synchronisation optionnelle chiffrée AES-256 avec votre partenaire.
+  > 🆓 Gratuit — sans abonnement caché.
+  >
+  > Créez votre mariage en 30 secondes, sans inscription. Téléchargez Fiancé et commencez à organiser dès aujourd'hui.
+
+**🇬🇧🇺🇸 English (en-US — primary for English storefronts)**
+- **App Name (23/30):** `Fiancé: Wedding Planner`
+- **Subtitle (28/30):** `Guest List, Budget & Seating`
+- **Keywords (99/100):** `checklist,rsvp,countdown,chart,table,vendor,todo,organizer,private,offline,invitation,tracker,noads`
+- **Description — hook (first 3 lines):**
+  > Plan your entire wedding in one place — guest list, RSVPs, seating chart, budget, vendors and checklist. 100% private, works offline. No account, no ads, no vendor spam.
+- **Description — body:**
+  > Fiancé is the all-in-one wedding planner for couples who want to organize everything calmly — without handing over their data.
+  >
+  > ✓ Guest list & RSVP — track replies, plus-ones and dietary needs
+  > ✓ Seating chart — drag & drop, round or rectangular tables, PDF export
+  > ✓ Wedding budget — track every expense and deposit in real time
+  > ✓ Vendors — compare, contact and track caterer, photographer, DJ, florist…
+  > ✓ Checklist & timeline — never forget a thing before the big day
+  > ✓ Countdown & widget — keep the date front of mind
+  > ✓ Photo sharing — a private album for guests via QR code, no account
+  > ✓ Wedding website — share details with your guests
+  >
+  > 🔒 100% private — your data stays on your device. No ads, no tracking, no data selling.
+  > 📶 Offline — everything works without a connection. Optional AES-256 encrypted sync with your partner.
+  > 🆓 Free — no hidden subscription.
+  >
+  > Create your wedding in 30 seconds, no sign-up. Download Fiancé and start planning today.
+
+> Char counts verified against the 30/30/100 limits. Every keyword-field term is checked to **not** repeat any word already in that locale's Name or Subtitle (e.g. the fr-FR keyword field deliberately omits `organisation`, `mariage`, `budget`, `invités`, `plan`, `table`), and contains no brand/category/stop-words.
+
+### Cross-localization stacking plan (App Store Connect — free extra keyword reach)
+
+- **France storefront → enable the English (U.K.) localization** as a second keyword bank (indexed by the FR store). Name it `Fiancé: Wedding Planner`; fill its keyword field with English wedding terms French users also search, no fr-FR duplicates: `wedding,planner,seating,guest,countdown,vendor,rsvp,checklist,private,offline`.
+- **US storefront → fill secondary locales' keyword fields with additional English long-tail** (Spanish (Mexico), French, Portuguese (Brazil)…): `honeymoon,registry,save,date,bridal,groom,ceremony,reception,marriage,engagement,couples` — expands the indexable footprint well beyond the base 100 chars.
+- **Promotional Text (170, non-indexed, editable without review):** use for seasonal/timely hooks (e.g. "Nouvelle saison des mariages — organisez le vôtre, 100 % privé.").
+
+### Maintenance rules
+
+- When a feature is **added or renamed**, re-evaluate the **Subtitle** and **Keywords** first (highest ROI), not the Description.
+- Never let a keyword appear in more than one of Name/Subtitle/Keywords **within a locale** — it's wasted space. Re-run the dedup check after any edit.
+- Keep the **Description tuned for conversion, not keywords** (Apple doesn't index it). Protect the first 3 lines as the hook.
+- Keep FR **accented** in the visible Title/Subtitle and push **unaccented** high-volume variants into the hidden keyword field.
+- Exact competitor 30-char **subtitles could not be byte-verified** from this environment (Apple domains blocked); before a competitive-copy decision, confirm live via an ASO tool (AppTweak / Sensor Tower / Mobile Action) or a device set to the target storefront.
