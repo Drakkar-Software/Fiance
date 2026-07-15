@@ -251,14 +251,15 @@ Source of truth for the Apple App Store listing copy. The app ships FR-primary (
 
 Load-bearing facts (2025–2026, sourced from Apple Developer/Apple Ads + AppTweak/SplitMetrics/MobileAction):
 
-- **The Description is NOT indexed by Apple** (unlike Google Play). Do not keyword-stuff it — it exists purely for conversion. Only the first ~3 lines (~170 chars) show before "more"; that hook is the highest-leverage copy.
-- **Ranking weight is Title > Subtitle > Keywords.** Put the single most valuable keyword in the Title, second tier in the Subtitle, long tail in the Keywords field.
+- **The Description is NOT part of Apple's classic keyword index** (unlike Google Play, which fully indexes it). Its primary job is conversion — only the first ~3 lines (~170 chars) show before "more", so that hook is the highest-leverage copy. Caveat (WWDC25, June 2025): the description **and screenshots** now feed Apple's **AI-generated App Store Tags** and semantic/natural-language search, so the description has *indirect* discovery value. Still write it for humans — never keyword-stuff it (it won't rank the way a Play description does).
+- **Ranking weight is Title > Subtitle > Keywords** — this ordering is **ASO practitioner consensus from testing**, not Apple-published. Apple only confirms all three are indexed for "text relevance" and gives no weights. Practically: put the single most valuable keyword in the Title, second tier in the Subtitle, long tail in the Keywords field.
 - **Apple combines individual words across Title + Subtitle + Keywords _within one localization_** to form searchable phrases (e.g. "plan" in subtitle + "table" in subtitle → ranks for "plan de table"). So spread component words; don't write whole phrases redundantly.
 - **Never duplicate a keyword** across Name/Subtitle/Keywords — Apple indexes each word once; repeats just waste your 160 indexable chars.
-- **Keywords field syntax:** comma-separated, **no spaces after commas** (saves chars), **singular only** (Apple stems plurals; both = duplicates). **Never** put in the keyword field: the brand/app name, the category name, or `app`/`free`/`gratuit`/stop-words ("the/to/for/son/de/la") — all indexed for free or ignored.
-- **Words combine only WITHIN a locale, never across locales.** Each localization must carry complete, self-sufficient phrases.
-- **Cross-localization stacking (free extra reach):** each storefront indexes a primary locale + secondary "backend" locales. **The France storefront's secondary indexed locale is English (U.K.)** → its fields are a *second keyword bank* that ranks in France. The US storefront indexes 9 secondaries (incl. Spanish (Mexico), French, Portuguese (Brazil), Korean, Russian…) → you can place *additional English* terms in those locales' keyword fields to rank in the US. Never duplicate across the primary and its secondaries.
-- **Accents (FR):** accented ≠ unaccented at indexing (`rétroplanning` and `retroplanning` are different tokens), and mobile users often type the unaccented form. Tactic: **accented forms in the visible Title/Subtitle** (credibility), **unaccented high-volume variants in the hidden Keywords field** (`retroplanning`, `invites`, `fete`, `prestataires`) — without duplicating a word already in the title/subtitle.
+- **Keywords field syntax:** comma-separated, **no spaces after commas** (saves chars), **singular by default** (Apple stems plurals, so both usually = a wasteful duplicate — but singular vs plural *can* rank differently, so when you have spare chars and both terms have real volume, testing both is legitimate). **Special characters (`-`, `@`) are treated as blank spaces** — so `faire-part` indexes as the two tokens `faire`+`part` (fine — it still ranks for "faire part"; just know it isn't one atomic token). **Never** put in the keyword field: the brand/app name, the category name, or `app`/`free`/`gratuit`/stop-words ("the/to/for/son/de/la") — all indexed for free or ignored.
+- **Words combine only WITHIN a locale, never across locales.** Each localization must carry complete, self-sufficient phrases. (You *may* deliberately repeat a word inside one locale's fields when you need it to form a multi-word phrase — the "no duplication" rule is about not wasting slots, not an absolute ban.)
+- **Cross-localization stacking (free extra reach):** each storefront indexes a primary locale + secondary "backend" locales (verified against Apple's official App Store localizations reference). **The France storefront indexes THREE secondary locales: English (U.K.), Italian, and German** → each is a *second keyword bank* that ranks in France (guidance below only fills English (U.K.); Italian/German are extra unused banks). **The US storefront indexes exactly 9 secondaries** — Arabic, Chinese (Simplified), Chinese (Traditional), French, Korean, Portuguese (Brazil), Russian, Spanish (Mexico), Vietnamese → place *additional English* terms in those keyword fields to rank in the US. Never duplicate across the primary and its secondaries.
+- **Accents (FR) — Apple only:** on the **App Store**, accented ≠ unaccented at indexing (`rétroplanning` and `retroplanning` are different tokens), and mobile users often type the unaccented form. Tactic: **accented forms in the visible Title/Subtitle** (credibility), **unaccented high-volume variants in the hidden Keywords field** (`retroplanning`, `invites`, `fete`, `prestataires`) — without duplicating a word already in the title/subtitle. (Apps targeting the accented form often *also* rank for the unaccented one, so this is a volume-capture optimization, not strictly either/or.) **Google Play normalizes accents** — do NOT double them there; see the Play section.
+- **2025–2026 signals (WWDC25):** Apple added **AI-generated App Store Tags** (LLM reads metadata + description + screenshots), **semantic/natural-language search**, **Custom Product Page keyword binding** (a CPP can rank for its assigned keywords), and screenshot-text is now read for discovery (AI extraction, not classic OCR — real but not a firmly confirmed ranking surface; put captions near the top of screenshots). The keyword field is **100 today**, but WWDC25 demos showed **107 chars** — a possible near-future bump; treat 100 as the hard limit. None of the 30/30/100 limits or the Title/Subtitle/Keywords structure changed.
 
 ### Positioning (what to own vs. what to avoid)
 
@@ -324,7 +325,8 @@ Fiancé's differentiators map almost perfectly onto this category's whitespace:
 ### Cross-localization stacking plan (App Store Connect — free extra keyword reach)
 
 - **France storefront → enable the English (U.K.) localization** as a second keyword bank (indexed by the FR store). Name it `Fiancé: Wedding Planner`; fill its keyword field with English wedding terms French users also search, no fr-FR duplicates: `wedding,planner,seating,guest,countdown,vendor,rsvp,checklist,private,offline`.
-- **US storefront → fill secondary locales' keyword fields with additional English long-tail** (Spanish (Mexico), French, Portuguese (Brazil)…): `honeymoon,registry,save,date,bridal,groom,ceremony,reception,marriage,engagement,couples` — expands the indexable footprint well beyond the base 100 chars.
+- **France also indexes Italian and German** (two more free keyword banks the base plan leaves empty). Optional extra reach: add Italian (`matrimonio,invitati,tavoli,budget,scaletta,checklist`) and German (`hochzeit,gäste,tischplan,budget,checklist,countdown`) keyword fields — French users searching those terms, and IT/DE speakers in France, then rank too.
+- **US storefront → fill the 9 secondary locales' keyword fields with additional English long-tail** (Spanish (Mexico), French, Portuguese (Brazil), Korean, Russian, Arabic, Chinese ×2, Vietnamese): `honeymoon,registry,save,date,bridal,groom,ceremony,reception,marriage,engagement,couples` — expands the indexable footprint from 160 toward ~1,440 chars.
 - **Promotional Text (170, non-indexed, editable without review):** use for seasonal/timely hooks (e.g. "Nouvelle saison des mariages — organisez le vôtre, 100 % privé.").
 
 ### Maintenance rules
@@ -334,3 +336,88 @@ Fiancé's differentiators map almost perfectly onto this category's whitespace:
 - Keep the **Description tuned for conversion, not keywords** (Apple doesn't index it). Protect the first 3 lines as the hook.
 - Keep FR **accented** in the visible Title/Subtitle and push **unaccented** high-volume variants into the hidden keyword field.
 - Exact competitor 30-char **subtitles could not be byte-verified** from this environment (Apple domains blocked); before a competitive-copy decision, confirm live via an ASO tool (AppTweak / Sensor Tower / Mobile Action) or a device set to the target storefront.
+
+## Google Play Store Optimization (Play ASO)
+
+Source of truth for the **Google Play** listing (`software.drakkar.fiance.app`). Play is optimized **separately from Apple** because the ranking mechanics are fundamentally different — do not copy the App Store keyword strategy here. Play fields are managed in Play Console, per-locale.
+
+### Play vs. Apple — the differences that flip the whole strategy
+
+| | App Store (Apple) | Google Play |
+|---|---|---|
+| Hidden keyword field | ✅ 100 chars | ❌ **none — doesn't exist** |
+| Long **description** indexed for search? | ❌ no (conversion only) | ✅ **yes — fully indexed** |
+| Where keywords go | Title + Subtitle + keyword field | **Title + Short description + Full description** (the descriptions *are* the keyword surface) |
+| Keyword repetition | wasteful (indexed once) | **helpful in moderation** (repeat each core term ~3–5×, naturally) |
+| Cross-locale stacking | ✅ yes (backend locales) | ❌ **no** — each locale self-contained (Google auto-translates/semantic-matches for some free reach) |
+| Accents (é/è) | **distinct tokens** — index both forms | **normalized** — accented ranks for unaccented; do **NOT** double them |
+| Keyword-list ("comma salad") copy | harmless in desc (not indexed) | **rejection risk** — metadata policy bans repetitive keywords |
+
+- **Field limits:** Title **30**, Short description **80**, Full description **4000** (all three indexed; weight **Title > Short > Full**). Stable since the 2021 title cut from 50→30.
+- **The long description IS a ranking asset** (not just conversion). Weave each target keyword **~3–5× in natural prose** (≈2–3% density; ~1 exact match per 250 chars). First ~167 chars show before "read more" — put primary keywords there, readably. Google's NLP **penalizes stuffing** — no synonym dumps.
+- **Repetition across Title + Short + Full is positive on Play** (a relevance stack), unlike Apple where repeats waste slots. Still don't repeat the exact same phrase mechanically.
+- **Metadata policy (rejection triggers, stricter than Apple):** in Title / Short description / icon / developer name — **no emojis, no ALL-CAPS** (unless it's the real brand), **no promo words** ("#1", "Best", "Top", "New", **"Free"/"Gratuit"**, "Sale"), no price, no "download now" CTAs in graphics, **no repetitive/irrelevant keyword lists**. (Emoji/✓ bullets are fine in the *long description* body — use sparingly, never as keyword substitutes.)
+- **No cross-locale stacking:** set **fr-FR as the default locale** (untargeted locales fall back to it), add full **en-US** (+ en-GB) localizations. Don't expect English to "leak" into the FR store — localize deliberately.
+- **Behavioral signals gate ranking** (much more than Apple): install **velocity**, ratings + review responses, **D1/D7/D30 retention**, low uninstalls, and **Android Vitals** (crashes/ANRs). The offline-first, no-account UX should help retention.
+- **Play-only levers:** **Store Listing Experiments** (free built-in A/B test of icon/screenshots/short + full description — note the **Title is NOT testable**), and **Custom Store Listings** with **keyword-level targeting** (2025) for high-intent terms like "plan de table" / "seating chart". **Tags** (up to 5, from Google's fixed list) drive browse/Explore discovery, **not** keyword search.
+
+### Optimized Play metadata to ship
+
+**🇫🇷 French (fr-FR — default locale)**
+- **Title (29/30):** `Fiancé : Organisation Mariage`
+- **Short description (72/80):** `Invités, RSVP, plan de table, budget, rétroplanning. Privé et hors ligne`
+- **Full description (indexed — weave keywords naturally):**
+  > Organisez tout votre mariage au même endroit : invités, RSVP, plan de table, budget, prestataires et rétroplanning. Fiancé est 100 % privé et fonctionne hors ligne — sans compte, sans publicité, sans démarchage de prestataires.
+  >
+  > Fiancé est l'application d'organisation de mariage pensée pour les couples qui veulent tout gérer sereinement, sans céder leurs données personnelles.
+  >
+  > ✓ Liste d'invités & RSVP — suivez les confirmations, les accompagnants et les régimes alimentaires
+  > ✓ Plan de table — glisser-déposer, tables rondes ou rectangulaires, export PDF
+  > ✓ Budget mariage — suivez chaque dépense et acompte en temps réel
+  > ✓ Prestataires — comparez, contactez et suivez traiteur, photographe, DJ, fleuriste (votre carnet, pas un annuaire)
+  > ✓ Rétroplanning & checklist — un planning personnalisé pour ne rien oublier jusqu'au jour J
+  > ✓ Compte à rebours & widget — gardez la date de votre mariage en tête
+  > ✓ Partage de photos — un album privé pour vos invités via QR code, sans compte
+  > ✓ Site de mariage — partagez les infos avec vos invités
+  >
+  > Privé — vos données restent sur votre téléphone. Aucune publicité, aucun tracking, aucune revente.
+  > Hors ligne — tout fonctionne sans connexion. Synchronisation optionnelle chiffrée AES-256 avec votre partenaire.
+  > Sans abonnement caché.
+  >
+  > Créez votre mariage en 30 secondes, sans inscription. Téléchargez Fiancé et commencez à organiser votre mariage dès aujourd'hui.
+
+  Target density (FR): `mariage` ~8–12×, `plan de table` 2–3×, `invités` 3–4×, `rétroplanning` 2–3×, `budget` 3–4×, `prestataires` 2×, `RSVP` 2×, `privé`/`hors ligne`/`sans compte` 2–3× each — all already woven above; keep it that way on edits.
+
+**🇬🇧🇺🇸 English (en-US — full localization)**
+- **Title (23/30):** `Fiancé: Wedding Planner`
+- **Short description (74/80):** `Guest list, RSVP, seating, budget, checklist. Private, offline, no account`
+- **Full description (indexed — weave keywords naturally):**
+  > Plan your entire wedding in one place: guest list, RSVPs, seating chart, budget, vendors and checklist. Fiancé is 100% private and works offline — no account, no ads, no vendor spam.
+  >
+  > Fiancé is the all-in-one wedding planner for couples who want to organize everything calmly — without handing over their data.
+  >
+  > ✓ Guest list & RSVP — track replies, plus-ones and dietary needs
+  > ✓ Seating chart — drag & drop, round or rectangular tables, PDF export
+  > ✓ Wedding budget — track every expense and deposit in real time
+  > ✓ Vendors — compare, contact and track caterer, photographer, DJ, florist (your own notebook, not a directory)
+  > ✓ Checklist & timeline — a personalized wedding checklist so you never forget a thing before the big day
+  > ✓ Countdown & widget — keep your wedding date front of mind
+  > ✓ Photo sharing — a private album for guests via QR code, no account
+  > ✓ Wedding website — share details with your guests
+  >
+  > Private — your data stays on your device. No ads, no tracking, no data selling.
+  > Offline — everything works without a connection. Optional AES-256 encrypted sync with your partner.
+  > No hidden subscription.
+  >
+  > Create your wedding in 30 seconds, no sign-up. Download Fiancé and start planning your wedding today.
+
+  Target density (EN): `wedding` ~8–12×, `seating chart` 2×, `guest list` 3×, `budget` 3×, `checklist` 2×, `vendors` 2×, `RSVP` 2×, `private`/`offline`/`no account` 2–3× each.
+
+### Play maintenance rules
+
+- **Title:** keep it policy-clean (no "Gratuit/Free", no "#1", no emoji, no ALL-CAPS). Put the #1 keyword (`Mariage` / `Wedding Planner`) here — the highest-weight, fastest-moving lever (rank shifts in 48–72h after a title change).
+- **Short description (80):** the 2nd-highest-weighted field and the most under-optimized — pack the high-value keywords the Title lacks, still reading naturally; don't repeat Title words.
+- **Full description:** on a feature add/rename, re-weave the new term ~3–5× in natural prose and put it in the hook (first ~167 chars). Never convert it into a keyword list — that's a rejection trigger.
+- **Accents:** write correctly accented everywhere in FR (Play normalizes, so unaccented is covered for free) — do **not** duplicate accented/unaccented as on Apple.
+- **Don't fight the directory game** (Mariages.net, Zankyou) or registry/cash-fund (Mariages.io "wallet") — frame vendors as *your own notebook*. Own the whitespace no Play competitor can: **private / no account / offline / no ads** (indexed here, so it earns free long-tail) plus **plan de table / rétroplanning / seating chart**.
+- Competitor **titles and 80-char short descriptions could not be byte-verified** here (Play + mirrors blocked); confirm live via an ASO tool or a device on the target storefront before mirroring competitor copy. Closest FR structural analogs to study: **MyWed**, **Weddi**, **Mariage de A à Z**; closest "no-ads/clean" EN analog: **The Big Day**.
