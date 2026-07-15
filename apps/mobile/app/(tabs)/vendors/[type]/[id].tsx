@@ -191,7 +191,7 @@ export default function VendorDetailScreen() {
       <View className="mx-4 mt-3">
         <SegmentedControl
           compact
-          segments={(["infos", "tarif", ...(isNew ? [] : ["paiements", "documents"])] as ("infos" | "tarif" | "paiements" | "documents")[]).map((tab) => {
+          segments={(["infos", "tarif", ...(isNew ? [] : ["paiements"])] as ("infos" | "tarif" | "paiements" | "documents")[]).map((tab) => {
             const tabKeys = { infos: "tabInfo", tarif: "tabPricing", paiements: "tabPayments", documents: "tabDocuments" } as const;
             return { key: tab, label: t(tabKeys[tab]) };
           })}

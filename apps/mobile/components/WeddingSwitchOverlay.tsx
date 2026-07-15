@@ -1,15 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Platform, StyleSheet, View } from "react-native";
-import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
+import React, { useEffect, useRef, useState } from "react";
+import { AccessibilityInfo, Animated, Easing, Platform, StyleSheet, View } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
 import { Display, Label, Script, Sprig, Underline } from "@fiance/ui/components";
@@ -41,61 +31,110 @@ export function WeddingSwitchOverlay({
     (s) => s.registry?.weddings.find((w) => w.id === s.registry?.activeWeddingId)?.label,
   );
   const label = labelProp ?? storeLabel;
-  const reducedMotion = useReducedMotion();
+
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReducedMotion).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener("reduceMotionChanged", setReducedMotion);
+    return () => sub.remove();
+  }, []);
 
   const [mounted, setMounted] = useState(visible);
-  const opacity = useSharedValue(0);
-  const cardProgress = useSharedValue(0);
-  const dot1 = useSharedValue(0.3);
-  const dot2 = useSharedValue(0.3);
-  const dot3 = useSharedValue(0.3);
+  const opacity = useRef(new Animated.Value(0)).current;
+  const cardProgress = useRef(new Animated.Value(0)).current;
+  const dot1 = useRef(new Animated.Value(0.3)).current;
+  const dot2 = useRef(new Animated.Value(0.3)).current;
+  const dot3 = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      opacity.value = withTiming(1, { duration: 180 });
-      cardProgress.value = reducedMotion
-        ? withTiming(1, { duration: 180 })
-        : withDelay(120, withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) }));
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(cardProgress, {
+        toValue: 1,
+        duration: reducedMotion ? 180 : 320,
+        delay: reducedMotion ? 0 : 120,
+        easing: reducedMotion ? Easing.linear : Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
       if (Platform.OS !== "web") {
         Haptics.selectionAsync().catch(() => {});
       }
     } else {
-      opacity.value = withTiming(0, { duration: 240 }, (finished) => {
-        if (finished) runOnJS(setMounted)(false);
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 240,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) setMounted(false);
       });
-      cardProgress.value = withTiming(0, { duration: 200 });
+      Animated.timing(cardProgress, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     }
-  }, [visible]);
+  }, [visible, reducedMotion, opacity, cardProgress]);
 
   useEffect(() => {
     if (!mounted) return;
     if (reducedMotion) {
-      dot1.value = 0.6;
-      dot2.value = 0.6;
-      dot3.value = 0.6;
+      dot1.setValue(0.6);
+      dot2.setValue(0.6);
+      dot3.setValue(0.6);
       return;
     }
-    dot1.value = withRepeat(withTiming(1, { duration: 420 }), -1, true);
-    dot2.value = withDelay(140, withRepeat(withTiming(1, { duration: 420 }), -1, true));
-    dot3.value = withDelay(280, withRepeat(withTiming(1, { duration: 420 }), -1, true));
-  }, [mounted, reducedMotion]);
+    const pulse = (value: Animated.Value) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(value, { toValue: 1, duration: 420, useNativeDriver: true }),
+          Animated.timing(value, { toValue: 0.3, duration: 420, useNativeDriver: true }),
+        ]),
+      );
+    const loop1 = pulse(dot1);
+    const loop2 = pulse(dot2);
+    const loop3 = pulse(dot3);
+    const timer2 = setTimeout(() => loop2.start(), 140);
+    const timer3 = setTimeout(() => loop3.start(), 280);
+    loop1.start();
+    return () => {
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      loop1.stop();
+      loop2.stop();
+      loop3.stop();
+    };
+  }, [mounted, reducedMotion, dot1, dot2, dot3]);
 
-  const overlayStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-  const cardStyle = useAnimatedStyle(() =>
-    reducedMotion
-      ? { opacity: cardProgress.value }
-      : {
-          opacity: cardProgress.value,
-          transform: [
-            { translateY: (1 - cardProgress.value) * 12 },
-            { scale: 0.94 + cardProgress.value * 0.06 },
-          ],
-        },
+  // Stop everything on unmount so no animation callback fires afterward.
+  useEffect(
+    () => () => {
+      opacity.stopAnimation();
+      cardProgress.stopAnimation();
+      dot1.stopAnimation();
+      dot2.stopAnimation();
+      dot3.stopAnimation();
+    },
+    [opacity, cardProgress, dot1, dot2, dot3],
   );
-  const dot1Style = useAnimatedStyle(() => ({ opacity: dot1.value }));
-  const dot2Style = useAnimatedStyle(() => ({ opacity: dot2.value }));
-  const dot3Style = useAnimatedStyle(() => ({ opacity: dot3.value }));
+
+  const overlayStyle = { opacity };
+  const cardStyle = reducedMotion
+    ? { opacity: cardProgress }
+    : {
+        opacity: cardProgress,
+        transform: [
+          { translateY: cardProgress.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) },
+          { scale: cardProgress.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) },
+        ],
+      };
+  const dot1Style = { opacity: dot1 };
+  const dot2Style = { opacity: dot2 };
+  const dot3Style = { opacity: dot3 };
 
   if (!mounted) return null;
 

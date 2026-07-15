@@ -70,11 +70,12 @@ export function PreparationView() {
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const now = new Date();
 
-  // The free-tier cap only counts user-added custom tasks (isSystem: false) —
-  // the full onboarding checklist (isSystem: true, ~65 tasks) stays free
-  // regardless of size, matching "the guided checklist is a free retention hook".
-  const customTaskCount = useMemo(() => tasks.filter((task) => !task.isSystem).length, [tasks]);
-  const canAddTask = useCanAddMore("tasks", customTaskCount);
+  // The free-tier cap counts every task, including the guided onboarding
+  // checklist (isSystem: true, ~65 tasks) — generating it is a free action,
+  // but it intentionally consumes the quota, so a free user who generates it
+  // (or adds 25+ tasks manually) hits the paywall on the next add.
+  const taskCount = tasks.length;
+  const canAddTask = useCanAddMore("tasks", taskCount);
   const { openPaywall } = useShowPaywall();
   const handleAddTask = useCallback(() => {
     if (!canAddTask) {
@@ -235,7 +236,7 @@ export function PreparationView() {
       </View>
 
       <View className="px-4 mt-3">
-        <QuotaBadge entityKey="tasks" count={customTaskCount} />
+        <QuotaBadge entityKey="tasks" count={taskCount} />
       </View>
 
       {filteredTasks.length === 0 ? (

@@ -65,9 +65,10 @@ export default function TaskDetailScreen() {
   const [showDelete, setShowDelete] = useState(false);
   // Defense-in-depth: the planning list's FAB/header already gate this on the
   // happy path, but this screen is directly reachable by URL on web (deep
-  // link, stale bookmark) — re-check at the actual write boundary too. Only
-  // user-added tasks (isSystem: false) count toward the cap.
-  const canAddTask = useCanAddMore("tasks", tasks.filter((task) => !task.isSystem).length);
+  // link, stale bookmark) — re-check at the actual write boundary too. Counts
+  // every task, including the guided checklist — generating it (or adding
+  // 25+ tasks) intentionally consumes the free-tier quota.
+  const canAddTask = useCanAddMore("tasks", tasks.length);
   const [showPaywall, setShowPaywall] = useState(false);
 
   const canSave = title.trim().length > 0;

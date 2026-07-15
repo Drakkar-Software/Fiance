@@ -13,8 +13,8 @@ export default function PlanningPreparationScreen() {
   const { t } = useTranslation("planning");
   const router = useRouter();
   const canEdit = useCan("planning");
-  const customTaskCount = usePlanningStore((s) => s.tasks.filter((task) => !task.isSystem).length);
-  const canAddTask = useCanAddMore("tasks", customTaskCount);
+  const taskCount = usePlanningStore((s) => s.tasks.length);
+  const canAddTask = useCanAddMore("tasks", taskCount);
   const { openPaywall } = useShowPaywall();
   const handleAdd = useCallback(() => {
     if (!canAddTask) {
