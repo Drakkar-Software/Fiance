@@ -1,8 +1,44 @@
 'use client'
-import React from 'react'
-import { TextInput as RNTextInput, useColorScheme } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Platform, TextInput as RNTextInput, useColorScheme } from 'react-native'
 import type { TextInputProps as RNTextInputProps, TextStyle } from 'react-native'
 import { useForgeTheme } from '../../theme/context'
+
+/**
+ * Resolves the app's *effective* dark-mode state, not the raw OS preference.
+ *
+ * `apps/mobile/app/_layout.tsx` themes the app by toggling a `.dark` class on
+ * `document.documentElement` on web (NativeWind class-based dark mode) — it
+ * deliberately skips `Appearance.setColorScheme()` there because react-native-web
+ * doesn't implement it (`Appearance.getColorScheme()` always mirrors the raw
+ * `prefers-color-scheme` media query and can't be overridden). So on web, RN's
+ * `useColorScheme()` reflects the OS setting even when the user has explicitly
+ * picked a different in-app theme, or the OS disagrees with "system" — e.g. an
+ * OS in Dark Mode with the app resolved to light left this field rendering its
+ * dark-mode (light cream) ink color on a light background, nearly invisible.
+ * Native platforms don't have this gap (`Appearance.setColorScheme()` keeps
+ * `useColorScheme()` in sync there), so only web needs the DOM-class fallback.
+ */
+function useIsDarkScheme(): boolean {
+  const systemScheme = useColorScheme()
+  const [webDark, setWebDark] = useState(
+    () =>
+      Platform.OS === 'web' &&
+      typeof document !== 'undefined' &&
+      document.documentElement.classList.contains('dark')
+  )
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return
+    const root = document.documentElement
+    setWebDark(root.classList.contains('dark'))
+    const observer = new MutationObserver(() => setWebDark(root.classList.contains('dark')))
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
+
+  return Platform.OS === 'web' ? webDark : systemScheme === 'dark'
+}
 
 /**
  * Text input primitive, backed by react-native's `TextInput`.
@@ -47,7 +83,7 @@ function TextInput({
   ...rest
 }: TextInputProps) {
   const { colors } = useForgeTheme()
-  const scheme = useColorScheme()
+  const isDark = useIsDarkScheme()
 
   return (
     <RNTextInput
@@ -61,7 +97,7 @@ function TextInput({
         // form rows that already provide their own spacing and separators. Text
         // color adapts to the scheme (Garden Press ink / paper) the way the
         // SwiftUI label color used to; callers can override via style/textStyle.
-        { fontSize: 16, color: scheme === 'dark' ? '#f2ece0' : '#2a2418', padding: 0 },
+        { fontSize: 16, color: isDark ? '#f2ece0' : '#2a2418', padding: 0 },
         style,
         textStyle,
       ]}

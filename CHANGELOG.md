@@ -28,6 +28,8 @@ All notable changes to Fiancé are documented in this file.
 - Fixed guest cold-start scroll offset and the iOS companion-picker sheet layout; fixed a budget category silently dropping a deselected vendor when its comparison group had no winner; hid empty guest filters and warn on possible duplicate guest names.
 - Fixed SEO meta title lengths and invalid breadcrumb JSON-LD; improved EmptyState contrast and fixed an action-button width bug on web.
 - Restored a "create table" entry point in the guests table-management and seating-plan screens' header (top-right +), matching the guest/vendor add pattern, so it's reachable on both mobile and wide desktop layouts alongside the floating action button.
+- Fixed the EmptyState primary button not stretching full-width/centering on web (an `@expo/ui` Host sizing quirk defeated the fill style) and form text-input font color going near-invisible when the OS is in dark mode but the app itself is set to light — the input was reading the raw OS scheme instead of the app's actual resolved theme.
+- Replaced the wedding-switch wait screen (a bare spinner armed a render late, letting the previous wedding's data flash before the swap) with an instantly-arming, animated Garden Press transition naming the destination wedding.
 
 ## [1.10.0]
 

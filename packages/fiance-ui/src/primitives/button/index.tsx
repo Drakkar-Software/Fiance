@@ -63,7 +63,13 @@ function Button({
 }: FianceButtonProps) {
   const fillMod = fill ? [frame({ maxWidth: Infinity })] : []
   const userMods = modifiers ?? []
-  const platformStyle = Platform.OS === 'android' ? androidStripVerticalPadding(style) : style
+  let platformStyle = Platform.OS === 'android' ? androidStripVerticalPadding(style) : style
+  // `frame({maxWidth: Infinity})` (the fill mechanism above) is a SwiftUI-only
+  // modifier — a no-op on web, where the underlying @expo/ui Button is a plain
+  // `display:inline-flex` Pressable that otherwise hugs its label width.
+  if (fill && Platform.OS === 'web') {
+    platformStyle = { width: '100%', ...platformStyle }
+  }
 
   // Android + web: `foregroundStyle` (SwiftUI) has no Compose/web equivalent and the
   // universal Button never forwards a content color, so a colored `Text` child is the
@@ -90,8 +96,16 @@ function Button({
     </ExpoButton>
   )
 
+  // Host's web fallback treats `matchContents: {vertical: true}` as matching
+  // BOTH axes (`shouldMatchContents = matchContents.horizontal || matchContents.vertical`
+  // in @expo/ui's universal Host), giving the Host `alignSelf: 'flex-start'` — which
+  // hugs it to content width and defeats the `width: '100%'` fill style above. Skip
+  // matchContents entirely for fill+web so the Host stays a normal stretching flex child.
+  const hostProps =
+    fill && Platform.OS === 'web' ? undefined : fill ? { matchContents: { vertical: true } } : { matchContents: true }
+
   // One `useHostWrap` call (a hook) regardless of branch — the node is computed above.
-  return useHostWrap(node, fill ? { matchContents: { vertical: true } } : { matchContents: true })
+  return useHostWrap(node, hostProps)
 }
 
 Button.displayName = 'Button'
