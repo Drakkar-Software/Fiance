@@ -4,7 +4,9 @@ import { Alert, Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import { ChevronRight, Download, Upload, FileText, Table2, Sparkles, FileSpreadsheet } from "lucide-react-native";
+import { ChevronRight, Download, Upload, FileText, Table2, Sparkles, FileSpreadsheet, Lock } from "lucide-react-native";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { usePlanningStore } from "@/store/usePlanningStore";
@@ -52,6 +54,8 @@ export default function ExportImportScreen() {
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find((w) => w.id === registry.activeWeddingId);
   const budgetSummary = useBudgetSummary();
+  const hasExports = useHasFeature("exports");
+  const { openPaywall } = useShowPaywall();
 
   const isLegacy = !!wedding && !getActiveWeddingNodeId();
 
@@ -97,8 +101,8 @@ export default function ExportImportScreen() {
         analytics.capture("import_data", { source: "backup" });
         toast.success(t("importSuccessMsg"));
         if (useSettingsStore.getState().notificationsEnabled) {
-          const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
-          rescheduleAllNotifications(newTasks, newEvents).catch((err) =>
+          const { tasks: newTasks, agendaEvents: newEvents, dayOfItems: newDayOfItems } = usePlanningStore.getState();
+          rescheduleAllNotifications(newTasks, newEvents, newDayOfItems).catch((err) =>
             console.warn("[notifications] Reschedule failed:", err)
           );
         }
@@ -169,8 +173,8 @@ export default function ExportImportScreen() {
         analytics.capture("import_data", { source: "sample", sample: selectedSampleId });
         toast.success(t("importSuccessMsg"));
         if (useSettingsStore.getState().notificationsEnabled) {
-          const { tasks: newTasks, agendaEvents: newEvents } = usePlanningStore.getState();
-          rescheduleAllNotifications(newTasks, newEvents).catch((err) =>
+          const { tasks: newTasks, agendaEvents: newEvents, dayOfItems: newDayOfItems } = usePlanningStore.getState();
+          rescheduleAllNotifications(newTasks, newEvents, newDayOfItems).catch((err) =>
             console.warn("[notifications] Reschedule failed:", err)
           );
         }
@@ -188,6 +192,10 @@ export default function ExportImportScreen() {
 
   const handleExportPdf = useCallback(
     async (type: "guests" | "budget" | "timeline" | "vendors" | "menu") => {
+      if (!hasExports) {
+        openPaywall(t("exportsLockedDesc"));
+        return;
+      }
       try {
         let html = "";
         let filename = "";
@@ -223,11 +231,15 @@ export default function ExportImportScreen() {
         Alert.alert(t("common:error"), e.message);
       }
     },
-    [guests, tables, groups, vendors, dayOfItems, wedding, budgetSummary, currency, mealSelections, weddingEvents, t]
+    [hasExports, openPaywall, guests, tables, groups, vendors, dayOfItems, wedding, budgetSummary, currency, mealSelections, weddingEvents, t]
   );
 
   const handleExportCsv = useCallback(
     async (type: "budget" | "payments" | "logistics") => {
+      if (!hasExports) {
+        openPaywall(t("exportsLockedDesc"));
+        return;
+      }
       try {
         let csv = "";
         let filename = "";
@@ -251,7 +263,7 @@ export default function ExportImportScreen() {
         Alert.alert(t("common:error"), e.message);
       }
     },
-    [budgetSummary, vendorPayments, vendors, guests, currency, t]
+    [hasExports, openPaywall, budgetSummary, vendorPayments, vendors, guests, currency, t]
   );
 
   return (
@@ -260,8 +272,22 @@ export default function ExportImportScreen() {
         className="flex-1 bg-accent-paper"
         showsVerticalScrollIndicator={false}
       >
+        {!hasExports && (
+          <View className="px-4 pt-4">
+            <Pressable
+              onPress={() => openPaywall(t("exportsLockedDesc"))}
+              className="flex-row items-start gap-2 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+            >
+              <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+              <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+                {t("exportsLockedDesc")}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* PDF exports */}
-        <View className="px-4 pt-4">
+        <View className={`px-4 ${hasExports ? "pt-4" : ""}`}>
           <SectionTitle>{t("pdfSection")}</SectionTitle>
           <FormCard>
             <ExportRow

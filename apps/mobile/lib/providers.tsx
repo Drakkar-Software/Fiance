@@ -26,7 +26,8 @@ import { ensureSpaceProvisioned } from "@/lib/space-provision";
 import { resolveServerUrl, resolveSessionConfig, resolveOwnerUserId, normalizeSyncBase } from "@/lib/server";
 import { ensurePublicPageNode, pushPublicPageContent, publicPageNodeId } from "@/lib/public-page";
 import { useEntitlementsStore } from "@/store/useEntitlementsStore";
-import { requestPermissions, rescheduleAllNotifications } from "@/lib/notifications";
+import { requestPermissions, rescheduleAllNotifications, cancelAllNotifications } from "@/lib/notifications";
+import { useIsPremium } from "@/lib/premium";
 import { configureRevenueCat, subscribeCustomerInfo } from "@/lib/revenuecat";
 import { useRevenueCatStore } from "@/store/useRevenueCatStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -503,24 +504,38 @@ export function WidgetInitializer() {
 }
 
 // ---------------------------------------------------------------------------
-// NotificationInitializer — unchanged
+// NotificationInitializer
 // ---------------------------------------------------------------------------
 
-/** Request permissions on boot and reschedule all notifications. */
+/**
+ * Request permissions on boot, then reschedule (or clear) all notifications
+ * whenever premium or the notifications toggle changes. Reminders are
+ * premium-only: `rescheduleAllNotifications`/`scheduleXNotification` already
+ * no-op internally when `!isPremium()`, but a wedding whose entitlement
+ * resolves *false* after having previously scheduled reminders (or whose
+ * RevenueCat entitlement only resolves asynchronously after this mounts)
+ * needs an explicit re-run to clear/re-populate — hence depending on
+ * `useIsPremium()` here rather than a mount-once effect.
+ */
 export function NotificationInitializer() {
+  const isPremium = useIsPremium();
+  const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
+
   useEffect(() => {
     (async () => {
       try {
+        if (!isPremium || !notificationsEnabled) {
+          await cancelAllNotifications();
+          return;
+        }
         const granted = await requestPermissions();
         if (!granted) return;
-        if (useSettingsStore.getState().notificationsEnabled) {
-          const { tasks, agendaEvents } = usePlanningStore.getState();
-          await rescheduleAllNotifications(tasks, agendaEvents);
-        }
+        const { tasks, agendaEvents, dayOfItems } = usePlanningStore.getState();
+        await rescheduleAllNotifications(tasks, agendaEvents, dayOfItems);
       } catch (err) {
         console.warn("[notifications] Initialization failed:", err);
       }
     })();
-  }, []);
+  }, [isPremium, notificationsEnabled]);
   return null;
 }

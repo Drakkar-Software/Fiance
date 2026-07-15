@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform, Linking } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck } from "lucide-react-native";
+import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck, Bell, FileDown } from "lucide-react-native";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Script } from "@/components/Script";
@@ -21,6 +21,8 @@ const BENEFITS = [
   { key: "premiumBenefit2", icon: UserPlus },
   { key: "premiumBenefit3", icon: Globe },
   { key: "premiumBenefit5", icon: Wallet },
+  { key: "premiumBenefit6", icon: Bell },
+  { key: "premiumBenefit7", icon: FileDown },
   { key: "premiumBenefit4", icon: BadgeCheck },
 ] as const;
 

@@ -12,9 +12,11 @@ const COLOR_SCHEME_KEY = "wos_color_scheme";
 interface SettingsState {
   language: Language;
   notificationsEnabled: boolean;
+  dayOfReminderLeadMinutes: number;
   colorScheme: ColorScheme;
   setLanguage: (lang: Language) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
+  setDayOfReminderLeadMinutes: (minutes: number) => void;
   setColorScheme: (scheme: ColorScheme) => void;
   loadLanguage: () => Promise<void>;
   loadNotifications: () => Promise<void>;
@@ -24,6 +26,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>((set) => ({
   language: "fr",
   notificationsEnabled: Platform.OS !== "web",
+  dayOfReminderLeadMinutes: 10,
   colorScheme: "light",
   setLanguage: (lang) => {
     set({ language: lang });
@@ -33,6 +36,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setNotificationsEnabled: (enabled) => {
     set({ notificationsEnabled: enabled });
     secureSet("notifications_enabled", enabled ? "true" : "false");
+  },
+  setDayOfReminderLeadMinutes: (minutes) => {
+    set({ dayOfReminderLeadMinutes: minutes });
+    secureSet("day_of_reminder_lead_minutes", String(minutes));
   },
   setColorScheme: (scheme) => {
     set({ colorScheme: scheme });
@@ -64,6 +71,12 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       set({ notificationsEnabled: stored === "true" });
     }
     // Default remains true on native if never set
+    const storedLead = await secureGet("day_of_reminder_lead_minutes");
+    const parsedLead = storedLead != null ? parseInt(storedLead, 10) : NaN;
+    if (!isNaN(parsedLead)) {
+      set({ dayOfReminderLeadMinutes: parsedLead });
+    }
+    // Default remains 10 if never set
   },
   loadColorScheme: async () => {
     let stored: string | null = null;

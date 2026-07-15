@@ -86,4 +86,6 @@ export type PremiumFeature =
   | 'budgetCategories'
   | 'budgetContributors'
   | 'budgetMultiCurrency'
-  | 'quoteComparison';
+  | 'quoteComparison'
+  | 'reminders'
+  | 'exports';

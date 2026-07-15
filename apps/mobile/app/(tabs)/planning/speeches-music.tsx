@@ -2,7 +2,9 @@ import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Mic2, Music2, Star, Trash2, Pencil } from "lucide-react-native";
+import { Mic2, Music2, Star, Trash2, Pencil, Lock } from "lucide-react-native";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import * as Crypto from "expo-crypto";
 import { PLAYLIST_MOMENT_LABELS } from "@fiance/sdk";
 import type { PlaylistMoment } from "@fiance/sdk";
@@ -60,12 +62,18 @@ export default function SpeechesMusicScreen() {
     [guests]
   );
   const roleMap = useMemo(() => new Map(roles.map((r) => [r.id, r.name])), [roles]);
+  const hasExports = useHasFeature("exports");
+  const { openPaywall } = useShowPaywall();
 
   const handleExport = useCallback(async () => {
+    if (!hasExports) {
+      openPaywall(t("settings:exportsLockedDesc"));
+      return;
+    }
     const momentLabels = Object.fromEntries(MOMENTS.map((m) => [m, t(PLAYLIST_MOMENT_LABELS[m])]));
     await printDjWitnessPack(speeches, tracks, dayOfItems, djVendor, guests, roles, momentLabels);
     analytics.capture("export_data", { format: "pdf", kind: "dj_pack" });
-  }, [speeches, tracks, dayOfItems, djVendor, guests, roles, t]);
+  }, [hasExports, openPaywall, speeches, tracks, dayOfItems, djVendor, guests, roles, t]);
 
   // ─── Music tab: inline add/edit form ──────────────────────────────────────
   const [showAdd, setShowAdd] = useState(false);
@@ -225,7 +233,8 @@ export default function SpeechesMusicScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable onPress={handleExport} className="mr-2 px-3 py-1.5 rounded-lg active:opacity-60">
+            <Pressable onPress={handleExport} className="mr-2 px-3 py-1.5 rounded-lg active:opacity-60 flex-row items-center gap-1">
+              {!hasExports && <Lock size={12} color="#b96a4a" />}
               <Text className="text-primary-500 text-sm font-semibold">{t("music.exportPack")}</Text>
             </Pressable>
           ),

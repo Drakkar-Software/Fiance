@@ -1,7 +1,10 @@
 import Constants from "expo-constants";
-import { subDays, setHours, setMinutes, setSeconds, subHours, isBefore } from "date-fns";
-import type { Task, AgendaEvent } from "@/db/schema";
+import { subDays, subMinutes, setHours, setMinutes, setSeconds, subHours, isBefore } from "date-fns";
+import type { Task, AgendaEvent, DayOfItem } from "@/db/schema";
 import i18n from "@/i18n";
+import { isPremium } from "@/lib/premium";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { useWeddingStore } from "@/store/useWeddingStore";
 import type * as NotificationsType from "expo-notifications";
 
 // expo-notifications remote push support was removed from Expo Go in SDK 53 — importing
@@ -29,6 +32,10 @@ function taskIdentifier(id: string) {
 
 function agendaIdentifier(id: string) {
   return `agenda-${id}`;
+}
+
+function dayOfIdentifier(id: string) {
+  return `dayof-${id}`;
 }
 
 function getTaskTriggerDate(task: Task): Date | null {
@@ -60,10 +67,25 @@ function getAgendaTriggerDate(event: AgendaEvent): Date | null {
   return trigger;
 }
 
+function getDayOfItemTriggerDate(item: DayOfItem, weddingDate: string | null | undefined, leadMinutes: number): Date | null {
+  if (item.completedAt) return null;
+  const baseDate = item.date ?? weddingDate;
+  if (!baseDate || !item.time) return null;
+  const parts = item.time.split(":");
+  const h = Number(parts[0]);
+  const m = Number(parts[1]);
+  if (isNaN(h) || isNaN(m)) return null;
+  const itemDate = setSeconds(setMinutes(setHours(new Date(baseDate), h), m), 0);
+  if (isNaN(itemDate.getTime())) return null;
+  const trigger = subMinutes(itemDate, leadMinutes);
+  if (isBefore(trigger, new Date())) return null;
+  return trigger;
+}
+
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 export async function scheduleTaskNotification(task: Task): Promise<void> {
-  if (!N) return;
+  if (!N || !isPremium()) return;
   const id = taskIdentifier(task.id);
 
   if (task.status === "DONE") {
@@ -90,7 +112,7 @@ export async function scheduleTaskNotification(task: Task): Promise<void> {
 }
 
 export async function scheduleAgendaNotification(event: AgendaEvent): Promise<void> {
-  if (!N) return;
+  if (!N || !isPremium()) return;
   const id = agendaIdentifier(event.id);
   const trigger = getAgendaTriggerDate(event);
   if (!trigger) {
@@ -114,6 +136,29 @@ export async function scheduleAgendaNotification(event: AgendaEvent): Promise<vo
   });
 }
 
+export async function scheduleDayOfItemNotification(item: DayOfItem): Promise<void> {
+  if (!N || !isPremium()) return;
+  const id = dayOfIdentifier(item.id);
+  const weddingDate = useWeddingStore.getState().wedding?.weddingDate;
+  const leadMinutes = useSettingsStore.getState().dayOfReminderLeadMinutes;
+  const trigger = getDayOfItemTriggerDate(item, weddingDate, leadMinutes);
+  if (!trigger) {
+    await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+    return;
+  }
+
+  await N.cancelScheduledNotificationAsync(id).catch((e) => console.warn("[notifications] cancel failed:", e));
+  await N.scheduleNotificationAsync({
+    identifier: id,
+    content: {
+      title: "Fiancé",
+      body: i18n.t("planning:notifications.dayOfReminder", { title: item.title }),
+      data: { type: "dayof", id: item.id },
+    },
+    trigger: { type: N.SchedulableTriggerInputTypes.DATE, date: trigger },
+  });
+}
+
 export async function cancelNotification(identifier: string): Promise<void> {
   if (!N) return;
   await N.cancelScheduledNotificationAsync(identifier).catch((e) => console.warn("[notifications] cancel failed:", e));
@@ -127,9 +172,14 @@ export async function cancelAllNotifications(): Promise<void> {
 export async function rescheduleAllNotifications(
   tasks: Task[],
   agendaEvents: AgendaEvent[],
+  dayOfItems: DayOfItem[],
 ): Promise<void> {
   if (!N) return;
   await N.cancelAllScheduledNotificationsAsync();
+  if (!isPremium()) return;
+
+  const weddingDate = useWeddingStore.getState().wedding?.weddingDate;
+  const leadMinutes = useSettingsStore.getState().dayOfReminderLeadMinutes;
 
   const taskItems = tasks
     .filter((t) => t.status !== "DONE" && t.dueDate)
@@ -140,7 +190,11 @@ export async function rescheduleAllNotifications(
     .map((e) => ({ trigger: getAgendaTriggerDate(e), schedule: () => scheduleAgendaNotification(e) }))
     .filter((x) => x.trigger !== null);
 
-  const all = [...taskItems, ...agendaItems]
+  const dayOfItemsList = dayOfItems
+    .map((i) => ({ trigger: getDayOfItemTriggerDate(i, weddingDate, leadMinutes), schedule: () => scheduleDayOfItemNotification(i) }))
+    .filter((x) => x.trigger !== null);
+
+  const all = [...taskItems, ...agendaItems, ...dayOfItemsList]
     .sort((a, b) => a.trigger!.getTime() - b.trigger!.getTime())
     .slice(0, 60);
 
@@ -167,4 +221,11 @@ export function onAgendaMutation(event: AgendaEvent, action: "add" | "update" | 
     ? cancelNotification(agendaIdentifier(event.id))
     : scheduleAgendaNotification(event);
   promise.catch((err) => console.warn("[notifications] onAgendaMutation failed:", err));
+}
+
+export function onDayOfItemMutation(item: DayOfItem, action: "add" | "update" | "remove"): void {
+  const promise = action === "remove"
+    ? cancelNotification(dayOfIdentifier(item.id))
+    : scheduleDayOfItemNotification(item);
+  promise.catch((err) => console.warn("[notifications] onDayOfItemMutation failed:", err));
 }

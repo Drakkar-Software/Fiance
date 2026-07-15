@@ -4,6 +4,9 @@ All notable changes to Fiancé are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Live day-of (jour-J) run-of-show items now get local reminder notifications, matching the existing task/agenda reminders — the lead time (10 min before, or at the exact time) is user-configurable in Settings. Reminders and PDF/CSV report exports (guest list, budget, timeline, vendors, menu, ceremony booklet, DJ pack) are now Premium features — free weddings see a small lock on the reminders toggle and each export entry point and get routed to the paywall on tap; JSON data backup export/import stays free. Two new items were added to the Premium benefits list for reminders and exports.
+
 ### Fixed
 - Fixed the planning tasks free-tier quota badge disagreeing with the progress bar (e.g. "9 / 25" next to "22 / 73 tâches"): the quota only counted user-added tasks, excluding the ~65-task guided checklist that the progress bar includes. The quota now counts every task, so generating the checklist (or adding 25+ tasks) intentionally consumes the free quota and both numbers agree on the same task population.
 - Fixed an intermittent native crash (`EXC_BAD_ACCESS` on the JS thread) during wedding switching: the switch overlay's loading animation used Reanimated worklets (infinite `withRepeat` loops with no cancellation) that could be torn down mid-worklet-call while the database swap re-hydrated stores underneath. Rebuilt the overlay's animation on core React Native `Animated` instead, removing the worklet code path entirely.

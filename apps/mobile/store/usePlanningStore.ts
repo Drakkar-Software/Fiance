@@ -8,7 +8,7 @@ import {
 } from "@/lib/persistence";
 import { notifySync } from "@/lib/starfish";
 import { maybeRequestReview } from "@/lib/store-review";
-import { onTaskMutation, onAgendaMutation } from "@/lib/notifications";
+import { onTaskMutation, onAgendaMutation, onDayOfItemMutation } from "@/lib/notifications";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
 interface PlanningState {
@@ -180,6 +180,7 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();
+    if (useSettingsStore.getState().notificationsEnabled) onDayOfItemMutation(item, "add");
   },
   updateDayOfItem: (id, updates) => {
     const updatedFields = { ...updates, updatedAt: new Date().toISOString() };
@@ -191,12 +192,16 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();
+    const updated = get().dayOfItems.find((i) => i.id === id);
+    if (updated && useSettingsStore.getState().notificationsEnabled) onDayOfItemMutation(updated, "update");
   },
   removeDayOfItem: (id) => {
+    const item = get().dayOfItems.find((i) => i.id === id);
     set((state) => ({ dayOfItems: state.dayOfItems.filter((i) => i.id !== id) }));
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();
+    if (item && useSettingsStore.getState().notificationsEnabled) onDayOfItemMutation(item, "remove");
   },
   completeDayOfItem: (id) => {
     set((state) => ({
@@ -207,6 +212,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();
+    const updated = get().dayOfItems.find((i) => i.id === id);
+    if (updated && useSettingsStore.getState().notificationsEnabled) onDayOfItemMutation(updated, "update");
   },
   uncompleteDayOfItem: (id) => {
     set((state) => ({
@@ -217,6 +224,8 @@ export const usePlanningStore = create<PlanningState>((set, get) => ({
     const storage = getStorage();
     if (storage) persistDayOfItems(storage);
     notifySync();
+    const updated = get().dayOfItems.find((i) => i.id === id);
+    if (updated && useSettingsStore.getState().notificationsEnabled) onDayOfItemMutation(updated, "update");
   },
 }));
 

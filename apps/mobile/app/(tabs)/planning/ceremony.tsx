@@ -2,7 +2,9 @@ import React, { useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Church } from "lucide-react-native";
+import { Church, Lock } from "lucide-react-native";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { CEREMONY_ITEM_KIND_LABELS } from "@fiance/sdk";
 import type { CeremonyItemKind } from "@fiance/sdk";
 import { useCeremonyStore } from "@/store/useCeremonyStore";
@@ -26,6 +28,8 @@ export default function CeremonyScreen() {
   const guests = useGuestsStore((s) => s.guests);
   const roles = useWeddingPartyStore((s) => s.weddingRoles);
   const wedding = useWeddingStore((s) => s.wedding);
+  const hasExports = useHasFeature("exports");
+  const { openPaywall } = useShowPaywall();
 
   const guestMap = useMemo(
     () => new Map(guests.map((g) => [g.id, `${g.firstName} ${g.lastName}`.trim()])),
@@ -57,6 +61,10 @@ export default function CeremonyScreen() {
   );
 
   const handleExport = useCallback(async () => {
+    if (!hasExports) {
+      openPaywall(t("settings:exportsLockedDesc"));
+      return;
+    }
     const kindLabels = Object.fromEntries(
       (Object.keys(CEREMONY_ITEM_KIND_LABELS) as CeremonyItemKind[]).map((k) => [k, t(CEREMONY_ITEM_KIND_LABELS[k])])
     );
@@ -65,7 +73,7 @@ export default function CeremonyScreen() {
       performedBy: t("ceremony.performedBy"),
     });
     analytics.capture("export_data", { format: "pdf", kind: "ceremony" });
-  }, [sorted, wedding, guests, roles, t]);
+  }, [hasExports, openPaywall, sorted, wedding, guests, roles, t]);
 
   const renderRow = (item: CeremonyItem) => {
     const performer = item.guestId ? guestMap.get(item.guestId) ?? item.performerName : item.performerName;
@@ -87,7 +95,8 @@ export default function CeremonyScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable onPress={handleExport} className="mr-2 px-3 py-1.5 rounded-lg active:opacity-60">
+            <Pressable onPress={handleExport} className="mr-2 px-3 py-1.5 rounded-lg active:opacity-60 flex-row items-center gap-1">
+              {!hasExports && <Lock size={12} color="#b96a4a" />}
               <Text className="text-primary-500 text-sm font-semibold">{t("ceremony.exportBooklet")}</Text>
             </Pressable>
           ),

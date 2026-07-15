@@ -182,7 +182,8 @@
   "notifications": {
     "taskReminder": "Rappel : {{title}}",
     "agendaReminder": "Aujourd'hui : {{title}}",
-    "agendaReminderWithTime": "Dans 1 heure : {{title}} à {{time}}"
+    "agendaReminderWithTime": "Dans 1 heure : {{title}} à {{time}}",
+    "dayOfReminder": "Bientôt : {{title}}"
   },
   "overdueCount_one": "{{count}} en retard",
   "overdueCount_other": "{{count}} en retard",

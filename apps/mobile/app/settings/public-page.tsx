@@ -89,7 +89,7 @@ export default function PublicPageScreen() {
       const updated = recalculateDueDates(tasks, weddingDate);
       setTasks(updated);
       if (useSettingsStore.getState().notificationsEnabled) {
-        rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents)
+        rescheduleAllNotifications(updated, usePlanningStore.getState().agendaEvents, usePlanningStore.getState().dayOfItems)
           .catch((err) => console.warn("[notifications] Reschedule failed:", err));
       }
     }

@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Sheet } from "@fiance/ui/components";
-import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck } from "lucide-react-native";
+import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck, Bell, FileDown } from "lucide-react-native";
 import { purchasePremium, restorePremium, getPremiumPrice } from "@/lib/revenuecat";
 import { usePermissions } from "@/lib/permissions/usePermissions";
 
@@ -21,6 +21,8 @@ const BENEFITS = [
   { key: "premiumBenefit2", icon: UserPlus },
   { key: "premiumBenefit3", icon: Globe },
   { key: "premiumBenefit5", icon: Wallet },
+  { key: "premiumBenefit6", icon: Bell },
+  { key: "premiumBenefit7", icon: FileDown },
   { key: "premiumBenefit4", icon: BadgeCheck },
 ] as const;
 

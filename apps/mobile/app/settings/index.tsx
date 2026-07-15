@@ -38,7 +38,7 @@ import {
   cancelAllNotifications,
   rescheduleAllNotifications,
 } from "@/lib/notifications";
-import { SectionTitle } from "@/components/FormSection";
+import { SectionTitle, ChipSelect } from "@/components/FormSection";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { RenameSheet } from "@/components/RenameSheet";
 import { InviteQRSheet } from "@/components/InviteQRSheet";
@@ -46,7 +46,7 @@ import { ToggleCard } from "@/components/ToggleCard";
 import { IconCard } from "@/components/IconCard";
 import { PaywallSheet } from "@/components/PaywallSheet";
 import { useIsPremium } from "@/lib/premium";
-import { useCanAddMore } from "@/lib/limits";
+import { useCanAddMore, useHasFeature } from "@/lib/limits";
 import { Display } from "@/components/Display";
 import { Label } from "@/components/Label";
 import { Chip } from "@/components/Chip";
@@ -252,11 +252,20 @@ export default function SettingsScreen() {
 
 
   // Notifications
+  const hasReminders = useHasFeature("reminders");
   const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
   const setNotificationsEnabled = useSettingsStore((s) => s.setNotificationsEnabled);
+  const dayOfReminderLeadMinutes = useSettingsStore((s) => s.dayOfReminderLeadMinutes);
+  const setDayOfReminderLeadMinutes = useSettingsStore((s) => s.setDayOfReminderLeadMinutes);
   const agendaEvents = usePlanningStore((s) => s.agendaEvents);
+  const dayOfItems = usePlanningStore((s) => s.dayOfItems);
 
   const handleToggleNotifications = useCallback(async () => {
+    if (!hasReminders) {
+      toast.error(t("remindersLockedHint"));
+      setShowPaywall(true);
+      return;
+    }
     try {
       if (notificationsEnabled) {
         await cancelAllNotifications();
@@ -264,13 +273,22 @@ export default function SettingsScreen() {
       } else {
         const granted = await requestPermissions();
         if (!granted) return;
-        await rescheduleAllNotifications(tasks, agendaEvents);
+        await rescheduleAllNotifications(tasks, agendaEvents, dayOfItems);
         setNotificationsEnabled(true);
       }
     } catch (err) {
       console.warn("[notifications] Toggle failed:", err);
     }
-  }, [notificationsEnabled, tasks, agendaEvents]);
+  }, [hasReminders, notificationsEnabled, tasks, agendaEvents, dayOfItems, t]);
+
+  const handleChangeDayOfReminderLead = useCallback(async (minutes: number) => {
+    setDayOfReminderLeadMinutes(minutes);
+    try {
+      await rescheduleAllNotifications(tasks, agendaEvents, dayOfItems);
+    } catch (err) {
+      console.warn("[notifications] Reschedule failed:", err);
+    }
+  }, [setDayOfReminderLeadMinutes, tasks, agendaEvents, dayOfItems]);
 
   const [deleteWeddingId, setDeleteWeddingId] = useState<string | null>(null);
   const deleteWeddingEntry = registry?.weddings.find((w) => w.id === deleteWeddingId);
@@ -571,15 +589,45 @@ export default function SettingsScreen() {
           <SectionTitle>{t("notifications")}</SectionTitle>
           <ToggleCard
             icon={
-              <View className="w-10 h-10 rounded-xl bg-accent-paper items-center justify-center">
+              <View className="w-10 h-10 rounded-xl bg-accent-paper items-center justify-center" style={{ position: "relative" }}>
                 <Bell size={20} color={notificationsEnabled ? "#b96a4a" : "#C0C0C8"} />
+                {!hasReminders && (
+                  <View
+                    className="w-3.5 h-3.5 rounded-full bg-primary-500 items-center justify-center"
+                    style={{ position: "absolute", bottom: -2, right: -2 }}
+                  >
+                    <Lock size={8} color="#fff" />
+                  </View>
+                )}
               </View>
             }
             title={t("notificationsToggle")}
             subtitle={notificationsEnabled ? t("notificationsOnDesc") : t("notificationsOffDesc")}
-            enabled={notificationsEnabled}
+            enabled={hasReminders && notificationsEnabled}
             onToggle={handleToggleNotifications}
           />
+          {!hasReminders && (
+            <Pressable
+              onPress={() => { toast.error(t("remindersLockedHint")); setShowPaywall(true); }}
+              className="flex-row items-start gap-2 mb-2 -mt-1 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+            >
+              <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+              <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+                {t("remindersLockedHint")}
+              </Text>
+            </Pressable>
+          )}
+          {hasReminders && notificationsEnabled && (
+            <View className="mt-1">
+              <Text className="text-xs text-mute mb-2">{t("dayOfReminderLead")}</Text>
+              <ChipSelect
+                options={["10", "0"]}
+                value={String(dayOfReminderLeadMinutes)}
+                onChange={(v) => handleChangeDayOfReminderLead(Number(v))}
+                labels={{ "10": t("dayOfReminderLead10min"), "0": t("dayOfReminderLeadAtTime") }}
+              />
+            </View>
+          )}
         </View>
       )}
 
