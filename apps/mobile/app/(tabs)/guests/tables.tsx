@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native-css/components";
 import { Alert } from "react-native";
+import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { LayoutGrid } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -13,6 +14,7 @@ import { FormActions } from "@/components/FormSection";
 import { PlanView } from "@/components/SeatingPlanView";
 import { PageHeader } from "@/components/PageHeader";
 import { Script } from "@/components/Script";
+import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 
@@ -51,6 +53,16 @@ export default function TablesScreen() {
 
   return (
     <View className="relative flex-1 bg-accent-paper">
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <HeaderAddButton
+              accessibilityLabel={t("createTable2")}
+              onPress={() => setShowAdd(true)}
+            />
+          ),
+        }}
+      />
       {/* Add table form */}
       {showAdd && (
         <View className="mx-4 mt-4 bg-accent-card rounded-2xl p-4 border border-primary-200 dark:border-primary-800">

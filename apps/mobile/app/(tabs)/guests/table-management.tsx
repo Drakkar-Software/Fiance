@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, LayoutGrid, Trash2, Map as MapIcon, Ban } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -13,6 +13,7 @@ import { FAB } from "@/components/FAB";
 import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
+import { HeaderAddButton } from "@/components/HeaderAddButton";
 
 export default function TableManagementScreen() {
   const { t } = useTranslation("guests");
@@ -67,6 +68,16 @@ export default function TableManagementScreen() {
 
   return (
     <View className="relative flex-1 bg-accent-paper">
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <HeaderAddButton
+              accessibilityLabel={t("createTable2")}
+              onPress={() => setShowAdd(true)}
+            />
+          ),
+        }}
+      />
       {/* Unassigned guests warning */}
       {unassignedCount > 0 && (
         <View className="mx-4 mt-4 bg-amber-50 dark:bg-amber-950 rounded-xl p-3 flex-row items-center border border-amber-100 dark:border-amber-900">

@@ -27,6 +27,7 @@ All notable changes to Fiancé are documented in this file.
 - Wired resilient fetch for sync calls to avoid 429 rate limiting from the sync server; deduped the RSVP `/content` fetch that re-ran on every tab focus; fixed an instant-check delay on the communication guest roster.
 - Fixed guest cold-start scroll offset and the iOS companion-picker sheet layout; fixed a budget category silently dropping a deselected vendor when its comparison group had no winner; hid empty guest filters and warn on possible duplicate guest names.
 - Fixed SEO meta title lengths and invalid breadcrumb JSON-LD; improved EmptyState contrast and fixed an action-button width bug on web.
+- Restored a "create table" entry point in the guests table-management and seating-plan screens' header (top-right +), matching the guest/vendor add pattern, so it's reachable on both mobile and wide desktop layouts alongside the floating action button.
 
 ## [1.10.0]
 
