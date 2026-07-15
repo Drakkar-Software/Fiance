@@ -17,17 +17,31 @@ import { computeBudgetSummary } from "@/store/useBudgetStore";
 // component just renders strings. Mirrors the home dashboard's warnings +
 // agenda/tasks summary. Priority-ordered so short widgets fill their space
 // with whatever matters most: warnings first, then agenda, then tasks.
+//
+// `tone` mirrors the home dashboard's own color language (see
+// app/(tabs)/home/index.tsx) so a line reads the same way here as it does in
+// the app: clay = critical/overdue/over-budget, mustard = due soon, blue =
+// agenda, mute = a plain upcoming task.
+
+export type WidgetTone = "critical" | "warning" | "info" | "neutral";
 
 export interface WidgetLine {
   /** SF Symbol name. */
   icon: string;
   text: string;
+  tone: WidgetTone;
 }
 
 export interface WidgetData {
-  /** Header line: "J-142" / "Jour J" / "Félicitations !" / couple names. */
-  title: string;
-  /** Secondary header (couple names when the title is the countdown). */
+  /** Days left, when a wedding date is set and hasn't passed/arrived yet. */
+  daysUntil: number | null;
+  /** Localized unit label for `daysUntil` ("jours" / "days"). */
+  dayUnitLabel: string;
+  /** Headline shown instead of the digit when there's no date, it's today, or it has passed. */
+  headline: string;
+  /** Wedding date, formatted ("sam. 12 sept. 2026"). Empty when no date is set. */
+  dateLabel: string;
+  /** Couple names. */
   subtitle: string;
   /** Priority-ordered content lines; the widget slices to its size capacity. */
   lines: WidgetLine[];
@@ -57,23 +71,23 @@ export function buildWidgetData(): WidgetData {
   // ── Countdown ──
   const primaryEvent = getPrimaryEvent(weddingEvents);
   const countdownStr = primaryEvent?.date ?? wedding?.weddingDate ?? null;
-  const daysUntil = countdownStr ? differenceInDays(new Date(countdownStr), now) : null;
+  const daysUntilRaw = countdownStr ? differenceInDays(new Date(countdownStr), now) : null;
   const couple = [wedding?.partner1Name, wedding?.partner2Name].filter(Boolean).join(" & ");
 
-  let title: string;
-  let subtitle = "";
-  if (daysUntil == null) {
-    title = couple || "Fiancé";
-  } else if (daysUntil < 0) {
-    title = t("congratulations");
-    subtitle = couple;
-  } else if (daysUntil === 0) {
-    title = t("widgetToday");
-    subtitle = couple;
+  let daysUntil: number | null = null;
+  let headline = "";
+  if (daysUntilRaw == null) {
+    headline = couple || "Fiancé";
+  } else if (daysUntilRaw < 0) {
+    headline = t("congratulations");
+  } else if (daysUntilRaw === 0) {
+    headline = t("widgetToday");
   } else {
-    title = `J-${daysUntil}`;
-    subtitle = couple;
+    daysUntil = daysUntilRaw;
   }
+  const dateLabel = countdownStr
+    ? safeFormat(new Date(countdownStr + "T00:00:00"), "EEE d MMM yyyy", { locale: getDateLocale() })
+    : "";
 
   // ── Budget summary (non-hook, mirrors useBudgetSummary) ──
   const counts = computeCounts(guests);
@@ -101,7 +115,11 @@ export function buildWidgetData(): WidgetData {
     (task) => task.dueDate && new Date(task.dueDate) < now && task.status !== "DONE",
   );
   if (overdue.length > 0) {
-    lines.push({ icon: "exclamationmark.triangle.fill", text: t("overdue", { count: overdue.length }) });
+    lines.push({
+      icon: "exclamationmark.triangle.fill",
+      text: t("overdue", { count: overdue.length }),
+      tone: "critical",
+    });
   }
 
   vendors
@@ -110,6 +128,7 @@ export function buildWidgetData(): WidgetData {
       lines.push({
         icon: "creditcard.fill",
         text: t("deposit", { name: v.name, date: safeFormat(new Date(v.depositDueDate!), "dd/MM") }),
+        tone: "warning",
       }),
     );
 
@@ -121,7 +140,9 @@ export function buildWidgetData(): WidgetData {
         v.status !== "CANCELLED" &&
         withinDays(v.validityDate, now, 7),
     )
-    .forEach((v) => lines.push({ icon: "clock.badge.exclamationmark", text: t("quoteExpiring", { name: v.name }) }));
+    .forEach((v) =>
+      lines.push({ icon: "clock.badge.exclamationmark", text: t("quoteExpiring", { name: v.name }), tone: "warning" }),
+    );
 
   tasks
     .filter(
@@ -131,13 +152,17 @@ export function buildWidgetData(): WidgetData {
         task.dueDate &&
         withinDays(task.dueDate, now, 30),
     )
-    .forEach((task) => lines.push({ icon: "flag.fill", text: task.title }));
+    .forEach((task) => lines.push({ icon: "flag.fill", text: task.title, tone: "critical" }));
 
   if (counts.no_table_count > 0) {
-    lines.push({ icon: "person.2.fill", text: t("noTable", { count: counts.no_table_count }) });
+    lines.push({ icon: "person.2.fill", text: t("noTable", { count: counts.no_table_count }), tone: "warning" });
   }
   if (budget.remaining < 0) {
-    lines.push({ icon: "eurosign.circle.fill", text: t("overBudget", { amount: formatMoney(Math.abs(budget.remaining)) }) });
+    lines.push({
+      icon: "eurosign.circle.fill",
+      text: t("overBudget", { amount: formatMoney(Math.abs(budget.remaining)) }),
+      tone: "critical",
+    });
   }
 
   // ── 2. Upcoming agenda events (soonest first) ──
@@ -148,6 +173,7 @@ export function buildWidgetData(): WidgetData {
       lines.push({
         icon: "calendar",
         text: `${e.title} · ${dayFmt(e.date)}${e.time ? ` ${e.time}` : ""}`,
+        tone: "info",
       }),
     );
 
@@ -164,8 +190,17 @@ export function buildWidgetData(): WidgetData {
       lines.push({
         icon: "circle",
         text: `${task.title}${task.dueDate ? ` · ${dayFmt(task.dueDate)}` : ""}`,
+        tone: "neutral",
       }),
     );
 
-  return { title, subtitle, lines: lines.slice(0, 8), empty: t("nothingUpcoming") };
+  return {
+    daysUntil,
+    dayUnitLabel: t("days"),
+    headline,
+    dateLabel,
+    subtitle: couple,
+    lines: lines.slice(0, 8),
+    empty: t("nothingUpcoming"),
+  };
 }

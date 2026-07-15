@@ -129,7 +129,7 @@
               "name": "PlanningWidget",
               "displayName": "Fiancé",
               "description": "Compte à rebours, alertes et prochaines tâches",
-              "supportedFamilies": ["systemSmall", "systemMedium"]
+              "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
             }
           ]
         }
