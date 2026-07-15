@@ -30,6 +30,7 @@ import type { LucideIcon } from "lucide-react-native";
 import { FeatureWelcome } from "@fiance/ui/components";
 import { theme as GP } from "@/lib/theme";
 import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
+import type { FeatureWelcomeKey } from "@/lib/feature-welcome-keys";
 
 /** Any route accepted by expo-router's push (string or object form). */
 type WelcomeRoute = string | { pathname: string; params: Record<string, string> };
@@ -50,7 +51,7 @@ interface WelcomeConfig {
  * in FeatureWelcomeHost, which mirrors DesktopSidebar). i18n copy lives in the
  * `welcome` namespace under the same keys.
  */
-export const FEATURE_WELCOMES: Record<string, WelcomeConfig> = {
+export const FEATURE_WELCOMES: Record<FeatureWelcomeKey, WelcomeConfig> = {
   home: {
     icon: Home,
     accent: GP.clay,
@@ -106,7 +107,10 @@ export function FeatureWelcomeHost() {
   // Mirrors DesktopSidebar: tab routes sit under "(tabs)"; top-level groups
   // (ideas) sit at segments[0].
   const activeKey = segments[0] === "(tabs)" ? segments[1] : segments[0];
-  const cfg = activeKey ? FEATURE_WELCOMES[activeKey] : undefined;
+  const cfg =
+    activeKey && activeKey in FEATURE_WELCOMES
+      ? FEATURE_WELCOMES[activeKey as FeatureWelcomeKey]
+      : undefined;
 
   // No config for this route → nothing to render (settings/onboarding/etc.).
   if (!cfg || !activeKey) return null;
@@ -143,6 +147,7 @@ export function FeatureWelcomeHost() {
       onPrimary={handlePrimary}
       secondaryLabel={hasRoute ? t(`${activeKey}.secondaryCta`) : undefined}
       onSecondary={hasRoute ? close : undefined}
+      closeLabel={t("close")}
     />
   );
 }
