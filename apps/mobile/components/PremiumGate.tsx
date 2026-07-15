@@ -36,7 +36,7 @@ export function PremiumGate({ locked, title, message, onUnlock, children }: Prem
   const resolvedMessage = message ?? t("premiumGateMessage");
 
   return (
-    <View style={{ position: "relative" }}>
+    <View style={{ position: "relative", minHeight: 196 }}>
       <View pointerEvents="none" style={{ opacity: 0.32 }}>
         {children}
       </View>

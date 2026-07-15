@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Platform, StatusBar as RNStatusBar } from "react-native";
+import { Modal, Platform, StatusBar as RNStatusBar, useWindowDimensions } from "react-native";
 import { View, Text, Pressable, ScrollView } from "react-native-css/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { X } from "lucide-react-native";
@@ -74,6 +74,16 @@ export function FeatureWelcome({
   const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const bulletTint = `${accent}1f`; // ~12% alpha soft fill for the icon chips
 
+  // The fullscreen Modal below is a true window-level overlay, so on a wide web
+  // viewport it would otherwise blot out DesktopSidebar (apps/mobile/components/
+  // DesktopShell.tsx, shown >= 1024px per useIsWideScreen's DESKTOP_BREAKPOINT).
+  // Insetting the modal's own content by the sidebar's fixed width (248px, see
+  // DesktopSidebar's styles.sidebar) leaves that strip transparent so the
+  // sidebar underneath stays visible and usable.
+  const { width: winWidth } = useWindowDimensions();
+  const isWideDesktop = Platform.OS === "web" && winWidth >= 1024;
+  const SIDEBAR_WIDTH = 248;
+
   const bulletRows = (
     <View className="bg-accent-card rounded-2xl border border-hair overflow-hidden">
       {bullets.map(({ icon: BulletIcon, text }, i) => (
@@ -105,7 +115,7 @@ export function FeatureWelcome({
         <Text className="text-white font-semibold text-base">{primaryLabel}</Text>
       </Pressable>
       {secondaryLabel && onSecondary ? (
-        <ScriptButton onPress={onSecondary} color={accent} style={{ marginTop: 4 }}>
+        <ScriptButton onPress={onSecondary} color={accent} size={17} style={{ marginTop: 4 }}>
           {secondaryLabel}
         </ScriptButton>
       ) : null}
@@ -156,7 +166,14 @@ export function FeatureWelcome({
       statusBarTranslucent
       onRequestClose={onDismiss}
     >
-      <View className="flex-1 bg-accent-paper">
+      <View
+        className="flex-1 bg-accent-paper"
+        style={
+          isWideDesktop
+            ? { marginLeft: SIDEBAR_WIDTH, borderLeftWidth: 1, borderLeftColor: GP.hair }
+            : undefined
+        }
+      >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ flexGrow: 1 }}

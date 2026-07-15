@@ -42,12 +42,13 @@ interface FianceButtonProps extends ButtonProps {
    * column, or a `flex-1` wrapper), which the frame modifier then fills. */
   fill?: boolean
   /** Label text color for buttons drawn on a solid (clay/red) `backgroundColor`.
-   * On iOS it's applied via the SwiftUI `foregroundStyle` modifier. On Android that
-   * modifier is a no-op (Compose keeps Material's dark default content color, which
-   * is invisible on our fills), so the label is instead rendered as a colored
-   * `@expo/ui` `Text` child — the universal Button uses `children` as its content.
-   * Pass `colors.onPrimary`. Web keeps the current behavior (the modifier is a
-   * no-op stub there). */
+   * On iOS it's applied via the SwiftUI `foregroundStyle` modifier. On Android and
+   * web that modifier is a no-op (Android: Compose keeps Material's dark default
+   * content color; web: the shim stub ignores it) — invisible/low-contrast on our
+   * fills either way — so on those two platforms the label is instead rendered as a
+   * colored `@expo/ui` `Text` child (the universal Button uses `children` as its
+   * content; the web fallback's default label color is a fixed blue, not our
+   * accent's contrast color). Pass `colors.onPrimary`. */
   labelColor?: string
 }
 
@@ -64,16 +65,17 @@ function Button({
   const userMods = modifiers ?? []
   const platformStyle = Platform.OS === 'android' ? androidStripVerticalPadding(style) : style
 
-  // Android: `foregroundStyle` (SwiftUI) has no Compose equivalent and the universal
-  // Button never forwards a content color, so a colored `Text` child is the only way
-  // to set the label color. `Text` from `@expo/ui` is native Compose Text here.
-  const androidColoredLabel =
-    Platform.OS === 'android' && labelColor != null && label != null && children == null
+  // Android + web: `foregroundStyle` (SwiftUI) has no Compose/web equivalent and the
+  // universal Button never forwards a content color, so a colored `Text` child is the
+  // only way to set the label color. `Text` from `@expo/ui` is native Compose Text on
+  // Android and a styled RN Text on web — both respect `textStyle.color`.
+  const coloredLabelChild =
+    Platform.OS !== 'ios' && labelColor != null && label != null && children == null
 
-  // iOS forces the color via `foregroundStyle`; on web this modifier is a no-op stub.
-  const colorMod = !androidColoredLabel && labelColor != null ? [foregroundStyle(labelColor)] : []
+  // iOS forces the color via `foregroundStyle`.
+  const colorMod = !coloredLabelChild && labelColor != null ? [foregroundStyle(labelColor)] : []
 
-  const node = androidColoredLabel ? (
+  const node = coloredLabelChild ? (
     <ExpoButton {...props} style={platformStyle} modifiers={[...fillMod, ...userMods]}>
       <ExpoText textStyle={{ color: labelColor }}>{label}</ExpoText>
     </ExpoButton>

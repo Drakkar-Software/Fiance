@@ -25,6 +25,31 @@ import {
   Palette,
   FolderHeart,
   Sparkles,
+  FolderOpen,
+  Grid2x2,
+  BedDouble,
+  Tag,
+  Percent,
+  Mail,
+  Send,
+  UsersRound,
+  Crown,
+  Heart,
+  Armchair,
+  Ban,
+  CalendarClock,
+  ListOrdered,
+  CalendarRange,
+  MapPinned,
+  Timer,
+  Church,
+  BookOpen,
+  Mic2,
+  Music,
+  MessageSquareQuote,
+  Palmtree,
+  Plane,
+  Luggage,
 } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { FeatureWelcome } from "@fiance/ui/components";
@@ -88,6 +113,80 @@ export const FEATURE_WELCOMES: Record<FeatureWelcomeKey, WelcomeConfig> = {
     bulletIcons: [Palette, FolderHeart, Sparkles],
     primaryRoute: { pathname: "/ideas/[id]", params: { id: "new" } },
   },
+  // Guests sub-nav — accent matches the parent "guests" tab. None of these
+  // screens have a dedicated "new" route (their add action opens a local
+  // bottom sheet), so the CTA dismisses onto the screen, same as home/budget.
+  groups: {
+    icon: FolderOpen,
+    accent: GP.blue,
+    bulletIcons: [FolderOpen, Users, Tag],
+  },
+  "table-management": {
+    icon: LayoutGrid,
+    accent: GP.blue,
+    bulletIcons: [Grid2x2, Armchair, Users],
+  },
+  accommodations: {
+    icon: BedDouble,
+    accent: GP.blue,
+    bulletIcons: [BedDouble, Users, CircleCheck],
+  },
+  "invitation-types": {
+    icon: Tag,
+    accent: GP.blue,
+    bulletIcons: [Tag, Percent, Users],
+  },
+  communications: {
+    icon: Mail,
+    accent: GP.blue,
+    bulletIcons: [Send, Mail, Users],
+  },
+  "wedding-party": {
+    icon: UsersRound,
+    accent: GP.blue,
+    bulletIcons: [Crown, Heart, UsersRound],
+  },
+  "seating-constraints": {
+    icon: Armchair,
+    accent: GP.blue,
+    bulletIcons: [Heart, Ban, Armchair],
+  },
+  // Planning sub-nav — accent matches the parent "planning" tab. agenda,
+  // day-of and ceremony have a real "new item" route to deep-link into;
+  // the rest open a local sheet, so their CTA dismisses onto the screen.
+  agenda: {
+    icon: Calendar,
+    accent: GP.mustard,
+    bulletIcons: [CalendarClock, ListOrdered, BellRing],
+    primaryRoute: { pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } },
+  },
+  "day-of": {
+    icon: Clock,
+    accent: GP.mustard,
+    bulletIcons: [Clock, ListChecks, Timer],
+    primaryRoute: { pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } },
+  },
+  events: {
+    icon: CalendarRange,
+    accent: GP.mustard,
+    bulletIcons: [CalendarRange, MapPinned, Users],
+  },
+  ceremony: {
+    icon: Church,
+    accent: GP.mustard,
+    bulletIcons: [Church, BookOpen, ListOrdered],
+    primaryRoute: { pathname: "/(tabs)/planning/ceremony-item", params: { id: "new" } },
+  },
+  "speeches-music": {
+    icon: Mic2,
+    accent: GP.mustard,
+    bulletIcons: [Mic2, Music, MessageSquareQuote],
+  },
+  honeymoon: {
+    icon: Palmtree,
+    accent: GP.mustard,
+    bulletIcons: [Plane, Palmtree, Luggage],
+  },
 };
 
 /**
@@ -105,8 +204,12 @@ export function FeatureWelcomeHost() {
   const markSeen = useFeatureTrialsStore((s) => s.markSeen);
 
   // Mirrors DesktopSidebar: tab routes sit under "(tabs)"; top-level groups
-  // (ideas) sit at segments[0].
-  const activeKey = segments[0] === "(tabs)" ? segments[1] : segments[0];
+  // (ideas) sit at segments[0]. A registered sub-nav segment (segments[2],
+  // e.g. guests/groups or planning/agenda) takes priority over its parent tab
+  // so each sub-screen gets its own first-visit welcome.
+  const topKey = segments[0] === "(tabs)" ? segments[1] : segments[0];
+  const subKey = segments[2];
+  const activeKey = subKey && subKey in FEATURE_WELCOMES ? subKey : topKey;
   const cfg =
     activeKey && activeKey in FEATURE_WELCOMES
       ? FEATURE_WELCOMES[activeKey as FeatureWelcomeKey]

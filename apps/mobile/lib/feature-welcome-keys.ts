@@ -10,6 +10,19 @@ export const FEATURE_WELCOME_KEYS = [
   "planning",
   "budget",
   "ideas",
+  "groups",
+  "table-management",
+  "accommodations",
+  "invitation-types",
+  "communications",
+  "wedding-party",
+  "seating-constraints",
+  "agenda",
+  "day-of",
+  "events",
+  "ceremony",
+  "speeches-music",
+  "honeymoon",
 ] as const;
 
 export type FeatureWelcomeKey = (typeof FEATURE_WELCOME_KEYS)[number];
@@ -24,4 +37,7 @@ export const FEATURE_WELCOME_DEEPLINK_KEYS: readonly FeatureWelcomeKey[] = [
   "guests",
   "planning",
   "ideas",
+  "agenda",
+  "day-of",
+  "ceremony",
 ];

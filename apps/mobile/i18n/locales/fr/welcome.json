@@ -57,5 +57,125 @@
     "bullet3": "Retrouvez l'inspiration au moment de décider",
     "primaryCta": "Ajouter une idée",
     "secondaryCta": "Explorer d'abord"
+  },
+  "groups": {
+    "eyebrow": "Groupes",
+    "title": "Vos invités par groupes",
+    "tagline": "Famille, amis, collègues : organisez qui va avec qui",
+    "bullet1": "Regroupez vos invités par affinité ou par famille",
+    "bullet2": "Filtrez et gérez chaque groupe en un coup d'œil",
+    "bullet3": "Simplifiez le plan de table grâce aux groupes",
+    "primaryCta": "Créer un groupe"
+  },
+  "table-management": {
+    "eyebrow": "Tables",
+    "title": "Votre plan de salle",
+    "tagline": "Chaque invité à la bonne place, sans prise de tête",
+    "bullet1": "Créez vos tables et définissez leur capacité",
+    "bullet2": "Placez vos invités en tenant compte des contraintes",
+    "bullet3": "Visualisez l'occupation de chaque table en un instant",
+    "primaryCta": "Ajouter une table"
+  },
+  "accommodations": {
+    "eyebrow": "Hébergements",
+    "title": "Vos hébergements invités",
+    "tagline": "Chambres, capacités et attributions, tout centralisé",
+    "bullet1": "Répertoriez les hébergements proposés à vos invités",
+    "bullet2": "Suivez les places disponibles et attribuées",
+    "bullet3": "Attribuez chaque invité à son hébergement",
+    "primaryCta": "Ajouter un hébergement"
+  },
+  "invitation-types": {
+    "eyebrow": "Types d'invitation",
+    "title": "Vos types d'invitation",
+    "tagline": "Journée complète, soirée seule : à chacun son invitation",
+    "bullet1": "Définissez plusieurs formules d'invitation",
+    "bullet2": "Associez chaque invité au bon type",
+    "bullet3": "Gardez une vue claire de qui est convié à quoi",
+    "primaryCta": "Créer un type d'invitation"
+  },
+  "communications": {
+    "eyebrow": "Communications",
+    "title": "Vos envois aux invités",
+    "tagline": "Save the date, invitations, relances : tout depuis un seul endroit",
+    "bullet1": "Rédigez et envoyez vos messages à vos invités",
+    "bullet2": "Suivez qui a reçu quoi et quand",
+    "bullet3": "Relancez facilement les invités sans réponse",
+    "primaryCta": "Créer un envoi"
+  },
+  "wedding-party": {
+    "eyebrow": "Cortège",
+    "title": "Votre cortège nuptial",
+    "tagline": "Témoins, demoiselles et garçons d'honneur, bien organisés",
+    "bullet1": "Attribuez les rôles clés de votre cortège",
+    "bullet2": "Gardez une vue d'ensemble des personnes impliquées",
+    "bullet3": "Suivez leurs coordonnées et leur rôle le jour J",
+    "primaryCta": "Ajouter un rôle"
+  },
+  "seating-constraints": {
+    "eyebrow": "Contraintes",
+    "title": "Vos contraintes de placement",
+    "tagline": "À éviter, à réunir : gardez-le en tête pour le plan de table",
+    "bullet1": "Notez les invités à ne pas placer ensemble",
+    "bullet2": "Notez ceux qui doivent rester proches",
+    "bullet3": "Le plan de table en tient compte automatiquement",
+    "primaryCta": "Ajouter une contrainte"
+  },
+  "agenda": {
+    "eyebrow": "Agenda",
+    "title": "Votre agenda du jour J",
+    "tagline": "Chaque moment de la journée, minute par minute",
+    "bullet1": "Listez chaque temps fort de votre journée",
+    "bullet2": "Fixez les horaires et les lieux de chaque étape",
+    "bullet3": "Partagez un déroulé clair avec vos prestataires",
+    "primaryCta": "Ajouter un moment",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "day-of": {
+    "eyebrow": "Jour J",
+    "title": "Votre checklist jour J",
+    "tagline": "Les derniers détails, sous contrôle jusqu'au bout",
+    "bullet1": "Listez les tâches spécifiques au jour J",
+    "bullet2": "Cochez chaque étape au fur et à mesure",
+    "bullet3": "Ne laissez rien au hasard le grand jour",
+    "primaryCta": "Ajouter une tâche",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "events": {
+    "eyebrow": "Événements",
+    "title": "Vos événements liés au mariage",
+    "tagline": "Enterrement de vie de garçon ou de jeune fille, brunch : tout au même endroit",
+    "bullet1": "Ajoutez chaque événement autour de votre mariage",
+    "bullet2": "Fixez date, lieu et invités pour chacun",
+    "bullet3": "Gardez une vue d'ensemble de votre calendrier",
+    "primaryCta": "Ajouter un événement"
+  },
+  "ceremony": {
+    "eyebrow": "Cérémonie",
+    "title": "Votre déroulé de cérémonie",
+    "tagline": "Chaque étape de la cérémonie, dans l'ordre",
+    "bullet1": "Construisez le déroulé de votre cérémonie",
+    "bullet2": "Ajoutez lectures, rituels et intervenants",
+    "bullet3": "Partagez-le avec votre officiant",
+    "primaryCta": "Ajouter une étape",
+    "secondaryCta": "Explorer d'abord"
+  },
+  "speeches-music": {
+    "eyebrow": "Discours & musique",
+    "title": "Vos discours et votre playlist",
+    "tagline": "Qui prend la parole, quelle musique, dans quel ordre",
+    "bullet1": "Listez les discours et leurs intervenants",
+    "bullet2": "Construisez la playlist de votre réception",
+    "bullet3": "Gardez le fil du programme musical",
+    "primaryCta": "Ajouter un discours"
+  },
+  "honeymoon": {
+    "eyebrow": "Voyage de noces",
+    "title": "Votre voyage de noces",
+    "tagline": "Destination, budget et étapes, déjà en préparation",
+    "bullet1": "Notez votre destination et vos envies",
+    "bullet2": "Suivez le budget dédié à votre voyage",
+    "bullet3": "Gardez les étapes clés de votre itinéraire",
+    "primaryCta": "Planifier mon voyage"
   }
 }

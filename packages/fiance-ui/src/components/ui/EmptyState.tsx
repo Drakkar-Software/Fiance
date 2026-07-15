@@ -33,7 +33,10 @@ export function EmptyState({
 }: EmptyStateProps) {
   const { colors } = useForgeTheme();
   return (
-    <View className="flex-1 items-center justify-center p-8">
+    <View
+      className="flex-1 items-center justify-center p-8"
+      style={{ width: "100%", maxWidth: 420, alignSelf: "center" }}
+    >
       <View className={`w-24 h-24 rounded-full ${iconBgClassName} items-center justify-center mb-5`}>
         <Icon size={40} color={iconColor} />
       </View>

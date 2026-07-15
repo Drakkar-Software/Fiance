@@ -57,5 +57,125 @@
     "bullet3": "Find inspiration when it's time to decide",
     "primaryCta": "Add an idea",
     "secondaryCta": "Explore first"
+  },
+  "groups": {
+    "eyebrow": "Groups",
+    "title": "Your guests, by group",
+    "tagline": "Family, friends, colleagues: organise who belongs together",
+    "bullet1": "Group guests by family or friendship circle",
+    "bullet2": "Filter and manage each group at a glance",
+    "bullet3": "Make seating easier with ready-made groups",
+    "primaryCta": "Create a group"
+  },
+  "table-management": {
+    "eyebrow": "Tables",
+    "title": "Your seating plan",
+    "tagline": "Every guest in the right seat, without the headache",
+    "bullet1": "Create your tables and set their capacity",
+    "bullet2": "Seat guests while respecting your constraints",
+    "bullet3": "See each table's occupancy at a glance",
+    "primaryCta": "Add a table"
+  },
+  "accommodations": {
+    "eyebrow": "Accommodation",
+    "title": "Your guest accommodation",
+    "tagline": "Rooms, capacity and assignments, all in one place",
+    "bullet1": "List the accommodation offered to your guests",
+    "bullet2": "Track available and assigned spots",
+    "bullet3": "Assign each guest to their accommodation",
+    "primaryCta": "Add accommodation"
+  },
+  "invitation-types": {
+    "eyebrow": "Invitation types",
+    "title": "Your invitation types",
+    "tagline": "Full day, evening only: an invitation for every guest",
+    "bullet1": "Set up several invitation formats",
+    "bullet2": "Match each guest to the right type",
+    "bullet3": "Keep a clear view of who's invited to what",
+    "primaryCta": "Create an invitation type"
+  },
+  "communications": {
+    "eyebrow": "Communications",
+    "title": "Your guest messages",
+    "tagline": "Save the dates, invitations, reminders: all from one place",
+    "bullet1": "Write and send messages to your guests",
+    "bullet2": "Track who received what, and when",
+    "bullet3": "Easily follow up with guests who haven't replied",
+    "primaryCta": "Create a message"
+  },
+  "wedding-party": {
+    "eyebrow": "Wedding party",
+    "title": "Your wedding party",
+    "tagline": "Witnesses, bridesmaids and groomsmen, kept organised",
+    "bullet1": "Assign the key roles in your wedding party",
+    "bullet2": "Keep an overview of everyone involved",
+    "bullet3": "Track their details and role on the big day",
+    "primaryCta": "Add a role"
+  },
+  "seating-constraints": {
+    "eyebrow": "Constraints",
+    "title": "Your seating constraints",
+    "tagline": "Keep apart, keep together: noted for the seating plan",
+    "bullet1": "Flag guests who shouldn't sit together",
+    "bullet2": "Flag guests who should stay close",
+    "bullet3": "The seating plan factors them in automatically",
+    "primaryCta": "Add a constraint"
+  },
+  "agenda": {
+    "eyebrow": "Agenda",
+    "title": "Your day-of agenda",
+    "tagline": "Every moment of the day, minute by minute",
+    "bullet1": "List every highlight of your day",
+    "bullet2": "Set the time and place for each step",
+    "bullet3": "Share a clear schedule with your vendors",
+    "primaryCta": "Add a moment",
+    "secondaryCta": "Explore first"
+  },
+  "day-of": {
+    "eyebrow": "Day-of",
+    "title": "Your day-of checklist",
+    "tagline": "The final details, under control right to the end",
+    "bullet1": "List tasks specific to the wedding day",
+    "bullet2": "Check off each step as you go",
+    "bullet3": "Leave nothing to chance on the big day",
+    "primaryCta": "Add a task",
+    "secondaryCta": "Explore first"
+  },
+  "events": {
+    "eyebrow": "Events",
+    "title": "Your wedding-related events",
+    "tagline": "Bachelor or bachelorette party, brunch: all in one place",
+    "bullet1": "Add every event around your wedding",
+    "bullet2": "Set the date, place and guests for each",
+    "bullet3": "Keep an overview of your full calendar",
+    "primaryCta": "Add an event"
+  },
+  "ceremony": {
+    "eyebrow": "Ceremony",
+    "title": "Your ceremony outline",
+    "tagline": "Every step of the ceremony, in order",
+    "bullet1": "Build the outline of your ceremony",
+    "bullet2": "Add readings, rituals and participants",
+    "bullet3": "Share it with your officiant",
+    "primaryCta": "Add a step",
+    "secondaryCta": "Explore first"
+  },
+  "speeches-music": {
+    "eyebrow": "Speeches & music",
+    "title": "Your speeches and playlist",
+    "tagline": "Who's speaking, what's playing, in what order",
+    "bullet1": "List your speeches and who's giving them",
+    "bullet2": "Build your reception playlist",
+    "bullet3": "Keep track of the full programme",
+    "primaryCta": "Add a speech"
+  },
+  "honeymoon": {
+    "eyebrow": "Honeymoon",
+    "title": "Your honeymoon",
+    "tagline": "Destination, budget and itinerary, already underway",
+    "bullet1": "Note your destination and wishlist",
+    "bullet2": "Track the budget set aside for your trip",
+    "bullet3": "Keep the key stops of your itinerary",
+    "primaryCta": "Plan my trip"
   }
 }
