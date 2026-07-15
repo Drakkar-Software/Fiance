@@ -276,9 +276,9 @@ export default function ExportImportScreen() {
           <View className="px-4 pt-4">
             <Pressable
               onPress={() => openPaywall(t("exportsLockedDesc"))}
-              className="flex-row items-start gap-2 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+              className="flex-row items-center gap-2 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
             >
-              <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+              <Lock size={14} color="#b96a4a" />
               <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
                 {t("exportsLockedDesc")}
               </Text>
