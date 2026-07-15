@@ -97,5 +97,9 @@
     "vendors": "Free plan: up to {{limit}} vendors. Upgrade for unlimited vendors.",
     "events": "Free plan: 1 event. Upgrade to add more events.",
     "tasks": "Free plan: up to {{limit}} custom tasks. Upgrade for unlimited tasks."
+  },
+  "quota": {
+    "badge": "{{count}} / {{limit}}",
+    "badgeLabel": "{{count}} of {{limit}} used on the free plan"
   }
 }

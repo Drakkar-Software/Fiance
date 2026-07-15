@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useColorScheme } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useVendorsStore } from "@/store/useVendorsStore";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { toast } from "@/lib/toast/sonner";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
@@ -19,9 +19,8 @@ export default function VendorsLayout() {
   const isWide = useIsWideScreen();
   const vendorCount = useVendorsStore((s) => s.vendors.length);
   const canAddVendor = useCanAddMore("vendors", vendorCount);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
   return (
-    <>
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" },
@@ -39,10 +38,12 @@ export default function VendorsLayout() {
           headerRight: () => (
             <HeaderAddButton
               accessibilityLabel={t("newVendor")}
+              locked={!canAddVendor}
               onPress={() => {
                 if (!canAddVendor) {
-                  toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
-                  setShowPaywall(true);
+                  const msg = t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors });
+                  toast.error(msg);
+                  openPaywall(msg);
                   return;
                 }
                 router.push("/(tabs)/vendors/new");
@@ -56,7 +57,5 @@ export default function VendorsLayout() {
       <Stack.Screen name="[type]/[id]" options={{ title: "" }} />
       <Stack.Screen name="compare" options={{ title: t("compareCaterers") }} />
     </Stack>
-    <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
-    </>
   );
 }

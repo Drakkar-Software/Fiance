@@ -39,7 +39,8 @@ import { buildWeddingPageUrl } from "@/lib/identity";
 import { deriveUserId } from "@/lib/server";
 import { analytics } from "@/lib/analytics";
 import { useIsWideScreen } from "@/lib/useIsWideScreen";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { useShowPaywall } from "@/components/PaywallProvider";
+import { QuotaBadge } from "@/components/QuotaBadge";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
 import { toast } from "@/lib/toast/sonner";
 
@@ -74,15 +75,16 @@ export function PreparationView() {
   // regardless of size, matching "the guided checklist is a free retention hook".
   const customTaskCount = useMemo(() => tasks.filter((task) => !task.isSystem).length, [tasks]);
   const canAddTask = useCanAddMore("tasks", customTaskCount);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
   const handleAddTask = useCallback(() => {
     if (!canAddTask) {
-      toast.error(t("common:premiumLimits.tasks", { limit: FREE_LIMITS.tasks }));
-      setShowPaywall(true);
+      const msg = t("common:premiumLimits.tasks", { limit: FREE_LIMITS.tasks });
+      toast.error(msg);
+      openPaywall(msg);
       return;
     }
     router.push({ pathname: "/(tabs)/planning/[id]", params: { id: "new" } });
-  }, [canAddTask, router, t]);
+  }, [canAddTask, router, t, openPaywall]);
 
   const handleGenerateTemplate = useCallback(() => {
     if (!effectiveDate) {
@@ -232,6 +234,10 @@ export function PreparationView() {
         />
       </View>
 
+      <View className="px-4 mt-3">
+        <QuotaBadge entityKey="tasks" count={customTaskCount} />
+      </View>
+
       {filteredTasks.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Calendar size={48} color="#D1D5DB" />
@@ -312,8 +318,7 @@ export function PreparationView() {
         </ScrollView>
       )}
 
-      {isWide && <FAB onPress={handleAddTask} />}
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+      {isWide && <FAB onPress={handleAddTask} locked={!canAddTask} />}
     </View>
   );
 }

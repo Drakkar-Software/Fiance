@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { PageHeader } from "@/components/PageHeader";
@@ -14,7 +14,7 @@ import { FAB } from "@/components/FAB";
 import { EmptyState } from "@/components/EmptyState";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { Display } from "@/components/Display";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { useCanAddMore, useHasFeature, FREE_LIMITS } from "@/lib/limits";
 import { toast } from "@/lib/toast/sonner";
 
@@ -30,19 +30,20 @@ export default function VendorTypeListScreen() {
   const guests = useGuestsStore((s) => s.guests);
   const canAddVendor = useCanAddMore("vendors", totalVendorCount);
   const hasQuoteComparison = useHasFeature("quoteComparison");
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
 
   const handleAdd = () => {
     if (!canAddVendor) {
-      toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
-      setShowPaywall(true);
+      const msg = t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors });
+      toast.error(msg);
+      openPaywall(msg);
       return;
     }
     router.push({ pathname: "/(tabs)/vendors/[type]/[id]", params: { type: type!, id: "new" } });
   };
 
   const handleViewComparison = () => {
-    if (!hasQuoteComparison) { setShowPaywall(true); return; }
+    if (!hasQuoteComparison) { openPaywall(); return; }
     router.push({ pathname: "/(tabs)/vendors/compare", params: { type: type! } });
   };
 
@@ -132,8 +133,7 @@ export default function VendorTypeListScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={handleAdd} />
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+      <FAB onPress={handleAdd} locked={!canAddVendor} />
     </View>
   );
 }

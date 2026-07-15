@@ -21,6 +21,9 @@ const ASPECT_ROUTES: Record<PlanningAspect, string> = {
 interface PlanningShellProps {
   aspect: PlanningAspect;
   onAdd?: () => void;
+  /** Free-tier cap reached for this aspect's add action (e.g. task cap) — shows
+   * a lock badge on the header + so tapping into the paywall is expected. */
+  onAddLocked?: boolean;
   children: React.ReactNode;
 }
 
@@ -28,7 +31,7 @@ interface PlanningShellProps {
 // as tabs within one screen feel); wide/desktop hides it in favor of the
 // DesktopSidebar's planning sub-nav, since preparation/agenda/day-of are now
 // real routes.
-export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
+export function PlanningShell({ aspect, onAdd, onAddLocked = false, children }: PlanningShellProps) {
   const { t } = useTranslation("planning");
   const router = useRouter();
   const isWide = useIsWideScreen();
@@ -50,7 +53,9 @@ export function PlanningShell({ aspect, onAdd, children }: PlanningShellProps) {
                   <Play size={20} color="#b96a4a" />
                 </Pressable>
               )}
-              {onAdd && <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} />}
+              {onAdd && (
+                <HeaderAddButton accessibilityLabel={t("common:add")} onPress={onAdd} locked={onAddLocked} />
+              )}
               <StackMenu
                 items={[
                   {

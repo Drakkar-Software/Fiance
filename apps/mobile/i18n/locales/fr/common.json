@@ -97,5 +97,9 @@
     "vendors": "Offre gratuite : jusqu'à {{limit}} prestataires. Passez à Premium pour un nombre illimité.",
     "events": "Offre gratuite : 1 événement. Passez à Premium pour en ajouter d'autres.",
     "tasks": "Offre gratuite : jusqu'à {{limit}} tâches personnalisées. Passez à Premium pour un nombre illimité."
+  },
+  "quota": {
+    "badge": "{{count}} / {{limit}}",
+    "badgeLabel": "{{count}} sur {{limit}} utilisés dans l'offre gratuite"
   }
 }

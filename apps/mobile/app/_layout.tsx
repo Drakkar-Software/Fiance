@@ -57,6 +57,7 @@ import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
 import { FeatureWelcomeHost } from "@/lib/feature-welcomes";
+import { PaywallProvider } from "@/components/PaywallProvider";
 import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
 import { ObserveRoot, useObserve } from "expo-observe";
 
@@ -176,10 +177,10 @@ function InnerApp() {
     markInteractive();
   }, [markInteractive]);
   return (
-    <>
+    <PaywallProvider>
       <AppContent />
       <Toaster />
-    </>
+    </PaywallProvider>
   );
 }
 

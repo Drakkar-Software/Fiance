@@ -21,7 +21,8 @@ import { FilterTabs } from "@/components/FilterTabs";
 import { SearchBar } from "@/components/SearchBar";
 import { formatMoney } from "@/components/MoneyDisplay";
 import { PageHeader } from "@/components/PageHeader";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { QuotaBadge } from "@/components/QuotaBadge";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
 import { toast } from "@/lib/toast/sonner";
 
@@ -38,7 +39,7 @@ export default function VendorsListScreen() {
   const [activeType, setActiveType] = useState<string>("ALL");
   const [search, setSearch] = useState("");
   const canAddVendor = useCanAddMore("vendors", vendors.length);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
 
   // Per-vendor display total: dynamic vendors show their computed (guest-based + fixed) total,
   // others their base price. Recomputes only when vendors / pricings / guest counts change.
@@ -81,8 +82,9 @@ export default function VendorsListScreen() {
 
   const handleAdd = () => {
     if (!canAddVendor) {
-      toast.error(t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors }));
-      setShowPaywall(true);
+      const msg = t("common:premiumLimits.vendors", { limit: FREE_LIMITS.vendors });
+      toast.error(msg);
+      openPaywall(msg);
       return;
     }
     router.push("/(tabs)/vendors/new");
@@ -159,6 +161,9 @@ export default function VendorsListScreen() {
             <View className="mt-3 pb-3">
               <FilterTabs tabs={tabs} activeKey={activeType} onSelect={setActiveType} />
             </View>
+            <View className="px-4 pb-3">
+              <QuotaBadge entityKey="vendors" count={vendors.length} />
+            </View>
           </>
         }
         ListEmptyComponent={
@@ -173,8 +178,7 @@ export default function VendorsListScreen() {
         ListFooterComponent={<View className="h-24" />}
       />
 
-      {isWide && canEdit && <FAB onPress={handleAdd} />}
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+      {isWide && canEdit && <FAB onPress={handleAdd} locked={!canAddVendor} />}
     </View>
   );
 }

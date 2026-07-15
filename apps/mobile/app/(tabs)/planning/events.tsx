@@ -12,7 +12,8 @@ import { FAB } from "@/components/FAB";
 import { ChipSelect, ToggleRow, DateRow, TimeRow, FormActions } from "@/components/FormSection";
 import { analytics } from "@/lib/analytics";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { useShowPaywall } from "@/components/PaywallProvider";
+import { QuotaBadge } from "@/components/QuotaBadge";
 import { useCanAddMore } from "@/lib/limits";
 import { toast } from "@/lib/toast/sonner";
 import type { WeddingEvent } from "@/db/schema";
@@ -47,11 +48,12 @@ export default function PlanningEventsScreen() {
   const [form, setForm] = useState<FormState>(emptyForm());
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const canAddEvent = useCanAddMore("weddingEvents", events.length);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
   const handleAddEvent = () => {
     if (!canAddEvent) {
-      toast.error(t("common:premiumLimits.events"));
-      setShowPaywall(true);
+      const msg = t("common:premiumLimits.events");
+      toast.error(msg);
+      openPaywall(msg);
       return;
     }
     resetForm();
@@ -197,6 +199,10 @@ export default function PlanningEventsScreen() {
         />
       ) : (
         <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+          <View className="mb-3">
+            <QuotaBadge entityKey="weddingEvents" count={events.length} />
+          </View>
+
           {showAdd && renderForm()}
 
           {sorted.map((e) => {
@@ -236,8 +242,7 @@ export default function PlanningEventsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={handleAddEvent} />
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
+      <FAB onPress={handleAddEvent} locked={!canAddEvent} />
 
       <ConfirmSheet
         visible={!!deleteId}

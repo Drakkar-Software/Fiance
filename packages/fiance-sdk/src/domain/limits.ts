@@ -25,6 +25,28 @@ export function isWithinFreeLimit(
   return premium || currentCount < FREE_LIMITS[key];
 }
 
+export interface QuotaStatus {
+  count: number;
+  limit: number;
+  atCap: boolean;
+}
+
+/**
+ * Whether a usage badge ("12 / 30") should render for a count-limited entity.
+ * Free users only — premium is unlimited, nothing to show. Also hidden at zero
+ * so it doesn't compete with the empty-state CTA, which already carries the
+ * free-tier message on first use.
+ */
+export function shouldShowQuotaBadge(count: number, premium: boolean): boolean {
+  return !premium && count > 0;
+}
+
+/** Current count vs. the free cap for `key`, and whether it's been reached. */
+export function getQuotaStatus(key: FreeLimitKey, count: number): QuotaStatus {
+  const limit = FREE_LIMITS[key];
+  return { count, limit, atCap: count >= limit };
+}
+
 /** Boolean feature gates (no count) — locked on free, unlocked on premium. */
 export type PremiumFeature =
   | 'publicPhotos'

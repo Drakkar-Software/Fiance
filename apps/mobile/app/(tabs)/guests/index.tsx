@@ -23,7 +23,8 @@ import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { QuotaBadge } from "@/components/QuotaBadge";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
 import { toast } from "@/lib/toast/sonner";
 import type { Guest } from "@/db/schema";
@@ -115,15 +116,16 @@ function GuestsView() {
   const [rsvpFilter, setRsvpFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const canAddGuest = useCanAddMore("guests", guests.length);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
   const handleAddGuest = useCallback(() => {
     if (!canAddGuest) {
-      toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
-      setShowPaywall(true);
+      const msg = t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests });
+      toast.error(msg);
+      openPaywall(msg);
       return;
     }
     router.push({ pathname: "/(tabs)/guests/[id]", params: { id: "new" } });
-  }, [canAddGuest, router, t]);
+  }, [canAddGuest, router, t, openPaywall]);
 
   // Map invitationType id → label for display
   const typeLabels = useMemo(() => {
@@ -349,6 +351,10 @@ function GuestsView() {
           );
         })}
       </ScrollView>
+
+      <View className="px-4 mb-3">
+        <QuotaBadge entityKey="guests" count={guests.length} />
+      </View>
     </>
   );
 
@@ -362,7 +368,7 @@ function GuestsView() {
           title={t("noGuests")}
           description={t("addFirstGuest")}
           actionLabel={t("addGuest")}
-          onAction={() => router.push("/(tabs)/guests/new" as any)}
+          onAction={handleAddGuest}
           secondaryActionLabel={t("importExternalGuests")}
           onSecondaryAction={() => router.push("/settings/import-external")}
         />
@@ -385,9 +391,7 @@ function GuestsView() {
         />
       )}
 
-      {isWide && canEditGuests && <FAB onPress={handleAddGuest} />}
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
-
+      {isWide && canEditGuests && <FAB onPress={handleAddGuest} locked={!canAddGuest} />}
     </View>
   );
 }

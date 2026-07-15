@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useColorScheme } from "react-native";
 import { View } from "react-native-css/components";
 import { Stack, useRouter } from "expo-router";
@@ -7,7 +7,7 @@ import { BedDouble, Tag, Mail, FolderOpen, LayoutGrid, Users, UsersRound } from 
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { useShowPaywall } from "@/components/PaywallProvider";
 import { toast } from "@/lib/toast/sonner";
 import { StackMenu } from "@/components/StackMenu";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
@@ -22,10 +22,9 @@ export default function InvitesLayout() {
   const isWide = useIsWideScreen();
   const guestCount = useGuestsStore((s) => s.guests.length);
   const canAddGuest = useCanAddMore("guests", guestCount);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
 
   return (
-    <>
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" },
@@ -44,10 +43,12 @@ export default function InvitesLayout() {
             <View className="flex-row items-center">
               <HeaderAddButton
                 accessibilityLabel={t("addGuest")}
+                locked={!canAddGuest}
                 onPress={() => {
                   if (!canAddGuest) {
-                    toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
-                    setShowPaywall(true);
+                    const msg = t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests });
+                    toast.error(msg);
+                    openPaywall(msg);
                     return;
                   }
                   router.push({ pathname: "/(tabs)/guests/[id]", params: { id: "new" } });
@@ -114,7 +115,5 @@ export default function InvitesLayout() {
       <Stack.Screen name="wedding-party" options={{ title: t("weddingParty.title") }} />
       <Stack.Screen name="seating-constraints" options={{ title: t("seatingConstraints.title") }} />
     </Stack>
-    <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
-    </>
   );
 }
