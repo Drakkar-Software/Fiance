@@ -4,8 +4,29 @@ All notable changes to Fiancé are documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0]
+
 ### Added
-- iOS home-screen widget (`expo-widgets`, Small + Medium) that mirrors the home dashboard. It shows the countdown plus a priority-ordered summary — warnings first (overdue tasks, vendor deposits due, expiring quotes, critical unstarted tasks, guests without a table, over-budget), then upcoming agenda events, then next tasks — so a shorter widget fills its space with whatever matters most. Refreshes on data changes and when the app returns to the foreground; fully localized (FR/EN). A dismissible home banner explains how to add it. iOS-only (no-op on Android and web).
+- **Free vs. Premium**: a real, enforced free tier (30 guests, 3 vendors, 1 event, 25 custom planning tasks, 1 invited collaborator — couple sync itself stays unconditionally free) backed by a pure SDK quota helper (`isWithinFreeLimit`) and checked at every add/save entry point, including the ones reachable by direct URL on web. A reusable `PremiumGate` blur-lock overlay gates advanced budget tools (categories, contributors, multi-currency, quote comparison) and the public page's gift registry, each with a "Déverrouiller" unlock CTA. The paywall (`/settings/premium`) and `PaywallSheet` were rewritten with the real benefit list and a live price instead of a hardcoded one.
+- RevenueCat integration (iOS, Android, and Web Billing) bound to the wedding **owner's** entitlement, so every collaborator on a wedding reads the same premium unlock without needing their own RevenueCat account; the entitlement is also persisted onto the synced wedding document so it works fully offline/cold-boot.
+- Collaborator roles with per-feature permissions: invite family, a wedding planner, or vendors with view-only or edit access per section, with revocation support and a read-only banner/gating for view-only collaborators.
+- Day-of moments can now link to a wedding-party role (e.g. "Maid of Honor gives a speech at 6pm") instead of only a free-text name.
+- Real-time sync push over SSE (server + SDK + mobile), so collaborators see changes land live instead of waiting for the next poll.
+- Per-invitation-type guest pricing: vendor cost-per-guest now derives from dynamic invitation-type counts (adults/children/vendors, etc.) with a visible count-mode toggle, fixed fees, and a propagated dynamic total, instead of a single flat per-head rate.
+- iOS home-screen widget (`expo-widgets`, Small + Medium) mirroring the home dashboard: countdown plus a priority-ordered summary (overdue tasks, vendor deposits due, expiring quotes, critical unstarted tasks, guests without a table, over-budget, then upcoming agenda events and next tasks). Refreshes on data changes and app foreground; fully localized; a dismissible home banner explains how to add it. iOS-only.
+- First-visit feature welcome screens introducing new areas of the app.
+- Collaborator roles: invite-link "copy to clipboard" before opening the share sheet, and an invite name requirement so collaborators show up identifiable in the roster.
+- 118 new Le Carnet blog articles (two batches of 68 and 50) filling out planning, budget, guest, vendor, and comparison content; social-media and App Store/Play Store badges added to the marketing footer/README; a store-review prompt at 10+ guests/vendors/tasks.
+- Settings: real app version + last-update date shown in the About card; EAS Insights + EAS Observe instrumentation for release health monitoring.
+
+### Fixed
+- Closed a wedding-singleton lost-update hole with per-entity revision LWW, and fixed a rollout-window bug that could lose data during a sync race; fixed an SSE sync race, status pollution, and duplicated auth headers.
+- Fixed member-device data loss caused by a read-only cap, a member invite that pointed at an unpublished space, and an objdoc-403 affecting link-joined collaborators.
+- Fixed the analytics 404 and the public page not going live immediately after wedding creation; fixed resync-path bugs surfaced by review of the `fiance` → `dk` namespace migration.
+- Fixed a RevenueCat entitlement id / product id mismatch against the dashboard, a stale cross-wedding entitlement, a customer-info listener leak, and a configure-crash risk on rapid wedding switching; the purchase CTA no longer shows a raw ellipsis placeholder while the price is loading.
+- Wired resilient fetch for sync calls to avoid 429 rate limiting from the sync server; deduped the RSVP `/content` fetch that re-ran on every tab focus; fixed an instant-check delay on the communication guest roster.
+- Fixed guest cold-start scroll offset and the iOS companion-picker sheet layout; fixed a budget category silently dropping a deselected vendor when its comparison group had no winner; hid empty guest filters and warn on possible duplicate guest names.
+- Fixed SEO meta title lengths and invalid breadcrumb JSON-LD; improved EmptyState contrast and fixed an action-button width bug on web.
 
 ## [1.10.0]
 

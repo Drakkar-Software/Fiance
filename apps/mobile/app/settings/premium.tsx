@@ -34,7 +34,22 @@ export default function PremiumScreen() {
   useEffect(() => {
     // Fetched regardless of owner status — the hero shows the real price to
     // everyone, even though only the owner sees the purchase CTA below.
-    getPremiumPrice().then((p) => { if (p) setPrice(p); }).catch(() => {});
+    // Retried: on mount, RevenueCat may not be configured yet (RevenueCatInitializer
+    // in providers.tsx resolves the wedding owner session — including a web Argon2id
+    // hash — before calling configureRevenueCat()), so the first getOfferings() call
+    // can race and return nothing. Poll a few times instead of fetching only once.
+    let cancelled = false;
+    let attempts = 0;
+    const tryFetch = () => {
+      getPremiumPrice().then((p) => {
+        if (cancelled) return;
+        if (p) { setPrice(p); return; }
+        attempts += 1;
+        if (attempts < 10) setTimeout(tryFetch, 1000);
+      }).catch(() => {});
+    };
+    tryFetch();
+    return () => { cancelled = true; };
   }, []);
 
   const handlePurchase = useCallback(async () => {

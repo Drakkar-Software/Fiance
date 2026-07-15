@@ -36,9 +36,22 @@ export function PaywallSheet({ visible, onClose, context }: PaywallSheetProps) {
   const [price, setPrice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (visible && isOwner) {
-      getPremiumPrice().then((p) => { if (p) setPrice(p); }).catch(() => {});
-    }
+    if (!visible || !isOwner) return;
+    // Retried: RevenueCat may not be configured yet when the sheet first opens
+    // (see the matching comment in settings/premium.tsx) — poll instead of a
+    // single fetch so the price still appears once configuration catches up.
+    let cancelled = false;
+    let attempts = 0;
+    const tryFetch = () => {
+      getPremiumPrice().then((p) => {
+        if (cancelled) return;
+        if (p) { setPrice(p); return; }
+        attempts += 1;
+        if (attempts < 10) setTimeout(tryFetch, 1000);
+      }).catch(() => {});
+    };
+    tryFetch();
+    return () => { cancelled = true; };
   }, [visible, isOwner]);
 
   const handlePurchase = useCallback(async () => {
