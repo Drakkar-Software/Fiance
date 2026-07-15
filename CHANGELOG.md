@@ -18,6 +18,7 @@ All notable changes to Fiancé are documented in this file.
 - Collaborator roles: invite-link "copy to clipboard" before opening the share sheet, and an invite name requirement so collaborators show up identifiable in the roster.
 - 118 new Le Carnet blog articles (two batches of 68 and 50) filling out planning, budget, guest, vendor, and comparison content; social-media and App Store/Play Store badges added to the marketing footer/README; a store-review prompt at 10+ guests/vendors/tasks.
 - Settings: real app version + last-update date shown in the About card; EAS Insights + EAS Observe instrumentation for release health monitoring.
+- A "tip of the day" card under the home screen's planning section: a short, useful wedding-planning reminder or fact, picked from a pool of 110 tips (fully translated FR/EN), refreshing on each app open and on tap.
 
 ### Fixed
 - Closed a wedding-singleton lost-update hole with per-entity revision LWW, and fixed a rollout-window bug that could lose data during a sync race; fixed an SSE sync race, status pollution, and duplicated auth headers.

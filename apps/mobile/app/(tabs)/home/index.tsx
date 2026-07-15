@@ -23,6 +23,7 @@ import { TimelineItem } from "@/components/TimelineItem";
 import { usePwaInstall } from "@/lib/usePwaInstall";
 import { useWidgetBanner } from "@/lib/useWidgetBanner";
 import { HomeBanner } from "@/components/HomeBanner";
+import { TipsBanner } from "@/components/TipsBanner";
 import { analytics } from "@/lib/analytics";
 import { theme as GP } from "@/lib/theme";
 import { Display } from "@/components/Display";
@@ -566,6 +567,8 @@ function DashboardScreen() {
             </>
           )}
         </View>
+
+        <TipsBanner />
 
         {/* Prestataires */}
         <Pressable
