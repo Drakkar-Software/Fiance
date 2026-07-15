@@ -1,7 +1,7 @@
 import React from "react";
-import { Modal, Platform } from "react-native";
+import { Modal, Platform, StatusBar as RNStatusBar } from "react-native";
 import { View, Text, Pressable, ScrollView } from "react-native-css/components";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { X } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { theme as GP } from "../garden-theme";
@@ -37,6 +37,8 @@ interface FeatureWelcomeProps {
   /** Optional low-emphasis "Explorer" link. Omit for a single-CTA welcome. */
   secondaryLabel?: string;
   onSecondary?: () => void;
+  /** Accessibility label for the fullscreen close button. Default "Fermer". */
+  closeLabel?: string;
 }
 
 /**
@@ -64,7 +66,12 @@ export function FeatureWelcome({
   onPrimary,
   secondaryLabel,
   onSecondary,
+  closeLabel = "Fermer",
 }: FeatureWelcomeProps) {
+  const insets = useSafeAreaInsets();
+  // Mirrors the home hero (app/(tabs)/home/index.tsx): real inset, with the
+  // Android status-bar height as a fallback (insets can read 0 inside a Modal).
+  const topInset = insets.top || RNStatusBar.currentHeight || 0;
   const bulletTint = `${accent}1f`; // ~12% alpha soft fill for the icon chips
 
   const bulletRows = (
@@ -162,23 +169,23 @@ export function FeatureWelcome({
               backgroundColor: accent,
               borderBottomLeftRadius: 32,
               borderBottomRightRadius: 32,
-              paddingTop: (Platform.OS === "ios" ? 64 : 48),
+              paddingTop: topInset + 20,
             }}
           >
-            <SafeAreaView edges={["top"]} style={{ position: "absolute", top: 0, right: 0, left: 0 }} />
-            <View style={{ position: "absolute", top: 54, right: 70, opacity: 0.4 }}>
+            <View style={{ position: "absolute", top: topInset + 10, right: 70, opacity: 0.4 }}>
               <Sprig size={26} color="#fff" angle={18} />
             </View>
-            <View style={{ position: "absolute", top: 48, left: 24, opacity: 0.28 }}>
+            <View style={{ position: "absolute", top: topInset + 4, left: 24, opacity: 0.28 }}>
               <Sprig size={18} color="#fff" angle={-24} />
             </View>
 
             <Pressable
               onPress={onDismiss}
               className="absolute p-2 rounded-full active:opacity-60"
-              style={{ top: 44, right: 20, backgroundColor: "rgba(255,255,255,0.18)" }}
+              style={{ top: topInset, right: 20, backgroundColor: "rgba(255,255,255,0.18)" }}
               hitSlop={8}
               accessibilityRole="button"
+              accessibilityLabel={closeLabel}
             >
               <X size={18} color="#fff" />
             </Pressable>
