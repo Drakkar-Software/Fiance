@@ -289,6 +289,19 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       id, type, title, date, time: startTime, venueName, address,
     }));
 
+  // Free tier's public page only publishes the earliest day — multi-day
+  // programs are a premium feature. A single-day wedding is unaffected.
+  const earliestDate = [
+    ...publicItems.map((i) => i.date || weddingDate),
+    ...publicEvents.map((e) => e.date),
+  ].filter(Boolean).sort()[0];
+  const timelineForPage = premium || !earliestDate
+    ? publicItems
+    : publicItems.filter((i) => (i.date || weddingDate) === earliestDate);
+  const eventsForPage = premium || !earliestDate
+    ? publicEvents
+    : publicEvents.filter((e) => e.date === earliestDate);
+
   return {
     version: 2,
     timestamp: new Date().toISOString(),
@@ -299,12 +312,12 @@ export function buildPublicPageDocument(): PublicWeddingPage {
       venueName: wedding?.venueName,
       description: wedding?.description,
     },
-    timeline: publicItems,
-    faq: wedding?.faq
+    timeline: timelineForPage,
+    faq: premium && wedding?.faq
       ? (() => { try { return JSON.parse(wedding.faq); } catch { return []; } })()
       : [],
     gifts: premium && publicGifts.length > 0 ? publicGifts : undefined,
-    events: publicEvents.length > 0 ? publicEvents : undefined,
+    events: eventsForPage.length > 0 ? eventsForPage : undefined,
     premium,
   };
 }

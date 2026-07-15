@@ -29,6 +29,8 @@ export function isWithinFreeLimit(
 export type PremiumFeature =
   | 'publicPhotos'
   | 'publicGifts'
+  | 'publicFaq'
+  | 'publicMultiDay'
   | 'budgetCategories'
   | 'budgetContributors'
   | 'budgetMultiCurrency'

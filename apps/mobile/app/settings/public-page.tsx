@@ -39,6 +39,8 @@ export default function PublicPageScreen() {
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
   const hasPublicGifts = useHasFeature("publicGifts");
+  const hasPublicFaq = useHasFeature("publicFaq");
+  const hasPublicMultiDay = useHasFeature("publicMultiDay");
   const registry = useWeddingRegistryStore((s) => s.registry);
   const activeEntry = registry?.weddings.find(
     (w) => w.id === registry.activeWeddingId
@@ -201,6 +203,14 @@ export default function PublicPageScreen() {
         <Text className="text-sm text-mute leading-5 mb-3 -mt-1">
           {t("timelinePreviewDesc")}
         </Text>
+        {isMultiDay && !hasPublicMultiDay && (
+          <View className="flex-row items-center gap-1.5 mb-3 -mt-2">
+            <Lock size={13} color="#b96a4a" />
+            <Text className="text-xs text-primary-500">
+              {t("multiDayLockedHint")}
+            </Text>
+          </View>
+        )}
 
         {publicDayOfItems.length > 0 ? (
           <View className="mb-3">
@@ -259,8 +269,12 @@ export default function PublicPageScreen() {
             </View>
           }
           title={t("configureFaq")}
-          subtitle={t("configureFaqDesc")}
-          right={<ChevronRight size={18} color="#C0C0C8" />}
+          subtitle={hasPublicFaq ? t("configureFaqDesc") : t("configureFaqLockedDesc")}
+          right={
+            hasPublicFaq
+              ? <ChevronRight size={18} color="#C0C0C8" />
+              : <Lock size={16} color="#b96a4a" />
+          }
           onPress={() => router.push("/settings/faq")}
         />
         <IconCard
