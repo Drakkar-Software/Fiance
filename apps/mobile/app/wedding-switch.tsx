@@ -42,9 +42,14 @@ export default function WeddingSwitchScreen() {
     return () => clearTimeout(timeout);
   }, [router]);
 
+  // Own the cover only until DatabaseProvider's overlay arms (switching flips
+  // true) — from then on that one is the single source of truth for the wait
+  // screen, so this crossfades out rather than staying double-mounted for the
+  // whole swap. Before that point (switchWedding still awaiting the registry
+  // write/reload), this is the only cover, hence `label` from route params.
   return (
     <View style={{ flex: 1 }}>
-      <WeddingSwitchOverlay visible label={label} />
+      <WeddingSwitchOverlay visible={!switching} label={label} />
     </View>
   );
 }

@@ -52,7 +52,8 @@ import { Toaster } from "@/lib/toast/sonner";
 import { TelemetryProvider, useTelemetryScreenTracking } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics, initAnalytics } from "@/lib/analytics";
 import { configureOnBoot, SyncInitializer, NotificationInitializer, RevenueCatInitializer, WeddingPremiumInitializer, WidgetInitializer } from "@/lib/providers";
-import { DatabaseProvider } from "@/db/provider";
+import { DatabaseProvider, useDatabaseSwitching } from "@/db/provider";
+import type { WeddingRegistryEntry } from "@/lib/wedding-registry";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
 import { FeatureWelcomeHost } from "@/lib/feature-welcomes";
@@ -64,6 +65,26 @@ import { ObserveRoot, useObserve } from "expo-observe";
 // resolveServerConfig which calls deriveSession).
 configureOnBoot();
 
+
+// Hosts every per-wedding side-effect initializer (sync, notifications, RevenueCat,
+// premium flag, widget). Unmounted for the duration of a wedding switch (see
+// useDatabaseSwitching) so none of them keep running — subscriptions firing,
+// in-flight sync pulls/pushes, AppState listeners — against the old wedding's
+// torn-down DB/sync globals while clearAllStores/hydrateAllStores swap underneath.
+// They remount fresh, for the new wedding, once the swap completes.
+function ActiveWeddingRuntime({ wedding }: { wedding: WeddingRegistryEntry }) {
+  const switching = useDatabaseSwitching();
+  if (switching) return null;
+  return (
+    <>
+      <SyncInitializer wedding={wedding} />
+      <NotificationInitializer />
+      <RevenueCatInitializer wedding={wedding} />
+      <WeddingPremiumInitializer wedding={wedding} />
+      <WidgetInitializer />
+    </>
+  );
+}
 
 function AppContent() {
   const registry = useWeddingRegistryStore((s) => s.registry);
@@ -124,11 +145,7 @@ function AppContent() {
 
   return (
     <DatabaseProvider dbFileName={activeWedding?.dbFileName}>
-      {activeWedding && <SyncInitializer wedding={activeWedding} />}
-      {activeWedding && <NotificationInitializer />}
-      {activeWedding && <RevenueCatInitializer wedding={activeWedding} />}
-      {activeWedding && <WeddingPremiumInitializer wedding={activeWedding} />}
-      {activeWedding && <WidgetInitializer />}
+      {activeWedding && <ActiveWeddingRuntime wedding={activeWedding} />}
       <View style={{ flex: 1 }}>
         {activeWedding && <ReadOnlyBanner />}
         <View style={{ flex: 1 }}>

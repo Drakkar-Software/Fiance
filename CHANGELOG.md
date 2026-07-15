@@ -30,6 +30,7 @@ All notable changes to Fiancé are documented in this file.
 - Restored a "create table" entry point in the guests table-management and seating-plan screens' header (top-right +), matching the guest/vendor add pattern, so it's reachable on both mobile and wide desktop layouts alongside the floating action button.
 - Fixed the EmptyState primary button not stretching full-width/centering on web (an `@expo/ui` Host sizing quirk defeated the fill style) and form text-input font color going near-invisible when the OS is in dark mode but the app itself is set to light — the input was reading the raw OS scheme instead of the app's actual resolved theme.
 - Fixed the previous wedding's data flashing on Home after switching weddings: `router.replace` to home fired before `switchWedding`'s async registry write/reload resolved, so the destination screen painted stale data until the swap caught up. Switching now routes through a dedicated transition screen — an animated Garden Press overlay naming the destination wedding — that only hands off to Home once the new wedding's data is fully hydrated.
+- Fixed an intermittent full app crash while switching weddings: the previous wedding's sync/notifications/RevenueCat/widget initializers stayed mounted and kept running (subscriptions, in-flight sync pulls/pushes, AppState listeners) while the database swap closed and re-hydrated storage underneath them. They're now unmounted for the duration of the swap and remount fresh for the new wedding once it completes.
 
 ## [1.10.0]
 
