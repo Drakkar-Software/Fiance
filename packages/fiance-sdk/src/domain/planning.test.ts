@@ -5,7 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { addMonths } from "date-fns";
 import type { Task, DayOfItem } from './schema.js';
-import { resolveRunOfShow } from './planning.js';
+import { resolveRunOfShow, isDayOfMultiDay } from './planning.js';
 
 // The recalculateDueDates function is pure logic — reimplement it here
 // to avoid importing the full store (which pulls in react-native).
@@ -152,5 +152,47 @@ describe("resolveRunOfShow", () => {
     expect(result.current).toBeNull();
     expect(result.next).toBeNull();
     expect(result.total).toBe(0);
+  });
+});
+
+describe("isDayOfMultiDay", () => {
+  it("is false for a single item with no date (falls back to weddingDate)", () => {
+    const items = [makeDayOfItem({ id: "a", date: null })];
+    expect(isDayOfMultiDay(items, undefined, null, "2026-06-01")).toBe(false);
+  });
+
+  it("is false when every item shares the same date", () => {
+    const items = [
+      makeDayOfItem({ id: "a", date: "2026-06-01" }),
+      makeDayOfItem({ id: "b", date: "2026-06-01" }),
+    ];
+    expect(isDayOfMultiDay(items, undefined, "2026-06-01", "2026-06-01")).toBe(false);
+  });
+
+  it("is true when items span two distinct dates", () => {
+    const items = [
+      makeDayOfItem({ id: "a", date: "2026-06-01" }),
+      makeDayOfItem({ id: "b", date: "2026-06-02" }),
+    ];
+    expect(isDayOfMultiDay(items, undefined, "2026-06-01", "2026-06-01")).toBe(true);
+  });
+
+  it("excludes the item being edited so its stale date doesn't double-count", () => {
+    // item "a" currently has 06-01 in the store, but the form's candidateDate
+    // moves it to 06-02, matching "b" — should NOT read as multi-day.
+    const items = [
+      makeDayOfItem({ id: "a", date: "2026-06-01" }),
+      makeDayOfItem({ id: "b", date: "2026-06-02" }),
+    ];
+    expect(isDayOfMultiDay(items, "a", "2026-06-02", "2026-06-01")).toBe(false);
+  });
+
+  it("counts a new item (excludeId not present in items) via candidateDate", () => {
+    const items = [makeDayOfItem({ id: "a", date: "2026-06-01" })];
+    expect(isDayOfMultiDay(items, "new", "2026-06-02", "2026-06-01")).toBe(true);
+  });
+
+  it("is false for an empty list with no candidate date", () => {
+    expect(isDayOfMultiDay([], undefined, null, null)).toBe(false);
   });
 });

@@ -3,6 +3,8 @@ import {
   isWithinFreeLimit,
   shouldShowQuotaBadge,
   getQuotaStatus,
+  wouldExceedFreeLimit,
+  PREMIUM_LIMIT_MESSAGE_KEY,
   FREE_LIMITS,
   type FreeLimitKey,
 } from './limits.js';
@@ -66,5 +68,50 @@ describe('getQuotaStatus', () => {
     (Object.keys(FREE_LIMITS) as FreeLimitKey[]).forEach((key) => {
       expect(getQuotaStatus(key, 0).limit).toBe(FREE_LIMITS[key]);
     });
+  });
+});
+
+describe('wouldExceedFreeLimit', () => {
+  it('allows a bulk add that lands exactly at the cap', () => {
+    expect(wouldExceedFreeLimit('guests', 20, 10, false)).toBe(false);
+  });
+
+  it('blocks a bulk add that would cross the cap', () => {
+    expect(wouldExceedFreeLimit('guests', 25, 10, false)).toBe(true);
+  });
+
+  it('blocks even a single add once already at the cap', () => {
+    expect(wouldExceedFreeLimit('vendors', 3, 1, false)).toBe(true);
+  });
+
+  it('always allows for premium, even far above the cap', () => {
+    expect(wouldExceedFreeLimit('guests', 100, 50, true)).toBe(false);
+  });
+
+  it('allows adding zero when already within the cap', () => {
+    expect(wouldExceedFreeLimit('guests', 20, 0, false)).toBe(false);
+  });
+
+  it('still reports exceeded when adding zero to already-over-cap data (grandfathered)', () => {
+    expect(wouldExceedFreeLimit('guests', 45, 0, false)).toBe(true);
+  });
+});
+
+describe('PREMIUM_LIMIT_MESSAGE_KEY', () => {
+  it('maps every FreeLimitKey to a message key', () => {
+    (Object.keys(FREE_LIMITS) as FreeLimitKey[]).forEach((key) => {
+      expect(typeof PREMIUM_LIMIT_MESSAGE_KEY[key]).toBe('string');
+    });
+  });
+
+  it('maps weddingEvents to the shorter "events" key', () => {
+    expect(PREMIUM_LIMIT_MESSAGE_KEY.weddingEvents).toBe('events');
+  });
+
+  it('maps every other key to itself', () => {
+    expect(PREMIUM_LIMIT_MESSAGE_KEY.members).toBe('members');
+    expect(PREMIUM_LIMIT_MESSAGE_KEY.guests).toBe('guests');
+    expect(PREMIUM_LIMIT_MESSAGE_KEY.vendors).toBe('vendors');
+    expect(PREMIUM_LIMIT_MESSAGE_KEY.tasks).toBe('tasks');
   });
 });

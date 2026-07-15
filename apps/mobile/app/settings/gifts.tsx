@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Linking } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Trash2, ExternalLink, Gift, CheckCircle2, Circle } from "lucide-react-native";
+import { Trash2, ExternalLink, Gift, CheckCircle2, Circle, Lock } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useGiftsStore } from "@/store/useGiftsStore";
 import type { Gift as GiftType } from "@/db/schema";
@@ -13,6 +13,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle, FormCard, InputRow, ChipSelect, FormActions } from "@/components/FormSection";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
 
 const CATEGORIES = ["maison", "voyage", "experience", "autre"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -24,6 +26,8 @@ export default function GiftsScreen() {
   const addGift = useGiftsStore((s) => s.addGift);
   const updateGift = useGiftsStore((s) => s.updateGift);
   const removeGift = useGiftsStore((s) => s.removeGift);
+  const hasPublicGifts = useHasFeature("publicGifts");
+  const { openPaywall } = useShowPaywall();
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -128,6 +132,19 @@ export default function GiftsScreen() {
         tagline={t("giftsTagline")}
         titleSize={26}
       />
+      {!hasPublicGifts && (
+        <View className="px-4 mb-1">
+          <Pressable
+            onPress={() => openPaywall(t("giftRegistryLockedDesc"))}
+            className="flex-row items-start gap-2 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+          >
+            <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+            <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+              {t("giftRegistryLockedDesc")}
+            </Text>
+          </Pressable>
+        </View>
+      )}
       {gifts.length === 0 ? (
         <EmptyState
           icon={Gift}

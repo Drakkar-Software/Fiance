@@ -2,7 +2,12 @@ import React from "react";
 import { View, Text, Pressable } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
 import { Lock, Sparkles } from "lucide-react-native";
-import { getQuotaStatus, shouldShowQuotaBadge, type FreeLimitKey } from "@fiance/sdk";
+import {
+  getQuotaStatus,
+  shouldShowQuotaBadge,
+  PREMIUM_LIMIT_MESSAGE_KEY,
+  type FreeLimitKey,
+} from "@fiance/sdk";
 import { useIsPremium } from "@/lib/premium";
 import { useShowPaywall } from "@/components/PaywallProvider";
 
@@ -10,18 +15,6 @@ interface QuotaBadgeProps {
   entityKey: FreeLimitKey;
   count: number;
 }
-
-/** `FreeLimitKey` values don't all match their `common:premiumLimits.*` i18n key
- * one-to-one (every existing call site hardcodes its own literal key rather than
- * deriving it — see e.g. guests/_layout.tsx, planning/events.tsx) — `weddingEvents`
- * maps to the shorter `events`. */
-const LIMIT_MESSAGE_KEY: Record<FreeLimitKey, string> = {
-  members: "members",
-  guests: "guests",
-  vendors: "vendors",
-  weddingEvents: "events",
-  tasks: "tasks",
-};
 
 /**
  * Free-tier usage pill ("12 / 30"), shown near a list header so the cap is
@@ -44,7 +37,7 @@ export function QuotaBadge({ entityKey, count }: QuotaBadgeProps) {
 
   return (
     <Pressable
-      onPress={() => openPaywall(t(`premiumLimits.${LIMIT_MESSAGE_KEY[entityKey]}`, { limit }))}
+      onPress={() => openPaywall(t(`premiumLimits.${PREMIUM_LIMIT_MESSAGE_KEY[entityKey]}`, { limit }))}
       accessibilityRole="button"
       accessibilityLabel={t("quota.badgeLabel", { count, limit })}
       className={`flex-row items-center gap-1.5 self-start px-3 py-1.5 rounded-full border active:opacity-70 ${

@@ -203,3 +203,27 @@ export function resolveRunOfShow(items: DayOfItem[], nowHHmm: string): RunOfShow
 
   return { current, next, completedCount, total: sorted.length };
 }
+
+/**
+ * Whether a day-of item set spans more than one distinct date, once
+ * `candidateDate` is substituted for the item at `excludeId` (or added fresh,
+ * for a new item not yet in `items`). Missing dates fall back to
+ * `weddingDate`. Free tier only publishes the earliest day on the public page
+ * (see limits.ts's `publicMultiDay` feature gate).
+ */
+export function isDayOfMultiDay(
+  items: Pick<DayOfItem, 'id' | 'date'>[],
+  excludeId: string | undefined,
+  candidateDate: string | null | undefined,
+  weddingDate: string | null | undefined,
+): boolean {
+  const dates = new Set(
+    items
+      .filter((i) => i.id !== excludeId)
+      .map((i) => i.date || weddingDate || '')
+      .filter(Boolean)
+  );
+  const candidate = candidateDate || weddingDate || '';
+  if (candidate) dates.add(candidate);
+  return dates.size > 1;
+}

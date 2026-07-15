@@ -1,16 +1,20 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react-native";
+import { Plus, Trash2, Lock } from "lucide-react-native";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import type { FaqItem } from "@/lib/public-page";
 import { PageHeader } from "@/components/PageHeader";
 import { Label } from "@/components/Label";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
 
 export default function FaqScreen() {
   const { t } = useTranslation("settings");
   const wedding = useWeddingStore((s) => s.wedding);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
+  const hasPublicFaq = useHasFeature("publicFaq");
+  const { openPaywall } = useShowPaywall();
 
   const faqItems: FaqItem[] = useMemo(() => {
     if (!wedding?.faq) return [];
@@ -63,6 +67,18 @@ export default function FaqScreen() {
         <Text className="text-sm text-mute leading-5 mb-3">
           {t("faqSubtitle")}
         </Text>
+
+        {!hasPublicFaq && (
+          <Pressable
+            onPress={() => openPaywall(t("configureFaqLockedDesc"))}
+            className="flex-row items-start gap-2 mb-3 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+          >
+            <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+            <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+              {t("configureFaqLockedDesc")}
+            </Text>
+          </Pressable>
+        )}
 
         {faqItems.map((item, index) => (
           <View

@@ -85,6 +85,8 @@ Import alias: `@fiance/sdk` (declared as `workspace:*` dep in `apps/mobile`; Typ
 
 Currently `useGuestsStore` delegates to SDK reducers. Budget/planning/vendor-config/registry libs have SDK copies but the app still calls its own local copies — this is a known TODO.
 
+**Don't put business logic in components — put it in `@fiance/sdk`.** Any non-trivial computation (a boolean decision, a formula, a "does X exceed Y" check, deriving one value from a list) belongs in `packages/fiance-sdk/src/domain/*.ts` as a pure, exported, unit-tested function — not inlined in a component via `useMemo`/plain arithmetic, and not duplicated as a local const/mapping table inside a `.tsx` file. Components should only: call the SDK function, decide what UI to render from its result, and handle events (navigation, toasts, store writes). This keeps the logic testable without RN mocks and reusable across screens. Example: `isWithinFreeLimit`/`wouldExceedFreeLimit`/`getQuotaStatus` (`domain/limits.ts`) and `isDayOfMultiDay` (`domain/planning.ts`) — each used from a component via a one-line call, never reimplemented inline.
+
 ### `@fiance/ui` — vendored UI components
 
 `packages/fiance-ui/` holds RN/Expo UI code the app depends on, resolved from source in Metro the same way as `@fiance/sdk` (source/`react-native`/`require` export conditions → `./src/...`; `import`/`types` → the tsup `dist/` build for non-RN consumers). Two origins:

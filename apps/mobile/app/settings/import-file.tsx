@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, ScrollView } from "react-native-css/components";
+import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Platform } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
-import { FileSpreadsheet, Users } from "lucide-react-native";
+import { FileSpreadsheet, Users, Lock } from "lucide-react-native";
 import { toast } from "@/lib/toast/sonner";
 import { useGuestsStore } from "@/store/useGuestsStore";
 import { pickSpreadsheetFile } from "@/lib/export-import";
@@ -15,7 +15,8 @@ import { SettingsRow, WebFilePickRow } from "@/components/SettingsRow";
 import { useCan } from "@/lib/permissions/usePermissions";
 import { useIsPremium } from "@/lib/premium";
 import { FREE_LIMITS } from "@/lib/limits";
-import { PaywallSheet } from "@/components/PaywallSheet";
+import { wouldExceedFreeLimit } from "@fiance/sdk";
+import { useShowPaywall } from "@/components/PaywallProvider";
 
 export default function ImportFileScreen() {
   const { t } = useTranslation("settings");
@@ -34,7 +35,13 @@ export default function ImportFileScreen() {
 
   const [preview, setPreview] = useState<GuestImportResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { openPaywall } = useShowPaywall();
+  // Known before the user taps Import — surfaced inline near the preview
+  // (see below) instead of only after the tap, since reaching this point
+  // already required picking + parsing a file.
+  const wouldExceedLimit =
+    !!preview && wouldExceedFreeLimit("guests", existingGuestCount, preview.guests.length, premium);
+  const limitMessage = t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests });
 
   const handleFile = useCallback(
     (bytes: Uint8Array, name: string) => {
@@ -64,9 +71,9 @@ export default function ImportFileScreen() {
 
   const doImport = useCallback(() => {
     if (!preview) return;
-    if (!premium && existingGuestCount + preview.guests.length > FREE_LIMITS.guests) {
-      toast.error(t("common:premiumLimits.guests", { limit: FREE_LIMITS.guests }));
-      setShowPaywall(true);
+    if (wouldExceedLimit) {
+      toast.error(limitMessage);
+      openPaywall(limitMessage);
       return;
     }
     importGuestData(preview);
@@ -76,7 +83,7 @@ export default function ImportFileScreen() {
     });
     toast.success(t("importGuestsSuccess", { count: preview.guests.length }));
     router.back();
-  }, [preview, importGuestData, isMariagesNet, t, router, premium, existingGuestCount]);
+  }, [preview, importGuestData, isMariagesNet, t, router, wouldExceedLimit, limitMessage, openPaywall]);
 
   return (
     <ScrollView className="flex-1 bg-accent-paper" showsVerticalScrollIndicator={false}>
@@ -154,6 +161,17 @@ export default function ImportFileScreen() {
               </Text>
             )}
           </FormCard>
+          {wouldExceedLimit && (
+            <Pressable
+              onPress={() => openPaywall(limitMessage)}
+              className="flex-row items-start gap-2 mt-3 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+            >
+              <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+              <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+                {limitMessage}
+              </Text>
+            </Pressable>
+          )}
           {canImport && (
             <View className="mt-4">
               <FormActions
@@ -171,7 +189,6 @@ export default function ImportFileScreen() {
       )}
 
       <View className="h-8" />
-      <PaywallSheet visible={showPaywall} onClose={() => setShowPaywall(false)} />
     </ScrollView>
   );
 }

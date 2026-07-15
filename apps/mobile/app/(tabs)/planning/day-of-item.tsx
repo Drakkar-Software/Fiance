@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
 import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
-import { Users, Check } from "lucide-react-native";
+import { Users, Check, Lock } from "lucide-react-native";
 import { SheetScaffold } from "@fiance/ui/components";
 import { usePlanningStore } from "@/store/usePlanningStore";
 import { useWeddingPartyStore } from "@/store/useWeddingPartyStore";
@@ -15,6 +15,9 @@ import { SaveHeaderButton } from "@/components/SaveHeaderButton";
 import { useWeddingStore } from "@/store/useWeddingStore";
 import { analytics } from "@/lib/analytics";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
+import { useHasFeature } from "@/lib/limits";
+import { useShowPaywall } from "@/components/PaywallProvider";
+import { isDayOfMultiDay } from "@fiance/sdk";
 import type { DayOfItem } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -114,6 +117,16 @@ export default function DayOfItemScreen() {
 
   const canSave = title.trim().length > 0 && time.trim().length > 0;
 
+  // Whether this item, once saved with its current date, joins a collection
+  // that spans more than one distinct date. Free tier only publishes the
+  // earliest day on the public page.
+  const hasPublicMultiDay = useHasFeature("publicMultiDay");
+  const { openPaywall } = useShowPaywall();
+  const isMultiDay = useMemo(
+    () => isDayOfMultiDay(items, id, date, weddingDate),
+    [items, id, date, weddingDate]
+  );
+
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert(t("common:error"), t("titleRequired"));
@@ -194,6 +207,18 @@ export default function DayOfItemScreen() {
           )}
           <ToggleRow label={t("publicOnTimeline")} value={isPublic} onToggle={() => setIsPublic(!isPublic)} />
         </FormCard>
+
+        {isPublic && isMultiDay && !hasPublicMultiDay && (
+          <Pressable
+            onPress={() => openPaywall(t("settings:multiDayLockedHint"))}
+            className="flex-row items-start gap-2 mb-3 -mt-1 px-3.5 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 active:opacity-70"
+          >
+            <Lock size={14} color="#b96a4a" style={{ marginTop: 1 }} />
+            <Text className="flex-1 text-xs text-primary-600 dark:text-primary-300 leading-4">
+              {t("settings:multiDayLockedHint")}
+            </Text>
+          </Pressable>
+        )}
 
         <SectionTitle>{t("notes")}</SectionTitle>
         <FormCard>

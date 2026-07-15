@@ -47,6 +47,36 @@ export function getQuotaStatus(key: FreeLimitKey, count: number): QuotaStatus {
   return { count, limit, atCap: count >= limit };
 }
 
+/**
+ * Would adding `addingCount` more `key` items (e.g. a bulk guest import) push
+ * the total past the free cap? Unlike `isWithinFreeLimit` (single add), this
+ * covers multi-item adds where the count crossing the cap matters, not just
+ * whether it's already at the cap.
+ */
+export function wouldExceedFreeLimit(
+  key: FreeLimitKey,
+  currentCount: number,
+  addingCount: number,
+  premium: boolean,
+): boolean {
+  return !premium && currentCount + addingCount > FREE_LIMITS[key];
+}
+
+/**
+ * Maps a `FreeLimitKey` to its `common:premiumLimits.*` i18n key. Not 1:1 —
+ * every call site historically hardcoded its own literal key, and
+ * `weddingEvents` uses the shorter `events` — so callers building a key from a
+ * `FreeLimitKey` dynamically must go through this instead of interpolating
+ * the FreeLimitKey directly into a translation key.
+ */
+export const PREMIUM_LIMIT_MESSAGE_KEY: Record<FreeLimitKey, string> = {
+  members: 'members',
+  guests: 'guests',
+  vendors: 'vendors',
+  weddingEvents: 'events',
+  tasks: 'tasks',
+};
+
 /** Boolean feature gates (no count) — locked on free, unlocked on premium. */
 export type PremiumFeature =
   | 'publicPhotos'
