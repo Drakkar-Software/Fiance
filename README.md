@@ -217,13 +217,6 @@ claude mcp add storybook-mcp --transport http http://localhost:6006/mcp --scope 
 | Android APK (EAS) | `npx eas-cli build --platform android --profile preview` | Push to `master` |
 | Sync server | Managed by `Drakkar-Software/Infra` (drakkar_sync) | Infra repo deploy |
 
-**Web env var gotcha:** `EXPO_PUBLIC_*` values are inlined into the static JS bundle at *build* time, not read at runtime — editing one in Cloudflare's Variables and secrets does nothing until the next deploy actually rebuilds. Also double check for stray leading/trailing whitespace when pasting a value: it silently breaks auth (e.g. the RevenueCat Web Billing key) with no build error and no console warning. To verify what's actually live, pull the deployed bundle and grep for the expected value:
-
-```bash
-curl -s https://fiance.drakkar.software/ | grep -oE '/_expo/static/js/web/entry-[a-zA-Z0-9]+\.js'
-curl -s https://fiance.drakkar.software/_expo/static/js/web/entry-<hash>.js | grep -oE 'rcb_[a-zA-Z0-9_]*'
-```
-
 ---
 
 ## iOS Submission (Xcode CLI)
