@@ -138,6 +138,7 @@ function AppContent() {
             <Stack.Screen name="settings" />
             <Stack.Screen name="ideas" />
             <Stack.Screen name="wedding/[id]" />
+            <Stack.Screen name="wedding-switch" options={{ gestureEnabled: false }} />
           </Stack>
         </View>
         {activeWedding && <OfflineBanner />}

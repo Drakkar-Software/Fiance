@@ -20,6 +20,15 @@ export function useDatabase(): SQLiteStorage {
   return storage;
 }
 
+// Lets a screen (e.g. the dedicated wedding-switch transition route) observe
+// the same "switching" signal the overlay reacts to, so it can wait for the
+// DB swap to fully finish before navigating onward instead of guessing a delay.
+const SwitchingContext = createContext(false);
+
+export function useDatabaseSwitching(): boolean {
+  return useContext(SwitchingContext);
+}
+
 interface DatabaseProviderProps {
   children: React.ReactNode;
   dbFileName?: string;
@@ -119,7 +128,7 @@ export function DatabaseProvider({ children, dbFileName }: DatabaseProviderProps
 
   return (
     <StorageContext.Provider value={storage}>
-      {children}
+      <SwitchingContext.Provider value={switching}>{children}</SwitchingContext.Provider>
       {/* Wedding-switch wait screen, overlaid on the mounted children — keeps
           <Stack> mounted, no onboarding flash. Always rendered (not just when
           `switching`) so it can play its own exit animation on hide. */}

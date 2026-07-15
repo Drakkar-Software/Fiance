@@ -23,15 +23,24 @@ import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
  * arm on the very first frame `dbFileName` changes — before the old wedding's
  * data would otherwise flash.
  *
- * Only reads the wedding's registry `label` (set synchronously by
- * switchWedding, correct from frame one) — never couple names, which still
- * belong to the OLD wedding in useWeddingStore until hydration finishes.
+ * Reads the wedding's registry `label` (set synchronously by switchWedding,
+ * correct from frame one) — never couple names, which still belong to the
+ * OLD wedding in useWeddingStore until hydration finishes. Pass `label`
+ * explicitly when mounting before the registry has switched yet (e.g. the
+ * dedicated /wedding-switch route, which arms before `switchWedding` resolves).
  */
-export function WeddingSwitchOverlay({ visible }: { visible: boolean }) {
+export function WeddingSwitchOverlay({
+  visible,
+  label: labelProp,
+}: {
+  visible: boolean;
+  label?: string;
+}) {
   const { t } = useTranslation("common");
-  const label = useWeddingRegistryStore(
+  const storeLabel = useWeddingRegistryStore(
     (s) => s.registry?.weddings.find((w) => w.id === s.registry?.activeWeddingId)?.label,
   );
+  const label = labelProp ?? storeLabel;
   const reducedMotion = useReducedMotion();
 
   const [mounted, setMounted] = useState(visible);

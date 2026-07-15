@@ -68,7 +68,6 @@ export default function SettingsScreen() {
   const updateDate = currentlyRunning?.createdAt ?? null;
 
   const registry = useWeddingRegistryStore((s) => s.registry);
-  const switchWedding = useWeddingRegistryStore((s) => s.switchWedding);
   const createWedding = useWeddingRegistryStore((s) => s.createWedding);
   const deleteWedding = useWeddingRegistryStore((s) => s.deleteWedding);
   const updateRegistryWedding = useWeddingRegistryStore((s) => s.updateWedding);
@@ -474,9 +473,11 @@ export default function SettingsScreen() {
               <Pressable
                 onPress={() => {
                   if (!isActive) {
-                    switchWedding(w.id);
                     analytics.capture("wedding_switched");
-                    router.replace("/(tabs)");
+                    router.replace({
+                      pathname: "/wedding-switch",
+                      params: { id: w.id, label: w.label },
+                    } as any);
                   }
                 }}
                 className="flex-row items-center flex-1 active:opacity-80"
