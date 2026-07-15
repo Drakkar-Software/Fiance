@@ -127,9 +127,21 @@ export async function restorePremium(): Promise<boolean> {
   }
 }
 
+/** iOS only — presents Apple's native App Store offer/promo code redemption sheet. */
+export async function redeemCode(): Promise<void> {
+  try {
+    await Purchases.presentCodeRedemptionSheet();
+  } catch (e) {
+    if (__DEV__) console.warn("[revenuecat] presentCodeRedemptionSheet() threw:", e);
+  }
+}
+
 export async function getPremiumPrice(): Promise<string | null> {
   try {
     const pkg = await findPremiumPackage();
+    if (__DEV__ && pkg) {
+      console.log(`[revenuecat] price ${pkg.product.priceString} (${pkg.product.currencyCode}) from "${pkg.product.identifier}"`);
+    }
     return pkg?.product.priceString ?? null;
   } catch {
     return null;

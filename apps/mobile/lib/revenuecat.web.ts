@@ -111,9 +111,19 @@ export async function restorePremium(): Promise<boolean> {
   }
 }
 
+/**
+ * No-op on web — matches the shared lib/revenuecat.ts surface so callers don't
+ * need a platform branch. Code redemption has no RevenueCat Web Billing
+ * equivalent; the premium screen hides its "Redeem code" affordance on web.
+ */
+export async function redeemCode(): Promise<void> {}
+
 export async function getPremiumPrice(): Promise<string | null> {
   try {
     const pkg = await findPremiumPackage();
+    if (__DEV__ && pkg) {
+      console.log(`[revenuecat] price ${pkg.rcBillingProduct.currentPrice?.formattedPrice} (${pkg.rcBillingProduct.currentPrice?.currency}) from "${pkg.rcBillingProduct.identifier}"`);
+    }
     return pkg?.rcBillingProduct.currentPrice?.formattedPrice ?? null;
   } catch {
     return null;

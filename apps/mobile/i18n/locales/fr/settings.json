@@ -48,6 +48,7 @@
   "premiumCta": "Débloquer Premium — {{price}}",
   "premiumCtaNoPrice": "Débloquer Premium",
   "premiumRestore": "Restaurer mes achats",
+  "premiumRedeemCode": "Utiliser un code",
   "premiumUnlocking": "Vérification en cours…",
   "premiumPurchaseError": "Achat impossible. Veuillez réessayer.",
   "premiumPurchaseSuccess": "Premium débloqué !",

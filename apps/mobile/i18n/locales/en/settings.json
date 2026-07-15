@@ -48,6 +48,7 @@
   "premiumCta": "Unlock Premium — {{price}}",
   "premiumCtaNoPrice": "Unlock Premium",
   "premiumRestore": "Restore purchases",
+  "premiumRedeemCode": "Redeem a code",
   "premiumUnlocking": "Verifying…",
   "premiumPurchaseError": "Purchase failed. Please try again.",
   "premiumPurchaseSuccess": "Premium unlocked!",

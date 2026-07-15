@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Platform } from "react-native";
+import { Platform, Linking } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Infinity as InfinityIcon, UserPlus, Globe, Wallet, BadgeCheck } from "lucide-react-native";
 import { Display } from "@/components/Display";
@@ -9,7 +9,7 @@ import { Script } from "@/components/Script";
 import { Sprig } from "@/components/Sprig";
 import { Seal } from "@/components/Seal";
 import { PageHeader } from "@/components/PageHeader";
-import { purchasePremium, restorePremium, getPremiumPrice } from "@/lib/revenuecat";
+import { purchasePremium, restorePremium, getPremiumPrice, redeemCode } from "@/lib/revenuecat";
 import { useIsPremium } from "@/lib/premium";
 import { usePermissions } from "@/lib/permissions/usePermissions";
 import { analytics } from "@/lib/analytics";
@@ -65,6 +65,14 @@ export default function PremiumScreen() {
     } else {
       setState("error");
       setTimeout(() => setState("idle"), 3000);
+    }
+  }, []);
+
+  const handleRedeemCode = useCallback(() => {
+    if (Platform.OS === "ios") {
+      redeemCode();
+    } else if (Platform.OS === "android") {
+      Linking.openURL("https://play.google.com/redeem").catch(() => {});
     }
   }, []);
 
@@ -162,6 +170,16 @@ export default function PremiumScreen() {
                 className="items-center py-2 active:opacity-60"
               >
                 <Text className="text-sm text-mute dark:text-mute">{t("premiumRestore")}</Text>
+              </Pressable>
+            )}
+
+            {Platform.OS !== "web" && (
+              <Pressable
+                onPress={handleRedeemCode}
+                disabled={state !== "idle"}
+                className="items-center py-2 active:opacity-60"
+              >
+                <Text className="text-sm text-mute dark:text-mute">{t("premiumRedeemCode")}</Text>
               </Pressable>
             )}
           </>
