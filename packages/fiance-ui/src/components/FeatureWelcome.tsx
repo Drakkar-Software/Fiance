@@ -176,7 +176,7 @@ export function FeatureWelcome({
       >
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 8 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Clay hero band */}
@@ -232,15 +232,16 @@ export function FeatureWelcome({
           <View className="px-6 pt-6 pb-4 flex-1" style={{ width: "100%", maxWidth: 520, alignSelf: "center" }}>
             {bulletRows}
           </View>
-
-          {/* Footer CTAs */}
-          <View
-            className="px-6 pb-8 pt-2"
-            style={{ width: "100%", maxWidth: 520, alignSelf: "center" }}
-          >
-            {ctas}
-          </View>
         </ScrollView>
+
+        {/* Footer CTAs — pinned outside the ScrollView so the primary action is
+            always reachable, whatever the bullet count or screen height. */}
+        <View
+          className="px-6 pt-3 bg-accent-paper border-t border-hair"
+          style={{ paddingBottom: Math.max(insets.bottom, 16) + 8 }}
+        >
+          <View style={{ width: "100%", maxWidth: 520, alignSelf: "center" }}>{ctas}</View>
+        </View>
       </View>
     </Modal>
   );
