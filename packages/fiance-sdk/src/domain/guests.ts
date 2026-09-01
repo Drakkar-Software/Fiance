@@ -92,7 +92,7 @@ export function updateGuest(guests: Guest[], id: string, updates: Partial<Guest>
   return guests.map(g => g.id === id ? { ...g, ...updates, updatedAt: now } : g);
 }
 
-export function removeGuest(guests: Guest[], id: string): Guest[] {
+function removeOneGuest(guests: Guest[], id: string): Guest[] {
   const now = new Date().toISOString();
   // cascade unlinks: any guest pointing to the deleted guest as companion gets companionId=null
   const toUnlink = new Set(
@@ -104,6 +104,21 @@ export function removeGuest(guests: Guest[], id: string): Guest[] {
   return guests
     .filter(g => g.id !== id)
     .map(g => toUnlink.has(g.id) ? { ...g, companionId: null, updatedAt: now } : g);
+}
+
+// ─── Batch removal and update ────────────────────────────────────────────────
+//
+// A batch is the FOLD of the unit operation, so the two cannot diverge — the
+// companion-unlink cascade included. O(N·M) is deliberate: what costs in a bulk
+// delete is WRITING N times, and the store is what hoists the writes out of the
+// loop.
+
+export function removeGuests(guests: Guest[], ids: string[]): Guest[] {
+  return ids.reduce((acc, id) => removeOneGuest(acc, id), guests);
+}
+
+export function removeGuest(guests: Guest[], id: string): Guest[] {
+  return removeGuests(guests, [id]);
 }
 
 export function linkCompanion(guests: Guest[], guestId: string, companionId: string): Guest[] {
