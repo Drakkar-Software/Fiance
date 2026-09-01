@@ -6,6 +6,7 @@ import {
   guestNameMatches,
   removeGuest,
   removeGuests,
+  applyGuestUpdates,
 } from './guests.js';
 
 // Minimal guest factory — computeCounts only reads rsvpStatus + invitationType here.
@@ -266,6 +267,28 @@ describe('removeGuests — the batch IS the sequence of single removals', () => 
   it('an empty batch touches nothing', () => {
     const start = roster();
     expect(removeGuests(start, [])).toBe(start);
+  });
+});
+
+describe('applyGuestUpdates', () => {
+  it('two guests in one batch can receive different fragments', () => {
+    const guests = [guestOf('a'), guestOf('b'), guestOf('c')];
+    const after = applyGuestUpdates(guests, ['a', 'b'], (g) => ({
+      rsvpStatus: g.id === 'a' ? 'ACCEPTED' : 'DECLINED',
+    }));
+    expect(after.map((g) => g.rsvpStatus)).toEqual(['ACCEPTED', 'DECLINED', 'PENDING']);
+  });
+
+  it('stamps `updatedAt` on the batched guests only', () => {
+    const guests = [guestOf('a'), guestOf('b')];
+    const after = applyGuestUpdates(guests, ['a'], () => ({ rsvpStatus: 'ACCEPTED' }));
+    expect(after[0].updatedAt).toEqual(expect.any(String));
+    expect(after[1].updatedAt).toBeUndefined();
+  });
+
+  it('an id absent from the list creates nothing', () => {
+    const guests = [guestOf('a')];
+    expect(applyGuestUpdates(guests, ['zzz'], () => ({ rsvpStatus: 'ACCEPTED' }))).toHaveLength(1);
   });
 });
 

@@ -88,8 +88,7 @@ export function addGuest(guests: Guest[], guest: Guest): Guest[] {
 }
 
 export function updateGuest(guests: Guest[], id: string, updates: Partial<Guest>): Guest[] {
-  const now = new Date().toISOString();
-  return guests.map(g => g.id === id ? { ...g, ...updates, updatedAt: now } : g);
+  return applyGuestUpdates(guests, [id], () => updates);
 }
 
 function removeOneGuest(guests: Guest[], id: string): Guest[] {
@@ -119,6 +118,16 @@ export function removeGuests(guests: Guest[], ids: string[]): Guest[] {
 
 export function removeGuest(guests: Guest[], id: string): Guest[] {
   return removeGuests(guests, [id]);
+}
+
+export function applyGuestUpdates(
+  guests: Guest[],
+  ids: string[],
+  updatesFor: (guest: Guest) => Partial<Guest>,
+): Guest[] {
+  const now = new Date().toISOString();
+  const targets = new Set(ids);
+  return guests.map(g => targets.has(g.id) ? { ...g, ...updatesFor(g), updatedAt: now } : g);
 }
 
 export function linkCompanion(guests: Guest[], guestId: string, companionId: string): Guest[] {
