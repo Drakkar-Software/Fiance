@@ -130,6 +130,24 @@ export function applyGuestUpdates(
   return guests.map(g => targets.has(g.id) ? { ...g, ...updatesFor(g), updatedAt: now } : g);
 }
 
+/**
+ * RSVP status and the date that goes with it — the single place that rule
+ * lives, so the guest screen and the batch path cannot read it differently.
+ */
+export function rsvpStatusUpdate(
+  guest: Pick<Guest, 'rsvpStatus' | 'rsvpDate'>,
+  status: string,
+  now: string,
+): Partial<Guest> {
+  return {
+    rsvpStatus: status,
+    rsvpDate:
+      status !== "PENDING" && status !== guest.rsvpStatus
+        ? now
+        : guest.rsvpDate || null,
+  };
+}
+
 export function linkCompanion(guests: Guest[], guestId: string, companionId: string): Guest[] {
   // mutual link; unlink any prior companions of both
   const now = new Date().toISOString();

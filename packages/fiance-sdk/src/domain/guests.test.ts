@@ -7,6 +7,7 @@ import {
   removeGuest,
   removeGuests,
   applyGuestUpdates,
+  rsvpStatusUpdate,
 } from './guests.js';
 
 // Minimal guest factory — computeCounts only reads rsvpStatus + invitationType here.
@@ -289,6 +290,43 @@ describe('applyGuestUpdates', () => {
   it('an id absent from the list creates nothing', () => {
     const guests = [guestOf('a')];
     expect(applyGuestUpdates(guests, ['zzz'], () => ({ rsvpStatus: 'ACCEPTED' }))).toHaveLength(1);
+  });
+});
+
+describe('rsvpStatusUpdate — the guest-record rule, applied per guest', () => {
+  const NOW = '2026-08-20T12:00:00.000Z';
+  const EARLIER = '2026-01-02T09:00:00.000Z';
+
+  it('already in the target state: the existing date is kept', () => {
+    const g = guestOf('a', { rsvpStatus: 'ACCEPTED', rsvpDate: EARLIER });
+    expect(rsvpStatusUpdate(g, 'ACCEPTED', NOW)).toEqual({
+      rsvpStatus: 'ACCEPTED',
+      rsvpDate: EARLIER,
+    });
+  });
+
+  it('pending to accepted: stamped', () => {
+    const g = guestOf('a', { rsvpStatus: 'PENDING', rsvpDate: null });
+    expect(rsvpStatusUpdate(g, 'ACCEPTED', NOW)).toEqual({
+      rsvpStatus: 'ACCEPTED',
+      rsvpDate: NOW,
+    });
+  });
+
+  it('accepted to declined: re-stamped', () => {
+    const g = guestOf('a', { rsvpStatus: 'ACCEPTED', rsvpDate: EARLIER });
+    expect(rsvpStatusUpdate(g, 'DECLINED', NOW)).toEqual({
+      rsvpStatus: 'DECLINED',
+      rsvpDate: NOW,
+    });
+  });
+
+  it('going back to pending never stamps', () => {
+    const g = guestOf('a', { rsvpStatus: 'ACCEPTED', rsvpDate: EARLIER });
+    expect(rsvpStatusUpdate(g, 'PENDING', NOW)).toEqual({
+      rsvpStatus: 'PENDING',
+      rsvpDate: EARLIER,
+    });
   });
 });
 
