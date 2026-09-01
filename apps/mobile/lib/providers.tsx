@@ -319,6 +319,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
   // Debounced: collapses rapid per-keystroke changes into one network push.
   useEffect(() => {
     function pushPublicPageContentIfActive() {
+      // The bootstrap push above guards itself to the owner; this re-push had none,
+      // so a member tab overwrote the owner's public page on every hydration.
+      if (wedding.role === "member") return;
       const session = getActiveSession();
       const spaceId = getActiveSpaceId();
       const weddingNodeId = getActiveWeddingNodeId();
@@ -357,7 +360,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     });
 
     return () => { unsubPlanning(); unsubWedding(); unsubPermissions(); if (pushTimer) clearTimeout(pushTimer); };
-  }, []);
+    // wedding.role is read in the guard above; without it the effect would close
+    // over the role captured at first render.
+  }, [wedding.role]);
 
   return null;
 }
