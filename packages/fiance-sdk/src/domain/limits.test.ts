@@ -9,6 +9,15 @@ import {
   type FreeLimitKey,
 } from './limits.js';
 
+describe('FREE_LIMITS.members', () => {
+  it('counts invited people only: organizer plus one partner on free, second invite paywalled', () => {
+    expect(FREE_LIMITS.members).toBe(1);
+    expect(isWithinFreeLimit('members', 0, false)).toBe(true);
+    expect(isWithinFreeLimit('members', 1, false)).toBe(false);
+    expect(isWithinFreeLimit('members', 1, true)).toBe(true);
+  });
+});
+
 describe('isWithinFreeLimit', () => {
   it('allows adding when free and below the cap', () => {
     expect(isWithinFreeLimit('guests', 29, false)).toBe(true);
