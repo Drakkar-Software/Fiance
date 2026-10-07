@@ -78,7 +78,7 @@ Three-layer persistence:
 
 `packages/fiance-sdk/` contains pure TypeScript logic with no React Native dependencies:
 - `src/domain/` — entity reducers (guests, budget, planning, vendor-config, registry), schema, types
-- `src/sync/` — backup serialization/migration, public-page helpers, RSVP helpers, server-config
+- `src/sync/` — backup serialization/migration, public-page helpers, RSVP helpers
 - `src/analytics.ts`
 
 Import alias: `@fiance/sdk` (declared as `workspace:*` dep in `apps/mobile`; TypeScript resolves via tsconfig path alias; Metro resolves via the `react-native` export condition pointing to source).
