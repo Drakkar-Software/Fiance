@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
-import { Alert, Share, Platform } from "react-native";
+import { Share, Platform } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -176,7 +176,7 @@ export default function GuestDetailScreen() {
 
   const handleSave = () => {
     if (!firstName.trim() || !lastName.trim()) {
-      Alert.alert(t("common:error"), t("firstLastRequired"));
+      toast.error(t("firstLastRequired"));
       return;
     }
     if (isNew && !canAddGuest) {

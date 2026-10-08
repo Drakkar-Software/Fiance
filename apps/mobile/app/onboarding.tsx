@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Seo } from "@/components/Seo";
 import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Image } from "react-native-css/components";
-import { Alert, Platform, ActivityIndicator } from "react-native";
+import { Platform, ActivityIndicator } from "react-native";
 import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
 import { PlusCircle, Link, ArrowLeft, CheckCircle2, ScanLine } from "lucide-react-native";
@@ -16,6 +16,7 @@ import { Script } from "@/components/Script";
 import { PageHeader } from "@/components/PageHeader";
 import { DateRow } from "@/components/FormSection";
 import { setPendingWeddingSeed, consumePendingWeddingSeed } from "@/lib/pending-wedding-seed";
+import { toast } from "@/lib/toast/sonner";
 
 type Mode = "choose" | "create" | "join";
 
@@ -146,7 +147,7 @@ function CreateWeddingForm({
 
   const handleCreate = async () => {
     if (!partner1.trim()) {
-      Alert.alert(t("error"), t("onboarding.partner1Required"));
+      toast.error(t("onboarding.partner1Required"));
       return;
     }
     setSaving(true);
@@ -157,7 +158,7 @@ function CreateWeddingForm({
         weddingDate: date || null,
       });
     } catch (e: any) {
-      Alert.alert(t("error"), e.message);
+      toast.error(e.message);
     } finally {
       setSaving(false);
     }
@@ -255,7 +256,7 @@ function JoinWeddingForm({
     try {
       await onJoin(token);
     } catch (e: any) {
-      Alert.alert(t("error"), e.message);
+      toast.error(e.message);
     } finally {
       setSaving(false);
     }
@@ -265,7 +266,7 @@ function JoinWeddingForm({
     setScanning(false);
     const token = parseSpaceInviteUrl(url);
     if (!token) {
-      Alert.alert(t("error"), t("onboarding.invalidQR"));
+      toast.error(t("onboarding.invalidQR"));
       return;
     }
     await handleJoin(token);

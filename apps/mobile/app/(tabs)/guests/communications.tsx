@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Mail, Trash2, Pencil, ChevronRight, FileText } from "lucide-react-native";
@@ -19,6 +18,7 @@ import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
 import { renderTemplate, COMMUNICATION_CHANNEL_LABELS, type CommunicationChannel } from "@fiance/sdk";
 import type { Communication } from "@/db/schema";
+import { toast } from "@/lib/toast/sonner";
 
 type FormState = { label: string; date: string; notes: string; channel: CommunicationChannel; subject: string; body: string; templateId: string };
 const EMPTY_FORM: FormState = { label: "", date: "", notes: "", channel: "EMAIL", subject: "", body: "", templateId: "" };
@@ -65,7 +65,7 @@ export default function CommunicationsScreen() {
 
   const handleAdd = () => {
     if (!newForm.label.trim()) {
-      Alert.alert(t("common:error"), t("communicationNameRequired"));
+      toast.error(t("communicationNameRequired"));
       return;
     }
     const now = new Date().toISOString();

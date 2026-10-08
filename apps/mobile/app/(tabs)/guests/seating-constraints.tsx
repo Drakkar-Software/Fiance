@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { UsersRound, Trash2, Pencil, AlertTriangle } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -19,6 +18,7 @@ import { GuestSelectList } from "@/components/GuestSelectList";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 import type { SeatingConstraint } from "@/db/schema";
+import { toast } from "@/lib/toast/sonner";
 
 const TYPES = Object.keys(SEATING_CONSTRAINT_TYPE_LABELS) as SeatingConstraintType[];
 
@@ -60,7 +60,7 @@ export default function SeatingConstraintsScreen() {
 
   const handleSave = () => {
     if (form.guestIds.length < 2) {
-      Alert.alert(t("common:error"), t("seatingConstraints.minGuestsRequired"));
+      toast.error(t("seatingConstraints.minGuestsRequired"));
       return;
     }
     const now = new Date().toISOString();

@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, LayoutGrid, Trash2, Map as MapIcon, Ban } from "lucide-react-native";
@@ -14,6 +13,7 @@ import { useCan } from "@/lib/permissions/usePermissions";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
+import { toast } from "@/lib/toast/sonner";
 
 export default function TableManagementScreen() {
   const { t } = useTranslation("guests");
@@ -34,7 +34,7 @@ export default function TableManagementScreen() {
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
-      Alert.alert(t("common:error"), t("tableNameRequired"));
+      toast.error(t("tableNameRequired"));
       return;
     }
     addTable({

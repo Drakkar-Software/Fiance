@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Users, Trash2, Pencil } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -13,6 +12,7 @@ import { FAB } from "@/components/FAB";
 import { FormActions } from "@/components/FormSection";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
+import { toast } from "@/lib/toast/sonner";
 
 export default function WeddingPartyScreen() {
   const { t } = useTranslation("guests");
@@ -42,7 +42,7 @@ export default function WeddingPartyScreen() {
 
   const handleSave = () => {
     if (!name.trim()) {
-      Alert.alert(t("common:error"), t("weddingParty.roleNameRequired"));
+      toast.error(t("weddingParty.roleNameRequired"));
       return;
     }
     if (editingId) {

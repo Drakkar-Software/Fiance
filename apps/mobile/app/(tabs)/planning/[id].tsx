@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -75,7 +74,7 @@ export default function TaskDetailScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert(t("common:error"), t("titleRequired"));
+      toast.error(t("titleRequired"));
       return;
     }
     if (isNew && !canAddTask) {
@@ -92,7 +91,7 @@ export default function TaskDetailScreen() {
       if (weddingDate) {
         dueDate = addMonths(new Date(weddingDate), -mb).toISOString();
       } else {
-        Alert.alert(t("common:error"), t("setWeddingDateFirst"));
+        toast.error(t("setWeddingDateFirst"));
         return;
       }
     }

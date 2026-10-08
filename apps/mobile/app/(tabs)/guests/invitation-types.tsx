@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput, Switch } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Tag, Trash2, Pencil, Moon } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -14,6 +13,7 @@ import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { theme as GP } from "@/lib/theme";
 import { analytics } from "@/lib/analytics";
 import type { InvitationTypeEntity } from "@/db/schema";
+import { toast } from "@/lib/toast/sonner";
 
 function NeedsSleepingToggle({
   value,
@@ -76,7 +76,7 @@ export default function InvitationTypesScreen() {
 
   const handleAdd = () => {
     if (!newLabel.trim()) {
-      Alert.alert(t("common:error"), t("invitationTypeNameRequired"));
+      toast.error(t("invitationTypeNameRequired"));
       return;
     }
     const now = new Date().toISOString();

@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { FolderOpen, Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -10,6 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { FormActions } from "@/components/FormSection";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
+import { toast } from "@/lib/toast/sonner";
 
 export default function GroupsScreen() {
   const { t } = useTranslation("guests");
@@ -39,7 +39,7 @@ export default function GroupsScreen() {
 
   const handleAdd = () => {
     if (!newGroupName.trim()) {
-      Alert.alert(t("common:error"), t("groupNameRequired"));
+      toast.error(t("groupNameRequired"));
       return;
     }
     const now = new Date().toISOString();

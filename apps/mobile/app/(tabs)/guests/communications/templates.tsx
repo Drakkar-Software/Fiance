@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { FileText, Trash2, Pencil } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -12,6 +11,7 @@ import { ChipSelect, FormActions } from "@/components/FormSection";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { COMMUNICATION_CHANNEL_LABELS, type CommunicationChannel } from "@fiance/sdk";
 import type { CommunicationTemplate } from "@/db/schema";
+import { toast } from "@/lib/toast/sonner";
 
 const CHANNELS: CommunicationChannel[] = ["EMAIL", "POSTAL", "SMS", "WHATSAPP", "OTHER"];
 
@@ -47,7 +47,7 @@ export default function CommunicationTemplatesScreen() {
 
   const handleSave = () => {
     if (!form.name.trim() || !form.body.trim()) {
-      Alert.alert(t("common:error"), t("communications.templates.nameAndBodyRequired"));
+      toast.error(t("communications.templates.nameAndBodyRequired"));
       return;
     }
     const now = new Date().toISOString();

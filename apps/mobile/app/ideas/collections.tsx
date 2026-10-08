@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -10,6 +9,7 @@ import { FAB } from "@/components/FAB";
 import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { analytics } from "@/lib/analytics";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
+import { toast } from "@/lib/toast/sonner";
 
 export default function CollectionsScreen() {
   const { t } = useTranslation("ideas");
@@ -25,7 +25,7 @@ export default function CollectionsScreen() {
 
   const handleAdd = () => {
     if (!newName.trim()) {
-      Alert.alert(t("common:error"), t("nameRequired"));
+      toast.error(t("nameRequired"));
       return;
     }
     const now = new Date().toISOString();
