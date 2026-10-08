@@ -98,7 +98,6 @@ export default function Root({ children }: PropsWithChildren) {
         {/* Garden Press typefaces — non-blocking (display=swap already in URL) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           rel="preload"
           as="style"
