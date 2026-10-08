@@ -1,14 +1,16 @@
 /**
- * Pure-JS Argon2id shim aliased over `hash-wasm` for web (see metro.config.js).
+ * Pure-JS Argon2id, RFC 9106 (@noble/hashes), version 0x13 — the same default
+ * hash-wasm uses, so the derived userId matches byte for byte.
  *
- * starfish-identities imports `argon2id` from `hash-wasm`, which requires a
- * `WebAssembly` global and throws on web workers / older environments. @noble/hashes
- * Argon2id is a pure-JS RFC 9106 implementation with default version 0x13 —
- * identical to hash-wasm's default — so the derived userId is consistent across
- * web and native.
+ * NO LONGER ON ANY BUILD PATH. metro.config.js used to alias `hash-wasm` here
+ * for web, which cost ~2.9 s of main-thread time per derivation against
+ * hash-wasm's ~283 ms; a browser has had WebAssembly all along, so web now
+ * resolves the real package. Native still redirects to hash-wasm-shim.native.ts
+ * (react-native-quick-crypto) because Hermes has no WebAssembly global.
  *
- * On native (iOS/Android) metro.config.js redirects `hash-wasm` to
- * hash-wasm-shim.native.ts instead, which uses react-native-quick-crypto.
+ * Kept as the reference implementation the parity test measures against
+ * (__tests__/argon2id-web-parity.test.ts) — that test is what makes the
+ * "same digest" claim above checkable rather than asserted.
  */
 import { argon2id as nobleArgon2id } from "@noble/hashes/argon2.js";
 

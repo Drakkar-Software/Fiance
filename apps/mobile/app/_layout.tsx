@@ -60,6 +60,8 @@ import { FeatureWelcomeHost } from "@/lib/feature-welcomes";
 import { PaywallProvider } from "@/components/PaywallProvider";
 import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
 import { ObserveRoot, useObserve } from "expo-observe";
+// Prerendered loading indicator.
+import { dismissLoadingIndicator } from "@/lib/loading-indicator";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
 // available before any screen renders (home, settings, public-page all call
@@ -251,6 +253,13 @@ function RootLayout() {
   }, [colorScheme, systemScheme]);
 
   const handleUnlock = useCallback(() => setLocked(false), []);
+
+  // The prerendered loading indicator stands down.
+  //
+  // Here rather than lower down: RootLayout is the first component to mount
+  // whatever follows — lock screen, error fallback, or the app. An indicator
+  // dismissed from one particular screen would stay up over all the others.
+  useEffect(() => { dismissLoadingIndicator(); }, []);
 
   return (
     <SafeAreaProvider>

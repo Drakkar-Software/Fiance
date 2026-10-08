@@ -69,6 +69,20 @@ export function configureOnBoot(): void {
 const _activating = new Map<string, Promise<{ userId: string } | null>>();
 
 /**
+ * Resume only once the browser has actually painted. `requestAnimationFrame`
+ * runs BEFORE the paint and the `setTimeout` it arms runs AFTER it — the pair
+ * is what guarantees this, neither one on its own.
+ */
+function yieldToPaint(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const raf = (globalThis as { requestAnimationFrame?: (cb: () => void) => unknown })
+      .requestAnimationFrame;
+    if (typeof raf === "function") raf(() => setTimeout(resolve, 0));
+    else setTimeout(resolve, 0);
+  });
+}
+
+/**
  * Drop any in-flight activation for a wedding id so a subsequent activateSync()
  * call can't return a stale promise built from a since-changed registry entry
  * (e.g. a resync that cleared spaceId while a boot activation with the old
@@ -162,6 +176,9 @@ export function SyncInitializer({ wedding }: { wedding: WeddingRegistryEntry }) 
     let unsubSse: (() => void) | null = null;
 
     (async () => {
+      await yieldToPaint();
+      if (cancelled) return;
+
       const activated = await activateSync(wedding);
       if (cancelled || !activated) return;
       resolvedUserId = activated.userId;
