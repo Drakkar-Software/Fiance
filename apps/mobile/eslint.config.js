@@ -31,31 +31,4 @@ module.exports = defineConfig([
       },
     },
   },
-  {
-    // app/+html.tsx disables this Next.js rule. This Expo app does not load
-    // the Next.js plugin, and ESLint reports a missing rule as an error.
-    // Register the rule as off so that existing comment resolves.
-    plugins: {
-      "@next/next": {
-        rules: {
-          "no-page-custom-font": {
-            meta: {
-              type: "problem",
-              docs: {
-                description:
-                  "Registered so an existing disable comment resolves. Next.js ESLint is not used in this app.",
-              },
-              schema: [],
-            },
-            create() {
-              return {};
-            },
-          },
-        },
-      },
-    },
-    rules: {
-      "@next/next/no-page-custom-font": "off",
-    },
-  },
 ]);
