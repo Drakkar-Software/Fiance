@@ -99,7 +99,7 @@ const marketingClones: Partial<Record<"fr" | "en", typeof i18n>> = {};
 
 export function getI18nForLang(lang: "fr" | "en"): typeof i18n {
   if (!marketingClones[lang]) {
-    marketingClones[lang] = i18n.cloneInstance({ lng: lang, initImmediate: false });
+    marketingClones[lang] = i18n.cloneInstance({ lng: lang, initAsync: false });
   }
   return marketingClones[lang]!;
 }

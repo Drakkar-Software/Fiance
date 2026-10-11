@@ -40,7 +40,7 @@
     "@drakkar.software/starfish-sharing": "3.0.0-alpha.72",
     "@types/node": "^22.0.0",
     "tsup": "^8.3.0",
-    "typescript": "~5.9.3",
+    "typescript": "~6.0.3",
     "vitest": "^4.1.4"
   }
 }
