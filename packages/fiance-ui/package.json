@@ -113,7 +113,7 @@
   "peerDependencies": {
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "nativewind": "5.0.0-preview.3",
+    "nativewind": "5.0.0-preview.4",
     "react-native-css": "^3.0.7",
     "lucide-react-native": "^1.8.0",
     "@expo/ui": "~57.0.1",
