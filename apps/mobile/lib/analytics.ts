@@ -1,5 +1,6 @@
 import { createTelemetry, createTelemetryClient } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { DEFAULT_SYNC_NAMESPACE } from "@fiance/sdk";
+import { installScreenPrivacy } from "@/lib/screen-tracking";
 
 export type FianceEvents = {
   // Lifecycle
@@ -68,7 +69,7 @@ export type FianceEvents = {
   premium_restored:            undefined;
 };
 
-export const analytics = createTelemetryClient<FianceEvents>();
+export const analytics = installScreenPrivacy(createTelemetryClient<FianceEvents>());
 
 const ANALYTICS_BASE =
   process.env.EXPO_PUBLIC_ANALYTICS_URL ?? "";
