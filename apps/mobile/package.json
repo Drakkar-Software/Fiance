@@ -60,7 +60,6 @@
     "@fiance/ui": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
     "@legendapp/list": "^2.0.19",
-    "@legendapp/motion": "^2.5.3",
     "@noble/hashes": "^2.2.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/netinfo": "12.0.1",
