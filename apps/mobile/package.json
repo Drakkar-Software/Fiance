@@ -83,7 +83,6 @@
     "expo-haptics": "~57.0.1",
     "expo-iap": "4.3.5",
     "expo-image-picker": "~57.0.6",
-    "expo-insights": "~57.0.6",
     "expo-linking": "~57.0.4",
     "expo-local-authentication": "~57.0.2",
     "expo-localization": "~57.0.1",
