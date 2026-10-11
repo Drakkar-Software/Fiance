@@ -69,7 +69,6 @@
     "@scure/bip39": "^1.6.0",
     "@shopify/react-native-skia": "2.6.2",
     "date-fns": "^3.6.0",
-    "date-fns-tz": "^3.2.0",
     "expo": "57.0.8",
     "expo-build-properties": "~57.0.7",
     "expo-camera": "~57.0.3",
