@@ -10,7 +10,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@shopify/react-native-skia",
       "esbuild",
       "unrs-resolver"
     ]

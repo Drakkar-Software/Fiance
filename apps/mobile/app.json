@@ -3,7 +3,7 @@
     "name": "Fiancé",
     "slug": "fiance",
     "version": "2.0.1",
-    "runtimeVersion": "2.0.1",
+    "runtimeVersion": "2.0.2",
     "description": "Application gratuite et privée pour organiser votre mariage : budget, liste d'invités, plan de table, prestataires, planning, checklist et mood board. Fonctionne hors ligne, données 100% privées.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
