@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Stack pins (agent docs)
+
+Expo SDK **57** monorepo. Before changing dependency versions in `apps/mobile/package.json`, run `pnpm --filter fiance exec expo install --check` and align `CLAUDE.md` / `AGENTS.md` with the result (do not trust npm `latest` for Expo packages).
+
 ## Monorepo layout
 
 This is a **pnpm workspace** with three packages:
