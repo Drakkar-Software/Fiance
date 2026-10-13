@@ -3,6 +3,7 @@ import { secureGet, secureSet } from "@/lib/secure-store";
 import { analytics } from "@/lib/analytics";
 import {
   EMPTY_STATS_CONSENT_RECORD,
+  STATS_CONSENT_STORAGE_KEY,
   answerStatsConsent,
   applyPrivacySignal,
   isPrivacySignalOptOut,
@@ -17,7 +18,7 @@ import {
 
 // App-owned, device-local record (per browser on web). The SDK's own consent
 // flag cannot tell "answered Non" from "default off", so the answer lives here.
-const STORAGE_KEY = "wos_stats_consent";
+const STORAGE_KEY = STATS_CONSENT_STORAGE_KEY;
 
 interface StatsConsentState {
   record: StatsConsentRecord;

@@ -1,5 +1,6 @@
 import { createTelemetry, createTelemetryClient } from "@drakkar.software/dk-spaces-analytics-sdk";
-import { DEFAULT_SYNC_NAMESPACE } from "@fiance/sdk";
+import { DEFAULT_SYNC_NAMESPACE, statsConsentSdkTarget } from "@fiance/sdk";
+import { prepareStatsConsent } from "@/lib/stats-consent-reset";
 
 export type FianceEvents = {
   // Lifecycle
@@ -83,6 +84,9 @@ export async function initAnalytics(): Promise<void> {
   if (g[INIT_KEY]) return;
   g[INIT_KEY] = true;
 
+  const consent = await prepareStatsConsent();
+  if (!consent) return;
+
   const client = await createTelemetry({
     // Bare host, no /v1 — StarfishClient prepends /v1/{namespace} internally.
     syncBaseUrl: ANALYTICS_BASE,
@@ -94,6 +98,12 @@ export async function initAnalytics(): Promise<void> {
     defaultOptIn: false,
     debug: __DEV__,
   });
+
+  // The SDK loads the queue saved before the update. optOut() drops it and stops the
+  // flush timer, so nothing pre-update is sent unless the user has answered Oui.
+  if (statsConsentSdkTarget(consent) !== "opted-in") {
+    await client.optOut();
+  }
 
   analytics.init(client);
 }

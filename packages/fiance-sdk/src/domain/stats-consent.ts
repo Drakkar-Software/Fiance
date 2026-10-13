@@ -77,3 +77,46 @@ export function statsConsentSdkTarget(record: StatsConsentRecord): 'opted-in' | 
   if (!record.answered) return null;
   return record.choice === 'yes' ? 'opted-in' : 'opted-out';
 }
+
+export const STATS_CONSENT_STORAGE_KEY = 'wos_stats_consent';
+
+/** The status the analytics SDK persisted before this app kept its own answer record. */
+export function parseLegacyConsentStatus(raw: string | null): 'opted-in' | 'opted-out' | 'unknown' | null {
+  if (raw === null) return null;
+  const status = parseJsonOrNull(raw)?.status;
+  return status === 'opted-in' || status === 'opted-out' || status === 'unknown' ? status : null;
+}
+
+export interface StatsConsentResetInput {
+  /** Raw app record under STATS_CONSENT_STORAGE_KEY, or null when it was never written. */
+  storedRaw: string | null;
+  /** Raw analytics SDK consent state from before the app kept its own record, or null. */
+  legacyRaw: string | null;
+}
+
+/**
+ * Picks the record to start from. The reset only happens while no app record exists, so it
+ * runs once. An earlier explicit opt-out counts as an answered Non and never shows the prompt.
+ */
+export function planStatsConsentReset({ storedRaw, legacyRaw }: StatsConsentResetInput): {
+  reset: boolean;
+  record: StatsConsentRecord;
+} {
+  if (storedRaw !== null) {
+    return { reset: false, record: parseStatsConsentRecord(parseJsonOrNull(storedRaw)) };
+  }
+  const explicitOptOut = parseLegacyConsentStatus(legacyRaw) === 'opted-out';
+  return {
+    reset: true,
+    record: explicitOptOut ? answerStatsConsent(EMPTY_STATS_CONSENT_RECORD, 'no') : { ...EMPTY_STATS_CONSENT_RECORD },
+  };
+}
+
+function parseJsonOrNull(raw: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
