@@ -85,13 +85,12 @@ function getGuestCountForPricingKey(
   if (override != null && override > 0) return override;
 
   // Legacy lowercase caterer pricing keys (dinner/cocktail/…) keep the whole-list estimate.
-  const sourceKey = PRICING_KEY_GUEST_SOURCE[
-    key as keyof typeof PRICING_KEY_GUEST_SOURCE
-  ] as keyof GuestCounts | undefined;
+  const sourceKey =
+    PRICING_KEY_GUEST_SOURCE[key as keyof typeof PRICING_KEY_GUEST_SOURCE];
 
-  if (sourceKey && sourceKey !== ("manual" as any)) {
+  if (sourceKey && sourceKey !== "manual") {
     const useEstimate = counts.accepted === 0 && counts.total > 0;
-    const value = counts[sourceKey];
+    const value = counts[sourceKey as keyof GuestCounts];
     if (typeof value === "number") {
       return value || (useEstimate ? counts.total : 0);
     }
