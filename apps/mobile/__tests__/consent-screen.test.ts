@@ -93,8 +93,8 @@ describe("stats consent prompt after first wedding", () => {
 
   it("Oui with a failed save stays opted out until the save succeeds", async () => {
     const { secureSet } = await import("@/lib/secure-store");
-    vi.mocked(secureSet).mockRejectedValueOnce(new Error("disk full"));
     useStatsConsentStore.getState().releaseFirstWedding(true);
+    vi.mocked(secureSet).mockRejectedValueOnce(new Error("disk full"));
     await useStatsConsentStore.getState().answer("yes");
     expect(sdk.optIn).not.toHaveBeenCalled();
     expect(sdk.optOut).toHaveBeenCalled();
