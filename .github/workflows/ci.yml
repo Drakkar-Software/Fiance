@@ -48,6 +48,9 @@ jobs:
       - name: Lint
         run: pnpm --filter fiance lint
 
+      - name: i18n FR/EN key parity
+        run: pnpm --filter fiance i18n:parity
+
       - name: Typecheck
         run: pnpm typecheck
 
