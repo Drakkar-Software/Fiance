@@ -6,12 +6,15 @@ import {
   answerStatsConsent,
   applyPrivacySignal,
   isPrivacySignalOptOut,
+  markStatsConsentOwedToExistingInstall,
   markStatsConsentPending,
   parseStatsConsentRecord,
   recordUnansweredStatsConsentDisplay,
+  shouldPresentStatsConsentOnHome,
   shouldShowStatsConsent,
   statsConsentSdkTarget,
   type StatsConsentChoice,
+  type StatsConsentHomeContext,
   type StatsConsentRecord,
 } from "@fiance/sdk";
 
@@ -19,20 +22,27 @@ import {
 // flag cannot tell "answered Non" from "default off", so the answer lives here.
 const STORAGE_KEY = "wos_stats_consent";
 
+/**
+ * "onboarding": right after the first wedding is created or joined (full screen).
+ * "home-update": an existing install, shown once on Home (sheet on iOS, dialog on web).
+ */
+export type StatsConsentPresentation = "onboarding" | "home-update";
+
 interface StatsConsentState {
   record: StatsConsentRecord;
   isLoaded: boolean;
   /** Set while the first wedding is being created or joined, so navigation waits for the answer. */
   navHold: boolean;
-  /** The prompt was opened in this session. Opening counts one unanswered display. */
+  /** The screen on display, or null. */
+  presentation: StatsConsentPresentation | null;
+  /** A display was opened in this session. Opening counts one unanswered display. */
   shownThisSession: boolean;
-  /** Closed without answering during this session. Re-shows at the next launch, at most once more. */
-  dismissed: boolean;
   /** The last save did not persist. The SDK stays opted out until it does. */
   unsaved: boolean;
   load: () => Promise<void>;
   holdFirstWedding: () => void;
   releaseFirstWedding: (created: boolean) => void;
+  considerHome: (ctx: StatsConsentHomeContext) => void;
   dismiss: () => void;
   answer: (choice: StatsConsentChoice) => Promise<void>;
   retrySave: () => Promise<void>;
@@ -47,12 +57,13 @@ async function saveRecord(record: StatsConsentRecord): Promise<boolean> {
   }
 }
 
-async function loadRecord(): Promise<StatsConsentRecord> {
+async function loadRecord(): Promise<{ record: StatsConsentRecord; hasStoredRecord: boolean }> {
   try {
     const raw = await secureGet(STORAGE_KEY);
-    return parseStatsConsentRecord(raw ? JSON.parse(raw) : null);
+    if (raw == null) return { record: { ...EMPTY_STATS_CONSENT_RECORD }, hasStoredRecord: false };
+    return { record: parseStatsConsentRecord(JSON.parse(raw)), hasStoredRecord: true };
   } catch {
-    return { ...EMPTY_STATS_CONSENT_RECORD };
+    return { record: { ...EMPTY_STATS_CONSENT_RECORD }, hasStoredRecord: false };
   }
 }
 
@@ -77,26 +88,29 @@ async function applySdkState(record: StatsConsentRecord): Promise<void> {
 function openPrompt(
   record: StatsConsentRecord,
   shownThisSession: boolean,
-): { record: StatsConsentRecord; shownThisSession: boolean } {
-  if (shownThisSession || !shouldShowStatsConsent(record)) return { record, shownThisSession };
-  return { record: recordUnansweredStatsConsentDisplay(record), shownThisSession: true };
+  presentation: StatsConsentPresentation,
+): { record: StatsConsentRecord; shownThisSession: boolean; presentation: StatsConsentPresentation | null } {
+  if (shownThisSession || !shouldShowStatsConsent(record)) {
+    return { record, shownThisSession, presentation: null };
+  }
+  return { record: recordUnansweredStatsConsentDisplay(record), shownThisSession: true, presentation };
 }
 
 export const useStatsConsentStore = create<StatsConsentState>((set, get) => ({
   record: { ...EMPTY_STATS_CONSENT_RECORD },
   isLoaded: false,
   navHold: false,
+  presentation: null,
   shownThisSession: false,
-  dismissed: false,
   unsaved: false,
 
   load: async () => {
-    const loaded = await loadRecord();
-    const privacyApplied = applyPrivacySignal(loaded, readBrowserPrivacySignal());
-    const opened = openPrompt(privacyApplied, get().shownThisSession);
-    set({ record: opened.record, shownThisSession: opened.shownThisSession, isLoaded: true });
-    if (opened.record !== loaded) await saveRecord(opened.record);
-    await applySdkState(opened.record).catch(() => {});
+    const stored = await loadRecord();
+    const privacyApplied = applyPrivacySignal(stored.record, readBrowserPrivacySignal());
+    const owed = markStatsConsentOwedToExistingInstall(privacyApplied, stored.hasStoredRecord);
+    set({ record: owed, isLoaded: true });
+    if (privacyApplied !== stored.record) await saveRecord(privacyApplied);
+    await applySdkState(owed).catch(() => {});
   },
 
   holdFirstWedding: () => set({ navHold: true }),
@@ -106,16 +120,34 @@ export const useStatsConsentStore = create<StatsConsentState>((set, get) => ({
       set({ navHold: false });
       return;
     }
-    const opened = openPrompt(markStatsConsentPending(get().record), get().shownThisSession);
-    set({ navHold: false, record: opened.record, shownThisSession: opened.shownThisSession });
+    const opened = openPrompt(markStatsConsentPending(get().record), get().shownThisSession, "onboarding");
+    set({
+      navHold: false,
+      record: opened.record,
+      shownThisSession: opened.shownThisSession,
+      presentation: opened.presentation,
+    });
     void saveRecord(opened.record);
   },
 
-  dismiss: () => set({ dismissed: true }),
+  considerHome: (ctx) => {
+    const { record, shownThisSession, navHold } = get();
+    const eligible = shouldPresentStatsConsentOnHome(
+      record,
+      { ...ctx, navigationHeld: ctx.navigationHeld || navHold },
+      shownThisSession,
+    );
+    if (!eligible) return;
+    const next = recordUnansweredStatsConsentDisplay(record);
+    set({ record: next, shownThisSession: true, presentation: "home-update" });
+    void saveRecord(next);
+  },
+
+  dismiss: () => set({ presentation: null }),
 
   answer: async (choice) => {
     const record = answerStatsConsent(get().record, choice);
-    set({ record, unsaved: false });
+    set({ record, unsaved: false, presentation: null });
 
     if (choice === "no") await analytics.optOut().catch(() => {});
     const saved = await saveRecord(record);
@@ -153,7 +185,7 @@ export async function runWeddingCreation(isFirstWedding: boolean, run: () => Pro
 }
 
 export function selectStatsPromptVisible(state: StatsConsentState): boolean {
-  return state.isLoaded && state.shownThisSession && !state.dismissed && !state.record.answered;
+  return state.isLoaded && state.presentation !== null && !state.record.answered;
 }
 
 export function selectNavigationHeld(state: StatsConsentState): boolean {

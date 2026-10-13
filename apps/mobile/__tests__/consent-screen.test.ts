@@ -43,10 +43,18 @@ const resetStore = () =>
     record: { answered: false, choice: null, unansweredDisplays: 0, pending: false },
     isLoaded: true,
     navHold: false,
-    dismissed: false,
+    presentation: null,
     shownThisSession: false,
     unsaved: false,
   });
+
+const homeCtx = {
+  ready: true,
+  onHome: true,
+  welcomeDone: true,
+  paywallOpen: false,
+  navigationHeld: false,
+};
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
@@ -112,6 +120,7 @@ describe("stats consent prompt after first wedding", () => {
 
     resetStore();
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
     useStatsConsentStore.getState().dismiss();
     await flush();
@@ -119,6 +128,7 @@ describe("stats consent prompt after first wedding", () => {
 
     resetStore();
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(false);
   });
 
@@ -128,6 +138,7 @@ describe("stats consent prompt after first wedding", () => {
       JSON.stringify({ answered: false, choice: null, unansweredDisplays: 1, pending: true }),
     );
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
     expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(2);
   });
@@ -138,7 +149,9 @@ describe("stats consent prompt after first wedding", () => {
       JSON.stringify({ answered: false, choice: null, unansweredDisplays: 0, pending: true }),
     );
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(1);
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
   });
@@ -149,6 +162,7 @@ describe("stats consent prompt after first wedding", () => {
       JSON.stringify({ answered: false, choice: null, unansweredDisplays: 2, pending: true }),
     );
     await useStatsConsentStore.getState().load();
+    useStatsConsentStore.getState().considerHome(homeCtx);
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(false);
     expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(2);
   });

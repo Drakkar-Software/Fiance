@@ -2,12 +2,16 @@ import { describe, it, expect } from 'vitest';
 import {
   EMPTY_STATS_CONSENT_RECORD,
   STATS_CONSENT_MAX_UNANSWERED_DISPLAYS,
+  type StatsConsentHomeContext,
   answerStatsConsent,
   applyPrivacySignal,
+  isHomeRoute,
   isPrivacySignalOptOut,
+  markStatsConsentOwedToExistingInstall,
   markStatsConsentPending,
   parseStatsConsentRecord,
   recordUnansweredStatsConsentDisplay,
+  shouldPresentStatsConsentOnHome,
   shouldShowStatsConsent,
   statsConsentSdkTarget,
   statsConsentToggleOn,
@@ -111,5 +115,70 @@ describe('settings toggle and SDK target', () => {
     expect(statsConsentSdkTarget(answerStatsConsent(EMPTY_STATS_CONSENT_RECORD, 'yes'))).toBe('opted-in');
     expect(statsConsentSdkTarget(answerStatsConsent(EMPTY_STATS_CONSENT_RECORD, 'no'))).toBe('opted-out');
     expect(statsConsentSdkTarget(EMPTY_STATS_CONSENT_RECORD)).toBeNull();
+  });
+});
+
+describe('existing installs', () => {
+  it('owes the prompt to an install with no stored record, and leaves a stored record alone', () => {
+    expect(markStatsConsentOwedToExistingInstall(EMPTY_STATS_CONSENT_RECORD, false)).toEqual({
+      ...EMPTY_STATS_CONSENT_RECORD,
+      pending: true,
+    });
+    expect(markStatsConsentOwedToExistingInstall(EMPTY_STATS_CONSENT_RECORD, true)).toBe(EMPTY_STATS_CONSENT_RECORD);
+  });
+
+  it('never owes the prompt once answered, even without a stored record', () => {
+    const answered = answerStatsConsent(EMPTY_STATS_CONSENT_RECORD, 'no');
+    expect(markStatsConsentOwedToExistingInstall(answered, false)).toBe(answered);
+  });
+});
+
+describe('isHomeRoute', () => {
+  it('matches only the Home tab', () => {
+    expect(isHomeRoute(['(tabs)', 'home'])).toBe(true);
+    expect(isHomeRoute(['(tabs)', 'guests'])).toBe(false);
+    expect(isHomeRoute(['(tabs)', 'home', 'x'])).toBe(false);
+    expect(isHomeRoute(['onboarding'])).toBe(false);
+    expect(isHomeRoute([])).toBe(false);
+  });
+});
+
+describe('shouldPresentStatsConsentOnHome', () => {
+  const owed = markStatsConsentOwedToExistingInstall(EMPTY_STATS_CONSENT_RECORD, false);
+  const ready: StatsConsentHomeContext = {
+    ready: true,
+    onHome: true,
+    welcomeDone: true,
+    paywallOpen: false,
+    navigationHeld: false,
+  };
+
+  it('presents an owed prompt on Home with nothing else open', () => {
+    expect(shouldPresentStatsConsentOnHome(owed, ready, false)).toBe(true);
+  });
+
+  it('waits for each blocker to clear', () => {
+    expect(shouldPresentStatsConsentOnHome(owed, { ...ready, ready: false }, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(owed, { ...ready, onHome: false }, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(owed, { ...ready, welcomeDone: false }, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(owed, { ...ready, paywallOpen: true }, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(owed, { ...ready, navigationHeld: true }, false)).toBe(false);
+  });
+
+  it('presents at most once per session', () => {
+    expect(shouldPresentStatsConsentOnHome(owed, ready, true)).toBe(false);
+  });
+
+  it('never presents to an install that answered, or that a privacy signal answered', () => {
+    expect(shouldPresentStatsConsentOnHome(answerStatsConsent(owed, 'yes'), ready, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(answerStatsConsent(owed, 'no'), ready, false)).toBe(false);
+    expect(shouldPresentStatsConsentOnHome(applyPrivacySignal(owed, true), ready, false)).toBe(false);
+  });
+
+  it('stops after the second unanswered display, and counts each display once', () => {
+    const shownOnce = recordUnansweredStatsConsentDisplay(owed);
+    expect(shouldPresentStatsConsentOnHome(shownOnce, ready, false)).toBe(true);
+    const shownTwice = recordUnansweredStatsConsentDisplay(shownOnce);
+    expect(shouldPresentStatsConsentOnHome(shownTwice, ready, false)).toBe(false);
   });
 });
