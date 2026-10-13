@@ -87,7 +87,7 @@ export default function WeddingDayScreen() {
     <View style={[styles.root, { backgroundColor: c.bg, paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={handleBack} hitSlop={8} style={{ padding: 4, marginLeft: -4 }}>
+        <Pressable accessibilityLabel={t("common:back")} onPress={handleBack} hitSlop={8} style={{ padding: 4, marginLeft: -4 }}>
           <ChevronLeft size={26} color={c.mute} />
         </Pressable>
         <Script size={18} color={c.accent}>{timeStr}</Script>

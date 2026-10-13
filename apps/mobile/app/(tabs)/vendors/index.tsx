@@ -152,7 +152,7 @@ export default function VendorsListScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <SearchBar
+            <SearchBar clearLabel={t("common:clear")}
               value={search}
               onChangeText={setSearch}
               placeholder={t("searchVendor")}
@@ -178,7 +178,7 @@ export default function VendorsListScreen() {
         ListFooterComponent={<View className="h-24" />}
       />
 
-      {isWide && canEdit && <FAB onPress={handleAdd} locked={!canAddVendor} />}
+      {isWide && canEdit && <FAB accessibilityLabel={t("common:add")} onPress={handleAdd} locked={!canAddVendor} />}
     </View>
   );
 }

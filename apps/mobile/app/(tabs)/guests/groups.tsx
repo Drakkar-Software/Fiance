@@ -152,7 +152,7 @@ export default function GroupsScreen() {
                       </Text>
                     </View>
                     {canEdit && (
-                      <Pressable
+                      <Pressable accessibilityLabel={t("common:delete")}
                         onPress={() => setDeleteId(group.id)}
                         className="w-8 h-8 items-center justify-center"
                       >
@@ -193,7 +193,7 @@ export default function GroupsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={() => setShowAdd(true)} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => setShowAdd(true)} />
 
       <ConfirmSheet
         visible={!!deleteId}

@@ -39,6 +39,7 @@ function EventCard({
   onMoveUp: () => void;
   onMoveDown: () => void;
 }) {
+  const { t } = useTranslation();
   const dot = DOTS[index % DOTS.length];
   return (
     <View className="flex-row gap-3">
@@ -71,7 +72,7 @@ function EventCard({
                 <ArrowDown size={14} className="text-typography-400" />
               </Pressable>
             )}
-            <Pressable onPress={onDelete} className="p-1 active:opacity-60">
+            <Pressable accessibilityLabel={t("common:delete")} onPress={onDelete} className="p-1 active:opacity-60">
               <Trash2 size={14} className="text-typography-400" />
             </Pressable>
           </View>

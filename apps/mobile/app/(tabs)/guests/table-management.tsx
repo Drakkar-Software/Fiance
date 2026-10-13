@@ -246,7 +246,7 @@ export default function TableManagementScreen() {
                       </Text>
                     </View>
                     {canEdit && (
-                      <Pressable
+                      <Pressable accessibilityLabel={t("common:delete")}
                         onPress={() => setDeleteId(table.id)}
                         className="w-8 h-8 items-center justify-center"
                       >
@@ -300,7 +300,7 @@ export default function TableManagementScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={() => setShowAdd(true)} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => setShowAdd(true)} />
 
       <ConfirmSheet
         visible={!!deleteId}

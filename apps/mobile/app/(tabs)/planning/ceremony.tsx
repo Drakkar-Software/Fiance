@@ -126,7 +126,7 @@ export default function CeremonyScreen() {
           <View className="h-24" />
         </ScrollView>
       )}
-      <FAB onPress={() => navigateToItem("new")} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => navigateToItem("new")} />
     </View>
   );
 }

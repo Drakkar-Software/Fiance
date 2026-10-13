@@ -639,7 +639,7 @@ export default function GuestDetailScreen() {
                   return c ? `${c.firstName} ${c.lastName}` : "";
                 })()}
               </Text>
-              <Pressable
+              <Pressable accessibilityLabel={t("common:clear")}
                 onPress={(e) => {
                   e.stopPropagation();
                   setCompanionId("");

@@ -14,9 +14,10 @@ interface SearchBarProps {
   placeholder?: string;
   right?: React.ReactNode;
   className?: string;
+  clearLabel: string;
 }
 
-export function SearchBar({ value, onChangeText, placeholder, right, className }: SearchBarProps) {
+export function SearchBar({ value, onChangeText, placeholder, right, className, clearLabel }: SearchBarProps) {
   return (
     <View className={className}>
       <View className="flex-row items-center h-11 bg-accent-card border border-hair rounded-lg px-3">
@@ -29,7 +30,7 @@ export function SearchBar({ value, onChangeText, placeholder, right, className }
           onChangeText={onChangeText}
         />
         {value.length > 0 && (
-          <Pressable onPress={() => onChangeText("")} hitSlop={8} className="ml-1.5">
+          <Pressable onPress={() => onChangeText("")} hitSlop={8} className="ml-1.5" accessibilityLabel={clearLabel}>
             <XCircle size={18} color="#8a8373" />
           </Pressable>
         )}

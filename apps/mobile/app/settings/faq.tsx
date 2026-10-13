@@ -89,7 +89,7 @@ export default function FaqScreen() {
               <Label size={10} color="#9CA3AF">
                 {t("faqItemLabel", { index: index + 1 })}
               </Label>
-              <Pressable
+              <Pressable accessibilityLabel={t("common:delete")}
                 onPress={() => removeItem(index)}
                 className="w-8 h-8 items-center justify-center rounded-lg active:opacity-60"
               >

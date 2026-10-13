@@ -83,7 +83,7 @@ function TableCard({
               {t("tools.seatingChart.seatsTaken", { taken: assigned.length, total: table.capacity })}
             </Text>
           </View>
-          <Pressable onPress={onDelete} className="p-1 active:opacity-60">
+          <Pressable accessibilityLabel={t("common:delete")} onPress={onDelete} className="p-1 active:opacity-60">
             <Trash2 size={14} className="text-typography-400" />
           </Pressable>
         </View>
@@ -304,7 +304,7 @@ export default function SeatingChartTool() {
                   placeholder={t("tools.seatingChart.guestName")}
                   className="bg-white rounded-xl px-3 py-2.5 text-sm text-typography-900 border border-accent-rose-light flex-1"
                 />
-                <Pressable onPress={addGuest} className="w-11 items-center justify-center bg-primary-500 rounded-xl active:opacity-70">
+                <Pressable accessibilityLabel={t("common:add")} onPress={addGuest} className="w-11 items-center justify-center bg-primary-500 rounded-xl active:opacity-70">
                   <Plus size={16} className="text-white" />
                 </Pressable>
               </View>

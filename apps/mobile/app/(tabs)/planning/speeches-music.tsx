@@ -212,12 +212,12 @@ export default function SpeechesMusicScreen() {
           </View>
           <View className="flex-row items-center gap-1">
             {canEdit && (
-              <Pressable onPress={() => handleEditTrack(track)} className="w-8 h-8 items-center justify-center">
+              <Pressable accessibilityLabel={t("common:edit")} onPress={() => handleEditTrack(track)} className="w-8 h-8 items-center justify-center">
                 <Pencil size={15} color="#9CA3AF" />
               </Pressable>
             )}
             {canEdit && (
-              <Pressable onPress={() => setDeleteId(track.id)} className="w-8 h-8 items-center justify-center">
+              <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(track.id)} className="w-8 h-8 items-center justify-center">
                 <Trash2 size={15} color="#EF4444" />
               </Pressable>
             )}
@@ -327,7 +327,7 @@ export default function SpeechesMusicScreen() {
         </ScrollView>
       )}
 
-      <FAB
+      <FAB accessibilityLabel={t("common:add")}
         onPress={() => {
           if (tab === "speeches") {
             router.push({ pathname: "/(tabs)/planning/speech", params: { id: "new" } });

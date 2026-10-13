@@ -2,9 +2,11 @@ import React from "react";
 import { Pressable, useColorScheme } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { DesktopShell } from "@/components/DesktopShell";
 export default function IdeesLayout() {
+  const { t } = useTranslation();
   const router = useRouter();
   const appColorScheme = useSettingsStore((s) => s.colorScheme);
   const systemScheme = useColorScheme();
@@ -25,7 +27,7 @@ export default function IdeesLayout() {
             title: "Idées & Déco",
             headerShown: true,
             headerLeft: () => (
-              <Pressable onPress={() => router.back()} style={{ padding: 4, marginLeft: -4 }}>
+              <Pressable accessibilityLabel={t("common:back")} onPress={() => router.back()} style={{ padding: 4, marginLeft: -4 }}>
                 <ChevronLeft size={24} color={tintColor} />
               </Pressable>
             ),

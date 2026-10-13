@@ -70,7 +70,7 @@ export default function DocumentsHubScreen() {
                     <Text className="text-xs text-red-500 mt-0.5">{t("documentUnavailable")}</Text>
                   )}
                 </View>
-                <Pressable onPress={() => setDeleteId(doc.id)} className="w-8 h-8 items-center justify-center">
+                <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(doc.id)} className="w-8 h-8 items-center justify-center">
                   <Trash2 size={16} color="#EF4444" />
                 </Pressable>
               </View>

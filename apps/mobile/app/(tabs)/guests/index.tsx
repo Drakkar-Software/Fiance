@@ -288,7 +288,7 @@ function GuestsView() {
           />
         </View>
       )}
-      <SearchBar
+      <SearchBar clearLabel={t("common:clear")}
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchGuest")}
@@ -391,7 +391,7 @@ function GuestsView() {
         />
       )}
 
-      {isWide && canEditGuests && <FAB onPress={handleAddGuest} locked={!canAddGuest} />}
+      {isWide && canEditGuests && <FAB accessibilityLabel={t("common:add")} onPress={handleAddGuest} locked={!canAddGuest} />}
     </View>
   );
 }

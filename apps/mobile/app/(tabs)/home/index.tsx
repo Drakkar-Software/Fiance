@@ -160,7 +160,7 @@ function DashboardScreen() {
       >
         {!isWide && (
           <View className="absolute right-3 z-10" style={{ top: topInset + 8 }} pointerEvents="box-none">
-            <Pressable
+            <Pressable accessibilityLabel={t("common:tabs.settings")}
               onPress={(e) => {
                 if (Platform.OS === "web") (e.currentTarget as any)?.blur?.();
                 router.push("/settings");

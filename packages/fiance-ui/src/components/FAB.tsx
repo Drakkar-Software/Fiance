@@ -6,12 +6,14 @@ import type { LucideIcon } from "lucide-react-native";
 interface FABProps {
   onPress: () => void;
   icon?: LucideIcon;
+  accessibilityLabel?: string;
 }
 
-export function FAB({ onPress, icon: Icon = Plus }: FABProps) {
+export function FAB({ onPress, icon: Icon = Plus, accessibilityLabel }: FABProps) {
   return (
     <Pressable
       onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
       style={({ pressed }) => ({
         position: "absolute",
         bottom: 24,

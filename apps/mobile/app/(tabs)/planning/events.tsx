@@ -223,12 +223,12 @@ export default function PlanningEventsScreen() {
                   </View>
                   <View className="flex-row items-center gap-1">
                     {canEdit && (
-                      <Pressable onPress={() => handleEdit(e)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:edit")} onPress={() => handleEdit(e)} className="w-8 h-8 items-center justify-center">
                         <Pencil size={15} color="#9CA3AF" />
                       </Pressable>
                     )}
                     {canEdit && (
-                      <Pressable onPress={() => setDeleteId(e.id)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(e.id)} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>
                     )}
@@ -242,7 +242,7 @@ export default function PlanningEventsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={handleAddEvent} locked={!canAddEvent} />
+      <FAB accessibilityLabel={t("common:add")} onPress={handleAddEvent} locked={!canAddEvent} />
 
       <ConfirmSheet
         visible={!!deleteId}

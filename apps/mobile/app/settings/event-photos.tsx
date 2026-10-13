@@ -113,7 +113,7 @@ export default function EventPhotosScreen() {
                     style={{ width: photoSize, height: photoSize }}
                     resizeMode="cover"
                   />
-                  <Pressable
+                  <Pressable accessibilityLabel={t("common:delete")}
                     onPress={() => handleDelete(photo.id)}
                     className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/50 items-center justify-center active:opacity-70"
                   >
@@ -121,7 +121,7 @@ export default function EventPhotosScreen() {
                   </Pressable>
                 </View>
               ))}
-              <Pressable
+              <Pressable accessibilityLabel={t("common:add")}
                 onPress={handleAdd}
                 style={{ width: photoSize, height: photoSize }}
                 className="rounded-xl border border-hair dark:border-hair items-center justify-center bg-accent-card active:opacity-70"

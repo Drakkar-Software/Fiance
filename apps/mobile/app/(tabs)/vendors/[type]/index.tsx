@@ -133,7 +133,7 @@ export default function VendorTypeListScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={handleAdd} locked={!canAddVendor} />
+      <FAB accessibilityLabel={t("common:add")} onPress={handleAdd} locked={!canAddVendor} />
     </View>
   );
 }

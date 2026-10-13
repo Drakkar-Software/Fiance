@@ -188,12 +188,12 @@ export default function SeatingConstraintsScreen() {
                   </View>
                   <View className="flex-row items-center gap-1">
                     {canEdit && (
-                      <Pressable onPress={() => handleEdit(c)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:edit")} onPress={() => handleEdit(c)} className="w-8 h-8 items-center justify-center">
                         <Pencil size={15} color="#9CA3AF" />
                       </Pressable>
                     )}
                     {canEdit && (
-                      <Pressable onPress={() => setDeleteId(c.id)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(c.id)} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>
                     )}
@@ -207,7 +207,7 @@ export default function SeatingConstraintsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={() => { resetForm(); setShowAdd(true); }} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => { resetForm(); setShowAdd(true); }} />
 
       <ConfirmSheet
         visible={!!deleteId}

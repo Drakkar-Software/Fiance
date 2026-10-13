@@ -113,7 +113,7 @@ export default function CollectionsScreen() {
                   </Text>
                 </View>
                 {canEdit && (
-                  <Pressable onPress={() => setDeleteId(col.id)}>
+                  <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(col.id)}>
                     <Trash2 size={18} color="#EF4444" />
                   </Pressable>
                 )}
@@ -124,7 +124,7 @@ export default function CollectionsScreen() {
         <View className="h-24" />
       </ScrollView>
 
-      <FAB onPress={() => setShowAdd(true)} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => setShowAdd(true)} />
 
       <ConfirmSheet
         visible={!!deleteId}

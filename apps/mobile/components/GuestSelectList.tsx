@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native-css/components";
 import { Check } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { SearchBar } from "@/components/SearchBar";
 import { Avatar } from "@/components/Avatar";
 import type { Guest } from "@/db/schema";
@@ -19,6 +20,7 @@ export function GuestSelectList({
   searchPlaceholder?: string;
   maxHeight?: number;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const filtered = useMemo(() => {
     if (!search) return guests;
@@ -28,7 +30,12 @@ export function GuestSelectList({
 
   return (
     <View>
-      <SearchBar value={search} onChangeText={setSearch} placeholder={searchPlaceholder} />
+      <SearchBar
+        value={search}
+        onChangeText={setSearch}
+        placeholder={searchPlaceholder}
+        clearLabel={t("common:clear")}
+      />
       <ScrollView style={{ maxHeight }} className="mt-2" nestedScrollEnabled showsVerticalScrollIndicator>
         {filtered.map((g) => {
           const selected = selectedIds.has(g.id);

@@ -133,7 +133,7 @@ export default function CommunicationRosterScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <>
-              <SearchBar
+              <SearchBar clearLabel={t("common:clear")}
                 value={search}
                 onChangeText={setSearch}
                 placeholder={t("searchGuest")}

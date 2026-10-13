@@ -319,7 +319,7 @@ export function PreparationView() {
         </ScrollView>
       )}
 
-      {isWide && <FAB onPress={handleAddTask} locked={!canAddTask} />}
+      {isWide && <FAB accessibilityLabel={t("common:add")} onPress={handleAddTask} locked={!canAddTask} />}
     </View>
   );
 }
@@ -486,7 +486,7 @@ export function AgendaView() {
       )}
 
       {isWide && (
-        <FAB
+        <FAB accessibilityLabel={t("common:add")}
           onPress={() =>
             router.push({ pathname: "/(tabs)/planning/agenda-event", params: { id: "new" } })
           }
@@ -616,7 +616,7 @@ export function DayOfView() {
       )}
 
       {isWide && (
-        <FAB
+        <FAB accessibilityLabel={t("common:add")}
           onPress={() =>
             router.push({ pathname: "/(tabs)/planning/day-of-item", params: { id: "new" } })
           }

@@ -175,7 +175,7 @@ export default function GiftsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={openAdd} />
+      <FAB accessibilityLabel={t("common:add")} onPress={openAdd} />
 
       <ConfirmSheet
         visible={!!deleteId}
@@ -240,7 +240,7 @@ function GiftRow({
             <Circle size={18} color="#D1D5DB" />
           )}
           {canEdit && (
-            <Pressable onPress={onDelete} className="w-8 h-8 items-center justify-center">
+            <Pressable accessibilityLabel={t("common:delete")} onPress={onDelete} className="w-8 h-8 items-center justify-center">
               <Trash2 size={15} color="#EF4444" />
             </Pressable>
           )}

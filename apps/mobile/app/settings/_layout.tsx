@@ -29,7 +29,7 @@ export default function SettingsLayout() {
             title: t("settingsTitle"),
             headerShown: !isWide,
             headerLeft: () => (
-              <Pressable onPress={() => router.back()} style={{ padding: 4, marginLeft: -4 }}>
+              <Pressable accessibilityLabel={t("common:back")} onPress={() => router.back()} style={{ padding: 4, marginLeft: -4 }}>
                 <ChevronLeft size={24} color={tintColor} />
               </Pressable>
             ),
@@ -47,7 +47,7 @@ export default function SettingsLayout() {
           options={{
             title: t("importExternalTitle"),
             headerLeft: () => (
-              <Pressable
+              <Pressable accessibilityLabel={t("common:back")}
                 onPress={() => (router.canGoBack() ? router.back() : router.replace("/settings"))}
                 style={{ padding: 4, marginLeft: -4 }}
               >

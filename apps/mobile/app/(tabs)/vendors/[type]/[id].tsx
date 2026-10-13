@@ -474,7 +474,7 @@ function PaymentsTab({ vendorId }: { vendorId: string }) {
             )}
           </View>
           {canEdit && (
-            <Pressable
+            <Pressable accessibilityLabel={t("common:delete")}
               onPress={() => setDeleteId(p.id)}
               className="w-8 h-8 items-center justify-center"
             >
@@ -601,7 +601,7 @@ function DocumentsTab({ vendorId }: { vendorId: string }) {
               )}
             </View>
             {canEdit && (
-              <Pressable
+              <Pressable accessibilityLabel={t("common:delete")}
                 onPress={() => setDeleteId(doc.id)}
                 className="w-8 h-8 items-center justify-center"
               >

@@ -123,12 +123,12 @@ export default function WeddingPartyScreen() {
                     </View>
                   )}
                   {canEdit && (
-                    <Pressable onPress={() => handleEdit(role)} className="w-8 h-8 items-center justify-center">
+                    <Pressable accessibilityLabel={t("common:edit")} onPress={() => handleEdit(role)} className="w-8 h-8 items-center justify-center">
                       <Pencil size={15} color="#9CA3AF" />
                     </Pressable>
                   )}
                   {canEdit && (
-                    <Pressable onPress={() => setDeleteId(role.id)} className="w-8 h-8 items-center justify-center">
+                    <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(role.id)} className="w-8 h-8 items-center justify-center">
                       <Trash2 size={15} color="#EF4444" />
                     </Pressable>
                   )}
@@ -147,7 +147,7 @@ export default function WeddingPartyScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={() => { resetForm(); setShowAdd(true); }} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => { resetForm(); setShowAdd(true); }} />
 
       <ConfirmSheet
         visible={!!deleteId}

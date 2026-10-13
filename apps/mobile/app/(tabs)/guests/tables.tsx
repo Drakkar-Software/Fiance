@@ -121,7 +121,7 @@ export default function TablesScreen() {
         </>
       )}
 
-      <FAB onPress={() => setShowAdd(true)} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => setShowAdd(true)} />
 
       <ConfirmSheet
         visible={!!deleteId}

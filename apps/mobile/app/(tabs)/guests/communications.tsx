@@ -317,12 +317,12 @@ export default function CommunicationsScreen() {
                       </View>
                     )}
                     {canEdit && (
-                      <Pressable onPress={() => handleEdit(comm)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:edit")} onPress={() => handleEdit(comm)} className="w-8 h-8 items-center justify-center">
                         <Pencil size={15} color="#9CA3AF" />
                       </Pressable>
                     )}
                     {canEdit && (
-                      <Pressable onPress={() => setDeleteId(comm.id)} className="w-8 h-8 items-center justify-center">
+                      <Pressable accessibilityLabel={t("common:delete")} onPress={() => setDeleteId(comm.id)} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>
                     )}
@@ -340,7 +340,7 @@ export default function CommunicationsScreen() {
         </ScrollView>
       )}
 
-      <FAB onPress={() => { resetForm(); setShowAdd(true); }} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => { resetForm(); setShowAdd(true); }} />
 
       <ConfirmSheet
         visible={!!deleteId}

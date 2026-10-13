@@ -346,7 +346,7 @@ export default function RolesScreen() {
                     {role ? roleLabel(role) : t("unknownRole")}
                   </Display>
                 </View>
-                <Pressable onPress={() => setRemoveAssignmentId(a.id)} hitSlop={8}>
+                <Pressable accessibilityLabel={t("common:delete")} onPress={() => setRemoveAssignmentId(a.id)} hitSlop={8}>
                   <Trash2 size={17} color={theme.clay} />
                 </Pressable>
               </View>

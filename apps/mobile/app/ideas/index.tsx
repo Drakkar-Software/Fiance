@@ -134,7 +134,7 @@ export default function IdeasScreen() {
           right={ideas.length > 0 ? <Script size={16} color="#c9922f">{t("pageTagline", { count: ideas.length })}</Script> : undefined}
         />
       )}
-      <SearchBar
+      <SearchBar clearLabel={t("common:clear")}
         value={search}
         onChangeText={setSearch}
         placeholder={t("searchIdea")}
@@ -327,7 +327,7 @@ export default function IdeasScreen() {
         />
       )}
 
-      <FAB onPress={() => navigateToIdea("new")} />
+      <FAB accessibilityLabel={t("common:add")} onPress={() => navigateToIdea("new")} />
     </View>
   );
 }
