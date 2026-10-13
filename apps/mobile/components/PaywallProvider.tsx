@@ -5,6 +5,8 @@ interface PaywallContextValue {
   /** Opens the single shared paywall sheet. `context` is an optional headline
    * shown above the pitch (e.g. the free-limit message that triggered it). */
   openPaywall: (context?: string) => void;
+  /** The paywall sheet is on screen. */
+  isOpen: boolean;
 }
 
 const PaywallContext = createContext<PaywallContextValue | null>(null);
@@ -25,7 +27,7 @@ export function PaywallProvider({ children }: { children: React.ReactNode }) {
     setVisible(true);
   }, []);
 
-  const value = useMemo(() => ({ openPaywall }), [openPaywall]);
+  const value = useMemo(() => ({ openPaywall, isOpen: visible }), [openPaywall, visible]);
 
   return (
     <PaywallContext.Provider value={value}>
@@ -40,4 +42,9 @@ export function useShowPaywall(): PaywallContextValue {
   const ctx = useContext(PaywallContext);
   if (!ctx) throw new Error("useShowPaywall must be used within a PaywallProvider");
   return ctx;
+}
+
+/** Whether the shared paywall sheet is open. False outside a `PaywallProvider`. */
+export function usePaywallOpen(): boolean {
+  return useContext(PaywallContext)?.isOpen ?? false;
 }
