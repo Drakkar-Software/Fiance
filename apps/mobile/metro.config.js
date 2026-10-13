@@ -39,13 +39,20 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // hash-wasm (Argon2id in starfish-identities) requires a WebAssembly global —
   // absent on Hermes ("WebAssembly is not supported in this environment"). On native
   // (iOS/Android) redirect to a shim that delegates to react-native-quick-crypto's
-  // native Argon2id binding (OpenSSL, ~150 ms vs ~15–45 s pure JS). On web keep the
-  // original @noble/hashes shim. A package exports map can't remap a third-party
-  // specifier imported deep inside a dependency, so the alias must live here.
+  // native Argon2id binding (OpenSSL, ~150 ms vs ~15-45 s pure JS).
+  // A package exports map can't remap a third-party specifier imported deep inside
+  // a dependency, so the alias must live here.
+  //
+  // Web is NOT redirected: a browser has had WebAssembly all along, so it was paying
+  // a fallback meant for a constraint it does not have. Measured at production
+  // parameters (m=47104 KiB, t=3, p=1, dkLen=32): hash-wasm 283 ms vs @noble/hashes
+  // 2904 ms. At startup that single derivation held the main thread for 3187 ms.
+  // Both produce the same digest, so no identity is recomputed and nothing stored or
+  // synced changes. lib/hash-wasm-shim.ts stays in the tree, now without a caller.
   if (moduleName === 'hash-wasm') {
     const isNative = platform === 'ios' || platform === 'android'
-    const shimFile = isNative ? 'lib/hash-wasm-shim.native.ts' : 'lib/hash-wasm-shim.ts'
-    return { type: 'sourceFile', filePath: path.resolve(projectRoot, shimFile) }
+    if (!isNative) return resolve(context, moduleName, platform)
+    return { type: 'sourceFile', filePath: path.resolve(projectRoot, 'lib/hash-wasm-shim.native.ts') }
   }
 
   // Workspace SDK packages (packages/*) use NodeNext-style .js extensions in
