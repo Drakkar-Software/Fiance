@@ -67,6 +67,51 @@ export function shouldShowStatsConsent(record: StatsConsentRecord): boolean {
   return record.pending && !record.answered && record.unansweredDisplays < STATS_CONSENT_MAX_UNANSWERED_DISPLAYS;
 }
 
+/**
+ * An install that has no stored record predates the consent screen: it was never asked.
+ * A stored record (answered or not) is left as it is.
+ */
+export function markStatsConsentOwedToExistingInstall(
+  record: StatsConsentRecord,
+  hasStoredRecord: boolean,
+): StatsConsentRecord {
+  if (hasStoredRecord || record.answered) return record;
+  return { ...record, pending: true };
+}
+
+export interface StatsConsentHomeContext {
+  /** The record has been read from storage. */
+  ready: boolean;
+  /** The active route is the Home tab, with nothing pushed on top of it. */
+  onHome: boolean;
+  /** The Home welcome has been seen, so the consent screen comes after it. */
+  welcomeDone: boolean;
+  paywallOpen: boolean;
+  /** Another consent screen or a wedding creation is holding navigation. */
+  navigationHeld: boolean;
+}
+
+export function isHomeRoute(segments: readonly string[]): boolean {
+  return segments.length === 2 && segments[0] === '(tabs)' && segments[1] === 'home';
+}
+
+/** The post-update screen opens on Home only, once per session, and never over another surface. */
+export function shouldPresentStatsConsentOnHome(
+  record: StatsConsentRecord,
+  ctx: StatsConsentHomeContext,
+  shownThisSession: boolean,
+): boolean {
+  return (
+    ctx.ready &&
+    ctx.onHome &&
+    ctx.welcomeDone &&
+    !ctx.paywallOpen &&
+    !ctx.navigationHeld &&
+    !shownThisSession &&
+    shouldShowStatsConsent(record)
+  );
+}
+
 /** The Settings toggle mirrors the answer; before any answer it reflects what the SDK actually does. */
 export function statsConsentToggleOn(record: StatsConsentRecord, sdkOptedIn: boolean): boolean {
   return record.answered ? record.choice === 'yes' : sdkOptedIn;
