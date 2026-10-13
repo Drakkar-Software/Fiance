@@ -243,12 +243,12 @@ export default function AccommodationsScreen() {
                       </Text>
                     </View>
                     {canEdit && (
-                      <Pressable onPress={() => handleEdit(acc)} className="w-8 h-8 items-center justify-center">
+                      <Pressable onPress={() => handleEdit(acc)} accessibilityLabel={t("common:edit")} className="w-8 h-8 items-center justify-center">
                         <Pencil size={15} color="#9CA3AF" />
                       </Pressable>
                     )}
                     {canEdit && (
-                      <Pressable onPress={() => setDeleteId(acc.id)} className="w-8 h-8 items-center justify-center">
+                      <Pressable onPress={() => setDeleteId(acc.id)} accessibilityLabel={t("common:delete")} className="w-8 h-8 items-center justify-center">
                         <Trash2 size={15} color="#EF4444" />
                       </Pressable>
                     )}
