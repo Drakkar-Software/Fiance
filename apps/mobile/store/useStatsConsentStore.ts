@@ -129,6 +129,22 @@ export const useStatsConsentStore = create<StatsConsentState>((set, get) => ({
   },
 }));
 
+/**
+ * Runs the create or join of a wedding. When it is the user's first wedding, navigation
+ * is held until the consent screen is answered, dismissed, or the creation failed.
+ */
+export async function runWeddingCreation(isFirstWedding: boolean, run: () => Promise<void>): Promise<void> {
+  if (!isFirstWedding) return run();
+  useStatsConsentStore.getState().holdFirstWedding();
+  let created = false;
+  try {
+    await run();
+    created = true;
+  } finally {
+    useStatsConsentStore.getState().releaseFirstWedding(created);
+  }
+}
+
 export function selectStatsPromptVisible(state: StatsConsentState): boolean {
   return state.isLoaded && !state.dismissed && shouldShowStatsConsent(state.record);
 }
