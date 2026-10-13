@@ -190,7 +190,7 @@ export async function initStarfish(
   _legacyConfig: unknown,
   _encryptor?: unknown,
 ): Promise<object> {
-  // v2 callers pass an old ServerConfig; in v3 initSync() is the right entry point.
+  // v2 callers pass a legacy config; in v3 initSync() is the right entry point.
   // SyncInitializer in providers.tsx is being updated to call initSync() directly.
   // Until all callers are migrated, this is a safe no-op returning a sentinel.
   console.warn("[starfish] initStarfish() is deprecated — use initSync() from lib/starfish");

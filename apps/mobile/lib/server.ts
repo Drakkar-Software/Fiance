@@ -1,10 +1,5 @@
 /**
  * Server credential helpers — v3 (starfish-spaces).
- *
- * `ServerConfig` is kept for backward compatibility but `authToken` and
- * `encryptionKey` are deprecated stubs (Bearer auth and client-side key
- * derivation are removed in Starfish v3). Use `SessionConfig` /
- * `resolveSessionConfig` in new code.
  */
 
 import { deriveSession, getSyncNamespace, DEFAULT_SYNC_NAMESPACE, readSpaceAccess, type Session } from "@fiance/sdk";
@@ -26,21 +21,6 @@ function syncNamespace(): string {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-/**
- * @deprecated Use `SessionConfig` instead.
- * `authToken` and `encryptionKey` are always empty strings in v3 — Bearer
- * auth and client-side AES key derivation no longer exist.
- */
-export type ServerConfig = {
-  serverUrl: string;
-  /** @deprecated Always "" in v3. */
-  authToken: string;
-  userId: string;
-  /** @deprecated Always "" in v3. */
-  encryptionKey: string;
-};
-
-/** v3 replacement for ServerConfig. */
 export type SessionConfig = {
   serverUrl: string;
   session: Session;
@@ -143,31 +123,4 @@ export async function resolveOwnerUserId(
   } catch {
     return null;
   }
-}
-
-// ─── Legacy compat ────────────────────────────────────────────────────────────
-
-/**
- * @deprecated Use `resolveSessionConfig` instead.
- *
- * Kept for call sites that only need `serverUrl` and `userId`.
- * `authToken` and `encryptionKey` are always empty strings.
- */
-export async function resolveServerConfig(
-  entry: WeddingRegistryEntry | null | undefined,
-): Promise<ServerConfig | null> {
-  const seedPhrase = entry?.seedPhrase;
-  const serverUrl = resolveServerUrl(entry);
-  if (!seedPhrase || !serverUrl) return null;
-  const session = await deriveSession(
-    normalizePhrase(seedPhrase).split(" "),
-    makeClientOpts(serverUrl),
-    { sharedNamespace: syncNamespace(), autoProfile: false },
-  );
-  return {
-    serverUrl,
-    userId: session.userId,
-    authToken: "", // deprecated — Bearer auth removed in v3
-    encryptionKey: "", // deprecated — space keyring handles E2EE in v3
-  };
 }

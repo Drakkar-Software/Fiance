@@ -146,28 +146,6 @@ export async function applyLegacyToSpace(json: string): Promise<LegacyImportResu
   }
 }
 
-/**
- * Pick a JSON file, validate it, and restore into the active wedding.
- * Returns true on success, null if the user cancelled, or an ImportError string.
- * @deprecated Prefer pickBackupJson() + applyBackup() so the file dialog opens
- * before the confirm sheet (avoids browser user-activation loss).
- */
-export async function importWedding(): Promise<true | null | ImportError> {
-  const json = await pickBackupJson();
-  if (!json) return null;
-  return applyBackup(json);
-}
-
-/**
- * Pick a v6 backup JSON, parse it, and push all entities into the active Space.
- * @deprecated Prefer pickBackupJson() + applyLegacyToSpace().
- */
-export async function importLegacyToSpace(): Promise<LegacyImportResult | null> {
-  const json = await pickBackupJson();
-  if (!json) return null;
-  return applyLegacyToSpace(json);
-}
-
 function importWeb(): Promise<string | null> {
   return new Promise((resolve) => {
     const input = document.createElement("input");
