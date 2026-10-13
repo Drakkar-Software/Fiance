@@ -25,7 +25,7 @@ export default function SeatingScreen() {
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Script size={17} color={GP.clay}>← {t("common:back")}</Script>
         </Pressable>
-        <Display size={20} italic>{t("seatingPlan")}</Display>
+        <Display size={20} italic>{t("seatingTitle")}</Display>
         <View style={{ width: 60 }} />
       </View>
 
