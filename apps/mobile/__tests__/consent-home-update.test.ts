@@ -49,7 +49,6 @@ const resetStore = () =>
     navHold: false,
     presentation: null,
     shownThisSession: false,
-    dismissed: false,
     unsaved: false,
   });
 
@@ -168,6 +167,6 @@ describe("post-update consent screen on Home", () => {
     await useStatsConsentStore.getState().load();
     useStatsConsentStore.getState().considerHome(onHome);
     expect(visibleOnHome()).toBe(false);
-    expect(sdk.optIn).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(mem.get(STORAGE_KEY)!)).toMatchObject({ answered: true, choice: "yes", unansweredDisplays: 1 });
   });
 });
