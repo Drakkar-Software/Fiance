@@ -44,7 +44,7 @@ const resetStore = () =>
     isLoaded: true,
     navHold: false,
     dismissed: false,
-    displayCounted: false,
+    shownThisSession: false,
     unsaved: false,
   });
 
@@ -104,22 +104,53 @@ describe("stats consent prompt after first wedding", () => {
 
   it("a back or dismiss without answer is not an answer and re-shows once at the next launch", async () => {
     useStatsConsentStore.getState().releaseFirstWedding(true);
-    useStatsConsentStore.getState().countDisplay();
+    expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
     useStatsConsentStore.getState().dismiss();
     await flush();
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(false);
-    expect(JSON.parse(mem.get(STORAGE_KEY)!).answered).toBe(false);
+    expect(JSON.parse(mem.get(STORAGE_KEY)!)).toMatchObject({ answered: false, unansweredDisplays: 1 });
 
     resetStore();
     await useStatsConsentStore.getState().load();
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
-    useStatsConsentStore.getState().countDisplay();
     useStatsConsentStore.getState().dismiss();
     await flush();
+    expect(JSON.parse(mem.get(STORAGE_KEY)!)).toMatchObject({ answered: false, unansweredDisplays: 2 });
 
     resetStore();
     await useStatsConsentStore.getState().load();
     expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(false);
+  });
+
+  it("a relaunch shows the prompt on the display it owes, not hidden by counting that display", async () => {
+    mem.set(
+      STORAGE_KEY,
+      JSON.stringify({ answered: false, choice: null, unansweredDisplays: 1, pending: true }),
+    );
+    await useStatsConsentStore.getState().load();
+    expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
+    expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(2);
+  });
+
+  it("opening the prompt counts one display per session, not one per load call", async () => {
+    mem.set(
+      STORAGE_KEY,
+      JSON.stringify({ answered: false, choice: null, unansweredDisplays: 0, pending: true }),
+    );
+    await useStatsConsentStore.getState().load();
+    await useStatsConsentStore.getState().load();
+    expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(1);
+    expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(true);
+  });
+
+  it("does not show when the cap of two unanswered displays is already reached", async () => {
+    mem.set(
+      STORAGE_KEY,
+      JSON.stringify({ answered: false, choice: null, unansweredDisplays: 2, pending: true }),
+    );
+    await useStatsConsentStore.getState().load();
+    expect(selectStatsPromptVisible(useStatsConsentStore.getState())).toBe(false);
+    expect(JSON.parse(mem.get(STORAGE_KEY)!).unansweredDisplays).toBe(2);
   });
 
   it("web with Global Privacy Control is treated as Non and never shows", async () => {

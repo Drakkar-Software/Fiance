@@ -16,20 +16,17 @@ export function StatsConsentGate() {
   const visible = useStatsConsentStore(selectStatsPromptVisible);
   const answer = useStatsConsentStore((s) => s.answer);
   const dismiss = useStatsConsentStore((s) => s.dismiss);
-  const countDisplay = useStatsConsentStore((s) => s.countDisplay);
   const retrySave = useStatsConsentStore((s) => s.retrySave);
   const segments = useSegments();
   const router = useRouter();
   const wasVisible = useRef(false);
 
   useEffect(() => {
-    if (visible) {
-      countDisplay();
-    } else if (wasVisible.current && ONBOARDING_ROUTES.includes(segments[0] as string)) {
+    if (!visible && wasVisible.current && ONBOARDING_ROUTES.includes(segments[0] as string)) {
       router.replace("/home" as any);
     }
     wasVisible.current = visible;
-  }, [visible, segments, countDisplay, router]);
+  }, [visible, segments, router]);
 
   useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {
