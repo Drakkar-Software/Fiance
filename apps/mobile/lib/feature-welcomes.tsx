@@ -55,6 +55,7 @@ import type { LucideIcon } from "lucide-react-native";
 import { FeatureWelcome } from "@fiance/ui/components";
 import { theme as GP } from "@/lib/theme";
 import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
+import { selectNavigationHeld, useStatsConsentStore } from "@/store/useStatsConsentStore";
 import type { FeatureWelcomeKey } from "@/lib/feature-welcome-keys";
 
 /** Any route accepted by expo-router's push (string or object form). */
@@ -202,6 +203,8 @@ export function FeatureWelcomeHost() {
   const isLoaded = useFeatureTrialsStore((s) => s.isLoaded);
   const seen = useFeatureTrialsStore((s) => s.seen);
   const markSeen = useFeatureTrialsStore((s) => s.markSeen);
+  // The stats consent screen comes before the Home welcome, so hold this one back.
+  const consentHeld = useStatsConsentStore(selectNavigationHeld);
 
   // Mirrors DesktopSidebar: tab routes sit under "(tabs)"; top-level groups
   // (ideas) sit at segments[0]. A registered sub-nav segment (segments[2],
@@ -221,7 +224,7 @@ export function FeatureWelcomeHost() {
   // Derived directly from state (no effect/setState): show until the flag flips.
   // Dismissing calls markSeen(), which updates `seen` and hides the modal — and
   // persists it so the welcome never returns for this feature.
-  const shouldShow = isLoaded && !seen[activeKey];
+  const shouldShow = isLoaded && !seen[activeKey] && !consentHeld;
 
   const close = () => markSeen(activeKey);
   const handlePrimary = () => {

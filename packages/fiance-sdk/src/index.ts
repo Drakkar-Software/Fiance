@@ -21,6 +21,7 @@ export * from './domain/honeymoon.js';
 export * from './domain/ceremony.js';
 export * from './domain/speeches.js';
 export * from './domain/playlist.js';
+export * from './domain/stats-consent.js';
 
 // ─── Fiancé object model ──────────────────────────────────────────────────────
 export * from './objects/object-types.js';

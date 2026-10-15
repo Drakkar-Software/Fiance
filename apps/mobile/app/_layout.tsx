@@ -59,6 +59,8 @@ import { ReadOnlyBanner } from "@/components/ReadOnlyBanner";
 import { FeatureWelcomeHost } from "@/lib/feature-welcomes";
 import { PaywallProvider } from "@/components/PaywallProvider";
 import { useFeatureTrialsStore } from "@/store/useFeatureTrialsStore";
+import { selectNavigationHeld, useStatsConsentStore } from "@/store/useStatsConsentStore";
+import { StatsConsentGate } from "@/components/StatsConsentGate";
 import { ObserveRoot, useObserve } from "expo-observe";
 
 // Configure octospaces-sdk at module load so deriveSession/buildSession are
@@ -98,6 +100,8 @@ function AppContent() {
   // /join is handled like /onboarding: it must render even when the user has
   // no wedding yet, because that's exactly when the invite link deep-links in.
   const isOnboardingLike = segments[0] === "onboarding" || segments[0] === "join";
+  // True while the first wedding's stats consent screen is pending or its creation is in flight.
+  const navigationHeld = useStatsConsentStore(selectNavigationHeld);
 
   // Redirect to /onboarding when no wedding — skip on onboarding/join routes.
   useEffect(() => {
@@ -111,11 +115,11 @@ function AppContent() {
   // after (tabs)/_layout re-renders and mounts DatabaseProvider, guaranteeing the
   // DB context is available before home.tsx renders.
   useEffect(() => {
-    if (!isLoaded || isPublicPage || segments[0] !== "onboarding") return;
+    if (!isLoaded || isPublicPage || segments[0] !== "onboarding" || navigationHeld) return;
     if (registry?.weddings.length) {
       router.replace("/home" as any);
     }
-  }, [isLoaded, isPublicPage, registry?.weddings.length, segments]);
+  }, [isLoaded, isPublicPage, registry?.weddings.length, segments, navigationHeld]);
 
   // Public wedding page — always reachable, no auth required
   if (isPublicPage) {
@@ -161,6 +165,7 @@ function AppContent() {
         </View>
         {activeWedding && <OfflineBanner />}
         {activeWedding && <FeatureWelcomeHost />}
+        {activeWedding && <StatsConsentGate />}
       </View>
     </DatabaseProvider>
   );
@@ -225,7 +230,11 @@ function RootLayout() {
 
   useEffect(() => {
     loadRegistry();
-    initAnalytics().catch(console.error);
+    // Loads after the analytics client is initialised so the stored answer can
+    // be applied to it (optIn/optOut are no-ops before init).
+    initAnalytics()
+      .catch(console.error)
+      .then(() => useStatsConsentStore.getState().load());
     loadFeatureTrials();
     Promise.all([loadLanguage(), loadNotifications(), loadColorScheme(), isLockEnabled()]).then(
       ([, , , enabled]) => {

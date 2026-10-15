@@ -91,7 +91,7 @@ export async function initAnalytics(): Promise<void> {
     // Effective push endpoint: ANALYTICS_BASE/v1/dk/push/events/fiance/{uuid}
     // (the standalone "analytics" namespace was merged into "dk" server-side)
     appName: "fiance-mobile",
-    defaultOptIn: true,
+    defaultOptIn: false,
     debug: __DEV__,
   });
 

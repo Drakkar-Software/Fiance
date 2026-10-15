@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useTelemetry as useSunglasses } from "@drakkar.software/dk-spaces-analytics-sdk";
 import { analytics } from "@/lib/analytics";
+import { statsConsentToggleOn } from "@fiance/sdk";
+import { useStatsConsentStore } from "@/store/useStatsConsentStore";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
 import { Alert, Platform } from "react-native";
@@ -118,15 +120,16 @@ export default function SettingsScreen() {
   const partner2 = wedding?.partner2Name || "";
 
   const analyticsClient = useSunglasses();
-  const [analyticsConsented, setAnalyticsConsented] = useState(
-    analyticsClient.getConsentStatus() === "opted-in"
+  const consentRecord = useStatsConsentStore((s) => s.record);
+  const answerStatsConsent = useStatsConsentStore((s) => s.answer);
+  const analyticsConsented = statsConsentToggleOn(
+    consentRecord,
+    analyticsClient.getConsentStatus() === "opted-in",
   );
 
-  const handleToggleAnalytics = useCallback(async (value: boolean) => {
-    if (value) await analyticsClient.optIn();
-    else await analyticsClient.optOut();
-    setAnalyticsConsented(value);
-  }, [analyticsClient]);
+  const handleToggleAnalytics = useCallback((value: boolean) => {
+    void answerStatsConsent(value ? "yes" : "no");
+  }, [answerStatsConsent]);
 
   const premium = useIsPremium();
   const [showPaywall, setShowPaywall] = useState(false);
