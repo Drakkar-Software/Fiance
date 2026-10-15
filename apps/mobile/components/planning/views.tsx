@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
 import { shareLink } from "@/lib/share";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -42,6 +41,7 @@ import { useIsWideScreen } from "@/lib/useIsWideScreen";
 import { useShowPaywall } from "@/components/PaywallProvider";
 import { QuotaBadge } from "@/components/QuotaBadge";
 import { useCanAddMore, FREE_LIMITS } from "@/lib/limits";
+import { ConfirmSheet } from "@/components/ConfirmSheet";
 import { toast } from "@/lib/toast/sonner";
 
 type ViewMode = "timeline" | "kanban";
@@ -66,6 +66,15 @@ export function PreparationView() {
   const effectiveDate = primaryEvent?.date ?? weddingDate ?? null;
 
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
+  // Alert.alert is a no-op on react-native-web, so a choice dialog routed
+  // through it never fires its callback: template generation silently did
+  // nothing on web. ConfirmSheet works on every platform.
+  const [confirm, setConfirm] = useState<{
+    title: string;
+    message: string;
+    confirmLabel: string;
+    onConfirm: () => void;
+  } | null>(null);
   const [filter, setFilter] = useState<FilterKey>("ALL");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const now = new Date();
@@ -89,17 +98,16 @@ export function PreparationView() {
 
   const handleGenerateTemplate = useCallback(() => {
     if (!effectiveDate) {
-      Alert.alert(
-        t("requireDateTitle"),
-        t("requireDateMsg"),
-        [
-          { text: t("common:cancel"), style: "cancel" },
-          { text: t("requireDateAction"), onPress: () => router.push("/(tabs)/planning/events") },
-        ]
-      );
+      setConfirm({
+        title: t("requireDateTitle"),
+        message: t("requireDateMsg"),
+        confirmLabel: t("requireDateAction"),
+        onConfirm: () => { setConfirm(null); router.push("/(tabs)/planning/events"); },
+      });
       return;
     }
     const doGenerate = () => {
+      setConfirm(null);
       let cats = categories;
       if (cats.length === 0) {
         cats = generateDefaultCategories();
@@ -108,29 +116,28 @@ export function PreparationView() {
       const templateTasks = generateTemplateTasks(cats, effectiveDate || undefined);
       setTasks([...tasks, ...templateTasks]);
       analytics.capture("planning_template_generated");
-      Alert.alert(t("planningGenerated"), t("planningGeneratedMsg"));
+      toast.success(t("planningGenerated"), { description: t("planningGeneratedMsg") });
     };
 
-    if (tasks.length > 0) {
-      Alert.alert(
-        t("existingPlanning"),
-        t("existingPlanningMsg"),
-        [
-          { text: t("common:cancel"), style: "cancel" },
-          { text: t("common:add"), onPress: doGenerate },
-        ]
-      );
-    } else {
-      Alert.alert(
-        t("confirmGenerate"),
-        t("confirmGenerateMsg", { taskCount: TEMPLATE_TASK_COUNT, categoryCount: TEMPLATE_CATEGORY_COUNT }),
-        [
-          { text: t("common:cancel"), style: "cancel" },
-          { text: t("common:confirm"), onPress: doGenerate },
-        ]
-      );
-    }
-  }, [categories, tasks, effectiveDate, router, t]);
+    setConfirm(
+      tasks.length > 0
+        ? {
+            title: t("existingPlanning"),
+            message: t("existingPlanningMsg"),
+            confirmLabel: t("common:add"),
+            onConfirm: doGenerate,
+          }
+        : {
+            title: t("confirmGenerate"),
+            message: t("confirmGenerateMsg", {
+              taskCount: TEMPLATE_TASK_COUNT,
+              categoryCount: TEMPLATE_CATEGORY_COUNT,
+            }),
+            confirmLabel: t("common:confirm"),
+            onConfirm: doGenerate,
+          },
+    );
+  }, [categories, tasks, effectiveDate, router, t, setCategories, setTasks]);
 
   const completionRate = useMemo(() => {
     if (tasks.length === 0) return 0;
@@ -320,6 +327,16 @@ export function PreparationView() {
       )}
 
       {isWide && <FAB onPress={handleAddTask} locked={!canAddTask} />}
+
+      <ConfirmSheet
+        visible={confirm !== null}
+        title={confirm?.title ?? ""}
+        message={confirm?.message ?? ""}
+        confirmLabel={confirm?.confirmLabel ?? t("common:confirm")}
+        cancelLabel={t("common:cancel")}
+        onConfirm={() => confirm?.onConfirm()}
+        onCancel={() => setConfirm(null)}
+      />
     </View>
   );
 }

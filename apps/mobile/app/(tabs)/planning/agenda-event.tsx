@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -15,6 +14,7 @@ import { analytics } from "@/lib/analytics";
 import type { AgendaEvent } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
+import { toast } from "@/lib/toast/sonner";
 
 export default function AgendaEventScreen() {
   const { t } = useTranslation("planning");
@@ -43,11 +43,11 @@ export default function AgendaEventScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert(t("common:error"), t("titleRequired"));
+      toast.error(t("titleRequired"));
       return;
     }
     if (!date.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date.trim()) || isNaN(new Date(date.trim()).getTime())) {
-      Alert.alert(t("common:error"), t("dateRequired"));
+      toast.error(t("dateRequired"));
       return;
     }
 

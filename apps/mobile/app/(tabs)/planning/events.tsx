@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CalendarRange, Trash2, Pencil, Star } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -68,7 +67,7 @@ export default function PlanningEventsScreen() {
 
   const handleSave = () => {
     if (!form.title.trim()) {
-      Alert.alert(t("common:error"), t("events.titleRequired"));
+      toast.error(t("events.titleRequired"));
       return;
     }
     const now = new Date().toISOString();

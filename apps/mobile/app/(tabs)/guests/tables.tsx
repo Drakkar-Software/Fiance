@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native-css/components";
-import { Alert } from "react-native";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { LayoutGrid } from "lucide-react-native";
@@ -17,6 +16,7 @@ import { Script } from "@/components/Script";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
+import { toast } from "@/lib/toast/sonner";
 
 export default function TablesScreen() {
   const { t } = useTranslation("guests");
@@ -33,7 +33,7 @@ export default function TablesScreen() {
 
   const handleAdd = () => {
     if (!newTableName.trim()) {
-      Alert.alert(t("common:error"), t("tableNameRequired"));
+      toast.error(t("tableNameRequired"));
       return;
     }
     addTable({

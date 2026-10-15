@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { ChevronUp, ChevronDown, CheckSquare, Square, Trash2, FileText, Upload } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -121,7 +120,7 @@ export default function VendorDetailScreen() {
 
   const handleSave = () => {
     if (!name.trim()) {
-      Alert.alert(t("common:error"), t("nameRequired"));
+      toast.error(t("nameRequired"));
       return;
     }
     if (isNew && !canAddVendor) {
@@ -582,7 +581,7 @@ function DocumentsTab({ vendorId }: { vendorId: string }) {
       });
       analytics.capture("document_attached");
     } catch {
-      Alert.alert(t("common:error"), t("documentPickError"));
+      toast.error(t("documentPickError"));
     }
   };
 
