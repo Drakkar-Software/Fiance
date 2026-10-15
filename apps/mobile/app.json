@@ -98,17 +98,6 @@
       ],
       "expo-localization",
       "expo-sharing",
-      [
-        "expo-iap",
-        {
-          "iosProductIds": [
-            "software.drakkar.fiance.app.premium.lifetime"
-          ],
-          "androidProductIds": [
-            "software.drakkar.fiance.app.premium.lifetime"
-          ]
-        }
-      ],
       "expo-font",
       [
         "expo-splash-screen",
