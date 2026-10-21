@@ -142,6 +142,72 @@ export async function ensurePublicPageNode(
 // Owner-side: push page content to objinv
 // ---------------------------------------------------------------------------
 
+// ─── A push with nothing to write does not write ─────────────────────────────
+//
+// This node was re-pushed on EVERY hydration, identical or not. On its own that
+// cost one useless write per foreground. With the event stream it closed into a
+// LOOP: the push emits an event, the author's own tab receives the echo, it
+// hydrates, the hydration pushes again. 120 req/min measured with nobody at the
+// screen.
+//
+// Three guards, and the count is the part not to simplify away:
+//
+//   1. The IN-MEMORY FINGERPRINT, checked before the node is even opened. It is
+//      the only one that holds in the looping case, because handle.push has a
+//      fast path: once its document cache knows the push path's hash — i.e.
+//      from the second push of a session on — it calls the mutator with
+//      cur = null WITHOUT re-reading the server. A guard looking only at cur
+//      would never have anything to compare.
+//   2. The EXPLICIT RE-READ, for the first call of a page load, where the
+//      in-memory fingerprint knows nothing yet. It cannot be delegated to the
+//      mutator: makeHandle consults client.peekCache first, which reads a
+//      PERSISTED cache surviving a reload, so the fast path is taken from the
+//      very first push of a page. A read replaces a write, and a read emits no
+//      event, so it re-primes nothing.
+//   3. The COMPARISON AGAINST cur, as a last resort, when the re-read failed on
+//      the network and handle.push does its own.
+//
+// timestamp is excluded from the comparison on both sides: it changes on every
+// build, so including it would conclude "different" every time and reproduce
+// exactly the bug fixed here.
+
+/** Comparable fingerprint of a public-page document: timestamp dropped, keys
+ *  sorted at every depth, undefined skipped (JSON loses them anyway, so keeping
+ *  them would make the built document diverge from the re-read one). */
+export function publicPageFingerprint(doc: unknown): string {
+  const normalise = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(normalise);
+    if (v && typeof v === "object") {
+      const src = v as Record<string, unknown>;
+      const out: Record<string, unknown> = {};
+      for (const k of Object.keys(src).sort()) {
+        if (src[k] === undefined) continue;
+        out[k] = normalise(src[k]);
+      }
+      return out;
+    }
+    return v;
+  };
+  const withoutTimestamp =
+    doc && typeof doc === "object" && !Array.isArray(doc)
+      ? (() => {
+          const { timestamp: _ignored, ...rest } = doc as Record<string, unknown>;
+          return rest;
+        })()
+      : doc;
+  return JSON.stringify(normalise(withoutTimestamp));
+}
+
+/** Last fingerprint actually pushed, per node. Deliberately in memory:
+ *  persisting it would silence the bootstrap push after a reload, and that push
+ *  is what makes the public link live as soon as a wedding is created. */
+const _lastPushedFingerprint = new Map<string, string>();
+
+/** @internal For tests — the retained fingerprint is module state. */
+export function forgetPublicPageFingerprints(): void {
+  _lastPushedFingerprint.clear();
+}
+
 /** Push the current public page content to the `publicPage` ObjectNode's objinv. */
 export async function pushPublicPageContent(
   session: Session,
@@ -149,6 +215,13 @@ export async function pushPublicPageContent(
   pageNodeId: string,
 ): Promise<void> {
   const content = buildPublicPageDocument();
+  const fingerprint = publicPageFingerprint(content);
+  const key = `${spaceId}/${pageNodeId}`;
+
+  // Guard 1 — nothing changed since our last push: no write, no read, no node
+  // opened. This is the one that extinguishes the loop.
+  if (_lastPushedFingerprint.get(key) === fingerprint) return;
+
   const handle = await getNodeAccess(
     spaceId,
     pageNodeId,
@@ -156,11 +229,51 @@ export async function pushPublicPageContent(
     session,
     null,
   );
+
+  // Guard 2 — re-read what the server holds ourselves. Delegating this to the
+  // mutator does not work: handle.push's fast path stops it ever seeing the
+  // server state.
+  try {
+    const current = await handle.client.pull(objInvPull(spaceId, pageNodeId));
+    if (current?.hash) {
+      const data = handle.encryptor
+        ? await handle.encryptor.decrypt(current.data)
+        : current.data;
+      if (publicPageFingerprint(data) === fingerprint) {
+        _lastPushedFingerprint.set(key, fingerprint);
+        return;
+      }
+    }
+  } catch {
+    // Network down or document absent: carry on, guard 3 takes over if
+    // handle.push manages a read of its own.
+  }
+
+  // True once the server is established as holding this document, whether we
+  // just wrote it or found it already there.
+  let serverHasIt = false;
   await handle.push(
     objInvPull(spaceId, pageNodeId),
     objInvPush(spaceId, pageNodeId),
-    () => content as unknown as Record<string, unknown>,
+    (cur) => {
+      // Guard 3 — the server already holds the equivalent. Returning null tells
+      // handle.push to skip the write, as ensurePublicPageNode does above.
+      if (cur && publicPageFingerprint(cur) === fingerprint) {
+        serverHasIt = true;
+        return null;
+      }
+      serverHasIt = true;
+      return content as unknown as Record<string, unknown>;
+    },
   );
+  // Recorded AFTER the fact, and only if the call ran to completion: recording
+  // it earlier would silence the retry that must follow a network failure.
+  //
+  // Guard 3 counts as much as the push itself: it re-read the server, so it
+  // warmed the document cache (docKey maps read and write paths to one key).
+  // Without recording here, the next call would take the fast path, get
+  // cur = null, and write — the hole the loop would come back through.
+  if (serverHasIt) _lastPushedFingerprint.set(key, fingerprint);
 }
 
 // ---------------------------------------------------------------------------
