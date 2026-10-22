@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Home, Trash2, Pencil, ChevronDown, ChevronUp } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
@@ -16,6 +15,7 @@ import { useCanEditHere } from "@/lib/permissions/useCanEditHere";
 import { analytics } from "@/lib/analytics";
 import { Sprig } from "@/components/Sprig";
 import type { Accommodation } from "@/db/schema";
+import { toast } from "@/lib/toast/sonner";
 
 type FormState = {
   name: string;
@@ -65,7 +65,7 @@ export default function AccommodationsScreen() {
 
   const handleAdd = () => {
     if (!form.name.trim()) {
-      Alert.alert(t("common:error"), t("accommodationNameRequired"));
+      toast.error(t("accommodationNameRequired"));
       return;
     }
     const now = new Date().toISOString();

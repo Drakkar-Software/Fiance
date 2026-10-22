@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -76,7 +76,7 @@ export default function ExportImportScreen() {
       await exportWedding(activeEntry?.label || "wedding");
       analytics.capture("export_data", { format: "json", kind: "backup" });
     } catch (e: any) {
-      Alert.alert(t("common:error"), e.message);
+      toast.error(e.message);
     } finally {
       setExporting(false);
     }
@@ -228,7 +228,7 @@ export default function ExportImportScreen() {
         await exportToPdf(html, filename);
         analytics.capture("export_data", { format: "pdf", kind: type });
       } catch (e: any) {
-        Alert.alert(t("common:error"), e.message);
+        toast.error(e.message);
       }
     },
     [hasExports, openPaywall, guests, tables, groups, vendors, dayOfItems, wedding, budgetSummary, currency, mealSelections, weddingEvents, t]
@@ -260,7 +260,7 @@ export default function ExportImportScreen() {
         await exportToCsv(csv, filename);
         analytics.capture("export_data", { format: "csv", kind: type });
       } catch (e: any) {
-        Alert.alert(t("common:error"), e.message);
+        toast.error(e.message);
       }
     },
     [hasExports, openPaywall, budgetSummary, vendorPayments, vendors, guests, currency, t]

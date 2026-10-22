@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native-css/components";
-import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -20,6 +19,7 @@ import { useShowPaywall } from "@/components/PaywallProvider";
 import { isDayOfMultiDay } from "@fiance/sdk";
 import type { DayOfItem } from "@/db/schema";
 import { PageHeader } from "@/components/PageHeader";
+import { toast } from "@/lib/toast/sonner";
 
 /** Row that opens a bottom sheet to pick a wedding-party role (mirrors DateRow/TimeRow's tap-to-open pattern). */
 function RoleRow({
@@ -129,11 +129,11 @@ export default function DayOfItemScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert(t("common:error"), t("titleRequired"));
+      toast.error(t("titleRequired"));
       return;
     }
     if (!time.trim()) {
-      Alert.alert(t("common:error"), t("timeRequired"));
+      toast.error(t("timeRequired"));
       return;
     }
 

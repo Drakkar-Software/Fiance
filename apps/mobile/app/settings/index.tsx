@@ -4,7 +4,7 @@ import { useTelemetry as useSunglasses } from "@drakkar.software/dk-spaces-analy
 import { analytics } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, Pressable } from "react-native-css/components";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
 import { toast } from "@/lib/toast/sonner";
 import { format } from "date-fns";
 import Constants from "expo-constants";
@@ -133,6 +133,10 @@ export default function SettingsScreen() {
   const memberCount = usePermissionsStore((s) => s.assignments.length);
   const canInviteMember = useCanAddMore("members", memberCount);
 
+  // Alert.alert is a no-op on react-native-web, so this offer was never shown
+  // there — and its "migrate now" branch could never run.
+  const [showMigrationOffer, setShowMigrationOffer] = useState(false);
+
   const handleToggleSync = useCallback(async () => {
     console.log("[sync] handleToggleSync called", { id: activeEntry?.id, syncEnabled, hasSeed: !!activeEntry?.seedPhrase, serverUrl: activeEntry?.serverUrl });
     if (!activeEntry?.id) return;
@@ -149,7 +153,7 @@ export default function SettingsScreen() {
     // free member count is premium-gated, see handleInvite below.
     const serverUrl = resolveServerUrl(activeEntry);
     if (!activeEntry?.seedPhrase || !serverUrl) {
-      Alert.alert(t("syncImpossible"), t("noServerOrPassword"));
+      toast.error(t("syncImpossible"), { description: t("noServerOrPassword") });
       return;
     }
 
@@ -165,7 +169,7 @@ export default function SettingsScreen() {
       console.error("[sync] activateSync failed:", err);
       updateRegistryWedding(activeEntry.id, { syncDisabled: true });
       setSyncEnabled(false);
-      Alert.alert(t("syncImpossible"), err?.message ?? String(err));
+      toast.error(t("syncImpossible"), { description: err?.message ?? String(err) });
       return;
     }
     if (!activated) return;
@@ -174,16 +178,7 @@ export default function SettingsScreen() {
     setSyncEnabled(isSyncActive());
 
     // If the user has local data that hasn't been pushed to Space yet, offer migration.
-    if (wedding) {
-      Alert.alert(
-        t("migrationDetectedTitle"),
-        t("migrationDetectedMsg"),
-        [
-          { text: t("migrationLater"), style: "cancel" },
-          { text: t("migrationNow"), onPress: () => router.push("/settings/export-import") },
-        ],
-      );
-    }
+    if (wedding) setShowMigrationOffer(true);
   }, [syncEnabled, activeEntry, wedding, router, t]);
 
   const [showInviteQR, setShowInviteQR] = useState(false);
@@ -220,7 +215,7 @@ export default function SettingsScreen() {
     setShowJoinScanner(false);
     const token = parseSpaceInviteUrl(url);
     if (!token) {
-      Alert.alert(t("common:error"), t("common:onboarding.invalidQR"));
+      toast.error(t("common:onboarding.invalidQR"));
       return;
     }
     try {
@@ -228,7 +223,7 @@ export default function SettingsScreen() {
       analytics.capture("wedding_created", { method: "invite" });
       router.replace("/(tabs)");
     } catch (e: any) {
-      Alert.alert(t("common:error"), e?.message ?? String(e));
+      toast.error(e?.message ?? String(e));
     }
   }, [router, t]);
 
@@ -734,6 +729,16 @@ export default function SettingsScreen() {
 
       <View className="h-8" />
     </ScrollView>
+
+    <ConfirmSheet
+      visible={showMigrationOffer}
+      title={t("migrationDetectedTitle")}
+      message={t("migrationDetectedMsg")}
+      confirmLabel={t("migrationNow")}
+      cancelLabel={t("migrationLater")}
+      onConfirm={() => { setShowMigrationOffer(false); router.push("/settings/export-import"); }}
+      onCancel={() => setShowMigrationOffer(false)}
+    />
 
     <ConfirmSheet
       visible={!!deleteWeddingId}
