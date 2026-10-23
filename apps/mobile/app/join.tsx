@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { useWeddingRegistryStore } from "@/store/useWeddingRegistryStore";
 import { parseSpaceInviteUrl } from "@/lib/identity";
 import { joinWeddingByToken } from "@/lib/join-space";
+import { runWeddingCreation, selectNavigationHeld, useStatsConsentStore } from "@/store/useStatsConsentStore";
 import type { SpaceInviteLinkToken } from "@fiance/sdk";
 
 // Captured at module-load time — before Expo Router mounts and rewrites web
@@ -40,8 +41,10 @@ export default function JoinScreen() {
   const router = useRouter();
 
   const joinAndNavigate = useCallback(async (t: SpaceInviteLinkToken) => {
-    await joinWeddingByToken(t);
-    router.replace("/home" as any);
+    const isFirstWedding = (useWeddingRegistryStore.getState().registry?.weddings.length ?? 0) === 0;
+    await runWeddingCreation(isFirstWedding, () => joinWeddingByToken(t));
+    // The stats consent screen navigates home once it is answered.
+    if (!selectNavigationHeld(useStatsConsentStore.getState())) router.replace("/home" as any);
   }, [router]);
 
   // Still resolving the initial URL — avoid flashing the error screen

@@ -16,6 +16,7 @@ import { Script } from "@/components/Script";
 import { PageHeader } from "@/components/PageHeader";
 import { DateRow } from "@/components/FormSection";
 import { setPendingWeddingSeed, consumePendingWeddingSeed } from "@/lib/pending-wedding-seed";
+import { runWeddingCreation } from "@/store/useStatsConsentStore";
 
 type Mode = "choose" | "create" | "join";
 
@@ -53,8 +54,11 @@ export default function OnboardingScreen() {
           const label = [partner1Name, partner2Name].filter(Boolean).join(" & ") || "Mon mariage";
           setPendingWeddingSeed({ partner1Name, partner2Name, weddingDate });
           const passphrase = generatePassphrase();
+          const isFirstWedding = (useWeddingRegistryStore.getState().registry?.weddings.length ?? 0) === 0;
           try {
-            await createWedding(label, passphrase);
+            await runWeddingCreation(isFirstWedding, async () => {
+              await createWedding(label, passphrase);
+            });
           } catch (e) {
             consumePendingWeddingSeed(); // discard the stale seed on failure
             throw e;
@@ -71,7 +75,8 @@ export default function OnboardingScreen() {
       onBack={() => setMode("choose")}
       inviteToken={inviteToken}
       onJoin={async (token) => {
-        await joinWeddingByToken(token);
+        const isFirstWedding = (useWeddingRegistryStore.getState().registry?.weddings.length ?? 0) === 0;
+        await runWeddingCreation(isFirstWedding, () => joinWeddingByToken(token));
         analytics.capture("wedding_created", { method: "invite" });
         // Navigation to /home is handled by _layout.tsx after DatabaseProvider mounts
       }}

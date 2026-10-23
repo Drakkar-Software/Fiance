@@ -15,6 +15,7 @@ import enSeo from "./locales/en/seo.json";
 import enMarketing from "./locales/en/marketing.json";
 import enWelcome from "./locales/en/welcome.json";
 import enTips from "./locales/en/tips.json";
+import enConsent from "./locales/en/consent.json";
 
 import frCommon from "./locales/fr/common.json";
 import frDashboard from "./locales/fr/dashboard.json";
@@ -29,6 +30,7 @@ import frSeo from "./locales/fr/seo.json";
 import frMarketing from "./locales/fr/marketing.json";
 import frWelcome from "./locales/fr/welcome.json";
 import frTips from "./locales/fr/tips.json";
+import frConsent from "./locales/fr/consent.json";
 
 const deviceLang = getLocales()[0]?.languageCode ?? "fr";
 
@@ -50,6 +52,7 @@ i18n.use(initReactI18next).init({
     "marketing",
     "welcome",
     "tips",
+    "consent",
   ],
   defaultNS: "common",
   resources: {
@@ -67,6 +70,7 @@ i18n.use(initReactI18next).init({
       marketing: enMarketing,
       welcome: enWelcome,
       tips: enTips,
+      consent: enConsent,
     },
     fr: {
       common: frCommon,
@@ -82,6 +86,7 @@ i18n.use(initReactI18next).init({
       marketing: frMarketing,
       welcome: frWelcome,
       tips: frTips,
+      consent: frConsent,
     },
   },
   interpolation: {
